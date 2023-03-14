@@ -14,7 +14,7 @@
     ".vscode/",
     "package-lock.json",
     "yarn.lock",
-    "lib"
+    "dist"
   ],
   "extends": [
     "plugin:@typescript-eslint/recommended",
@@ -23,8 +23,8 @@
   "plugins": ["simple-import-sort", "unused-imports"],
   "rules": {
     "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/explicit-function-return-type": "error",
+    "@typescript-eslint/explicit-module-boundary-types": "error",
     "prettier/prettier": "error",
     "unused-imports/no-unused-imports": "error",
     "simple-import-sort/imports": "error",
