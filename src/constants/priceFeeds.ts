@@ -26,15 +26,15 @@ export function getPriceFeed(borrowCoin: ValidMoveCoin, collateralCoin: ValidMov
   return PRICE_FEEDS[borrowCoin] || PRICE_FEEDS[collateralCoin]
 }
 
-export function getCollateralPriceFeed(collateralCoin: ValidMoveCoin) {
+export function getCollateralPriceFeed(collateralCoin: ValidMoveCoin): string | undefined {
   return PRICE_FEEDS[collateralCoin]
 }
 
-export function getBorrowPriceFeed(borrowCoin: ValidMoveCoin) {
+export function getBorrowPriceFeed(borrowCoin: ValidMoveCoin): string | undefined {
   return PRICE_FEEDS[borrowCoin]
 }
 
-export const getPriceFeedUpdateData = async (priceFeedId: string) => {
+export const getPriceFeedUpdateData = async (priceFeedId: string): Promise<number[][]> => {
   try {
     console.log('Attempting to get pyth vaas')
     const updateData = await PYTH_CLIENT.getPriceFeedsUpdateData([priceFeedId])
