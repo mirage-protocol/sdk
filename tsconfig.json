@@ -1,8 +1,6 @@
 {
-  "extends": "@tsconfig/recommended/tsconfig.json",
-
   "compilerOptions": {
-    "outDir": "./lib",
+    "outDir": "./dist",
     "target": "ES2021",
     "lib": ["es2021", "esnext.bigint"],
     "allowJs": true,
@@ -11,6 +9,7 @@
     "declaration": true,
     "declarationMap": true,
     "noImplicitAny": false,
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "sourceMap": true,
     "esModuleInterop": true
