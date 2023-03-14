@@ -1,29 +1,29 @@
 {
-  "name": "@mirage-money/sdk",
+  "name": "@mirage-protocol/sdk",
   "license": "MIT",
   "version": "1.1.5",
   "publishConfig": {
     "access": "public"
   },
-  "description": "Typescript library for interacting with Mirage Protocol",
+  "description": "Typescript library for interacting with Mirage Protocol move contracts",
   "main": "./dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist"
   ],
   "module": "dist/sdk.esm.js",
+  "repository": "https://github.com/mirage-protocol/sdk.git",
+  "author": {
+    "name": "mirage-protocol",
+    "email": "contact@mirage.money",
+    "url": "https://mirage.money"
+  },
   "scripts": {
     "build": "rm -rf dist; tsc -p tsconfig.json",
     "type-check": "tsc --pretty --noEmit",
     "format": "prettier --check .",
     "lint": "eslint . --ext ts --ext tsx --ext js --quiet",
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": "https://github.com/mirage-protocol/sdk.git",
-  "author": {
-    "name": "mirage-protocol",
-    "email": "contact@mirage.money",
-    "url": "https://mirage.money"
   },
   "dependencies": {
     "@pythnetwork/pyth-aptos-js": "^1.0.0",
