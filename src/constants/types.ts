@@ -43,7 +43,7 @@ enum OtherTickers {
   BITCOIN = 'BTC',
 }
 
-export type ValidTickers = ValidMoveCoin | OtherTickers
+export type ValidAssets = typeof ValidMoveCoin | typeof OtherTickers
 
 export const TYPES: CoinMap = {
   [ValidMoveCoin.APTOS]: '0x1::aptos_coin::AptosCoin',
