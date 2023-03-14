@@ -1,16 +1,17 @@
 {
   "name": "@mirage-money/sdk",
   "license": "MIT",
-  "version": "1.0.9",
+  "version": "1.1.4",
   "publishConfig": {
     "access": "public"
   },
   "description": "Typescript library for interacting with Mirage Protocol",
   "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "typings": "dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "module": "dist/sdk.esm.js",
   "scripts": {
     "build": "rm -rf dist; tsc -p tsconfig.json",
     "type-check": "tsc --pretty --noEmit",
