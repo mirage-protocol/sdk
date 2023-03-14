@@ -1,16 +1,15 @@
-import * as Aptos from 'aptos'
 import BigNumber from 'bignumber.js'
 
-import { PRECISIONS, TYPES } from './constants/types'
+import { PRECISIONS, Resource, TYPES, ValidMoveCoin } from './constants/types'
 
 export default class Coin {
-  balance!: BigNumber
+  balance: BigNumber
 
-  constructor(resources: Aptos.Types.MoveResource[], ticker: string) {
-    const coinStoreResource = resources.find((resource) => resource.type == `0x1::coin::CoinStore<${TYPES[ticker]}>`)
+  constructor(resources: Resource[], coin: ValidMoveCoin) {
+    const coinStore = resources.find((resource) => resource.type == `0x1::coin::CoinStore<${TYPES[coin]}>`)
 
-    this.balance = new BigNumber((coinStoreResource!.data as any).coin.value).times(
-      BigNumber(10).pow(-PRECISIONS[ticker])
-    )
+    this.balance = !!coinStore
+      ? new BigNumber((coinStore.data as any).coin.value).div(BigNumber(10).pow(PRECISIONS[coin]))
+      : new BigNumber(0)
   }
 }

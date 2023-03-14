@@ -1,14 +1,8 @@
-import * as Aptos from 'aptos'
 import BigNumber from 'bignumber.js'
 
+import { INTEREST_PRECISION, PERCENT_PRECISION, SECONDS_PER_YEAR, ZERO } from './constants'
 import { MIRAGE_FRAMEWORK_ACCOUNT } from './constants/accounts'
-import { PRECISIONS, TYPES, ValidMoveCoin } from './constants/types'
-
-const PERCENT_PRECISION = 100000 // 1e5
-const RATE_PRECISION = 100000000 // 1e8
-const INTEREST_PRECISION = 1000000000000
-
-const SECONDS_PER_YEAR = 31622400
+import { PRECISIONS, Resource, TYPES, ValidMoveCoin } from './constants/types'
 
 export default class Vault {
   collateralCoin: ValidMoveCoin
@@ -22,25 +16,31 @@ export default class Vault {
   exchangeRate!: BigNumber // price of collateral in terms of borrow
   liquidationFee!: number // percent of liquidator cut
 
-  constructor(moduleResources: Aptos.Types.MoveResource[], collateralCoin: ValidMoveCoin, borrowCoin: ValidMoveCoin) {
+  constructor(moduleResources: Resource[], collateralCoin: ValidMoveCoin, borrowCoin: ValidMoveCoin) {
     this.collateralCoin = collateralCoin
     this.borrowCoin = borrowCoin
 
     const vaultResource = moduleResources.find((resource) => resource.type == this.getVaultTypeId())
 
-    this.borrowFee = Number((vaultResource!.data as any).borrow_fee) / PERCENT_PRECISION
+    this.borrowFee = !!vaultResource ? Number((vaultResource.data as any).borrow_fee) / Number(PERCENT_PRECISION) : 0
 
-    this.interest = Number((vaultResource!.data as any).interest_per_second) / INTEREST_PRECISION
+    this.interest = !!vaultResource
+      ? Number((vaultResource.data as any).interest_per_second) / Number(INTEREST_PRECISION)
+      : 0
 
-    this.collateralizationRate = Number((vaultResource!.data as any).collateralization_rate) / PERCENT_PRECISION
+    this.collateralizationRate = !!vaultResource
+      ? Number((vaultResource.data as any).collateralization_rate) / Number(PERCENT_PRECISION)
+      : 0
 
-    this.exchangeRate = new BigNumber((vaultResource!.data as any).cached_exchange_rate)
+    this.exchangeRate = !!vaultResource ? new BigNumber((vaultResource.data as any).cached_exchange_rate) : ZERO
 
-    this.borrow = new BigNumber((vaultResource?.data as any).borrow.elastic)
+    this.borrow = !!vaultResource ? new BigNumber((vaultResource.data as any).borrow.elastic) : ZERO
 
-    this.collateral = new BigNumber((vaultResource!.data as any).collateral.value)
+    this.collateral = !!vaultResource ? new BigNumber((vaultResource.data as any).collateral.value) : ZERO
 
-    this.liquidationFee = Number((vaultResource!.data as any).liquidation_multiplier) / PERCENT_PRECISION
+    this.liquidationFee = !!vaultResource
+      ? Number((vaultResource.data as any).liquidation_multiplier) / Number(PERCENT_PRECISION)
+      : 0
   }
 
   getVaultTypeId(): string {
