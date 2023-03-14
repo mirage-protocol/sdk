@@ -2,8 +2,6 @@ import { MIRAGE_FRAMEWORK_ACCOUNT } from '../constants/accounts'
 
 export const moduleAddress = MIRAGE_FRAMEWORK_ACCOUNT.address
 
-export type CoinMap = { readonly [coin in ValidMoveCoins]: string }
-
 export enum ValidMoveCoins {
   MIRA = 'MIRA',
   APTOS = 'APT',
@@ -13,6 +11,31 @@ export enum ValidMoveCoins {
   MIRAGE_USD = 'mUSD',
   ZL_USD = 'zUSDC',
   PANCAKE_APT_MUSD_LP = 'CAKE_APT_MUSD',
+}
+
+export type CoinMap = { readonly [coin in ValidMoveCoins]: string }
+
+export const checkTicker = (ticker: string) => {
+  switch (ticker) {
+    case ValidMoveCoins.MIRA:
+      return ValidMoveCoins.MIRA
+    case ValidMoveCoins.APTOS:
+      return ValidMoveCoins.APTOS
+    case ValidMoveCoins.DEV_USDC:
+      return ValidMoveCoins.DEV_USDC
+    case ValidMoveCoins.MIRAGE_APTOS:
+      return ValidMoveCoins.MIRAGE_APTOS
+    case ValidMoveCoins.MIRAGE_ETHEREUM:
+      return ValidMoveCoins.MIRAGE_ETHEREUM
+    case ValidMoveCoins.MIRAGE_USD:
+      return ValidMoveCoins.MIRAGE_USD
+    case ValidMoveCoins.ZL_USD:
+      return ValidMoveCoins.ZL_USD
+    case ValidMoveCoins.PANCAKE_APT_MUSD_LP:
+      return ValidMoveCoins.PANCAKE_APT_MUSD_LP
+    default:
+      throw new TypeError('Not a valid Coin')
+  }
 }
 
 enum OtherTickers {
