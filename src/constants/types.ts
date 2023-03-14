@@ -1,6 +1,10 @@
+import { Types } from 'aptos'
+
 import { MIRAGE_FRAMEWORK_ACCOUNT } from '../constants/accounts'
 
 export const moduleAddress = MIRAGE_FRAMEWORK_ACCOUNT.address
+
+export type Resource = Types.MoveResource
 
 export enum ValidMoveCoin {
   MIRA = 'MIRA',
@@ -13,7 +17,15 @@ export enum ValidMoveCoin {
   PANCAKE_APT_MUSD_LP = 'CAKE_APT_MUSD',
 }
 
+export enum OtherAsset {
+  ETHEREUM = 'ETH',
+  BITCOIN = 'BTC',
+}
+
+export type ValidAssets = ValidMoveCoin | OtherAsset
+
 export type CoinMap = { readonly [coin in ValidMoveCoin]: string }
+export type AssetMap = { readonly [asset in ValidAssets]: string }
 
 export const checkTicker = (ticker: string) => {
   switch (ticker) {
@@ -37,13 +49,6 @@ export const checkTicker = (ticker: string) => {
       throw new TypeError('Not a valid Coin')
   }
 }
-
-enum OtherTickers {
-  ETHEREUM = 'ETH',
-  BITCOIN = 'BTC',
-}
-
-export type ValidAssets = typeof ValidMoveCoin | typeof OtherTickers
 
 export const TYPES: CoinMap = {
   [ValidMoveCoin.APTOS]: '0x1::aptos_coin::AptosCoin',
