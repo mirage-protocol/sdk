@@ -27,7 +27,7 @@ export type ValidAssets = ValidMoveCoin | OtherAsset
 export type CoinMap = { readonly [coin in ValidMoveCoin]: string }
 export type AssetMap = { readonly [asset in ValidAssets]: string }
 
-export const checkTicker = (ticker: string) => {
+export const checkTicker = (ticker: string): ValidMoveCoin => {
   switch (ticker) {
     case ValidMoveCoin.MIRA:
       return ValidMoveCoin.MIRA
