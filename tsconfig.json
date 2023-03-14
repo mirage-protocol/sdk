@@ -1,6 +1,4 @@
 {
-  "extends": "@tsconfig/recommended/tsconfig.json",
-
   "compilerOptions": {
     "outDir": "./dist",
     "target": "ES2021",
@@ -15,7 +13,8 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "sourceMap": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "skipLibCheck": true,
   },
   "include": ["./src/**/*"],
   "exclude": ["./src/**/*.test.js", "node_modules", "**/node_modules"]
