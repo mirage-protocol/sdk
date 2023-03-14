@@ -1,0 +1,54 @@
+{
+  "name": "@mirage/sdk",
+  "license": "MIT",
+  "version": "1.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "Typescript library for interacting with Mirage Protocol",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf lib",
+    "type-check": "tsc --pretty --noEmit",
+    "format": "prettier --check .",
+    "lint": "eslint . --ext ts --ext tsx --ext js --quiet",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "https://github.com/mirage-protocol/sdk.git",
+  "author": {
+    "name": "mirage-protocol",
+    "email": "contact@mirage.money",
+    "url": "https://mirage.money"
+  },
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "@pythnetwork/pyth-aptos-js": "^1.0.0",
+    "@pythnetwork/pyth-common-js": "^1.4.0",
+    "aptos": "1.6.0",
+    "bignumber.js": "^9.1.1"
+  },
+  "devDependencies": {
+    "@tsconfig/recommended": "^1.0.1",
+    "@types/node": "^18.7.11",
+    "@types/styled-components": "^5.1.26",
+    "@typescript-eslint/eslint-plugin": "^5.34.0",
+    "@typescript-eslint/parser": "^5.34.0",
+    "eslint": "^8.22.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "eslint-plugin-unused-imports": "^2.0.0",
+    "lint-staged": "^13.0.3",
+    "prettier": "^2.7.1",
+    "typescript": "^4.7.4"
+  },
+  "prettier": {
+    "printWidth": 120,
+    "semi": false,
+    "singleQuote": true
+  }
+}
