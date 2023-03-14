@@ -2,15 +2,15 @@ import * as Aptos from 'aptos'
 import BigNumber from 'bignumber.js'
 
 import { MIRAGE_FRAMEWORK_ACCOUNT } from './constants/accounts'
-import { PRECISIONS, TYPES, ValidMoveCoins } from './constants/types'
+import { PRECISIONS, TYPES, ValidMoveCoin } from './constants/types'
 import Rebase from './Rebase'
 
 const COLLATERALIZATION_PRECISION = new BigNumber('100000')
 const EXCHANGE_RATE_PRECISION = new BigNumber('100000000')
 
 export default class UserInfo {
-  collateralCoin: ValidMoveCoins
-  borrowCoin: ValidMoveCoins
+  collateralCoin: ValidMoveCoin
+  borrowCoin: ValidMoveCoin
   address!: string
 
   userCollateral!: BigNumber
@@ -25,8 +25,8 @@ export default class UserInfo {
   constructor(
     userResources: Aptos.Types.MoveResource[],
     moduleResources: Aptos.Types.MoveResource[],
-    collateralCoin: ValidMoveCoins,
-    borrow: ValidMoveCoins
+    collateralCoin: ValidMoveCoin,
+    borrow: ValidMoveCoin
   ) {
     this.collateralCoin = collateralCoin
     this.borrowCoin = borrow

@@ -2,7 +2,7 @@ import * as Aptos from 'aptos'
 import BigNumber from 'bignumber.js'
 
 import { MIRAGE_FRAMEWORK_ACCOUNT } from './constants/accounts'
-import { PRECISIONS, TYPES, ValidMoveCoins } from './constants/types'
+import { PRECISIONS, TYPES, ValidMoveCoin } from './constants/types'
 
 const PERCENT_PRECISION = 100000 // 1e5
 const RATE_PRECISION = 100000000 // 1e8
@@ -11,8 +11,8 @@ const INTEREST_PRECISION = 1000000000000
 const SECONDS_PER_YEAR = 31622400
 
 export default class Vault {
-  collateralCoin: ValidMoveCoins
-  borrowCoin: ValidMoveCoins
+  collateralCoin: ValidMoveCoin
+  borrowCoin: ValidMoveCoin
 
   collateral!: BigNumber
   borrow!: BigNumber
@@ -22,7 +22,7 @@ export default class Vault {
   exchangeRate!: BigNumber // price of collateral in terms of borrow
   liquidationFee!: number // percent of liquidator cut
 
-  constructor(moduleResources: Aptos.Types.MoveResource[], collateralCoin: ValidMoveCoins, borrowCoin: ValidMoveCoins) {
+  constructor(moduleResources: Aptos.Types.MoveResource[], collateralCoin: ValidMoveCoin, borrowCoin: ValidMoveCoin) {
     this.collateralCoin = collateralCoin
     this.borrowCoin = borrowCoin
 
