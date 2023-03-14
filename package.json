@@ -21,7 +21,7 @@
   "scripts": {
     "build": "rm -rf dist; tsc -p tsconfig.json",
     "type-check": "tsc --pretty --noEmit",
-    "format": "prettier --check .",
+    "format": "prettier --check ./src",
     "lint": "eslint . --ext ts --ext tsx --ext js --quiet",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
