@@ -1,16 +1,14 @@
-import * as Aptos from 'aptos'
 import BigNumber from 'bignumber.js'
 
+import { COLLATERALIZATION_PRECISION, EXCHANGE_RATE_PRECISION, ZERO } from './constants'
 import { MIRAGE_FRAMEWORK_ACCOUNT } from './constants/accounts'
-import { PRECISIONS, TYPES, ValidMoveCoins } from './constants/types'
+import { PRECISIONS, Resource, TYPES, ValidMoveCoin } from './constants/types'
 import Rebase from './Rebase'
 
-const COLLATERALIZATION_PRECISION = new BigNumber('100000')
-const EXCHANGE_RATE_PRECISION = new BigNumber('100000000')
-
-export default class UserInfo {
-  collateralCoin: ValidMoveCoins
-  borrowCoin: ValidMoveCoins
+// TODO: move a lot of the heavy lifting from the interface into here
+export default class user {
+  collateral: ValidMoveCoin
+  borrowCoin: ValidMoveCoin
   address!: string
 
   userCollateral!: BigNumber
@@ -23,32 +21,30 @@ export default class UserInfo {
   collateralizationPercent!: BigNumber
 
   constructor(
-    userResources: Aptos.Types.MoveResource[],
-    moduleResources: Aptos.Types.MoveResource[],
-    collateralCoin: ValidMoveCoins,
-    borrow: ValidMoveCoins
+    userResources: Resource[],
+    moduleResources: Resource[],
+    collateral: ValidMoveCoin,
+    borrow: ValidMoveCoin
   ) {
-    this.collateralCoin = collateralCoin
+    this.collateral = collateral
     this.borrowCoin = borrow
 
-    const userInfoResource = userResources.find((resource) => resource.type == this.getUserInfoTypeId())
+    const user = userResources.find((resource) => resource.type == this.getUserTypeId())
+    const vault = moduleResources.find((resource) => resource.type == this.getVaultTypeId())
 
-    const vaultResource = moduleResources.find((resource) => resource.type == this.getVaultTypeId())
+    this.collateralizationPercent = !!vault
+      ? new BigNumber((vault.data as any).collateralization_rate).div(COLLATERALIZATION_PRECISION)
+      : ZERO
 
-    this.collateralizationPercent = new BigNumber((vaultResource!.data as any).collateralization_rate).div(
-      COLLATERALIZATION_PRECISION
-    )
+    const exchangeRate = !!vault ? new BigNumber((vault.data as any).cached_exchange_rate) : ZERO
 
-    const exchangeRate = new BigNumber((vaultResource!.data as any).cached_exchange_rate)
+    this.userCollateral = !!user ? new BigNumber((user.data as any).user_collateral) : ZERO
 
-    this.userCollateral = new BigNumber((userInfoResource!.data as any).user_collateral)
+    const totalBorrow = !!vault
+      ? new Rebase(new BigNumber((vault.data as any).borrow.elastic), new BigNumber((vault.data as any).borrow.base))
+      : new Rebase(ZERO, ZERO)
 
-    const totalBorrow = new Rebase(
-      new BigNumber((vaultResource!.data as any).borrow.elastic),
-      new BigNumber((vaultResource!.data as any).borrow.base)
-    )
-
-    this.userBorrow = totalBorrow.toElastic(new BigNumber((userInfoResource!.data as any).user_borrow_part), true)
+    this.userBorrow = !!user ? totalBorrow.toElastic(new BigNumber((user.data as any).user_borrow_part), true) : ZERO
 
     this.liquidationPrice = this.userBorrow
       .times(EXCHANGE_RATE_PRECISION)
@@ -81,20 +77,18 @@ export default class UserInfo {
   }
 
   getUiUserCollateral(): number {
-    return this.userCollateral.times(new BigNumber(10).exponentiatedBy(-PRECISIONS[this.collateralCoin])).toNumber()
+    return this.userCollateral.times(new BigNumber(10).exponentiatedBy(-PRECISIONS[this.collateral])).toNumber()
   }
 
   getUiUserBorrow(): number {
     return this.userBorrow.times(new BigNumber(10).exponentiatedBy(-PRECISIONS[this.borrowCoin])).toNumber()
   }
 
-  getUserInfoTypeId(): string {
-    return `${MIRAGE_FRAMEWORK_ACCOUNT.address}::vault::UserInfo<${TYPES[this.collateralCoin]}, ${
-      TYPES[this.borrowCoin]
-    }>`
+  getUserTypeId(): string {
+    return `${MIRAGE_FRAMEWORK_ACCOUNT.address}::vault::user<${TYPES[this.collateral]}, ${TYPES[this.borrowCoin]}>`
   }
 
   getVaultTypeId(): string {
-    return `${MIRAGE_FRAMEWORK_ACCOUNT.address}::vault::Vault<${TYPES[this.collateralCoin]}, ${TYPES[this.borrowCoin]}>`
+    return `${MIRAGE_FRAMEWORK_ACCOUNT.address}::vault::Vault<${TYPES[this.collateral]}, ${TYPES[this.borrowCoin]}>`
   }
 }
