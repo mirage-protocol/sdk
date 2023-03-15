@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js'
 
+import { toUi } from './Coin'
 import { COLLATERALIZATION_PRECISION, EXCHANGE_RATE_PRECISION, ZERO } from './constants'
 import { AccountResource, MIRAGE_ADDRESS } from './constants/accounts'
 import { coinInfo, MoveCoin } from './constants/coinList'
@@ -72,23 +73,23 @@ export default class user {
     this.withdrawableAmount = this.userCollateral.minus(minCollateral)
   }
 
-  simulateIsSolvent(exchangeRate: BigNumber): boolean {
+  public getUiUserCollateral(): number {
+    return toUi(this.userCollateral, this.collateral)
+  }
+
+  public getUiUserBorrow(): number {
+    return toUi(this.userBorrow, this.borrowCoin)
+  }
+
+  public simulateIsSolvent(exchangeRate: BigNumber): boolean {
     return this.userCollateral.div(this.collateralizationPercent).times(exchangeRate).isGreaterThan(this.userBorrow)
   }
 
-  getUiUserCollateral(): number {
-    return this.userCollateral.times(BigNumber(10).pow(coinInfo(this.collateral).decimals)).toNumber()
-  }
-
-  getUiUserBorrow(): number {
-    return this.userBorrow.div(BigNumber(10).pow(coinInfo(this.borrowCoin).decimals)).toNumber()
-  }
-
-  getUserTypeId(): string {
+  public getUserTypeId(): string {
     return `${MIRAGE_ADDRESS}::vault::UserInfo<${coinInfo(this.collateral).type}, ${coinInfo(this.borrowCoin).type}>`
   }
 
-  getVaultTypeId(): string {
+  public getVaultTypeId(): string {
     return `${MIRAGE_ADDRESS}::vault::Vault<${coinInfo(this.collateral).type}, ${coinInfo(this.borrowCoin).type}>`
   }
 }

@@ -15,11 +15,11 @@ export default class VaultEventStore {
     this.borrow = borrow
   }
 
-  getUserInfoTypeId(): string {
+  public getUserInfoTypeId(): string {
     return `${MIRAGE_ADDRESS}::vault::UserInfo<${coinInfo(this.collateral).type},${coinInfo(this.borrow).type}>`
   }
 
-  getVaultEventStoreTypeId(): string {
+  public getVaultEventStoreTypeId(): string {
     return `${MIRAGE_ADDRESS}::vault::VaultEventStore<${coinInfo(this.collateral).type},${coinInfo(this.borrow).type}>`
   }
 }
