@@ -12,9 +12,10 @@ export default class Coin {
   public readonly balance: BigNumber
   public readonly coinType: MoveCoin
   public readonly precision: BigNumber
+  public readonly logoUrl?: string
 
   constructor(resources: AccountResource[] | null | undefined, coinType: MoveCoin) {
-    const { name, symbol, decimals, type } = mirageCoinList[coinType]
+    const { name, symbol, decimals, type, logoUrl } = mirageCoinList[coinType]
 
     const precision = BigNumber(10).pow(decimals)
 
@@ -24,6 +25,7 @@ export default class Coin {
     this.coinType = coinType
     this.precision = precision
     this.balance = ZERO
+    this.logoUrl = logoUrl
 
     if (!!resources) {
       const coinStore = resources.find((resource) => resource.type == `0x1::coin::CoinStore<${type}>`)
