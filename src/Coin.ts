@@ -7,25 +7,54 @@ import { coinInfo, MoveCoin } from './constants/coinList'
 export const toUi = (bn: BigNumber, coin: MoveCoin): number =>
   bn.div(BigNumber(10).pow(coinInfo(coin).decimals)).toNumber()
 
+/**
+ * Represents an on-chain CoinStore with a unique type and stores some metadata.
+ * Holds the balance of a given user's resources.
+ */
 export default class Coin {
+  /**
+   * The coin represented by the class
+   */
+  public readonly coin: MoveCoin
+  /**
+   * The name of the coin
+   */
   public readonly name: string
+  /**
+   * The coin symbol
+   */
   public readonly symbol: string
+  /**
+   * The number of decimals the coin uses
+   */
   public readonly decimals: number
-
+  /**
+   * The balance of the CoinStore found in the given resources
+   */
   public readonly balance: BigNumber
-  public readonly coinType: MoveCoin
+  /**
+   * The precision of the coin (e.g. 8 decimals = 100,000,000)
+   */
   public readonly precision: BigNumber
+  /**
+   * The public logoUrl of the token
+   */
   public readonly logoUrl?: string
 
-  constructor(resources: AccountResource[] | null | undefined, coinType: MoveCoin) {
-    const { name, symbol, decimals, type, logoUrl } = coinInfo(coinType)
+  /**
+   * Constructs an instance of Coin
+   * @param resources resources of some account
+   * @param coin which coin to find data for
+   */
+  constructor(resources: AccountResource[] | null | undefined, coin: MoveCoin) {
+    const { name, symbol, decimals, type, logoUrl } = coinInfo(coin)
 
     const precision = BigNumber(10).pow(decimals)
 
     this.name = name
     this.symbol = symbol
     this.decimals = decimals
-    this.coinType = coinType
+    this.coin = coin
     this.precision = precision
     this.balance = ZERO
     this.logoUrl = logoUrl
@@ -36,7 +65,11 @@ export default class Coin {
     }
   }
 
+  /**
+   * Get a Ui friendly balance
+   * @returns The balance divided by the precision
+   */
   public getUiBalance(): number {
-    return toUi(this.balance, this.coinType)
+    return toUi(this.balance, this.coin)
   }
 }

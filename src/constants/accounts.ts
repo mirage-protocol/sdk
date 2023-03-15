@@ -11,7 +11,7 @@ export interface Account {
   address: HexString
 }
 
-export const MIRAGE_PROTOCOL_ACCOUNT: Account = {
+export const MIRAGE_ACCOUNT: Account = {
   name: 'mirage',
   address: MIRAGE_ADDRESS,
 }
