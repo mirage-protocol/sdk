@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js'
 
+import { ZERO } from './constants'
 import { AccountResource } from './constants/accounts'
 import { mirageCoinList, MoveCoin } from './constants/coinList'
 
@@ -22,11 +23,11 @@ export default class Coin {
     this.decimals = decimals
     this.coinType = coinType
     this.precision = precision
+    this.balance = ZERO
 
-    if (!resources) this.balance = new BigNumber(0)
-    else {
+    if (!!resources) {
       const coinStore = resources.find((resource) => resource.type == `0x1::coin::CoinStore<${type}>`)
-      this.balance = !!coinStore ? new BigNumber((coinStore.data as any).coin.value).div(precision) : new BigNumber(0)
+      this.balance = !!coinStore ? new BigNumber((coinStore.data as any).coin.value).div(precision) : ZERO
     }
   }
 }
