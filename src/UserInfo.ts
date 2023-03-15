@@ -22,7 +22,7 @@ export default class UserInfo {
   /**
    * The borrow asset of the vault (a mirage asset e.g. mUSD)
    */
-  public readonly borrowCoin: MoveCoin
+  public readonly borrow: MoveCoin
   /**
    * The amount of collateral the user has deposited
    */
@@ -66,15 +66,14 @@ export default class UserInfo {
     collateral: MoveCoin,
     borrow: MoveCoin
   ) {
-    this.userInfoType = `${MIRAGE_ADDRESS}::vault::UserInfo<${coinInfo(this.collateral).type}, ${
-      coinInfo(this.borrowCoin).type
-    }>`
+    this.vault = new Vault(moduleResources, collateral, borrow)
+    this.collateral = collateral
+    this.borrow = borrow
+
+    this.userInfoType = `${MIRAGE_ADDRESS}::vault::UserInfo<${coinInfo(collateral).type}, ${coinInfo(borrow).type}>`
 
     const user = userResources.find((resource) => resource.type == this.userInfoType)
 
-    this.vault = new Vault(moduleResources, collateral, borrow)
-    this.collateral = collateral
-    this.borrowCoin = borrow
     this.userCollateral = !!user ? new BigNumber((user.data as any).user_collateral) : ZERO
     this.userBorrow =
       !!user && !!this.vault
@@ -139,7 +138,7 @@ export default class UserInfo {
    * @returns the users total borrow
    */
   public getUiUserBorrow(): number {
-    return toUi(this.userBorrow, this.borrowCoin)
+    return toUi(this.userBorrow, this.borrow)
   }
 
   /**
