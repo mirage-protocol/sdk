@@ -12,10 +12,14 @@ yarn install
 
 ## How to Use
 
+You have to collect the resources for the sdk to parse yourself. You can use the exported `APTOS_CLIENT` to make the request. Some classes require the resources of the mirage protocol account itself. You can get these by using the exported `MIRAGE_ADDRESS` alongside the client.
+
+Resources can be kept up to date through time and fed to the sdk to keep an updated protocol state, for example on a frontend.
+
 ```typescript
 import { Vault, Coin, MoveCoin, APTOS_CLIENT, MIRAGE_ADDRESS } from '@mirage-protocol/sdk'
 
-// get coin balance
+// get coin balance of a user account
 const getCoinBalance = async (userAddr: string) => {
 
   // Get the resources for a user account
