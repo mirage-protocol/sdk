@@ -1,12 +1,12 @@
 import BigNumber from 'bignumber.js'
 
 import { INTEREST_PRECISION, PERCENT_PRECISION, SECONDS_PER_YEAR, ZERO } from './constants'
-import { MIRAGE_FRAMEWORK_ACCOUNT } from './constants/accounts'
-import { PRECISIONS, Resource, TYPES, ValidMoveCoin } from './constants/types'
+import { AccountResource, MIRAGE_ADDRESS } from './constants/accounts'
+import { mirageCoinList, MoveCoin } from './constants/coinList'
 
 export default class Vault {
-  collateralCoin: ValidMoveCoin
-  borrowCoin: ValidMoveCoin
+  collateralCoin: MoveCoin
+  borrowCoin: MoveCoin
 
   collateral!: BigNumber
   borrow!: BigNumber
@@ -16,7 +16,7 @@ export default class Vault {
   exchangeRate!: BigNumber // price of collateral in terms of borrow
   liquidationFee!: number // percent of liquidator cut
 
-  constructor(moduleResources: Resource[], collateralCoin: ValidMoveCoin, borrowCoin: ValidMoveCoin) {
+  constructor(moduleResources: AccountResource[], collateralCoin: MoveCoin, borrowCoin: MoveCoin) {
     this.collateralCoin = collateralCoin
     this.borrowCoin = borrowCoin
 
@@ -44,15 +44,17 @@ export default class Vault {
   }
 
   getVaultTypeId(): string {
-    return `${MIRAGE_FRAMEWORK_ACCOUNT.address}::vault::Vault<${TYPES[this.collateralCoin]}, ${TYPES[this.borrowCoin]}>`
+    return `${MIRAGE_ADDRESS}::vault::Vault<${mirageCoinList[this.collateralCoin].type}, ${
+      mirageCoinList[this.borrowCoin].type
+    }>`
   }
 
   getUiTotalCollateral(): number {
-    return this.collateral.times(new BigNumber(10).exponentiatedBy(-PRECISIONS[this.collateralCoin])).toNumber()
+    return this.collateral.div(BigNumber(10).pow(mirageCoinList[this.collateralCoin].decimals)).toNumber()
   }
 
   getUiTotalBorrow(): number {
-    return this.borrow.times(new BigNumber(10).exponentiatedBy(-PRECISIONS[this.borrowCoin])).toNumber()
+    return this.borrow.times(BigNumber(10).pow(mirageCoinList[this.borrowCoin].decimals)).toNumber()
   }
 
   getLiquidationFeePercent(): number {

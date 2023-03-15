@@ -1,29 +1,29 @@
 import { HexString } from 'aptos'
 
-import { MIRAGE_FRAMEWORK_ACCOUNT } from './constants/accounts'
-import { TYPES } from './constants/types'
+import { MIRAGE_ADDRESS } from './constants/accounts'
+import { mirageCoinList, MoveCoin } from './constants/coinList'
 import UserInfo from './UserInfo'
 
 export default class VaultEventStore {
-  collateralTicker: string
-  borrowTicker: string
+  collateral: MoveCoin
+  borrow: MoveCoin
   userAddresses!: HexString[]
   users!: UserInfo[]
 
-  constructor(collateralTicker: string, borrowTicker: string) {
-    this.collateralTicker = collateralTicker
-    this.borrowTicker = borrowTicker
+  constructor(collateral: MoveCoin, borrow: MoveCoin) {
+    this.collateral = collateral
+    this.borrow = borrow
   }
 
   getUserInfoTypeId(): string {
-    return `${MIRAGE_FRAMEWORK_ACCOUNT.address}::vault::UserInfo<${TYPES[this.collateralTicker]},${
-      TYPES[this.borrowTicker]
+    return `${MIRAGE_ADDRESS}::vault::UserInfo<${mirageCoinList[this.collateral].type},${
+      mirageCoinList[this.borrow].type
     }>`
   }
 
   getVaultEventStoreTypeId(): string {
-    return `${MIRAGE_FRAMEWORK_ACCOUNT.address}::vault::VaultEventStore<${TYPES[this.collateralTicker]},${
-      TYPES[this.borrowTicker]
+    return `${MIRAGE_ADDRESS}::vault::VaultEventStore<${mirageCoinList[this.collateral].type},${
+      mirageCoinList[this.borrow].type
     }>`
   }
 }
