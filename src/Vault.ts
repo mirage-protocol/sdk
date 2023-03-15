@@ -2,19 +2,19 @@ import BigNumber from 'bignumber.js'
 
 import { INTEREST_PRECISION, PERCENT_PRECISION, SECONDS_PER_YEAR, ZERO } from './constants'
 import { AccountResource, MIRAGE_ADDRESS } from './constants/accounts'
-import { mirageCoinList, MoveCoin } from './constants/coinList'
+import { coinInfo, MoveCoin } from './constants/coinList'
 
 export default class Vault {
-  collateralCoin: MoveCoin
-  borrowCoin: MoveCoin
+  public readonly collateralCoin: MoveCoin
+  public readonly borrowCoin: MoveCoin
 
-  collateral!: BigNumber
-  borrow!: BigNumber
-  interest!: number // basis points
-  collateralizationRate!: number // basis points
-  borrowFee!: number // basis points
-  exchangeRate!: BigNumber // price of collateral in terms of borrow
-  liquidationFee!: number // percent of liquidator cut
+  public readonly collateral!: BigNumber
+  public readonly borrow!: BigNumber
+  public readonly interest!: number // basis points
+  public readonly collateralizationRate!: number // basis points
+  public readonly borrowFee!: number // basis points
+  public readonly exchangeRate!: BigNumber // price of collateral in terms of borrow
+  public readonly liquidationFee!: number // percent of liquidator cut
 
   constructor(moduleResources: AccountResource[], collateralCoin: MoveCoin, borrowCoin: MoveCoin) {
     this.collateralCoin = collateralCoin
@@ -44,17 +44,15 @@ export default class Vault {
   }
 
   getVaultTypeId(): string {
-    return `${MIRAGE_ADDRESS}::vault::Vault<${mirageCoinList[this.collateralCoin].type}, ${
-      mirageCoinList[this.borrowCoin].type
-    }>`
+    return `${MIRAGE_ADDRESS}::vault::Vault<${coinInfo(this.collateralCoin).type}, ${coinInfo(this.borrowCoin).type}>`
   }
 
   getUiTotalCollateral(): number {
-    return this.collateral.div(BigNumber(10).pow(mirageCoinList[this.collateralCoin].decimals)).toNumber()
+    return this.collateral.div(BigNumber(10).pow(coinInfo(this.collateralCoin).decimals)).toNumber()
   }
 
   getUiTotalBorrow(): number {
-    return this.borrow.times(BigNumber(10).pow(mirageCoinList[this.borrowCoin].decimals)).toNumber()
+    return this.borrow.times(BigNumber(10).pow(coinInfo(this.borrowCoin).decimals)).toNumber()
   }
 
   getLiquidationFeePercent(): number {

@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js'
 
 export default class Rebase {
-  elastic: BigNumber
-  base: BigNumber
+  public readonly elastic: BigNumber
+  public readonly base: BigNumber
 
   constructor(elastic: BigNumber, base: BigNumber) {
     this.elastic = elastic
