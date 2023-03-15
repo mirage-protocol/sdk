@@ -42,7 +42,7 @@ export default class Vault {
   /**
    * The flat borrow fee for the vault (percent)
    */
-  public readonly borrowFee: number
+  public readonly borrowFeePercent: number
   /**
    * The last cached exchange rate of the vault (precision: 1e8)
    * This price is collateral / borrow
@@ -64,7 +64,7 @@ export default class Vault {
 
     this.collateral = collateral
     this.borrow = borrow
-    this.borrowFee = !!vault ? (100 * Number((vault.data as any).borrow_fee)) / 10000 : 0
+    this.borrowFeePercent = !!vault ? (100 * Number((vault.data as any).borrow_fee)) / 10000 : 0
     this.interestPerSecond = !!vault ? BigNumber((vault.data as any).interest_per_second) : ZERO
     this.collateralizationPercent = !!vault ? (100 * Number((vault.data as any).collateralization_rate)) / 10000 : 0
     this.exchangeRate = !!vault ? BigNumber((vault.data as any).cached_exchange_rate) : ZERO
