@@ -1,20 +1,75 @@
 import BigNumber from 'bignumber.js'
 
-import { PRECISIONS, Resource, TYPES, ValidMoveCoin } from './constants/types'
+import { ZERO } from './constants'
+import { AccountResource } from './constants/accounts'
+import { coinInfo, MoveCoin } from './constants/coinList'
 
+export const toUi = (bn: BigNumber, coin: MoveCoin): number =>
+  bn.div(BigNumber(10).pow(coinInfo(coin).decimals)).toNumber()
+
+/**
+ * Represents an on-chain CoinStore with a unique type and stores some metadata.
+ * Holds the balance of a given user's resources.
+ */
 export default class Coin {
-  balance: BigNumber
-  coinType: ValidMoveCoin
-  precision: BigNumber
+  /**
+   * The coin represented by the class
+   */
+  public readonly coin: MoveCoin
+  /**
+   * The name of the coin
+   */
+  public readonly name: string
+  /**
+   * The coin symbol
+   */
+  public readonly symbol: string
+  /**
+   * The number of decimals the coin uses
+   */
+  public readonly decimals: number
+  /**
+   * The balance of the CoinStore found in the given resources
+   */
+  public readonly balance: BigNumber
+  /**
+   * The precision of the coin (e.g. 8 decimals = 100,000,000)
+   */
+  public readonly precision: BigNumber
+  /**
+   * The public logoUrl of the token
+   */
+  public readonly logoUrl?: string
 
-  constructor(resources: Resource[] | null | undefined, coinType: ValidMoveCoin) {
-    const precision = BigNumber(10).pow(PRECISIONS[coinType])
+  /**
+   * Constructs an instance of Coin
+   * @param resources resources of some account
+   * @param coin which coin to find data for
+   */
+  constructor(resources: AccountResource[] | null | undefined, coin: MoveCoin) {
+    const { name, symbol, decimals, type, logoUrl } = coinInfo(coin)
+
+    const precision = BigNumber(10).pow(decimals)
+
+    this.name = name
+    this.symbol = symbol
+    this.decimals = decimals
+    this.coin = coin
     this.precision = precision
-    this.coinType = coinType
-    if (!resources) this.balance = new BigNumber(0)
-    else {
-      const coinStore = resources.find((resource) => resource.type == `0x1::coin::CoinStore<${TYPES[coinType]}>`)
-      this.balance = !!coinStore ? new BigNumber((coinStore.data as any).coin.value).div(precision) : new BigNumber(0)
+    this.balance = ZERO
+    this.logoUrl = logoUrl
+
+    if (!!resources) {
+      const coinStore = resources.find((resource) => resource.type == `0x1::coin::CoinStore<${type}>`)
+      this.balance = !!coinStore ? new BigNumber((coinStore.data as any).coin.value).div(precision) : ZERO
     }
+  }
+
+  /**
+   * Get a Ui friendly balance
+   * @returns The balance divided by the precision
+   */
+  public getUiBalance(): number {
+    return toUi(this.balance, this.coin)
   }
 }
