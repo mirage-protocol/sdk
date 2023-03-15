@@ -1,30 +1,26 @@
 import { HexString } from 'aptos'
 
-import { MIRAGE_FRAMEWORK_ACCOUNT } from './constants/accounts'
-import { TYPES } from './constants/types'
+import { MIRAGE_ADDRESS } from './constants/accounts'
+import { coinInfo, MoveCoin } from './constants/coinList'
 import UserInfo from './UserInfo'
 
 export default class VaultEventStore {
-  collateralTicker: string
-  borrowTicker: string
-  userAddresses!: HexString[]
-  users!: UserInfo[]
+  public readonly collateral: MoveCoin
+  public readonly borrow: MoveCoin
+  public readonly userAddresses!: HexString[]
+  public readonly users!: UserInfo[]
 
-  constructor(collateralTicker: string, borrowTicker: string) {
-    this.collateralTicker = collateralTicker
-    this.borrowTicker = borrowTicker
+  constructor(collateral: MoveCoin, borrow: MoveCoin) {
+    this.collateral = collateral
+    this.borrow = borrow
   }
 
-  getUserInfoTypeId(): string {
-    return `${MIRAGE_FRAMEWORK_ACCOUNT.address}::vault::UserInfo<${TYPES[this.collateralTicker]},${
-      TYPES[this.borrowTicker]
-    }>`
+  public getUserInfoTypeId(): string {
+    return `${MIRAGE_ADDRESS}::vault::UserInfo<${coinInfo(this.collateral).type},${coinInfo(this.borrow).type}>`
   }
 
-  getVaultEventStoreTypeId(): string {
-    return `${MIRAGE_FRAMEWORK_ACCOUNT.address}::vault::VaultEventStore<${TYPES[this.collateralTicker]},${
-      TYPES[this.borrowTicker]
-    }>`
+  public getVaultEventStoreTypeId(): string {
+    return `${MIRAGE_ADDRESS}::vault::VaultEventStore<${coinInfo(this.collateral).type},${coinInfo(this.borrow).type}>`
   }
 }
 //   async reloadUsers(moduleResources: Aptos.Types.MoveResource[]): Promise<VaultEventStore> {
