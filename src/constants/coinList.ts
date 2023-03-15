@@ -33,6 +33,7 @@ type CoinInfo = {
   readonly decimals: number
   readonly address: HexString
   readonly type: string
+  readonly logoUrl?: string
 }
 
 type CoinList = { readonly [coin in MoveCoin]: CoinInfo }
@@ -44,6 +45,7 @@ export const mirageCoinList: CoinList = {
     decimals: 8,
     address: new HexString('0x1'),
     type: '0x1::aptos_coin::AptosCoin',
+    logoUrl: 'https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/icons/APT.webp',
   },
   [MoveCoin.MIRA]: {
     name: 'Mirage Coin',
@@ -79,6 +81,7 @@ export const mirageCoinList: CoinList = {
     decimals: 6,
     address: LZ_ADDRESS,
     type: `${LZ_ADDRESS}::asset::USDC`,
+    logoUrl: 'https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/icons/USDC.svg',
   },
   [MoveCoin.devUSDC]: {
     name: 'Testnet USDC',
@@ -86,6 +89,7 @@ export const mirageCoinList: CoinList = {
     decimals: 8,
     address: DEV_USDC_ADDRESS,
     type: `${DEV_USDC_ADDRESS}::devnet_coins::DevnetUSDC`,
+    logoUrl: 'https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/icons/USDC.svg',
   },
   // TODO
   [MoveCoin.PANCAKE_APT_MUSD_LP]: {
