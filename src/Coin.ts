@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 
 import { ZERO } from './constants'
 import { AccountResource } from './constants/accounts'
-import { mirageCoinList, MoveCoin } from './constants/coinList'
+import { coinInfo, MoveCoin } from './constants/coinList'
 
 export default class Coin {
   public readonly name: string
@@ -15,7 +15,7 @@ export default class Coin {
   public readonly logoUrl?: string
 
   constructor(resources: AccountResource[] | null | undefined, coinType: MoveCoin) {
-    const { name, symbol, decimals, type, logoUrl } = mirageCoinList[coinType]
+    const { name, symbol, decimals, type, logoUrl } = coinInfo(coinType)
 
     const precision = BigNumber(10).pow(decimals)
 
