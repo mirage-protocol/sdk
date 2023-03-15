@@ -14,12 +14,12 @@ export enum MoveCoin {
   PANCAKE_APT_MUSD_LP,
 }
 
-export const MIRAGE_ASSETS: MoveCoin[] = [MoveCoin.mAPT, MoveCoin.mUSD, MoveCoin.mETH]
-
 export enum OtherAsset {
   BTC,
   ETH,
 }
+
+export const MIRAGE_ASSETS: readonly MoveCoin[] = [MoveCoin.mAPT, MoveCoin.mUSD, MoveCoin.mETH]
 
 export type ValidAssets = MoveCoin | OtherAsset
 
