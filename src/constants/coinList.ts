@@ -2,6 +2,7 @@ import { HexString } from 'aptos'
 
 import { DEV_USDC_ADDRESS, LZ_ADDRESS, MIRAGE_ADDRESS, PANCAKE_ADDRESS } from './accounts'
 
+// All relevant coins for the protocol
 export enum MoveCoin {
   MIRA,
   APT,
@@ -13,19 +14,14 @@ export enum MoveCoin {
   PANCAKE_APT_MUSD_LP,
 }
 
+export const MIRAGE_ASSETS: MoveCoin[] = [MoveCoin.mAPT, MoveCoin.mUSD, MoveCoin.mETH]
+
 export enum OtherAsset {
   BTC,
   ETH,
 }
 
 export type ValidAssets = MoveCoin | OtherAsset
-
-export const checkTicker = (symbol: string): MoveCoin => {
-  if (!Object.values(MoveCoin).includes(symbol)) {
-    throw new TypeError('Not a valid Coin')
-  }
-  return MoveCoin[symbol]
-}
 
 type CoinInfo = {
   readonly name: string
@@ -36,9 +32,16 @@ type CoinInfo = {
   readonly logoUrl?: string
 }
 
-type CoinList = { readonly [coin in MoveCoin]: CoinInfo }
+export const checkTicker = (symbol: string): MoveCoin => {
+  if (!Object.values(MoveCoin).includes(symbol)) {
+    throw new TypeError('Not a valid Coin')
+  }
+  return MoveCoin[symbol]
+}
 
-export const mirageCoinList: CoinList = {
+export const coinInfo = (coin: MoveCoin): CoinInfo => mirageCoinList[coin]
+
+const mirageCoinList: { readonly [coin in MoveCoin]: CoinInfo } = {
   [MoveCoin.APT]: {
     name: 'Aptos Coin',
     symbol: 'APT',

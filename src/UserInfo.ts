@@ -2,23 +2,23 @@ import BigNumber from 'bignumber.js'
 
 import { COLLATERALIZATION_PRECISION, EXCHANGE_RATE_PRECISION, ZERO } from './constants'
 import { AccountResource, MIRAGE_ADDRESS } from './constants/accounts'
-import { mirageCoinList, MoveCoin } from './constants/coinList'
+import { coinInfo, MoveCoin } from './constants/coinList'
 import Rebase from './Rebase'
 
 // TODO: move a lot of the heavy lifting from the interface into here
 export default class user {
-  collateral: MoveCoin
-  borrowCoin: MoveCoin
-  address!: string
+  public readonly collateral: MoveCoin
+  public readonly borrowCoin: MoveCoin
+  public readonly address!: string
 
-  userCollateral!: BigNumber
-  userBorrow!: BigNumber
-  liquidationPrice!: BigNumber
-  remainingBorrowable!: BigNumber
-  withdrawableAmount!: BigNumber
-  positionHealth!: number // basis points
+  public readonly userCollateral!: BigNumber
+  public readonly userBorrow!: BigNumber
+  public readonly liquidationPrice!: BigNumber
+  public readonly remainingBorrowable!: BigNumber
+  public readonly withdrawableAmount!: BigNumber
+  public readonly positionHealth!: number // basis points
 
-  collateralizationPercent!: BigNumber
+  public readonly collateralizationPercent!: BigNumber
 
   constructor(
     userResources: AccountResource[],
@@ -77,22 +77,18 @@ export default class user {
   }
 
   getUiUserCollateral(): number {
-    return this.userCollateral.times(BigNumber(10).pow(mirageCoinList[this.collateral].decimals)).toNumber()
+    return this.userCollateral.times(BigNumber(10).pow(coinInfo(this.collateral).decimals)).toNumber()
   }
 
   getUiUserBorrow(): number {
-    return this.userBorrow.div(BigNumber(10).pow(mirageCoinList[this.borrowCoin].decimals)).toNumber()
+    return this.userBorrow.div(BigNumber(10).pow(coinInfo(this.borrowCoin).decimals)).toNumber()
   }
 
   getUserTypeId(): string {
-    return `${MIRAGE_ADDRESS}::vault::UserInfo<${mirageCoinList[this.collateral].type}, ${
-      mirageCoinList[this.borrowCoin].type
-    }>`
+    return `${MIRAGE_ADDRESS}::vault::UserInfo<${coinInfo(this.collateral).type}, ${coinInfo(this.borrowCoin).type}>`
   }
 
   getVaultTypeId(): string {
-    return `${MIRAGE_ADDRESS}::vault::Vault<${mirageCoinList[this.collateral].type}, ${
-      mirageCoinList[this.borrowCoin].type
-    }>`
+    return `${MIRAGE_ADDRESS}::vault::Vault<${coinInfo(this.collateral).type}, ${coinInfo(this.borrowCoin).type}>`
   }
 }
