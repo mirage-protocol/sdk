@@ -85,7 +85,7 @@ export default class user {
   }
 
   getUserTypeId(): string {
-    return `${MIRAGE_FRAMEWORK_ACCOUNT.address}::vault::user<${TYPES[this.collateral]}, ${TYPES[this.borrowCoin]}>`
+    return `${MIRAGE_FRAMEWORK_ACCOUNT.address}::vault::UserInfo<${TYPES[this.collateral]}, ${TYPES[this.borrowCoin]}>`
   }
 
   getVaultTypeId(): string {
