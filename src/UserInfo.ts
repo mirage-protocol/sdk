@@ -12,6 +12,10 @@ import Vault from './Vault'
  */
 export default class UserInfo {
   /**
+   * The UserInfo type for this vault
+   */
+  public readonly userInfoType: string
+  /**
    * The collateral asset of the vault
    */
   public readonly collateral: MoveCoin
@@ -62,7 +66,11 @@ export default class UserInfo {
     collateral: MoveCoin,
     borrow: MoveCoin
   ) {
-    const user = userResources.find((resource) => resource.type == this.getUserTypeId())
+    this.userInfoType = `${MIRAGE_ADDRESS}::vault::UserInfo<${coinInfo(this.collateral).type}, ${
+      coinInfo(this.borrowCoin).type
+    }>`
+
+    const user = userResources.find((resource) => resource.type == this.userInfoType)
 
     this.vault = new Vault(moduleResources, collateral, borrow)
     this.collateral = collateral
@@ -145,21 +153,5 @@ export default class UserInfo {
       .times(exchangeRate)
       .times(100)
       .isGreaterThan(this.userBorrow)
-  }
-
-  /**
-   * Get the type of the UserInfo resource
-   * @returns the type for UserInfo<Collateral, Borrow>
-   */
-  public getUserTypeId(): string {
-    return `${MIRAGE_ADDRESS}::vault::UserInfo<${coinInfo(this.collateral).type}, ${coinInfo(this.borrowCoin).type}>`
-  }
-
-  /**
-   * Get the type of the Vault resource
-   * @returns the type for Vault<Collateral, Borrow>
-   */
-  public getVaultTypeId(): string {
-    return `${MIRAGE_ADDRESS}::vault::Vault<${coinInfo(this.collateral).type}, ${coinInfo(this.borrowCoin).type}>`
   }
 }

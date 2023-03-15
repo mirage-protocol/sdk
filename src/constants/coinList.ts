@@ -62,7 +62,7 @@ const mirageCoinList: { readonly [coin in MoveCoin]: CoinInfo } = {
   },
   [MoveCoin.mUSD]: {
     name: 'Mirage USD',
-    symbol: 'MIRA',
+    symbol: 'mUSD',
     decimals: 8,
     address: MIRAGE_ADDRESS,
     type: `${MIRAGE_ADDRESS}::synth::MUSD`,

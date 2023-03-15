@@ -12,6 +12,10 @@ import Rebase from './Rebase'
  */
 export default class Vault {
   /**
+   * The vaults type
+   */
+  public readonly vaultType: string
+  /**
    * The collateral asset of the vault
    */
   public readonly collateral: MoveCoin
@@ -60,7 +64,9 @@ export default class Vault {
    * @param borrow the borrow asset of the vault
    */
   constructor(moduleResources: AccountResource[], collateral: MoveCoin, borrow: MoveCoin) {
-    const vault = moduleResources.find((resource) => resource.type == this.getVaultTypeId())
+    this.vaultType = `${MIRAGE_ADDRESS}::vault::Vault<${coinInfo(this.collateral).type}, ${coinInfo(this.borrow).type}>`
+
+    const vault = moduleResources.find((resource) => resource.type == this.vaultType)
 
     this.collateral = collateral
     this.borrow = borrow
@@ -106,13 +112,5 @@ export default class Vault {
    */
   public getBorrowRebase(): Rebase {
     return this.borrowRebase
-  }
-
-  /**
-   * Get the type of the Vault resource
-   * @returns the type for Vault<Collateral, Borrow>
-   */
-  public getVaultTypeId(): string {
-    return `${MIRAGE_ADDRESS}::vault::Vault<${coinInfo(this.collateral).type}, ${coinInfo(this.borrow).type}>`
   }
 }
