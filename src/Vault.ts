@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js'
 
+import { toUi } from './Coin'
 import { INTEREST_PRECISION, PERCENT_PRECISION, SECONDS_PER_YEAR, ZERO } from './constants'
 import { AccountResource, MIRAGE_ADDRESS } from './constants/accounts'
 import { coinInfo, MoveCoin } from './constants/coinList'
@@ -43,31 +44,31 @@ export default class Vault {
       : 0
   }
 
-  getVaultTypeId(): string {
-    return `${MIRAGE_ADDRESS}::vault::Vault<${coinInfo(this.collateralCoin).type}, ${coinInfo(this.borrowCoin).type}>`
+  public getUiTotalCollateral(): number {
+    return toUi(this.collateral, this.collateralCoin)
   }
 
-  getUiTotalCollateral(): number {
-    return this.collateral.div(BigNumber(10).pow(coinInfo(this.collateralCoin).decimals)).toNumber()
+  public getUiTotalBorrow(): number {
+    return toUi(this.borrow, this.borrowCoin)
   }
 
-  getUiTotalBorrow(): number {
-    return this.borrow.times(BigNumber(10).pow(coinInfo(this.borrowCoin).decimals)).toNumber()
-  }
-
-  getLiquidationFeePercent(): number {
+  public getLiquidationFeePercent(): number {
     return this.liquidationFee * 100
   }
 
-  getCollateralizationRatePercent(): number {
+  public getCollateralizationRatePercent(): number {
     return this.collateralizationRate * 100
   }
 
-  getBorrowFeePercent(): number {
+  public getBorrowFeePercent(): number {
     return this.borrowFee * 100
   }
 
-  getBorrowInterestAPY(): number {
+  public getBorrowInterestAPY(): number {
     return this.interest * SECONDS_PER_YEAR * 100
+  }
+
+  public getVaultTypeId(): string {
+    return `${MIRAGE_ADDRESS}::vault::Vault<${coinInfo(this.collateralCoin).type}, ${coinInfo(this.borrowCoin).type}>`
   }
 }
