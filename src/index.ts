@@ -7,6 +7,7 @@ import VaultEventStore from './VaultEventStore'
 export { Coin, Rebase, UserInfo, Vault, VaultEventStore }
 
 export * from './constants/accounts'
+export * from './constants/coinList'
 export * from './constants/index'
 export * from './constants/network'
 export * from './constants/priceFeeds'
