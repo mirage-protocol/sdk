@@ -64,12 +64,13 @@ export default class Vault {
    * @param borrow the borrow asset of the vault
    */
   constructor(moduleResources: AccountResource[], collateral: MoveCoin, borrow: MoveCoin) {
-    this.vaultType = `${MIRAGE_ADDRESS}::vault::Vault<${coinInfo(this.collateral).type}, ${coinInfo(this.borrow).type}>`
+    this.collateral = collateral
+    this.borrow = borrow
+
+    this.vaultType = `${MIRAGE_ADDRESS}::vault::Vault<${coinInfo(collateral).type}, ${coinInfo(borrow).type}>`
 
     const vault = moduleResources.find((resource) => resource.type == this.vaultType)
 
-    this.collateral = collateral
-    this.borrow = borrow
     this.borrowFeePercent = !!vault ? (100 * Number((vault.data as any).borrow_fee)) / 10000 : 0
     this.interestPerSecond = !!vault ? BigNumber((vault.data as any).interest_per_second) : ZERO
     this.collateralizationPercent = !!vault ? (100 * Number((vault.data as any).collateralization_rate)) / 10000 : 0
