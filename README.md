@@ -17,13 +17,13 @@ You have to collect the resources for the sdk to parse yourself. You can use the
 Resources can be kept up to date through time and fed to the sdk to keep an updated protocol state, for example on a frontend.
 
 ```typescript
-import { Vault, Coin, MoveCoin, APTOS_CLIENT, MIRAGE_ADDRESS } from '@mirage-protocol/sdk'
+import { Vault, Coin, MoveCoin, aptosClient, MIRAGE_ADDRESS } from '@mirage-protocol/sdk'
 
-// get coin balance of a user account
-const getCoinBalance = async (userAddr: string) => {
+// Get coin balance of a user account
+const getUserAptosBalance = async (userAddr: string) => {
 
   // Get the resources for a user account
-  const resources = await APTOS_CLIENT.getAccountResources(userAddr);
+  const resources = await aptosClient().getAccountResources(userAddr);
 
   // MoveCoin is all the coins recognized by @mirage-protocol/sdk
   const APT = MoveCoin['APT']
@@ -35,14 +35,14 @@ const getCoinBalance = async (userAddr: string) => {
   return coin.getUiBalance()
 }
 
-// get total collateral deposited in the APT / MUSD vault
-const getTotalCollateral = async () => {
-  const vault = new Vault(
-    await APTOS_CLIENT.getAccountResources(MIRAGE_ADDRESS),
-    MoveCoin['APT'],
-    MoveCoin['MUSD'],
-  )
-
-  return vault.getUiTotalCollateral()
+// get total collateral deposited in the APT / MUSD testnet vault
+const getTotalTestnetCollateral = async () => {
+  return (
+    new Vault(
+      await aptosClient("testnet").getAccountResources(MIRAGE_ADDRESS),
+      MoveCoin['APT'],
+      MoveCoin['MUSD'],
+    )
+  ).getUiTotalCollateral()
 }
 ```
