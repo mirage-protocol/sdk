@@ -1,8 +1,11 @@
 import { HexString } from 'aptos'
+import BigNumber from 'bignumber.js'
 
 import { DEV_USDC_ADDRESS, LZ_ADDRESS, MIRAGE_ADDRESS, PANCAKE_ADDRESS } from './accounts'
 
-// All relevant coins and their symbols for the protocol
+/**
+ * All Coins relevant to the mirage-protocol ecosystem
+ */
 export enum MoveCoin {
   MIRA,
   APT,
@@ -14,16 +17,23 @@ export enum MoveCoin {
   PANCAKE_APT_MUSD_LP,
 }
 
-// Other off-chain assets
+/**
+ * Other off-chain assets
+ */
 export enum OtherAsset {
   BTC,
   ETH,
 }
 
-// The list of mirage assets
+/**
+ * All synthetic mirage assets
+ */
 export const MIRAGE_ASSETS: readonly MoveCoin[] = [MoveCoin.mAPT, MoveCoin.mUSD, MoveCoin.mETH]
 
-type CoinInfo = {
+/**
+ * Info for a coin
+ */
+export type CoinInfo = {
   readonly name: string
   readonly symbol: string
   readonly decimals: number
@@ -32,16 +42,28 @@ type CoinInfo = {
   readonly logoUrl?: string
 }
 
-// Check if the given string is a legitimate asset
-export const checkTicker = (symbol: string): MoveCoin => {
-  if (!Object.values(MoveCoin).includes(symbol)) {
-    throw new TypeError('Not a valid Coin')
-  }
-  return MoveCoin[symbol]
-}
+/**
+ * Get the MoveCoin of a given symbol
+ * @param symbol string symbol of coin
+ * @returns the MoveCoin or undefined if not valid
+ */
+export const checkTicker = (symbol: string): MoveCoin | undefined => MoveCoin[symbol]
 
-// Get the info of a specific MoveCoin
+/**
+ * Get info about a specific coin
+ * @param coin the MoveCoin to get info for
+ * @returns the CoinInfo for the specific coin
+ */
 export const coinInfo = (coin: MoveCoin): CoinInfo => mirageCoinList[coin]
+
+/**
+ * Get the balance of a coin in a Ui friendly format
+ * @param balance the balance to convert
+ * @param coin the coin
+ * @returns a human-readable balance value
+ */
+export const balanceToUi = (balance: BigNumber, coin: MoveCoin): number =>
+  balance.div(BigNumber(10).pow(coinInfo(coin).decimals)).toNumber()
 
 // A list of all coins and their info in the Mirage ecosystem
 const mirageCoinList: { readonly [coin in MoveCoin]: CoinInfo } = {
