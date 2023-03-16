@@ -1,9 +1,8 @@
 import BigNumber from 'bignumber.js'
 
-import { toUi } from './Coin'
 import { INTEREST_PRECISION, SECONDS_PER_YEAR, ZERO } from './constants'
 import { AccountResource, MIRAGE_ADDRESS } from './constants/accounts'
-import { coinInfo, MoveCoin } from './constants/coinList'
+import { balanceToUi, coinInfo, MoveCoin } from './constants/coinList'
 import Rebase from './Rebase'
 
 /**
@@ -88,7 +87,7 @@ export default class Vault {
    * @returns the vault's total collateral
    */
   public getUiTotalCollateral(): number {
-    return toUi(this.totalCollateral, this.collateral)
+    return balanceToUi(this.totalCollateral, this.collateral)
   }
 
   /**
@@ -96,7 +95,7 @@ export default class Vault {
    * @returns the vault's total borrow
    */
   public getUiTotalBorrow(): number {
-    return toUi(this.totalBorrow, this.borrow)
+    return balanceToUi(this.totalBorrow, this.borrow)
   }
 
   /**
