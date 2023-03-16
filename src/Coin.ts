@@ -2,10 +2,7 @@ import BigNumber from 'bignumber.js'
 
 import { ZERO } from './constants'
 import { AccountResource } from './constants/accounts'
-import { coinInfo, MoveCoin } from './constants/coinList'
-
-export const toUi = (bn: BigNumber, coin: MoveCoin): number =>
-  bn.div(BigNumber(10).pow(coinInfo(coin).decimals)).toNumber()
+import { balanceToUi, coinInfo, MoveCoin } from './constants/coinList'
 
 /**
  * Represents an on-chain CoinStore with a unique type and stores some metadata.
@@ -70,6 +67,6 @@ export default class Coin {
    * @returns The balance divided by the precision
    */
   public getUiBalance(): number {
-    return toUi(this.balance, this.coin)
+    return balanceToUi(this.balance, this.coin)
   }
 }
