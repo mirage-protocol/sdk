@@ -8,7 +8,6 @@
     "module": "esnext",
     "forceConsistentCasingInFileNames": true,
     "declaration": true,
-    "importHelpers": true,
     "declarationMap": true,
     "noImplicitThis": true,
     "noImplicitAny": false,
