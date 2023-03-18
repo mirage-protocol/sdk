@@ -22,7 +22,7 @@ export function hasPriceFeed(coin: MoveCoin): boolean {
  * @param network
  * @returns
  */
-export function getPriceFeed(coin: CoinsWithPriceFeeds, network: Network = 'mainnet'): string {
+export function getPriceFeed(coin: MoveCoin, network: Network = 'mainnet'): string {
   return PRICE_FEEDS[coin][network]
 }
 
