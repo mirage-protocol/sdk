@@ -2,9 +2,9 @@ import { HexString } from 'aptos'
 
 import { mirageAddress } from '../constants/accounts'
 import { coinInfo, MoveCoin } from '../constants/coinList'
-import UserInfo from './UserInfo'
+import { UserInfo } from './UserInfo'
 
-export default class VaultEventStore {
+export class VaultEventStore {
   public readonly collateral: MoveCoin
   public readonly borrow: MoveCoin
   public readonly userAddresses!: HexString[]
