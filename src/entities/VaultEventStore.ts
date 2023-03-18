@@ -1,7 +1,7 @@
 import { HexString } from 'aptos'
 
-import { mirageAddress } from './constants/accounts'
-import { coinInfo, MoveCoin } from './constants/coinList'
+import { mirageAddress } from '../constants/accounts'
+import { coinInfo, MoveCoin } from '../constants/coinList'
 import UserInfo from './UserInfo'
 
 export default class VaultEventStore {
