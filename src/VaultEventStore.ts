@@ -1,6 +1,6 @@
 import { HexString } from 'aptos'
 
-import { MIRAGE_ADDRESS } from './constants/accounts'
+import { mirageAddress } from './constants/accounts'
 import { coinInfo, MoveCoin } from './constants/coinList'
 import UserInfo from './UserInfo'
 
@@ -16,11 +16,11 @@ export default class VaultEventStore {
   }
 
   public getUserInfoTypeId(): string {
-    return `${MIRAGE_ADDRESS}::vault::UserInfo<${coinInfo(this.collateral).type},${coinInfo(this.borrow).type}>`
+    return `${mirageAddress()}::vault::UserInfo<${coinInfo(this.collateral).type},${coinInfo(this.borrow).type}>`
   }
 
   public getVaultEventStoreTypeId(): string {
-    return `${MIRAGE_ADDRESS}::vault::VaultEventStore<${coinInfo(this.collateral).type},${coinInfo(this.borrow).type}>`
+    return `${mirageAddress()}::vault::VaultEventStore<${coinInfo(this.collateral).type},${coinInfo(this.borrow).type}>`
   }
 }
 //   async reloadUsers(moduleResources: Aptos.Types.MoveResource[]): Promise<VaultEventStore> {

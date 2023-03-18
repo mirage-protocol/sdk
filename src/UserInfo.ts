@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 
 import { EXCHANGE_RATE_PRECISION, ZERO } from './constants'
-import { AccountResource, MIRAGE_ADDRESS } from './constants/accounts'
+import { AccountResource, mirageAddress } from './constants/accounts'
 import { balanceToUi, coinInfo, MoveCoin } from './constants/coinList'
 import Vault from './Vault'
 
@@ -62,14 +62,14 @@ export default class UserInfo {
   constructor(
     userResources: AccountResource[],
     moduleResources: AccountResource[],
-    collateral: MoveCoin,
-    borrow: MoveCoin
+    collateral: MoveCoin | string,
+    borrow: MoveCoin | string
   ) {
-    this.vault = new Vault(moduleResources, collateral, borrow)
-    this.collateral = collateral
-    this.borrow = borrow
+    this.collateral = collateral as MoveCoin
+    this.borrow = borrow as MoveCoin
+    this.vault = new Vault(moduleResources, this.collateral, this.borrow)
 
-    this.userInfoType = `${MIRAGE_ADDRESS}::vault::UserInfo<${coinInfo(collateral).type}, ${coinInfo(borrow).type}>`
+    this.userInfoType = `${mirageAddress()}::vault::UserInfo<${coinInfo(collateral).type}, ${coinInfo(borrow).type}>`
 
     const user = userResources.find((resource) => resource.type == this.userInfoType)
 
