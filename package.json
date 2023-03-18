@@ -1,15 +1,20 @@
 {
   "name": "@mirage-protocol/sdk",
   "license": "MIT",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "publishConfig": {
     "access": "public"
   },
   "description": "Typescript library for interacting with Mirage Protocol move contracts",
-  "main": "./dist/index.js",
+  "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist"
+  ],
+  "keywords": [
+    "aptos",
+    "move",
+    "mirage"
   ],
   "module": "dist/sdk.esm.js",
   "repository": "https://github.com/mirage-protocol/sdk.git",
@@ -45,6 +50,9 @@
     "lint-staged": "^13.0.3",
     "prettier": "^2.7.1",
     "typescript": "^4.7.4"
+  },
+  "engines": {
+    "node": ">=10"
   },
   "prettier": {
     "printWidth": 120,
