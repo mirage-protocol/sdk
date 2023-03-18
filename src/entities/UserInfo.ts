@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js'
 
-import { EXCHANGE_RATE_PRECISION, ZERO } from './constants'
-import { AccountResource, mirageAddress } from './constants/accounts'
-import { balanceToUi, coinInfo, MoveCoin } from './constants/coinList'
+import { EXCHANGE_RATE_PRECISION, ZERO } from '../constants'
+import { AccountResource, mirageAddress } from '../constants/accounts'
+import { balanceToUi, coinInfo, MoveCoin } from '../constants/coinList'
 import Vault from './Vault'
 
 /**
