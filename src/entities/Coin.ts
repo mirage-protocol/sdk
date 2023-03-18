@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js'
 
-import { ZERO } from './constants'
-import { AccountResource } from './constants/accounts'
-import { balanceToUi, coinInfo, MoveCoin } from './constants/coinList'
+import { ZERO } from '../constants'
+import { AccountResource } from '../constants/accounts'
+import { balanceToUi, coinInfo, MoveCoin } from '../constants/coinList'
 
 /**
  * Represents an on-chain CoinStore with a unique type and stores some metadata.
