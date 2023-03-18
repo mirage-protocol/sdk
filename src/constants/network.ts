@@ -11,15 +11,18 @@ const testnetPythClient = new AptosPriceServiceConnection(`https://xc-testnet.py
 /**
  * The network type of the app
  */
-export type Network = 'mainnet' | 'testnet'
+export enum Network {
+  MAINNET = 'mainnet',
+  TESTNET = 'testnet',
+}
 
 /**
  * Get an Aptos client for a network
  * @param network the network to use, if not specific = "mainnet"
  * @returns a useable aptos client
  */
-export const aptosClient = (network: Network = 'mainnet'): AptosClient => {
-  return network === 'mainnet' ? mainnetClient : testnetClient
+export const aptosClient = (network: Network | string = Network.MAINNET): AptosClient => {
+  return getNetwork(network) === Network.MAINNET ? mainnetClient : testnetClient
 }
 
 /**
@@ -27,6 +30,13 @@ export const aptosClient = (network: Network = 'mainnet'): AptosClient => {
  * @param network the network to use, if not specific = "mainnet"
  * @returns a useable aptos client
  */
-export const pythClient = (network: Network = 'mainnet'): AptosPriceServiceConnection => {
-  return network === 'mainnet' ? mainnetPythClient : testnetPythClient
+export const pythClient = (network: Network | string = Network.MAINNET): AptosPriceServiceConnection => {
+  return getNetwork(network) === Network.MAINNET ? mainnetPythClient : testnetPythClient
+}
+
+export const getNetwork = (network: Network | string): Network => {
+  if (typeof network === 'string') {
+    return Network[network]
+  }
+  return network
 }
