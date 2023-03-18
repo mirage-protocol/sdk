@@ -1,6 +1,7 @@
 import { HexString } from 'aptos'
 import BigNumber from 'bignumber.js'
 
+import { MoveType } from '../payloads'
 import { getModuleAddress, mirageAddress } from './accounts'
 
 /**
@@ -38,7 +39,7 @@ export type CoinInfo = {
   readonly symbol: string
   readonly decimals: number
   readonly address: HexString
-  readonly type: string
+  readonly type: MoveType
   readonly logoUrl?: string
 }
 
