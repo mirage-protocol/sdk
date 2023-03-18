@@ -3,13 +3,13 @@ import BigNumber from 'bignumber.js'
 import { INTEREST_PRECISION, SECONDS_PER_YEAR, ZERO } from '../constants'
 import { AccountResource, mirageAddress } from '../constants/accounts'
 import { balanceToUi, coinInfo, MoveCoin } from '../constants/coinList'
-import Rebase from './Rebase'
+import { Rebase } from './Rebase'
 
 /**
  * Represents a mirage-protocol Vault.
  * Deposit collateral and borrow "mirage-assets".
  */
-export default class Vault {
+export class Vault {
   /**
    * The vaults type
    */

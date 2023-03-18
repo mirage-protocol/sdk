@@ -8,7 +8,7 @@ import { balanceToUi, coinInfo, MoveCoin } from '../constants/coinList'
  * Represents an on-chain CoinStore with a unique type and stores some metadata.
  * Holds the balance of a given user's resources.
  */
-export default class Coin {
+export class Coin {
   /**
    * The coin represented by the class
    */

@@ -3,13 +3,13 @@ import BigNumber from 'bignumber.js'
 import { EXCHANGE_RATE_PRECISION, ZERO } from '../constants'
 import { AccountResource, mirageAddress } from '../constants/accounts'
 import { balanceToUi, coinInfo, MoveCoin } from '../constants/coinList'
-import Vault from './Vault'
+import { Vault } from './Vault'
 
 /**
  * Represent an UserInfo struct.
  * Stores info about a user's deposits and borrows in a specific vault
  */
-export default class UserInfo {
+export class UserInfo {
   /**
    * The UserInfo type for this vault
    */
