@@ -1,6 +1,7 @@
 import { AptosPriceServiceConnection } from '@pythnetwork/pyth-aptos-js'
 import { AptosClient } from 'aptos'
 
+// store copies of the client so they don't need to be rebuilt when fetched
 const mainnetClient = new AptosClient(`https://fullnode.mainnet.aptoslabs.com`)
 const testnetClient = new AptosClient(`https://fullnode.testnet.aptoslabs.com`)
 
