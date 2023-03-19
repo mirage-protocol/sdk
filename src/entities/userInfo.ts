@@ -71,9 +71,9 @@ export class UserInfo {
 
     this.userInfoType = `${mirageAddress()}::vault::UserInfo<${coinInfo(collateral).type}, ${coinInfo(borrow).type}>`
 
-    const user = userResources.find((resource) => resource.type == this.userInfoType)
+    const user = userResources.find((resource) => resource.type === this.userInfoType)
 
-    this.userCollateral = !!user ? new BigNumber((user.data as any).user_collateral) : ZERO
+    this.userCollateral = !!user ? new BigNumber((user.data as any).user_collateral.value) : ZERO
     this.userBorrow =
       !!user && !!this.vault
         ? this.vault.borrowRebase.toElastic(new BigNumber((user.data as any).user_borrow_part), true)
