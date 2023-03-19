@@ -2,7 +2,7 @@ import { HexString } from 'aptos'
 
 import { mirageAddress } from '../constants/accounts'
 import { coinInfo, MoveCoin } from '../constants/coinList'
-import { UserInfo } from './userInfo'
+import { UserInfo } from './userInfos'
 
 export class VaultEventStore {
   public readonly collateral: MoveCoin
