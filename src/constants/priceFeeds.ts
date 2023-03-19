@@ -1,11 +1,12 @@
 import { getNetwork, Network, pythClient } from '../constants/network'
 import { MoveCoin } from './coinList'
 
-const coinsWithPriceFeeds = [MoveCoin.APT, MoveCoin.mAPT, MoveCoin.mETH, MoveCoin.devUSDC] as const
 /**
- * All coins with a price feed supported by mirage protocol
+ * All the coins with price feeds
  */
-export type CoinsWithPriceFeeds = (typeof coinsWithPriceFeeds)[number]
+export const coinsWithPriceFeeds = [MoveCoin.APT, MoveCoin.mAPT, MoveCoin.mETH] as const
+
+type CoinsWithPriceFeeds = (typeof coinsWithPriceFeeds)[number]
 
 /**
  * Check if a coin has a price feed
@@ -13,7 +14,7 @@ export type CoinsWithPriceFeeds = (typeof coinsWithPriceFeeds)[number]
  * @returns if a mirage protocol price feed exists for the coin
  */
 export const hasPriceFeed = (coin: MoveCoin): boolean => {
-  return (coinsWithPriceFeeds as any).indexOf(coin) != -1
+  return !!PRICE_FEEDS[coin.valueOf()]
 }
 
 /**
@@ -23,7 +24,7 @@ export const hasPriceFeed = (coin: MoveCoin): boolean => {
  * @returns
  */
 export const getPriceFeed = (coin: MoveCoin, network: Network | string = Network.MAINNET): string | undefined => {
-  return PRICE_FEEDS[coin] ? PRICE_FEEDS[coin][getNetwork(network)] : undefined
+  return PRICE_FEEDS[coin.valueOf()][getNetwork(network)]
 }
 
 /**
@@ -47,7 +48,7 @@ export const getPriceFeedUpdateData = async (
 }
 
 // Price feeds of coins by network
-const PRICE_FEEDS: { readonly [coin: string]: { readonly [network in Network]: string } } = {
+const PRICE_FEEDS: { readonly [coin in CoinsWithPriceFeeds]: { readonly [network in Network]: string } } = {
   [MoveCoin.APT]: {
     [Network.MAINNET]: '0x03ae4db29ed4ae33d323568895aa00337e658e348b37509f5372ae51f0af00d5',
     [Network.TESTNET]: '0x44a93dddd8effa54ea51076c4e851b6cbbfd938e82eb90197de38fe8876bb66e',
