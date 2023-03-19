@@ -1,16 +1,15 @@
 import BigNumber from 'bignumber.js'
 
-import { toUi } from './Coin'
-import { EXCHANGE_RATE_PRECISION, ZERO } from './constants'
-import { AccountResource, MIRAGE_ADDRESS } from './constants/accounts'
-import { coinInfo, MoveCoin } from './constants/coinList'
-import Vault from './Vault'
+import { EXCHANGE_RATE_PRECISION, ZERO } from '../constants'
+import { AccountResource, mirageAddress } from '../constants/accounts'
+import { balanceToUi, coinInfo, MoveCoin } from '../constants/coinList'
+import { Vault } from './vault'
 
 /**
  * Represent an UserInfo struct.
  * Stores info about a user's deposits and borrows in a specific vault
  */
-export default class UserInfo {
+export class UserInfo {
   /**
    * The UserInfo type for this vault
    */
@@ -63,14 +62,14 @@ export default class UserInfo {
   constructor(
     userResources: AccountResource[],
     moduleResources: AccountResource[],
-    collateral: MoveCoin,
-    borrow: MoveCoin
+    collateral: MoveCoin | string,
+    borrow: MoveCoin | string
   ) {
-    this.vault = new Vault(moduleResources, collateral, borrow)
-    this.collateral = collateral
-    this.borrow = borrow
+    this.collateral = collateral as MoveCoin
+    this.borrow = borrow as MoveCoin
+    this.vault = new Vault(moduleResources, this.collateral, this.borrow)
 
-    this.userInfoType = `${MIRAGE_ADDRESS}::vault::UserInfo<${coinInfo(collateral).type}, ${coinInfo(borrow).type}>`
+    this.userInfoType = `${mirageAddress()}::vault::UserInfo<${coinInfo(collateral).type}, ${coinInfo(borrow).type}>`
 
     const user = userResources.find((resource) => resource.type == this.userInfoType)
 
@@ -130,7 +129,7 @@ export default class UserInfo {
    * @returns the users total collateral
    */
   public getUiUserCollateral(): number {
-    return toUi(this.userCollateral, this.collateral)
+    return balanceToUi(this.userCollateral, this.collateral)
   }
 
   /**
@@ -138,7 +137,7 @@ export default class UserInfo {
    * @returns the users total borrow
    */
   public getUiUserBorrow(): number {
-    return toUi(this.userBorrow, this.borrow)
+    return balanceToUi(this.userBorrow, this.borrow)
   }
 
   /**

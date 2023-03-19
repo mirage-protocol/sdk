@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js'
  * Represents an elastic rebase number
  * See: https://github.com/mirage-protocol/rebase
  */
-export default class Rebase {
+export class Rebase {
   /**
    * The elastic part of the rebase
    */
