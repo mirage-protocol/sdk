@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-import { INTEREST_PRECISION, SECONDS_PER_YEAR, ZERO } from '../constants'
+import { getPriceFeed, INTEREST_PRECISION, SECONDS_PER_YEAR, ZERO } from '../constants'
 import { AccountResource, mirageAddress } from '../constants/accounts'
 import { balanceToUi, coinInfo, MoveCoin } from '../constants/coinList'
 import { Rebase } from './rebase'
@@ -56,6 +56,11 @@ export class Vault {
    */
   public readonly liquidationPercent: number
 
+  public readonly priceFeeds: {
+    readonly collateral: string | undefined
+    readonly borrow: string | undefined
+  }
+
   /**
    * Construct an instance of Vault
    * @param moduleResources resources for the vault account (MIRAGE_ACCOUNT)
@@ -68,7 +73,13 @@ export class Vault {
 
     this.vaultType = `${mirageAddress()}::vault::Vault<${coinInfo(collateral).type}, ${coinInfo(borrow).type}>`
 
-    const vault = moduleResources.find((resource) => resource.type == this.vaultType)
+    console.log('attempting to get data for type:')
+    console.log(this.vaultType)
+
+    const vault = moduleResources.find((resource) => resource.type === this.vaultType)
+
+    console.log('found data:')
+    console.log(vault)
 
     this.borrowFeePercent = !!vault ? (100 * Number((vault.data as any).borrow_fee)) / 10000 : 0
     this.interestPerSecond = !!vault ? BigNumber((vault.data as any).interest_per_second) : ZERO
@@ -78,11 +89,16 @@ export class Vault {
     this.exchangeRate = !!vault ? BigNumber((vault.data as any).cached_exchange_rate) : ZERO
 
     this.totalBorrow = !!vault ? BigNumber((vault.data as any).borrow.elastic) : ZERO
-    this.totalCollateral = !!vault ? BigNumber((vault.data as any).collateral.value) : ZERO
+    this.totalCollateral = !!vault ? BigNumber((vault.data as any).total_collateral) : ZERO
 
     this.borrowRebase = !!vault
       ? new Rebase(BigNumber((vault.data as any).borrow.elastic), BigNumber((vault.data as any).borrow.base))
       : new Rebase(ZERO, ZERO)
+
+    this.priceFeeds = {
+      collateral: getPriceFeed(this.collateral),
+      borrow: getPriceFeed(this.borrow),
+    }
   }
 
   /**

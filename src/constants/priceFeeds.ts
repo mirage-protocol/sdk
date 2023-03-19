@@ -4,7 +4,7 @@ import { MoveCoin } from './coinList'
 /**
  * All the coins with price feeds
  */
-export const coinsWithPriceFeeds = [MoveCoin.APT, MoveCoin.mAPT, MoveCoin.mETH] as const
+export const coinsWithPriceFeeds = [MoveCoin.APT, MoveCoin.mAPT, MoveCoin.mETH, MoveCoin.devUSDC] as const
 
 type CoinsWithPriceFeeds = (typeof coinsWithPriceFeeds)[number]
 
@@ -24,7 +24,7 @@ export const hasPriceFeed = (coin: MoveCoin): boolean => {
  * @returns
  */
 export const getPriceFeed = (coin: MoveCoin, network: Network | string = Network.MAINNET): string | undefined => {
-  return PRICE_FEEDS[coin.valueOf()][getNetwork(network)]
+  return !!PRICE_FEEDS[coin.valueOf()] ? PRICE_FEEDS[coin.valueOf()][getNetwork(network)] : undefined
 }
 
 /**
@@ -36,14 +36,14 @@ export const getPriceFeed = (coin: MoveCoin, network: Network | string = Network
 export const getPriceFeedUpdateData = async (
   priceFeedId: string,
   network: Network | string = Network.MAINNET
-): Promise<number[][] | undefined> => {
+): Promise<number[][]> => {
+  if (!priceFeedId) return [[0]]
   try {
     console.debug('Attempting to get pyth vaas')
     const updateData = await pythClient(getNetwork(network)).getPriceFeedsUpdateData([priceFeedId])
     return updateData
   } catch (e) {
-    console.error(`Error getting pyth vaas: ${e}`)
-    return undefined
+    return [[0]]
   }
 }
 
@@ -61,8 +61,8 @@ const PRICE_FEEDS: { readonly [coin in CoinsWithPriceFeeds]: { readonly [network
     [Network.MAINNET]: '0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace',
     [Network.TESTNET]: '0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6',
   },
-  //[MoveCoin.devUSDC]: {
-  //  ['mainnet']: '0xeaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a',
-  //  ['testnet']: '0x41f3625971ca2ed2263e78573fe5ce23e13d2558ed3f2e47ab0f84fb9e7ae722',
-  //},
+  [MoveCoin.devUSDC]: {
+    [Network.MAINNET]: '0xeaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a',
+    [Network.TESTNET]: '0x41f3625971ca2ed2263e78573fe5ce23e13d2558ed3f2e47ab0f84fb9e7ae722',
+  },
 }
