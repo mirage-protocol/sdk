@@ -81,11 +81,7 @@ export class UserInfo {
 
     this.liquidationPrice =
       !!user && !!this.vault
-        ? this.userBorrow
-            .times(EXCHANGE_RATE_PRECISION)
-            .div(this.userCollateral)
-            .div(this.vault.collateralizationPercent)
-            .div(100)
+        ? this.userBorrow.div(this.userCollateral).times(this.vault.collateralizationPercent / 100)
         : ZERO
 
     const maxBorrow =
@@ -151,5 +147,9 @@ export class UserInfo {
       .times(exchangeRate)
       .times(100)
       .isGreaterThan(this.userBorrow)
+  }
+
+  public calculateHypotheticalLiquidationPrice(borrow: BigNumber, collateral: BigNumber): BigNumber {
+    return borrow.div(collateral).times(this.vault.collateralizationPercent / 100)
   }
 }
