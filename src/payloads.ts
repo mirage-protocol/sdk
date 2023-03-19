@@ -1,7 +1,15 @@
 import { Types } from 'aptos'
 import BigNumber from 'bignumber.js'
 
-import { coinInfo, getPriceFeedUpdateData, mirageAddress, MoveCoin } from './constants'
+import {
+  coinInfo,
+  getNetwork,
+  getPriceFeed,
+  getPriceFeedUpdateData,
+  mirageAddress,
+  MoveCoin,
+  Network,
+} from './constants'
 
 const type = 'entry_function_payload'
 
@@ -44,20 +52,29 @@ export const addCollateral = async (
  * @param collateral the collateral of the vault (e.g APT)
  * @param borrow the borrow of the vault (e.g. mUSD)
  * @param borrowAmount the amount to add to the borrow from the vault, no precision
- * @param priceFeedId the address of the necessary price feed to update
+ * @param collateralFeedId the address of the collateral price feed
+ * @param borrowFeedId the address of the borrow price feed
  * @returns payload promise for the transaction
  */
 export const borrow = async (
   collateral: MoveCoin | string,
   borrow: MoveCoin | string,
   borrowAmount: number,
-  priceFeedId: string
+  network: Network | string = Network.MAINNET
 ): Promise<Payload> => {
-  const vaas = await getPriceFeedUpdateData(priceFeedId)
+  const collateralCoin = typeof collateral === 'string' ? MoveCoin[collateral] : collateral
+  const borrowCoin = typeof borrow === 'string' ? MoveCoin[borrow] : borrow
+
+  const collateralFeed = getPriceFeed(collateralCoin, network)
+  const borrowFeed = getPriceFeed(borrowCoin, network)
+
+  const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : [[0]]
+  const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : [[0]]
+
   return {
     type,
     function: `${mirageAddress()}::vault::borrow`,
-    arguments: [getAmountArgument(borrow, borrowAmount), vaas],
+    arguments: [getAmountArgument(borrow, borrowAmount), collateralVaas, borrowVaas],
     type_arguments: getVaultTypeArguments(collateral, borrow),
   }
 }
@@ -67,20 +84,28 @@ export const borrow = async (
  * @param collateral the collateral of the vault (e.g APT)
  * @param borrow the borrow of the vault (e.g. mUSD)
  * @param removeAmount the amount to remove from the vault, no precision
- * @param priceFeedId the address of the necessary price feed to update
+ * @param collateralFeedId the address of the collateral price feed
+ * @param borrowFeedId the address of the borrow price feed
  * @returns payload promise for the transaction
  */
 export const removeCollateral = async (
   collateral: MoveCoin | string,
   borrow: MoveCoin | string,
   removeAmount: number,
-  priceFeedId: string
+  network: Network
 ): Promise<Payload> => {
-  const vaas = await getPriceFeedUpdateData(priceFeedId)
+  const collateralCoin = typeof collateral === 'string' ? MoveCoin[collateral] : collateral
+  const borrowCoin = typeof borrow === 'string' ? MoveCoin[borrow] : borrow
+
+  const collateralFeed = getPriceFeed(collateralCoin, network)
+  const borrowFeed = getPriceFeed(borrowCoin, network)
+
+  const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : [[0]]
+  const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : [[0]]
   return {
     type,
     function: `${mirageAddress()}::vault::remove_collateral`,
-    arguments: [getAmountArgument(collateral, removeAmount), vaas],
+    arguments: [getAmountArgument(collateral, removeAmount), collateralVaas, borrowVaas],
     type_arguments: getVaultTypeArguments(collateral, borrow),
   }
 }
@@ -111,7 +136,8 @@ export const repayDebt = async (
  * @param borrow the borrow of the vault (e.g. mUSD)
  * @param addAmount the amount to add to vault, no precision
  * @param borrowAmount the amount to borrow, no precision
- * @param priceFeedId the address of the necessary price feed to update
+ * @param collateralFeedId the address of the collateral price feed
+ * @param borrowFeedId the address of the borrow price feed
  * @returns payload promise for the transaction
  */
 export const addCollateralAndBorrow = async (
@@ -119,13 +145,25 @@ export const addCollateralAndBorrow = async (
   borrow: MoveCoin | string,
   addAmount: number,
   borrowAmount: number,
-  priceFeedId: string
+  network: Network
 ): Promise<Payload> => {
-  const vaas = await getPriceFeedUpdateData(priceFeedId)
+  const collateralCoin = typeof collateral === 'string' ? MoveCoin[collateral] : collateral
+  const borrowCoin = typeof borrow === 'string' ? MoveCoin[borrow] : borrow
+
+  const collateralFeed = getPriceFeed(collateralCoin, network)
+  const borrowFeed = getPriceFeed(borrowCoin, network)
+
+  const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : [[0]]
+  const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : [[0]]
   return {
     type,
     function: `${mirageAddress()}::vault::add_and_borrow`,
-    arguments: [getAmountArgument(collateral, addAmount), getAmountArgument(borrow, borrowAmount), vaas],
+    arguments: [
+      getAmountArgument(collateral, addAmount),
+      getAmountArgument(borrow, borrowAmount),
+      collateralVaas,
+      borrowVaas,
+    ],
     type_arguments: getVaultTypeArguments(collateral, borrow),
   }
 }
@@ -136,7 +174,8 @@ export const addCollateralAndBorrow = async (
  * @param borrow the borrow of the vault (e.g. mUSD)
  * @param repayAmount the amount to repay, no precision
  * @param removeAmount the amount to remove, no precision
- * @param priceFeedId the address of the necessary price feed to update
+ * @param collateralFeedId the address of the collateral price feed
+ * @param borrowFeedId the address of the borrow price feed
  * @returns payload promise for the transaction
  */
 export const repayDebtAndRemoveCollateral = async (
@@ -144,13 +183,25 @@ export const repayDebtAndRemoveCollateral = async (
   borrow: MoveCoin | string,
   repayAmount: number,
   removeAmount: number,
-  priceFeedId: string
+  network: Network
 ): Promise<Payload> => {
-  const vaas = await getPriceFeedUpdateData(priceFeedId)
+  const collateralCoin = typeof collateral === 'string' ? MoveCoin[collateral] : collateral
+  const borrowCoin = typeof borrow === 'string' ? MoveCoin[borrow] : borrow
+
+  const collateralFeed = getPriceFeed(collateralCoin, network)
+  const borrowFeed = getPriceFeed(borrowCoin, network)
+
+  const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : [[0]]
+  const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : [[0]]
   return {
     type,
     function: `${mirageAddress()}::vault::repay_and_remove`,
-    arguments: [getAmountArgument(borrow, repayAmount), getAmountArgument(collateral, removeAmount), vaas],
+    arguments: [
+      getAmountArgument(borrow, repayAmount),
+      getAmountArgument(collateral, removeAmount),
+      collateralVaas,
+      borrowVaas,
+    ],
     type_arguments: getVaultTypeArguments(collateral, borrow),
   }
 }
@@ -183,7 +234,8 @@ export const addCollateralAndRepayDebt = async (
  * @param borrow the borrow of the vault (e.g. mUSD)
  * @param removeAmount the amount to remove, no precision
  * @param borrowAmount the amount to borrow, no precision
- * @param priceFeedId the address of the necessary price feed to update
+ * @param collateralFeedId the address of the collateral price feed
+ * @param borrowFeedId the address of the borrow price feed
  * @returns payload promise for the transaction
  */
 export const removeCollateralAndBorrow = async (
@@ -191,13 +243,25 @@ export const removeCollateralAndBorrow = async (
   borrow: MoveCoin | string,
   removeAmount: number,
   borrowAmount: number,
-  priceFeedId: string
+  network: Network
 ): Promise<Payload> => {
-  const vaas = await getPriceFeedUpdateData(priceFeedId)
+  const collateralCoin = typeof collateral === 'string' ? MoveCoin[collateral] : collateral
+  const borrowCoin = typeof borrow === 'string' ? MoveCoin[borrow] : borrow
+
+  const collateralFeed = getPriceFeed(collateralCoin, network)
+  const borrowFeed = getPriceFeed(borrowCoin, network)
+
+  const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : [[0]]
+  const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : [[0]]
   return {
     type,
     function: `${mirageAddress()}::vault::remove_and_borrow`,
-    arguments: [getAmountArgument(collateral, removeAmount), getAmountArgument(borrow, borrowAmount), vaas],
+    arguments: [
+      getAmountArgument(collateral, removeAmount),
+      getAmountArgument(borrow, borrowAmount),
+      collateralVaas,
+      borrowVaas,
+    ],
     type_arguments: getVaultTypeArguments(collateral, borrow),
   }
 }

@@ -57,7 +57,7 @@ export class Coin {
     this.logoUrl = logoUrl
 
     if (!!resources) {
-      const coinStore = resources.find((resource) => resource.type == `0x1::coin::CoinStore<${type}>`)
+      const coinStore = resources.find((resource) => resource.type === `0x1::coin::CoinStore<${type}>`)
       this.balance = !!coinStore ? new BigNumber((coinStore.data as any).coin.value).div(precision) : ZERO
     }
   }
