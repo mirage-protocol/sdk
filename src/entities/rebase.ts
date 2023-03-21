@@ -25,7 +25,7 @@ export class Rebase {
   }
 
   /**
-   * Get a base value represented in terms of the current rebase.
+   * Get a elastic value represented in terms of the current rebase.
    * @param base the base value to convert
    * @param roundUp should we roundup the division
    * @returns the converted elastic part
@@ -41,5 +41,24 @@ export class Rebase {
         return elastic
       }
     }
+  }
+
+ /**
+   * Get a base value represented in terms of the current rebase.
+   * @param elastic the elastic value to convert
+   * @param roundUp should we roundup the division
+   * @returns the converted base part
+   */
+  toBase(elastic: BigNumber, roundUp: boolean): BigNumber {
+    let base = new BigNumber(0)
+    if (this.elastic.isZero()) {
+      base = elastic
+    } else {
+      base = elastic.times(this.base).div(this.elastic)
+      if (roundUp && base.times(this.elastic).div(this.base).lt(elastic)) {
+        base = base.plus(1)
+      }
+    }
+    return base
   }
 }
