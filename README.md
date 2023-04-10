@@ -25,11 +25,8 @@ const getUserAptosBalance = async (userAddr: string) => {
   // Get the resources for a user account
   const resources = await aptosClient().getAccountResources(userAddr);
 
-  // MoveCoin is all the coins recognized by @mirage-protocol/sdk
-  const APT = MoveCoin['APT']
-
   // Coin class contains useful functions
-  const coin = new Coin(resources, APT)
+  const coin = new Coin(resources, 'APT')
 
   // Get the balance
   return coin.getUiBalance()
@@ -39,10 +36,7 @@ const getUserAptosBalance = async (userAddr: string) => {
 const getTotalTestnetCollateral = async () => {
   return (
     new Vault(
-      await aptosClient("testnet").getAccountResources(MIRAGE_ADDRESS),
-      MoveCoin['APT'],
-      MoveCoin['MUSD'],
-    )
+      await aptosClient("testnet").getAccountResources(MIRAGE_ADDRESS), 'APT', 'mUSD')
   ).getUiTotalCollateral()
 }
 ```
