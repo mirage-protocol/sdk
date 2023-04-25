@@ -73,13 +73,11 @@ export class Vault {
 
     this.vaultType = `${mirageAddress()}::vault::Vault<${coinInfo(collateral).type}, ${coinInfo(borrow).type}>`
 
-    console.log('attempting to get data for type:')
-    console.log(this.vaultType)
+    console.debug(`attempting to get data for type: ${this.vaultType}`)
 
     const vault = moduleResources.find((resource) => resource.type === this.vaultType)
 
-    console.log('found data:')
-    console.log(vault)
+    console.debug(`found data: ${vault}`)
 
     this.borrowFeePercent = !!vault ? (100 * Number((vault.data as any).borrow_fee)) / 10000 : 0
     this.interestPerSecond = !!vault ? BigNumber((vault.data as any).interest_per_second) : ZERO
