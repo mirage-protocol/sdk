@@ -30,12 +30,14 @@ export class VeMirage
     constructor(
         moduleResources: AccountResource[]
     ) {
-        let moveType = `${mirageAddress()}::ve_mirage::VeMirage`
-        console.debug(`attempting to get data for type: ${moveType}`)
+        let veMirageType = `${mirageAddress()}::ve_mirage::VeMirage`
 
-        const veMirage = moduleResources.find((resource) => resource.type === this.vaultType)
+        console.debug(`attempting to get data for type: ${veMirageType}`)
+
+        const veMirage = moduleResources.find((resource) => resource.type === veMirageType)
 
         console.debug(`found data: ${veMirage}`)
+
         this.lock = !!veMirage
           ? new Rebase(BigNumber((veMirage.data as any).lock.elastic), BigNumber((veMirage.data as any).lock.base))
           : new Rebase(ZERO, ZERO)
