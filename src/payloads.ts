@@ -41,7 +41,7 @@ export const addCollateral = async (
 ): Promise<Payload> => {
   return {
     type,
-    function: `${mirageAddress()}::vault::add_collateral`,
+    function: `${mirageAddress()}::vault::deposit`,
     arguments: [getAmountArgument(collateral, amount)],
     type_arguments: getVaultTypeArguments(collateral, borrow),
   }
@@ -197,8 +197,8 @@ export const repayDebtAndRemoveCollateral = async (
     type,
     function: `${mirageAddress()}::vault::repay_and_remove`,
     arguments: [
-      getAmountArgument(borrow, repayAmount),
       getAmountArgument(collateral, removeAmount),
+      getAmountArgument(borrow, repayAmount),
       collateralVaas,
       borrowVaas,
     ],
