@@ -3,7 +3,7 @@ import { AptosClient } from 'aptos'
 
 // store copies of the client so they don't need to be rebuilt when fetched
 const mainnetClient = new AptosClient(`https://fullnode.mainnet.aptoslabs.com`)
-const testnetClient = new AptosClient(`https://artifact-staking.io/aptos`)
+const testnetClient = new AptosClient(`https://testnet.artifact.systems/aptos`)
 
 const mainnetPythClient = new AptosPriceServiceConnection(`https://xc-mainnet.pyth.network`)
 const testnetPythClient = new AptosPriceServiceConnection(`https://xc-testnet.pyth.network`)
