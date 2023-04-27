@@ -43,7 +43,7 @@ export class Rebase {
     }
   }
 
- /**
+  /**
    * Get a base value represented in terms of the current rebase.
    * @param elastic the elastic value to convert
    * @param roundUp should we roundup the division
