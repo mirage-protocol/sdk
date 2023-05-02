@@ -3,10 +3,8 @@ import BigNumber from 'bignumber.js'
 import { ZERO } from '../constants'
 import { AccountResource, mirageAddress } from '../constants/accounts'
 import { MoveCoin, OtherAsset } from '../constants/coinList'
-import { Coin } from './coin'
+import { assetInfo, coinInfo } from '../constants/coinList'
 import { Rebase } from './rebase'
-
-
 
 /**
  * Represents a mirage-protocol perpetuals market.
@@ -27,98 +25,105 @@ export class Market {
   /**
    * All the margin actively being used in the market for longs & shorts
    */
-  public readonly margin: Coin
+  public readonly margin: BigNumber
+  /**
+   * Resting margin waiting for triggers
+   */
+  public readonly restingMargin: BigNumber
+  /**
+   * Maximum taker fee at the max_oi_imbalance
+   */
+  public readonly maxTakerFee: BigNumber
+  /**
+   * Minimum taker fee at equal oi
+   */
+  public readonly minTakerFee: BigNumber
+  /**
+   * Max maker fee at equal oi
+   */
+  public readonly maxMakerFee: BigNumber
+  /**
+   * Min maker fee at large oi imbalance
+   */
+  public readonly minMakerFee: BigNumber
+  /**
+   * The minimum funding rate
+   */
+  public readonly minFundingRate: BigNumber
+  /**
+   * The funding that will be taken next payment
+   */
+  public readonly nextFundingRate: BigNumber
+  /**
+   * The funding that will be taken next payment
+   */
+  public readonly nextFundingPos: boolean
+  /**
+   * The time of the last funding payment
+   */
+  public readonly lastFundingUpdate: BigNumber
+  /**
+   * The discount percent of the protocol on funding payments
+   */
+  public readonly poolFundingDiscount: BigNumber
+  /**
+   * The interval between funding payments
+   */
+  public readonly fundingInterval: BigNumber
+  /**
+   * A rebase representing all long margin (in C)
+   * elastic = long margin, base = shares of long margin
+   */
+  public readonly longMargin: Rebase
+  /**
+   * A rebase representing all short margin (in C)
+   * elastic = long margin, base = shares of short margin
+   */
+  public readonly shortMargin: Rebase
 
   /**
-   * The underlying asset of the market
-   */
- 
-  /**
-   * Construct an instance of Vault
-   * @param moduleResources resources for the vault account (MIRAGE_ACCOUNT)
-   * @param collateral the collateral asset of the vault
-   * @param borrow the borrow asset of the vault
+   * Construct an instance of Market
+   * @param moduleResources resources for the market account (MIRAGE_ACCOUNT)
+   * @param base the base asset of the market
+   * @param underlying the underlying asset of the market
    */
   constructor(moduleResources: AccountResource[], base: MoveCoin | string, underlying: OtherAsset | string) {
     this.base = base as MoveCoin
     this.underlying = underlying as OtherAsset
+    this.marketType = `${mirageAddress()}::market::Market<${coinInfo(base).type}, ${assetInfo(underlying).type}>`
 
+    console.debug(`attempting to get data for type: ${this.marketType}`)
+
+    const market = moduleResources.find((resource) => resource.type === this.marketType)
+
+    console.debug(`found data: ${market}`)
+
+    this.margin = !!market ? new BigNumber((market.data as any).margin.value) : ZERO
+    this.restingMargin = !!market ? new BigNumber((market.data as any).resting_margin.value) : ZERO
+
+    this.maxTakerFee = !!market ? new BigNumber((market.data as any).max_taker_fee) : ZERO
+    this.minTakerFee = !!market ? new BigNumber((market.data as any).min_taker_fee) : ZERO
+    this.maxMakerFee = !!market ? new BigNumber((market.data as any).max_maker_fee) : ZERO
+    this.minMakerFee = !!market ? new BigNumber((market.data as any).min_maker_fee) : ZERO
+
+    this.minFundingRate = !!market ? new BigNumber((market.data as any).min_funding_rate) : ZERO
+    this.nextFundingRate = !!market ? new BigNumber((market.data as any).next_funding_rate) : ZERO
+    this.nextFundingPos = !!market ? Boolean((market.data as any).next_funding_pos) : false
+    this.lastFundingUpdate = !!market ? new BigNumber((market.data as any).last_funding_update) : ZERO
+    this.poolFundingDiscount = !!market ? new BigNumber((market.data as any).last_funding_update) : ZERO
+    this.fundingInterval = !!market ? new BigNumber((market.data as any).pool_funding_discount) : ZERO
+
+    this.longMargin = !!market
+      ? new Rebase(
+          BigNumber((market.data as any).long_margin.elastic),
+          BigNumber((market.data as any).long_margin.base)
+        )
+      : new Rebase(ZERO, ZERO)
+    this.shortMargin = !!market
+      ? new Rebase(
+          BigNumber((market.data as any).short_margin.elastic),
+          BigNumber((market.data as any).short_margin.base)
+        )
+      : new Rebase(ZERO, ZERO)
   }
-
 }
-struct Market<phantom C, phantom A> has key {
-        /// All the margin actively being used in the market for longs & shorts
-        margin: Coin<C>,
-        /// Resting margin waiting for triggers
-        resting_margin: Coin<C>,
-
-        /// Maximum taker fee at the max_oi_imbalance
-        max_taker_fee: u64,
-        /// Minimum taker fee at equal oi
-        min_taker_fee: u64,
-        /// Max maker fee at equal oi
-        max_maker_fee: u64,
-        /// Min maker fee at large oi imbalance
-        min_maker_fee: u64,
-
-        /// The minimum funding rate
-        min_funding_rate: u64,
-        /// The funding that will be taken next payment
-        next_funding_rate: u64,
-        /// If the funding is positive
-        next_funding_pos: bool,
-        /// The time of the last funding payment
-        last_funding_update: u64,
-        /// The discount percent of the protocol on funding payments
-        pool_funding_discount: u64,
-        /// The interval between funding payments
-        funding_interval: u64,
-
-        /// A rebase representing all long margin (in C)
-        /// elastic = long margin, base = shares of long margin
-        long_margin: rebase::Rebase,
-
-        /// A rebase representing the all short margin (in C)
-        /// elastic = short margin, base = shares of short margin
-        short_margin: rebase::Rebase,
-
-        /// Long open interest in musd
-        long_oi: u64,
-        /// Short open interest in musd
-        short_oi: u64,
-        /// The max total oi allowed for the long & short sides
-        max_oi: u64,
-        /// The max allowed imbalance between long and short oi
-        max_oi_imbalance: u64,
-
-        /// The max leverage for this market
-        max_leverage: u64,
-        /// The percent fee given to liquidators
-        liquidation_fee: u64,
-        /// The base percent maintence margin
-        maintenence_margin: u64,
-        /// The base mUSD position limit for a new trade
-        base_position_limit: u64,
-        /// The max mUSD position limit for a new trade
-        max_position_limit: u64,
-
-        /// The cached exchange rate of the asset A
-        cached_exchange_rate: u64,
-        /// The last exchange rate update of A
-        last_exchange_rate_update: u64,
-
-        /// The min mUSD order size for this market
-        min_order_size: u64,
-
-        /// The net accumulated debt for this market
-        net_accumulated_debt: u64,
-        /// The net accumulated fees for this market
-        net_accumulated_fees: u64,
-
-        /// If the market is frozen
-        frozen: bool,
-        /// If the market is in an emergency
-        emergency: bool,
-        /// Time the market first opened
-        market_open_time: u64,
- 
