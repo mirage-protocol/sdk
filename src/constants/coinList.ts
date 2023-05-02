@@ -34,7 +34,7 @@ export const MIRAGE_ASSETS: readonly MoveCoin[] = [MoveCoin.mAPT, MoveCoin.mUSD,
 export type AssetInfo = {
   readonly name: string
   readonly symbol: string
-  readonly logoUrl?: string
+  readonly type: MoveType
 }
 
 /**
@@ -43,7 +43,6 @@ export type AssetInfo = {
 export type CoinInfo = AssetInfo & {
   readonly decimals: number
   readonly address: HexString
-  readonly type: MoveType
 }
 
 /**
@@ -97,7 +96,6 @@ const mirageCoinList: { readonly [coin in MoveCoin | OtherAsset]: AssetInfo | Co
     decimals: 8,
     address: new HexString('0x1'),
     type: '0x1::aptos_coin::AptosCoin',
-    logoUrl: 'https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/icons/APT.webp',
   },
   [MoveCoin.MIRA]: {
     name: 'Mirage Coin',
@@ -133,7 +131,6 @@ const mirageCoinList: { readonly [coin in MoveCoin | OtherAsset]: AssetInfo | Co
     decimals: 6,
     address: getModuleAddress('layer_zero'),
     type: `${getModuleAddress('layer_zero')}::asset::USDC`,
-    logoUrl: 'https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/icons/USDC.svg',
   },
   [MoveCoin.devUSDC]: {
     name: 'Testnet USDC',
@@ -141,7 +138,6 @@ const mirageCoinList: { readonly [coin in MoveCoin | OtherAsset]: AssetInfo | Co
     decimals: 8,
     address: getModuleAddress('dev_usdc'),
     type: `${getModuleAddress('dev_usdc')}::devnet_coins::DevnetUSDC`,
-    logoUrl: 'https://raw.githubusercontent.com/hippospace/aptos-coin-list/main/icons/USDC.svg',
   },
   // TODO
   [MoveCoin.APT_MUSD_LP]: {
@@ -154,11 +150,11 @@ const mirageCoinList: { readonly [coin in MoveCoin | OtherAsset]: AssetInfo | Co
   [OtherAsset.ETH]: {
     name: 'Ethereum',
     symbol: 'ETH',
-    logoUrl: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/ethereum.png'
+    type: `${mirageAddress()}::mirage::METH`,
   },
   [OtherAsset.BTC]: {
     name: 'Bitcoin',
     symbol: 'BTC',
-    logoUrl: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/bitcoin.png',
+    type: `${mirageAddress()}::mirage::MBTC`, // TODO: doesn't exist
   },
 }
