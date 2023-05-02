@@ -33,10 +33,6 @@ export class Coin {
    * The precision of the coin (e.g. 8 decimals = 100,000,000)
    */
   public readonly precision: BigNumber
-  /**
-   * The public logoUrl of the token
-   */
-  public readonly logoUrl?: string
 
   /**
    * Constructs an instance of Coin
@@ -44,7 +40,7 @@ export class Coin {
    * @param coin which coin to find data for
    */
   constructor(resources: AccountResource[] | null | undefined, coin: MoveCoin | string) {
-    const { name, symbol, decimals, type, logoUrl } = coinInfo(coin)
+    const { name, symbol, decimals, type } = coinInfo(coin)
 
     const precision = BigNumber(10).pow(decimals)
 
@@ -54,7 +50,6 @@ export class Coin {
     this.coin = coin as MoveCoin
     this.precision = precision
     this.balance = ZERO
-    this.logoUrl = logoUrl
 
     if (!!resources) {
       const coinStore = resources.find((resource) => resource.type === `0x1::coin::CoinStore<${type}>`)
