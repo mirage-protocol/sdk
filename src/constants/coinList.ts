@@ -31,16 +31,19 @@ export enum OtherAsset {
  */
 export const MIRAGE_ASSETS: readonly MoveCoin[] = [MoveCoin.mAPT, MoveCoin.mUSD, MoveCoin.mETH]
 
+export type AssetInfo = {
+  readonly name: string
+  readonly symbol: string
+  readonly logoUrl?: string
+}
+
 /**
  * Info for a coin
  */
-export type CoinInfo = {
-  readonly name: string
-  readonly symbol: string
+export type CoinInfo = AssetInfo & {
   readonly decimals: number
   readonly address: HexString
   readonly type: MoveType
-  readonly logoUrl?: string
 }
 
 /**
@@ -53,7 +56,19 @@ export const checkSymbol = (symbol: string): MoveCoin | undefined => {
 }
 
 /**
- * Get info about a specific coin
+ * Get info about a specific asset
+ * @param coin the MoveCoin to get info for
+ * @returns the AssetInfo for the specific coin
+ */
+export const assetInfo = (asset: MoveCoin | OtherAsset | string): AssetInfo => {
+  if (typeof asset === 'string') {
+    return mirageCoinList[OtherAsset[asset]] || mirageCoinList[MoveCoin[asset]]
+  }
+  return mirageCoinList[asset]
+}
+
+/**
+ * Get info about a specific asset
  * @param coin the MoveCoin to get info for
  * @returns the CoinInfo for the specific coin
  */
@@ -61,7 +76,7 @@ export const coinInfo = (coin: MoveCoin | string): CoinInfo => {
   if (typeof coin === 'string') {
     return mirageCoinList[MoveCoin[coin]]
   }
-  return mirageCoinList[coin]
+  return <CoinInfo>mirageCoinList[coin]
 }
 
 /**
@@ -75,7 +90,7 @@ export const balanceToUi = (balance: BigNumber, coin: MoveCoin | string): number
 }
 
 // A list of all coins and their info in the Mirage ecosystem
-const mirageCoinList: { readonly [coin in MoveCoin]: CoinInfo } = {
+const mirageCoinList: { readonly [coin in MoveCoin | OtherAsset]: AssetInfo | CoinInfo } = {
   [MoveCoin.APT]: {
     name: 'Aptos Coin',
     symbol: 'APT',
@@ -135,5 +150,15 @@ const mirageCoinList: { readonly [coin in MoveCoin]: CoinInfo } = {
     decimals: 8,
     address: getModuleAddress('pancake'),
     type: 'TODO',
+  },
+  [OtherAsset.ETH]: {
+    name: 'Ethereum',
+    symbol: 'ETH',
+    logoUrl: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/ethereum.png'
+  },
+  [OtherAsset.BTC]: {
+    name: 'Bitcoin',
+    symbol: 'BTC',
+    logoUrl: 'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/128/bitcoin.png',
   },
 }
