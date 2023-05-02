@@ -1,31 +1,47 @@
+import BigNumber from 'bignumber.js'
+
+import { ZERO } from '../constants'
+import { AccountResource, mirageAddress } from '../constants/accounts'
+import { MoveCoin, OtherAsset } from '../constants/coinList'
+import { Coin } from './coin'
+import { Rebase } from './rebase'
+
+
 
 /**
  * Represents a mirage-protocol perpetuals market.
  */
 export class Market {
   /**
-   * The markets type
+   * The market type
    */
   public readonly marketType: string
   /**
-   * The mirage asset of the market
+   * The base asset of the market
    */
-  public readonly mirageAsset: MoveCoin
+  public readonly base: MoveCoin
   /**
-   * The asset of the market
+   * The underlying asset of the market
    */
-  public readonly asset: MoveCoin
+  public readonly underlying: OtherAsset
   /**
-   * 
+   * All the margin actively being used in the market for longs & shorts
+   */
+  public readonly margin: Coin
+
+  /**
+   * The underlying asset of the market
+   */
+ 
   /**
    * Construct an instance of Vault
    * @param moduleResources resources for the vault account (MIRAGE_ACCOUNT)
    * @param collateral the collateral asset of the vault
    * @param borrow the borrow asset of the vault
    */
-  constructor(moduleResources: AccountResource[], mirageAsset: MoveCoin | string, asset: MoveCoin | string) {
-    this.mirageAsset = mirageAsset as MoveCoin
-    this.asset = asset as MoveCoin
+  constructor(moduleResources: AccountResource[], base: MoveCoin | string, underlying: OtherAsset | string) {
+    this.base = base as MoveCoin
+    this.underlying = underlying as OtherAsset
 
   }
 
