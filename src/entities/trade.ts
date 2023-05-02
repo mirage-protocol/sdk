@@ -1,17 +1,16 @@
 import BigNumber from 'bignumber.js'
 
-import { getPriceFeed, INTEREST_PRECISION, SECONDS_PER_YEAR, ZERO } from '../constants'
+import { ZERO } from '../constants'
 import { AccountResource, mirageAddress } from '../constants/accounts'
-import { balanceToUi, coinInfo, MoveCoin } from '../constants/coinList'
+import { coinInfo, MoveCoin, OtherAsset } from '../constants/coinList'
 import { Rebase } from './rebase'
 
 /**
- * Represents a mirage-protocol Vault.
- * Deposit collateral and borrow "mirage-assets".
+ * Represents a trade in the a mirage-protocol market.
  */
 export class Trade {
   /**
-   * The vaults type
+   * The trade type
    */
   public readonly tradeType: string
   /**
@@ -21,7 +20,7 @@ export class Trade {
   /**
    * The underlying asset of the market
    */
-  public readonly underlying: MoveCoin
+  public readonly underlying: OtherAsset 
   /**
   /// The opening price of the trade (0 if trade is resting)
   */
@@ -32,9 +31,9 @@ export class Trade {
   public readonly long: boolean 
 
 
-  constructor(moduleResources: AccountResource[], base: MoveCoin | string, underlying: MoveCoin | string) {
-    this.base = underlying as MoveCoin
-    this.underlying = base as MoveCoin
+  constructor(moduleResources: AccountResource[], base: MoveCoin | string, underlying: OtherAsset | string) {
+    this.base = base as MoveCoin
+    this.underlying = underlying as OtherAsset
 
     this.tradeType = `${mirageAddress()}::market::Trade<${coinInfo(base).type}, ${coinInfo(underlying).type}>`
 
@@ -48,8 +47,5 @@ export class Trade {
     this.long = !!trade ? Boolean((trade.data as any).long) : false
     // this.margin = !!trade ? (100 * Number((vault.data as any).collateralization_rate)) / 10000 : 0
     // this.liquidationPercent = !!vault ? (100 * Number((vault.data as any).liquidation_multiplier)) / 10000 : 0
-
-
   }
-
 }
