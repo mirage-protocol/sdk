@@ -80,6 +80,74 @@ export class Market {
    * elastic = long margin, base = shares of short margin
    */
   public readonly shortMargin: Rebase
+  /**
+   * Long open interest in musd
+   */
+  public readonly longOpenInterest: BigNumber
+  /**
+   * Short open interest in musd
+   */
+  public readonly shortOpenInterest: BigNumber
+  /**
+   * The max total oi allowed for the long & short sides
+   */
+  public readonly maxOpenInterest: BigNumber
+  /**
+   * The max allowed imbalance between long and short oi
+   */
+  public readonly maxOpenInterestImbalance: BigNumber
+  /**
+   * The max leverage for this market
+   */
+  public readonly maxLeverage: BigNumber
+  /**
+   * The percent fee given to liquidators
+   */
+  public readonly liquidationFee: BigNumber
+  /**
+   * The base percent maintence margin
+   */
+  public readonly maintenenceMargin: BigNumber
+  /**
+   * The base mUSD position limit for a new trade
+   */
+  public readonly basePositionLimit: BigNumber
+  /**
+   * The max mUSD position limit for a new trade
+   */
+  public readonly maxPositionLimit: BigNumber
+  /**
+   * The cached exchange rate of the asset A
+   */
+  public readonly cachedExchangeRate: BigNumber
+  /**
+   * The last exchange rate update of A
+   */
+  public readonly lastExchangeRateUpdate: BigNumber
+  /**
+   * The min mUSD order size for this market
+   */
+  public readonly minOrderSize: BigNumber
+  /**
+   * The net accumulated debt for this market
+   */
+  public readonly netAccumulatedDebt: BigNumber
+  /**
+   * The net accumulated fees for this market
+   */
+  public readonly netAccumulatedFees: BigNumber
+  /**
+   * If the market is frozen
+   */
+  public readonly frozen: boolean
+  /**
+   * If the market is in an emergency
+   */
+  public readonly emergency: boolean
+  /**
+   * Time the market first opened
+   */
+  public readonly marketOpenTime: BigNumber
 
   /**
    * Construct an instance of Market
@@ -125,5 +193,28 @@ export class Market {
           BigNumber((market.data as any).short_margin.base)
         )
       : new Rebase(ZERO, ZERO)
+
+    this.longOpenInterest = !!market ? new BigNumber((market.data as any).long_oi) : ZERO
+    this.shortOpenInterest = !!market ? new BigNumber((market.data as any).short_io) : ZERO
+    this.maxOpenInterest = !!market ? new BigNumber((market.data as any).max_oi) : ZERO
+    this.maxOpenInterestImbalance = !!market ? new BigNumber((market.data as any).max_oi_imbalance) : ZERO
+
+    this.maxLeverage = !!market ? new BigNumber((market.data as any).max_leverage) : ZERO
+    this.liquidationFee = !!market ? new BigNumber((market.data as any).liquidation_fee) : ZERO
+    this.maintenenceMargin = !!market ? new BigNumber((market.data as any).maintenence_margin) : ZERO
+    this.basePositionLimit = !!market ? new BigNumber((market.data as any).base_position_limit) : ZERO
+    this.maxPositionLimit = !!market ? new BigNumber((market.data as any).max_position_limit) : ZERO
+
+    this.cachedExchangeRate = !!market ? new BigNumber((market.data as any).cached_exchange_rate) : ZERO
+    this.lastExchangeRateUpdate = !!market ? new BigNumber((market.data as any).last_exchange_rate_update) : ZERO
+
+    this.minOrderSize = !!market ? new BigNumber((market.data as any).min_order_size) : ZERO
+
+    this.netAccumulatedDebt = !!market ? new BigNumber((market.data as any).net_accumulated_debt) : ZERO
+    this.netAccumulatedFees = !!market ? new BigNumber((market.data as any).net_accumulated_fees) : ZERO
+
+    this.frozen = !!market ? Boolean((market.data as any).frozen) : false
+    this.emergency = !!market ? Boolean((market.data as any).emergency) : false
+    this.marketOpenTime = !!market ? BigNumber((market.data as any).market_open_time) : ZERO
   }
 }
