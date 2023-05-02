@@ -277,7 +277,7 @@ export const lockMira = async (amount: number, timeInSeconds: number): Promise<P
     type,
     function: `${mirageAddress()}::ve_mirage::lock`,
     arguments: [getAmountArgument(MoveCoin.MIRA, amount), timeInSeconds],
-    type_arguments: []
+    type_arguments: [],
   }
 }
 
@@ -291,7 +291,7 @@ export const increaseLockedAmount = async (amount: number): Promise<Payload> => 
     type,
     function: `${mirageAddress()}::ve_mirage::increase_locked_amount`,
     arguments: [getAmountArgument(MoveCoin.MIRA, amount)],
-    type_arguments: []
+    type_arguments: [],
   }
 }
 
@@ -304,7 +304,7 @@ export const resetStakeLockTime = async (): Promise<Payload> => {
     type,
     function: `${mirageAddress()}::ve_mirage::reset_stake_lock_time`,
     arguments: [],
-    type_arguments: []
+    type_arguments: [],
   }
 }
 
@@ -318,7 +318,7 @@ export const increaseLockTime = async (timeInSeconds: number): Promise<Payload> 
     type,
     function: `${mirageAddress()}::ve_mirage::increase_lock_time`,
     arguments: [timeInSeconds],
-    type_arguments: []
+    type_arguments: [],
   }
 }
 
@@ -331,6 +331,6 @@ export const withdraw = async (): Promise<Payload> => {
     type,
     function: `${mirageAddress()}::ve_mirage::withdraw`,
     arguments: [],
-    type_arguments: []
+    type_arguments: [],
   }
 }
