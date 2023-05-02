@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js'
 
-import { VeMirage } from './veMirage'
 import { ZERO } from '../constants'
 import { AccountResource, mirageAddress } from '../constants/accounts'
+import { VeMirage } from './veMirage'
 
 /**
  * Represent VoteLock struct.
@@ -48,7 +48,7 @@ export class VoteLock {
 
     console.debug(`found data: ${voteLock}`)
 
-    this.veMirage = new VeMirage(moduleResources);
+    this.veMirage = new VeMirage(moduleResources)
 
     this.locked =
       !!voteLock && !!this.veMirage
