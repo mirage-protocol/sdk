@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js'
 
-import { ZERO } from '../constants'
-import { AccountResource, mirageAddress } from '../constants/accounts'
-import { Rebase } from './rebase'
+import { ZERO } from '../../constants'
+import { AccountResource, mirageAddress } from '../../constants/accounts'
+import { Rebase } from '../rebase'
 
 /**
  * Represent VeMirage struct.

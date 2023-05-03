@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js'
 
-import { ZERO } from '../constants'
-import { AccountResource, mirageAddress } from '../constants/accounts'
-import { assetInfo, coinInfo, MoveCoin, OtherAsset } from '../constants/coinList'
+import { ZERO } from '../../constants'
+import { AccountResource, mirageAddress } from '../../constants/accounts'
+import { assetInfo, coinInfo, MoveCoin, OtherAsset } from '../../constants/coinList'
 import { Market } from './market'
 
 /**
