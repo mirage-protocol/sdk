@@ -1,7 +1,7 @@
 import { HexString } from 'aptos'
 import BigNumber from 'bignumber.js'
 
-import { MoveType } from '../payloads'
+import { MoveType } from '../transactions'
 import { getModuleAddress, mirageAddress } from './accounts'
 
 /**
