@@ -151,7 +151,7 @@ export class Market {
    * @param base the base asset of the market
    * @param underlying the underlying asset of the market
    */
-  constructor(moduleResources: AccountResource[], base: MoveCoin | string, underlying: OtherAsset | string) {
+  constructor(moduleResources: AccountResource[], base: MoveCoin | string, underlying: MoveCoin | OtherAsset | string) {
     this.base = base as MoveCoin
     this.underlying = underlying as OtherAsset
     this.marketType = `${mirageAddress()}::market::Market<${coinInfo(base).type}, ${assetInfo(underlying).type}>`

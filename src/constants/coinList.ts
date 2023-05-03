@@ -8,22 +8,22 @@ import { getModuleAddress, mirageAddress } from './accounts'
  * All Coins relevant to the mirage-protocol ecosystem
  */
 export enum MoveCoin {
-  MIRA, // Mirage coin
-  APT, // Aptos coin
-  mAPT, // mirage-Aptos
-  mETH, // mirage-Ethereum
-  mUSD, // mirage-Usd
-  zUSDC, // Layer-zero USDC
-  devUSDC, // devnet USDC
-  APT_MUSD_LP, // APT/MUSD LP
+  MIRA = 'MIRA', // Mirage coin
+  APT = 'APT', // Aptos coin
+  mAPT = 'mAPT', // mirage-Aptos
+  mETH = 'mETH', // mirage-Ethereum
+  mUSD = 'mUSD', // mirage-Usd
+  zUSDC = 'zUSDC', // Layer-zero USDC
+  devUSDC = 'devUSDC', // devnet USDC
+  APT_MUSD_LP = 'APT_MUSD_LP', // APT/MUSD LP
 }
 
 /**
  * Other off-chain assets
  */
 export enum OtherAsset {
-  BTC,
-  ETH,
+  BTC = 'BTC',
+  ETH = 'ETH',
 }
 
 /**
@@ -61,7 +61,7 @@ export const checkSymbol = (symbol: string): MoveCoin | undefined => {
  */
 export const assetInfo = (asset: MoveCoin | OtherAsset | string): AssetInfo => {
   if (typeof asset === 'string') {
-    return mirageCoinList[OtherAsset[asset]] || mirageCoinList[MoveCoin[asset]]
+    return mirageCoinList[MoveCoin[asset] || OtherAsset[asset]]
   }
   return mirageCoinList[asset]
 }

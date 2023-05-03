@@ -70,7 +70,7 @@ export class Trade {
     moduleResources: AccountResource[],
     userResource: AccountResource[],
     base: MoveCoin | string,
-    underlying: OtherAsset | string
+    underlying: MoveCoin | OtherAsset | string
   ) {
     this.base = base as MoveCoin
     this.underlying = underlying as OtherAsset
