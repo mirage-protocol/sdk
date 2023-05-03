@@ -35,14 +35,15 @@ export const openTrade = async (
   network: Network
 ): Promise<Payload> => {
   const baseCoin = typeof base === 'string' ? MoveCoin[base] : base
-  const underlyingAsset = typeof underlying === 'string' ? OtherAsset[underlying] : underlying
+  const underlyingAsset = typeof underlying === 'string' ? OtherAsset[underlying] || MoveCoin[underlying] : underlying
 
   const baseFeed = getPriceFeed(baseCoin, network)
   const underlyingFeed = getPriceFeed(underlyingAsset, network)
 
   const baseVaas = baseFeed ? await getPriceFeedUpdateData(baseFeed, getNetwork(network)) : [[0]]
   const underlyingVaas = underlyingFeed ? await getPriceFeedUpdateData(underlyingFeed, getNetwork(network)) : [[0]]
-  return {
+
+  const payload = {
     type,
     function: `${mirageAddress()}::market::open_trade`,
     arguments: [
@@ -51,11 +52,13 @@ export const openTrade = async (
       getAmountArgument(baseCoin, marginAmount),
       getAmountArgument(MoveCoin.mUSD, positionSize),
       long,
-      desired_price,
-      max_slippage,
-      take_profit_price,
-      stop_loss_price,
+      getAmountArgument(MoveCoin.mUSD, desired_price),
+      getAmountArgument(MoveCoin.mUSD, max_slippage),
+      getAmountArgument(MoveCoin.mUSD, take_profit_price),
+      getAmountArgument(MoveCoin.mUSD, stop_loss_price),
     ],
     type_arguments: getMarketTypeArguments(baseCoin, underlyingAsset),
   }
+  console.log(payload)
+  return payload
 }
