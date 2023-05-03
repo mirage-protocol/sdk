@@ -1,6 +1,3 @@
-import { Types } from 'aptos'
-import BigNumber from 'bignumber.js'
-
 import {
   coinInfo,
   getNetwork,
@@ -9,24 +6,16 @@ import {
   mirageAddress,
   MoveCoin,
   Network,
-} from './constants'
+} from '../constants'
+import { getAmountArgument, MoveType, Payload } from './'
 
 const type = 'entry_function_payload'
-
-export type Payload = Types.TransactionPayload_EntryFunctionPayload
-export type MoveType = Types.MoveType
-
-// Get the proper payload amount
-const getAmountArgument = (coin: MoveCoin | string, amount: number): string => {
-  return BigNumber(amount)
-    .times(BigNumber(10).pow(coinInfo(coin).decimals))
-    .toFixed(0)
-}
 
 // Get the types for this vault
 const getVaultTypeArguments = (collateral: MoveCoin | string, borrow: MoveCoin | string): MoveType[] => {
   return [coinInfo(collateral).type, coinInfo(borrow).type]
 }
+
 /**
  * Build a payload to add collateral to a vault
  * @param collateral the collateral of the vault (e.g APT)
@@ -263,74 +252,5 @@ export const removeCollateralAndBorrow = async (
       borrowVaas,
     ],
     type_arguments: getVaultTypeArguments(collateral, borrow),
-  }
-}
-
-/**
- * Build a payload to add collateral and borrow
- * @param amount the amount of MIRA to lock
- * @param timeInSeconds duration in seconds to lock
- * @returns payload promise for the transaction
- */
-export const lockMira = async (amount: number, timeInSeconds: number): Promise<Payload> => {
-  return {
-    type,
-    function: `${mirageAddress()}::ve_mirage::lock`,
-    arguments: [getAmountArgument(MoveCoin.MIRA, amount), timeInSeconds],
-    type_arguments: [],
-  }
-}
-
-/**
- * Build a payload to add collateral and borrow
- * @param amount the amount of MIRA to add to lock
- * @returns payload promise for the transaction
- */
-export const increaseLockedAmount = async (amount: number): Promise<Payload> => {
-  return {
-    type,
-    function: `${mirageAddress()}::ve_mirage::increase_locked_amount`,
-    arguments: [getAmountArgument(MoveCoin.MIRA, amount)],
-    type_arguments: [],
-  }
-}
-
-/**
- * Reset the lock time to reset veMIRA balance
- * @returns payload promise for the transaction
- */
-export const resetStakeLockTime = async (): Promise<Payload> => {
-  return {
-    type,
-    function: `${mirageAddress()}::ve_mirage::reset_stake_lock_time`,
-    arguments: [],
-    type_arguments: [],
-  }
-}
-
-/**
- * Increase the lock time of a MIRA stake by a given time in seconds
- * @param timeInSeconds duration in seconds to increase lock
- * @returns payload promise for the transaction
- */
-export const increaseLockTime = async (timeInSeconds: number): Promise<Payload> => {
-  return {
-    type,
-    function: `${mirageAddress()}::ve_mirage::increase_lock_time`,
-    arguments: [timeInSeconds],
-    type_arguments: [],
-  }
-}
-
-/**
- * Withdraw an expired MIRA stake in full
- * @returns payload promise for the transaction
- */
-export const withdraw = async (): Promise<Payload> => {
-  return {
-    type,
-    function: `${mirageAddress()}::ve_mirage::withdraw`,
-    arguments: [],
-    type_arguments: [],
   }
 }

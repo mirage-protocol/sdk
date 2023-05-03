@@ -1,10 +1,10 @@
 import BigNumber from 'bignumber.js'
 
-import { ZERO } from '../constants'
-import { AccountResource, mirageAddress } from '../constants/accounts'
-import { MoveCoin, OtherAsset } from '../constants/coinList'
-import { assetInfo, coinInfo } from '../constants/coinList'
-import { Rebase } from './rebase'
+import { ZERO } from '../../constants'
+import { AccountResource, mirageAddress } from '../../constants/accounts'
+import { MoveCoin, OtherAsset } from '../../constants/coinList'
+import { assetInfo, coinInfo } from '../../constants/coinList'
+import { Rebase } from '../rebase'
 
 /**
  * Represents a mirage-protocol perpetuals market.
@@ -144,10 +144,6 @@ export class Market {
    * If the market is in an emergency
    */
   public readonly emergency: boolean
-  /**
-   * Time the market first opened
-   */
-  public readonly marketOpenTime: BigNumber
 
   /**
    * Construct an instance of Market
@@ -215,6 +211,5 @@ export class Market {
 
     this.frozen = !!market ? Boolean((market.data as any).frozen) : false
     this.emergency = !!market ? Boolean((market.data as any).emergency) : false
-    this.marketOpenTime = !!market ? BigNumber((market.data as any).market_open_time) : ZERO
   }
 }

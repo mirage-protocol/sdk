@@ -1,9 +1,9 @@
 import BigNumber from 'bignumber.js'
 
-import { getPriceFeed, INTEREST_PRECISION, SECONDS_PER_YEAR, ZERO } from '../constants'
-import { AccountResource, mirageAddress } from '../constants/accounts'
-import { balanceToUi, coinInfo, MoveCoin } from '../constants/coinList'
-import { Rebase } from './rebase'
+import { getPriceFeed, INTEREST_PRECISION, SECONDS_PER_YEAR, ZERO } from '../../constants'
+import { AccountResource, mirageAddress } from '../../constants/accounts'
+import { balanceToUi, coinInfo, MoveCoin } from '../../constants/coinList'
+import { Rebase } from '../rebase'
 
 /**
  * Represents a mirage-protocol Vault.

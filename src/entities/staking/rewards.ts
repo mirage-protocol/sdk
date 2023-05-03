@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 
-import { ZERO } from '../constants'
-import { AccountResource, mirageAddress } from '../constants/accounts'
+import { ZERO } from '../../constants'
+import { AccountResource, mirageAddress } from '../../constants/accounts'
 
 /**
  * Represent Rewards struct.
