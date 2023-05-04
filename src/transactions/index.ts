@@ -1,7 +1,7 @@
 import { Types } from 'aptos'
 import BigNumber from 'bignumber.js'
 
-import { PRECISION_8, coinInfo, MoveCoin } from '../constants'
+import { coinInfo, MoveCoin, PRECISION_8 } from '../constants'
 
 export type Payload = Types.TransactionPayload_EntryFunctionPayload
 export type MoveType = Types.MoveType
