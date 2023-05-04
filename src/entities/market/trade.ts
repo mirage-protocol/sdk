@@ -125,6 +125,7 @@ export class Trade {
   }
 
   public isActive(): boolean {
-    return this.id && this.id != U256_MAX
+    // Inactive trades have an id of u256 max
+    return this.id && !this.id.eq(U256_MAX)
   }
 }
