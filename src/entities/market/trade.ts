@@ -8,6 +8,12 @@ import { Market } from './market'
 
 export const U256_MAX = BigNumber('115792089237316195423570985008687907853269984665640564039457584007913129639935')
 
+export enum TradeSide {
+  LONG = 0,
+  SHORT = 1,
+  UNKNOWN = 2,
+}
+
 /**
  * Represents a trade in the a mirage-protocol market.
  */
@@ -35,7 +41,7 @@ export class Trade {
   /**
    * The opening price of the trade (0 if trade is resting)
    */
-  public readonly long: boolean
+  public readonly tradeSide: TradeSide
   /**
    * This trades margin
    */
@@ -95,10 +101,11 @@ export class Trade {
 
     this.openingPrice = !!trade ? BigNumber((trade.data as any).opening_price).div(PRECISION_8) : ZERO
 
-    this.long = !!trade ? Boolean((trade.data as any).long) : false
+    this.tradeSide = !!trade ? Boolean((trade.data as any).long) ? TradeSide.LONG : TradeSide.SHORT : TradeSide.UNKNOWN
+
     this.margin =
       !!trade && !!this.market
-        ? (this.long
+        ? (this.tradeSide == TradeSide.LONG
             ? this.market.longMargin.toElastic(new BigNumber((trade.data as any).margin_part), true)
             : this.market.shortMargin.toElastic(new BigNumber((trade.data as any).margin_part), true)
           ).div(PRECISION_8)

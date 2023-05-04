@@ -9,7 +9,7 @@ import {
   Network,
   OtherAsset,
 } from '../constants'
-import { getDecimal8Argument, getCoinAmountArgument, MoveType, Payload } from './'
+import { getDecimal8Argument, MoveType, Payload } from './'
 
 const type = 'entry_function_payload'
 
