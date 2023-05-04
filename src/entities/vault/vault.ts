@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-import { getPriceFeed, INTEREST_PRECISION, SECONDS_PER_YEAR, ZERO } from '../../constants'
+import { getPriceFeed, INTEREST_PRECISION, PERCENT_PRECISION, SECONDS_PER_YEAR, ZERO } from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
 import { balanceToUi, coinInfo, MoveCoin } from '../../constants/coinList'
 import { Rebase } from '../rebase'
@@ -79,10 +79,25 @@ export class Vault {
 
     console.debug(`found data: ${vault}`)
 
-    this.borrowFeePercent = !!vault ? (100 * Number((vault.data as any).borrow_fee)) / 10000 : 0
+    this.borrowFeePercent = !!vault
+      ? BigNumber((vault.data as any).borrow_fee)
+          .div(PERCENT_PRECISION)
+          .times(100)
+          .toNumber()
+      : 0
     this.interestPerSecond = !!vault ? BigNumber((vault.data as any).interest_per_second) : ZERO
-    this.collateralizationPercent = !!vault ? (100 * Number((vault.data as any).collateralization_rate)) / 10000 : 0
-    this.liquidationPercent = !!vault ? (100 * Number((vault.data as any).liquidation_multiplier)) / 10000 : 0
+    this.collateralizationPercent = !!vault
+      ? BigNumber((vault.data as any).collateralization_rate)
+          .div(PERCENT_PRECISION)
+          .times(100)
+          .toNumber()
+      : 0
+    this.liquidationPercent = !!vault
+      ? BigNumber((vault.data as any).liquidation_multiplier)
+          .div(PERCENT_PRECISION)
+          .times(100)
+          .toNumber()
+      : 0
 
     this.exchangeRate = !!vault ? BigNumber((vault.data as any).cached_exchange_rate) : ZERO
 

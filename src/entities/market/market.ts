@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-import { ZERO } from '../../constants'
+import { FUNDING_PRECISION, PRECISION_8, ZERO } from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
 import { MoveCoin, OtherAsset } from '../../constants/coinList'
 import { assetInfo, coinInfo } from '../../constants/coinList'
@@ -162,16 +162,18 @@ export class Market {
 
     console.debug(`found data: ${market}`)
 
-    this.margin = !!market ? new BigNumber((market.data as any).margin.value) : ZERO
-    this.restingMargin = !!market ? new BigNumber((market.data as any).resting_margin.value) : ZERO
+    this.margin = !!market ? new BigNumber((market.data as any).margin.value).div(PRECISION_8) : ZERO
+    this.restingMargin = !!market ? new BigNumber((market.data as any).resting_margin.value).div(PRECISION_8) : ZERO
 
-    this.maxTakerFee = !!market ? new BigNumber((market.data as any).max_taker_fee) : ZERO
-    this.minTakerFee = !!market ? new BigNumber((market.data as any).min_taker_fee) : ZERO
-    this.maxMakerFee = !!market ? new BigNumber((market.data as any).max_maker_fee) : ZERO
-    this.minMakerFee = !!market ? new BigNumber((market.data as any).min_maker_fee) : ZERO
+    this.maxTakerFee = !!market ? new BigNumber((market.data as any).max_taker_fee).div(PRECISION_8) : ZERO
+    this.minTakerFee = !!market ? new BigNumber((market.data as any).min_taker_fee).div(PRECISION_8) : ZERO
+    this.maxMakerFee = !!market ? new BigNumber((market.data as any).max_maker_fee).div(PRECISION_8) : ZERO
+    this.minMakerFee = !!market ? new BigNumber((market.data as any).min_maker_fee).div(PRECISION_8) : ZERO
 
-    this.minFundingRate = !!market ? new BigNumber((market.data as any).min_funding_rate) : ZERO
-    this.nextFundingRate = !!market ? new BigNumber((market.data as any).next_funding_rate) : ZERO
+    this.minFundingRate = !!market ? new BigNumber((market.data as any).min_funding_rate).div(FUNDING_PRECISION) : ZERO
+    this.nextFundingRate = !!market
+      ? new BigNumber((market.data as any).next_funding_rate).div(FUNDING_PRECISION)
+      : ZERO
     this.nextFundingPos = !!market ? Boolean((market.data as any).next_funding_pos) : false
     this.lastFundingUpdate = !!market ? new BigNumber((market.data as any).last_funding_update) : ZERO
     this.poolFundingDiscount = !!market ? new BigNumber((market.data as any).last_funding_update) : ZERO
