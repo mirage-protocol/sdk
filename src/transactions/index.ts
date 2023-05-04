@@ -1,16 +1,21 @@
 import { Types } from 'aptos'
 import BigNumber from 'bignumber.js'
 
-import { coinInfo, MoveCoin } from '../constants'
+import { PRECISION_8, coinInfo, MoveCoin } from '../constants'
 
 export type Payload = Types.TransactionPayload_EntryFunctionPayload
 export type MoveType = Types.MoveType
 
 // Get the proper payload amount
-export const getAmountArgument = (coin: MoveCoin | string, amount: number): string => {
+export const getCoinAmountArgument = (coin: MoveCoin | string, amount: number): string => {
   return BigNumber(amount)
     .times(BigNumber(10).pow(coinInfo(coin).decimals))
     .toFixed(0)
+}
+
+// Get the proper payload amount
+export const getDecimal8Argument = (amount: number): string => {
+  return BigNumber(PRECISION_8).times(amount).toFixed(0)
 }
 
 export * from './marketTransactions'

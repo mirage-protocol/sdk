@@ -9,7 +9,7 @@ import {
   Network,
   OtherAsset,
 } from '../constants'
-import { getAmountArgument, MoveType, Payload } from './'
+import { getDecimal8Argument, getCoinAmountArgument, MoveType, Payload } from './'
 
 const type = 'entry_function_payload'
 
@@ -47,15 +47,15 @@ export const openTrade = async (
     type,
     function: `${mirageAddress()}::market::open_trade`,
     arguments: [
-      baseVaas,
       underlyingVaas,
-      getAmountArgument(baseCoin, marginAmount),
-      getAmountArgument(MoveCoin.mUSD, positionSize),
+      baseVaas,
+      getDecimal8Argument(marginAmount), // always 8 decimals
+      getDecimal8Argument(positionSize),
       long,
-      getAmountArgument(MoveCoin.mUSD, desired_price),
-      getAmountArgument(MoveCoin.mUSD, max_slippage),
-      getAmountArgument(MoveCoin.mUSD, take_profit_price),
-      getAmountArgument(MoveCoin.mUSD, stop_loss_price),
+      getDecimal8Argument(desired_price),
+      getDecimal8Argument(max_slippage),
+      getDecimal8Argument(take_profit_price),
+      getDecimal8Argument(stop_loss_price),
     ],
     type_arguments: getMarketTypeArguments(baseCoin, underlyingAsset),
   }

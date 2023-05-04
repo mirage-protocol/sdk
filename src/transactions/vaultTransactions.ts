@@ -7,7 +7,7 @@ import {
   MoveCoin,
   Network,
 } from '../constants'
-import { getAmountArgument, MoveType, Payload } from './'
+import { getCoinAmountArgument, MoveType, Payload } from './'
 
 const type = 'entry_function_payload'
 
@@ -31,7 +31,7 @@ export const addCollateral = async (
   return {
     type,
     function: `${mirageAddress()}::vault::deposit`,
-    arguments: [getAmountArgument(collateral, amount)],
+    arguments: [getCoinAmountArgument(collateral, amount)],
     type_arguments: getVaultTypeArguments(collateral, borrow),
   }
 }
@@ -63,7 +63,7 @@ export const borrow = async (
   return {
     type,
     function: `${mirageAddress()}::vault::borrow`,
-    arguments: [getAmountArgument(borrow, borrowAmount), collateralVaas, borrowVaas],
+    arguments: [getCoinAmountArgument(borrow, borrowAmount), collateralVaas, borrowVaas],
     type_arguments: getVaultTypeArguments(collateral, borrow),
   }
 }
@@ -94,7 +94,7 @@ export const removeCollateral = async (
   return {
     type,
     function: `${mirageAddress()}::vault::remove_collateral`,
-    arguments: [getAmountArgument(collateral, removeAmount), collateralVaas, borrowVaas],
+    arguments: [getCoinAmountArgument(collateral, removeAmount), collateralVaas, borrowVaas],
     type_arguments: getVaultTypeArguments(collateral, borrow),
   }
 }
@@ -114,7 +114,7 @@ export const repayDebt = async (
   return {
     type,
     function: `${mirageAddress()}::vault::repay`,
-    arguments: [getAmountArgument(borrow, repayAmount)],
+    arguments: [getCoinAmountArgument(borrow, repayAmount)],
     type_arguments: getVaultTypeArguments(collateral, borrow),
   }
 }
@@ -148,8 +148,8 @@ export const addCollateralAndBorrow = async (
     type,
     function: `${mirageAddress()}::vault::add_and_borrow`,
     arguments: [
-      getAmountArgument(collateral, addAmount),
-      getAmountArgument(borrow, borrowAmount),
+      getCoinAmountArgument(collateral, addAmount),
+      getCoinAmountArgument(borrow, borrowAmount),
       collateralVaas,
       borrowVaas,
     ],
@@ -186,8 +186,8 @@ export const repayDebtAndRemoveCollateral = async (
     type,
     function: `${mirageAddress()}::vault::repay_and_remove`,
     arguments: [
-      getAmountArgument(collateral, removeAmount),
-      getAmountArgument(borrow, repayAmount),
+      getCoinAmountArgument(collateral, removeAmount),
+      getCoinAmountArgument(borrow, repayAmount),
       collateralVaas,
       borrowVaas,
     ],
@@ -212,7 +212,7 @@ export const addCollateralAndRepayDebt = async (
   return {
     type,
     function: `${mirageAddress()}::vault::add_and_repay`,
-    arguments: [getAmountArgument(collateral, addAmount), getAmountArgument(borrow, repayAmount)],
+    arguments: [getCoinAmountArgument(collateral, addAmount), getCoinAmountArgument(borrow, repayAmount)],
     type_arguments: getVaultTypeArguments(collateral, borrow),
   }
 }
@@ -246,8 +246,8 @@ export const removeCollateralAndBorrow = async (
     type,
     function: `${mirageAddress()}::vault::remove_and_borrow`,
     arguments: [
-      getAmountArgument(collateral, removeAmount),
-      getAmountArgument(borrow, borrowAmount),
+      getCoinAmountArgument(collateral, removeAmount),
+      getCoinAmountArgument(borrow, borrowAmount),
       collateralVaas,
       borrowVaas,
     ],
