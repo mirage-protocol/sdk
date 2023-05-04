@@ -1,9 +1,12 @@
 import BigNumber from 'bignumber.js'
 
+import { PRECISION_8 } from '../../constants'
 import { ZERO } from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
 import { assetInfo, coinInfo, MoveCoin, OtherAsset } from '../../constants/coinList'
 import { Market } from './market'
+
+export const U256_MAX = BigNumber('115792089237316195423570985008687907853269984665640564039457584007913129639935')
 
 /**
  * Represents a trade in the a mirage-protocol market.
@@ -21,6 +24,10 @@ export class Trade {
    * The underlying asset of the market
    */
   public readonly underlying: OtherAsset
+  /**
+   * The id of the trade, global across all markets (MAX_U256 if inactive)
+   */
+  public readonly id: BigNumber
   /**
    * The opening price of the trade (0 if trade is resting)
    */
@@ -67,8 +74,8 @@ export class Trade {
   public readonly market: Market
 
   constructor(
-    moduleResources: AccountResource[],
     userResource: AccountResource[],
+    moduleResources: AccountResource[],
     base: MoveCoin | string,
     underlying: MoveCoin | OtherAsset | string
   ) {
@@ -82,24 +89,31 @@ export class Trade {
 
     const trade = userResource.find((resource) => resource.type === this.tradeType)
 
-    console.debug(`found data: ${trade}`)
+    console.debug(`found trade: ${JSON.stringify(trade)}`)
 
-    this.openingPrice = !!trade ? BigNumber((trade.data as any).opening_price) : ZERO
+    this.id = !!trade ? BigNumber((trade.data as any).id) : U256_MAX
+
+    this.openingPrice = !!trade ? BigNumber((trade.data as any).opening_price).div(PRECISION_8) : ZERO
 
     this.long = !!trade ? Boolean((trade.data as any).long) : false
     this.margin =
       !!trade && !!this.market
-        ? this.long
-          ? this.market.longMargin.toElastic(new BigNumber((trade.data as any).margin_part), true)
-          : this.market.shortMargin.toElastic(new BigNumber((trade.data as any).margin_part), true)
+        ? (this.long
+            ? this.market.longMargin.toElastic(new BigNumber((trade.data as any).margin_part), true)
+            : this.market.shortMargin.toElastic(new BigNumber((trade.data as any).margin_part), true)
+          ).div(PRECISION_8)
         : ZERO
 
-    this.positionSize = !!trade ? BigNumber((trade.data as any).position_size) : ZERO
-    this.maintenenceMargin = !!trade ? BigNumber((trade.data as any).maintenence_margin) : ZERO
-    this.liquidationPrice = !!trade ? BigNumber((trade.data as any).liquidation_price) : ZERO
-    this.limitPrice = !!trade ? BigNumber((trade.data as any).limit_price) : ZERO
-    this.restingMargin = !!trade ? BigNumber((trade.data as any).resting_margin) : ZERO
-    this.takeProfitPrice = !!trade ? BigNumber((trade.data as any).take_profit_price) : ZERO
-    this.stopLossPrice = !!trade ? BigNumber((trade.data as any).stop_loss_price) : ZERO
+    this.positionSize = !!trade ? BigNumber((trade.data as any).position_size).div(PRECISION_8) : ZERO
+    this.maintenenceMargin = !!trade ? BigNumber((trade.data as any).maintenence_margin).div(PRECISION_8) : ZERO
+    this.liquidationPrice = !!trade ? BigNumber((trade.data as any).liquidation_price).div(PRECISION_8) : ZERO
+    this.limitPrice = !!trade ? BigNumber((trade.data as any).limit_price).div(PRECISION_8) : ZERO
+    this.restingMargin = !!trade ? BigNumber((trade.data as any).resting_margin).div(PRECISION_8) : ZERO
+    this.takeProfitPrice = !!trade ? BigNumber((trade.data as any).take_profit_price).div(PRECISION_8) : ZERO
+    this.stopLossPrice = !!trade ? BigNumber((trade.data as any).stop_loss_price).div(PRECISION_8) : ZERO
+  }
+
+  public isActive(): boolean {
+    return this.id && this.id != U256_MAX
   }
 }
