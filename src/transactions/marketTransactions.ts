@@ -9,6 +9,7 @@ import {
   Network,
   OtherAsset,
 } from '../constants'
+import { TradeSide } from '../entities'
 import { getDecimal8Argument, MoveType, Payload } from './'
 
 const type = 'entry_function_payload'
@@ -27,7 +28,7 @@ export const openTrade = async (
   underlying: OtherAsset | string,
   marginAmount: number,
   positionSize: number,
-  long: boolean,
+  tradeSide: TradeSide,
   desired_price: number,
   max_slippage: number,
   take_profit_price: number,
@@ -51,7 +52,7 @@ export const openTrade = async (
       baseVaas,
       getDecimal8Argument(marginAmount), // always 8 decimals
       getDecimal8Argument(positionSize),
-      long,
+      tradeSide == TradeSide.LONG ? true : false,
       getDecimal8Argument(desired_price),
       getDecimal8Argument(max_slippage),
       getDecimal8Argument(take_profit_price),
@@ -99,7 +100,7 @@ export const placeLimitOrder = async (
   underlying: OtherAsset | string,
   marginAmount: number,
   positionSize: number,
-  long: boolean,
+  tradeSide: TradeSide,
   triggerPrice: number,
   take_profit_price: number,
   stop_loss_price: number,
@@ -122,7 +123,7 @@ export const placeLimitOrder = async (
       baseVaas,
       getDecimal8Argument(marginAmount), // always 8 decimals
       getDecimal8Argument(positionSize),
-      long,
+      tradeSide == TradeSide.LONG ? true : false,
       getDecimal8Argument(triggerPrice),
       getDecimal8Argument(take_profit_price),
       getDecimal8Argument(stop_loss_price),
