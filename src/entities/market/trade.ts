@@ -101,7 +101,11 @@ export class Trade {
 
     this.openingPrice = !!trade ? BigNumber((trade.data as any).opening_price).div(PRECISION_8) : ZERO
 
-    this.tradeSide = !!trade ? Boolean((trade.data as any).long) ? TradeSide.LONG : TradeSide.SHORT : TradeSide.UNKNOWN
+    this.tradeSide = !!trade
+      ? Boolean((trade.data as any).long)
+        ? TradeSide.LONG
+        : TradeSide.SHORT
+      : TradeSide.UNKNOWN
 
     this.margin =
       !!trade && !!this.market
