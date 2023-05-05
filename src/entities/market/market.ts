@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-import { FUNDING_PRECISION, PRECISION_8, ZERO } from '../../constants'
+import { FUNDING_PRECISION, PERCENT_PRECISION, ZERO } from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
 import { MoveCoin, OtherAsset } from '../../constants/coinList'
 import { assetInfo, coinInfo } from '../../constants/coinList'
@@ -33,23 +33,23 @@ export class Market {
   /**
    * Maximum taker fee at the max_oi_imbalance
    */
-  public readonly maxTakerFee: BigNumber
+  public readonly maxTakerFee: number
   /**
    * Minimum taker fee at equal oi
    */
-  public readonly minTakerFee: BigNumber
+  public readonly minTakerFee: number
   /**
    * Max maker fee at equal oi
    */
-  public readonly maxMakerFee: BigNumber
+  public readonly maxMakerFee: number
   /**
    * Min maker fee at large oi imbalance
    */
-  public readonly minMakerFee: BigNumber
+  public readonly minMakerFee: number
   /**
    * The minimum funding rate
    */
-  public readonly minFundingRate: BigNumber
+  public readonly minFundingRate: number
   /**
    * The funding that will be taken next payment
    */
@@ -99,15 +99,15 @@ export class Market {
   /**
    * The max leverage for this market
    */
-  public readonly maxLeverage: BigNumber
+  public readonly maxLeverage: number
   /**
    * The percent fee given to liquidators
    */
-  public readonly liquidationFee: BigNumber
+  public readonly liquidationFee: number
   /**
    * The base percent maintence margin
    */
-  public readonly maintenenceMargin: BigNumber
+  public readonly maintenenceMargin: number
   /**
    * The base mUSD position limit for a new trade
    */
@@ -162,15 +162,25 @@ export class Market {
 
     console.debug(`found data: ${market}`)
 
-    this.margin = !!market ? new BigNumber((market.data as any).margin.value).div(PRECISION_8) : ZERO
-    this.restingMargin = !!market ? new BigNumber((market.data as any).resting_margin.value).div(PRECISION_8) : ZERO
+    this.margin = !!market ? new BigNumber((market.data as any).margin.value) : ZERO
+    this.restingMargin = !!market ? new BigNumber((market.data as any).resting_margin.value) : ZERO
 
-    this.maxTakerFee = !!market ? new BigNumber((market.data as any).max_taker_fee).div(PRECISION_8) : ZERO
-    this.minTakerFee = !!market ? new BigNumber((market.data as any).min_taker_fee).div(PRECISION_8) : ZERO
-    this.maxMakerFee = !!market ? new BigNumber((market.data as any).max_maker_fee).div(PRECISION_8) : ZERO
-    this.minMakerFee = !!market ? new BigNumber((market.data as any).min_maker_fee).div(PRECISION_8) : ZERO
+    this.maxTakerFee = !!market
+      ? new BigNumber((market.data as any).max_taker_fee).div(PERCENT_PRECISION).times(100).toNumber()
+      : 0
+    this.minTakerFee = !!market
+      ? new BigNumber((market.data as any).min_taker_fee).div(PERCENT_PRECISION).times(100).toNumber()
+      : 0
+    this.maxMakerFee = !!market
+      ? new BigNumber((market.data as any).max_maker_fee).div(PERCENT_PRECISION).times(100).toNumber()
+      : 0
+    this.minMakerFee = !!market
+      ? new BigNumber((market.data as any).min_maker_fee).div(PERCENT_PRECISION).times(100).toNumber()
+      : 0
 
-    this.minFundingRate = !!market ? new BigNumber((market.data as any).min_funding_rate).div(FUNDING_PRECISION) : ZERO
+    this.minFundingRate = !!market
+      ? new BigNumber((market.data as any).min_funding_rate).div(PERCENT_PRECISION).times(100).toNumber()
+      : 0
     this.nextFundingRate = !!market
       ? new BigNumber((market.data as any).next_funding_rate).div(FUNDING_PRECISION)
       : ZERO
@@ -197,9 +207,15 @@ export class Market {
     this.maxOpenInterest = !!market ? new BigNumber((market.data as any).max_oi) : ZERO
     this.maxOpenInterestImbalance = !!market ? new BigNumber((market.data as any).max_oi_imbalance) : ZERO
 
-    this.maxLeverage = !!market ? new BigNumber((market.data as any).max_leverage) : ZERO
-    this.liquidationFee = !!market ? new BigNumber((market.data as any).liquidation_fee) : ZERO
-    this.maintenenceMargin = !!market ? new BigNumber((market.data as any).maintenence_margin) : ZERO
+    this.maxLeverage = !!market
+      ? new BigNumber((market.data as any).max_leverage).div(PERCENT_PRECISION).times(100).toNumber()
+      : 0
+    this.liquidationFee = !!market
+      ? new BigNumber((market.data as any).liquidation_fee).div(PERCENT_PRECISION).times(100).toNumber()
+      : 0
+    this.maintenenceMargin = !!market
+      ? new BigNumber((market.data as any).maintenence_margin).div(PERCENT_PRECISION).times(100).toNumber()
+      : 0
     this.basePositionLimit = !!market ? new BigNumber((market.data as any).base_position_limit) : ZERO
     this.maxPositionLimit = !!market ? new BigNumber((market.data as any).max_position_limit) : ZERO
 
