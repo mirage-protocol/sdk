@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-import { FUNDING_PRECISION, PERCENT_PRECISION, ZERO } from '../../constants'
+import { FUNDING_PRECISION, PERCENT_PRECISION, PRECISION_8, ZERO } from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
 import { MoveCoin, OtherAsset } from '../../constants/coinList'
 import { assetInfo, coinInfo } from '../../constants/coinList'
@@ -71,15 +71,23 @@ export class Market {
    */
   public readonly fundingInterval: BigNumber
   /**
+   * The total long margin of this market
+   */
+  public readonly longMargin: BigNumber
+  /**
    * A rebase representing all long margin (in C)
    * elastic = long margin, base = shares of long margin
    */
-  public readonly longMargin: Rebase
+  public readonly longMarginRebase: Rebase
+  /**
+   * The total short margin of this market
+   */
+  public readonly shortMargin: BigNumber
   /**
    * A rebase representing all short margin (in C)
-   * elastic = long margin, base = shares of short margin
+   * elastic = short margin, base = shares of short margin
    */
-  public readonly shortMargin: Rebase
+  public readonly shortMarginRebase: Rebase
   /**
    * Long open interest in musd
    */
@@ -189,18 +197,20 @@ export class Market {
     this.poolFundingDiscount = !!market ? new BigNumber((market.data as any).last_funding_update) : ZERO
     this.fundingInterval = !!market ? new BigNumber((market.data as any).pool_funding_discount) : ZERO
 
-    this.longMargin = !!market
+    this.longMarginRebase = !!market
       ? new Rebase(
           BigNumber((market.data as any).long_margin.elastic),
           BigNumber((market.data as any).long_margin.base)
         )
       : new Rebase(ZERO, ZERO)
-    this.shortMargin = !!market
+    this.longMargin = this.longMarginRebase.elastic
+    this.shortMarginRebase = !!market
       ? new Rebase(
           BigNumber((market.data as any).short_margin.elastic),
           BigNumber((market.data as any).short_margin.base)
         )
       : new Rebase(ZERO, ZERO)
+    this.shortMargin = this.shortMarginRebase.elastic
 
     this.longOpenInterest = !!market ? new BigNumber((market.data as any).long_oi) : ZERO
     this.shortOpenInterest = !!market ? new BigNumber((market.data as any).short_io) : ZERO
@@ -229,5 +239,44 @@ export class Market {
 
     this.frozen = !!market ? Boolean((market.data as any).frozen) : false
     this.emergency = !!market ? Boolean((market.data as any).emergency) : false
+  }
+
+  /**
+   * Get a Ui friendly long margin of the market
+   * @returns the markets long margin
+   */
+  public getUiLongMargin(): number {
+    return this.longMargin.div(PRECISION_8).toNumber()
+  }
+
+  /**
+   * Get a Ui friendly short margin of the market
+   * @returns the markets short margin
+   */
+  public getUiShortMargin(): number {
+    return this.shortMargin.div(PRECISION_8).toNumber()
+  }
+
+  /**
+   * Get a Ui friendly active margin of the market (used in longs & shorts)
+   * @returns the markets active margin
+   */
+  public getUiActiveMargin(): number {
+    return this.margin.div(PRECISION_8).toNumber()
+  }
+
+  /**
+   * Get a Ui friendly resting margin of the market (waiting for triggers)
+   * @returns the markets resting margin
+   */
+  public getUiRestingMargin(): number {
+    return this.restingMargin.div(PRECISION_8).toNumber()
+  }
+  /**
+   * Get a Ui friendly total margin of the market (active and resting)
+   * @returns the markets total margin
+   */
+  public getUiTotalMargin(): number {
+    return this.getUiActiveMargin() + this.getUiRestingMargin()
   }
 }
