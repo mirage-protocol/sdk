@@ -115,7 +115,7 @@ export class Market {
   /**
    * The base percent maintence margin
    */
-  public readonly maintenenceMargin: number
+  public readonly maintenanceMargin: number
   /**
    * The base mUSD position limit for a new trade
    */
@@ -223,8 +223,8 @@ export class Market {
     this.liquidationFee = !!market
       ? new BigNumber((market.data as any).liquidation_fee).div(PERCENT_PRECISION).times(100).toNumber()
       : 0
-    this.maintenenceMargin = !!market
-      ? new BigNumber((market.data as any).maintenence_margin).div(PERCENT_PRECISION).times(100).toNumber()
+    this.maintenanceMargin = !!market
+      ? new BigNumber((market.data as any).maintenance_margin).div(PERCENT_PRECISION).times(100).toNumber()
       : 0
     this.basePositionLimit = !!market ? new BigNumber((market.data as any).base_position_limit) : ZERO
     this.maxPositionLimit = !!market ? new BigNumber((market.data as any).max_position_limit) : ZERO
