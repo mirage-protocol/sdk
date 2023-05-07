@@ -51,9 +51,9 @@ export class Trade {
    */
   public readonly positionSize: BigNumber
   /**
-   * Maintenence margin in mUSD
+   * maintenance margin in mUSD
    */
-  public readonly maintenenceMargin: BigNumber
+  public readonly maintenanceMargin: BigNumber
   /**
    * The liquidation price of the trade
    */
@@ -116,7 +116,7 @@ export class Trade {
         : ZERO
 
     this.positionSize = !!trade ? BigNumber((trade.data as any).position_size).div(PRECISION_8) : ZERO
-    this.maintenenceMargin = !!trade ? BigNumber((trade.data as any).maintenence_margin).div(PRECISION_8) : ZERO
+    this.maintenanceMargin = !!trade ? BigNumber((trade.data as any).maintenance_margin).div(PRECISION_8) : ZERO
     this.liquidationPrice = !!trade ? BigNumber((trade.data as any).liquidation_price).div(PRECISION_8) : ZERO
     this.limitPrice = !!trade ? BigNumber((trade.data as any).limit_price).div(PRECISION_8) : ZERO
     this.restingMargin = !!trade ? BigNumber((trade.data as any).resting_margin).div(PRECISION_8) : ZERO
