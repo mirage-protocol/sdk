@@ -59,14 +59,6 @@ export class Trade {
    */
   public readonly liquidationPrice: BigNumber
   /**
-   * The limit price of the trade (0 if unused)
-   */
-  public readonly limitPrice: BigNumber
-  /**
-   * Resting margin in limit order (0 if trade is open)
-   */
-  public readonly restingMargin: BigNumber
-  /**
    * The take profit price of the trade (0 if unused)
    */
   public readonly takeProfitPrice: BigNumber
@@ -118,8 +110,6 @@ export class Trade {
     this.positionSize = !!trade ? BigNumber((trade.data as any).position_size).div(PRECISION_8) : ZERO
     this.maintenanceMargin = !!trade ? BigNumber((trade.data as any).maintenance_margin).div(PRECISION_8) : ZERO
     this.liquidationPrice = !!trade ? BigNumber((trade.data as any).liquidation_price).div(PRECISION_8) : ZERO
-    this.limitPrice = !!trade ? BigNumber((trade.data as any).limit_price).div(PRECISION_8) : ZERO
-    this.restingMargin = !!trade ? BigNumber((trade.data as any).resting_margin).div(PRECISION_8) : ZERO
     this.takeProfitPrice = !!trade ? BigNumber((trade.data as any).take_profit_price).div(PRECISION_8) : ZERO
     this.stopLossPrice = !!trade ? BigNumber((trade.data as any).stop_loss_price).div(PRECISION_8) : ZERO
   }
