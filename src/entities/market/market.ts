@@ -115,7 +115,7 @@ export class Market {
   /**
    * The base percent maintence margin
    */
-  public readonly maintenanceMargin: number
+  public readonly baseMaintenanceMargin: number
   /**
    * The base mUSD position limit for a new trade
    */
@@ -125,13 +125,9 @@ export class Market {
    */
   public readonly maxPositionLimit: BigNumber
   /**
-   * The cached exchange rate of the asset A
+   * The exchange rate of the asset A
    */
-  public readonly cachedExchangeRate: BigNumber
-  /**
-   * The last exchange rate update of A
-   */
-  public readonly lastExchangeRateUpdate: BigNumber
+  public readonly exchangeRate: BigNumber
   /**
    * The min mUSD order size for this market
    */
@@ -223,14 +219,13 @@ export class Market {
     this.liquidationFee = !!market
       ? new BigNumber((market.data as any).liquidation_fee).div(PERCENT_PRECISION).times(100).toNumber()
       : 0
-    this.maintenanceMargin = !!market
-      ? new BigNumber((market.data as any).maintenance_margin).div(PERCENT_PRECISION).times(100).toNumber()
+    this.baseMaintenanceMargin = !!market
+      ? new BigNumber((market.data as any).base_maintenance_margin).div(PERCENT_PRECISION).times(100).toNumber()
       : 0
     this.basePositionLimit = !!market ? new BigNumber((market.data as any).base_position_limit) : ZERO
     this.maxPositionLimit = !!market ? new BigNumber((market.data as any).max_position_limit) : ZERO
 
-    this.cachedExchangeRate = !!market ? new BigNumber((market.data as any).cached_exchange_rate) : ZERO
-    this.lastExchangeRateUpdate = !!market ? new BigNumber((market.data as any).last_exchange_rate_update) : ZERO
+    this.exchangeRate = !!market ? new BigNumber((market.data as any).cached_exchange_rate) : ZERO
 
     this.minOrderSize = !!market ? new BigNumber((market.data as any).min_order_size) : ZERO
 
