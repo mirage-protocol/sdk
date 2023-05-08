@@ -28,7 +28,7 @@ export class LimitOrder {
    */
   public readonly underlying: OtherAsset
   /**
-   * The id of the trade, global across all markets (MAX_U256 if inactive)
+   * The id of the trade, global across all markets
    */
   public readonly id: BigNumber
   /**

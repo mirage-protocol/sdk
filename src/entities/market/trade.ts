@@ -1,12 +1,11 @@
 import BigNumber from 'bignumber.js'
 
-import { PRECISION_8 } from '../../constants'
+import { PRECISION_8, U64_MAX } from '../../constants'
 import { ZERO } from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
 import { assetInfo, coinInfo, MoveCoin, OtherAsset } from '../../constants/coinList'
 import { Market } from './market'
-
-export const U256_MAX = BigNumber('115792089237316195423570985008687907853269984665640564039457584007913129639935')
+import { U64 } from '@manahippo/move-to-ts'
 
 export enum TradeSide {
   LONG = 0,
@@ -115,7 +114,7 @@ export class Trade {
   }
 
   public isActive(): boolean {
-    // Inactive trades have an id of u256 max
-    return this.id && !this.id.eq(U256_MAX)
+    // Inactive trades have an id of u64 max
+    return this.id && !this.id.eq(U64_MAX)
   }
 }
