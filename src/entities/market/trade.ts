@@ -29,7 +29,11 @@ export class Trade {
    */
   public readonly underlying: OtherAsset
   /**
-   * The id of the trade, global across all markets (MAX_U256 if inactive)
+   * Is the resource initialized
+   */
+  public readonly initialized: boolean
+  /**
+   * The id of the trade, global across all markets (MAX_U64 if inactive)
    */
   public readonly id: BigNumber
   /**
@@ -87,6 +91,8 @@ export class Trade {
 
     console.debug(`found trade: ${JSON.stringify(trade)}`)
 
+    this.initialized = trade !== undefined
+
     this.id = !!trade ? BigNumber((trade.data as any).id) : BigNumber(U64_MAX)
 
     this.openingPrice = !!trade ? BigNumber((trade.data as any).opening_price).div(PRECISION_8) : ZERO
@@ -110,6 +116,11 @@ export class Trade {
     this.liquidationPrice = !!trade ? BigNumber((trade.data as any).liquidation_price).div(PRECISION_8) : ZERO
     this.takeProfitPrice = !!trade ? BigNumber((trade.data as any).take_profit_price).div(PRECISION_8) : ZERO
     this.stopLossPrice = !!trade ? BigNumber((trade.data as any).stop_loss_price).div(PRECISION_8) : ZERO
+  }
+
+  public isInitialized(): boolean {
+    // Inactive trades have an id of u64 max
+    return this.initialized
   }
 
   public isActive(): boolean {

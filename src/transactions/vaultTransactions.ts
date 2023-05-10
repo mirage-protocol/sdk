@@ -9,6 +9,8 @@ import {
 } from '../constants'
 import { getCoinAmountArgument, MoveType, Payload } from './'
 
+import {  } from '@pythnetwork/pyth-aptos-js'
+
 const type = 'entry_function_payload'
 
 // Get the types for this vault
@@ -30,7 +32,7 @@ export const addCollateral = async (
 ): Promise<Payload> => {
   return {
     type,
-    function: `${mirageAddress()}::vault::deposit`,
+    function: `${mirageAddress()}::vault::add_collateral`,
     arguments: [getCoinAmountArgument(collateral, amount)],
     type_arguments: getVaultTypeArguments(collateral, borrow),
   }
@@ -57,8 +59,8 @@ export const borrow = async (
   const collateralFeed = getPriceFeed(collateralCoin, network)
   const borrowFeed = getPriceFeed(borrowCoin, network)
 
-  const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : [[0]]
-  const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : [[0]]
+  const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : []
+  const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
 
   return {
     type,
@@ -89,8 +91,8 @@ export const removeCollateral = async (
   const collateralFeed = getPriceFeed(collateralCoin, network)
   const borrowFeed = getPriceFeed(borrowCoin, network)
 
-  const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : [[0]]
-  const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : [[0]]
+  const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : []
+  const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
   return {
     type,
     function: `${mirageAddress()}::vault::remove_collateral`,
@@ -142,8 +144,8 @@ export const addCollateralAndBorrow = async (
   const collateralFeed = getPriceFeed(collateralCoin, network)
   const borrowFeed = getPriceFeed(borrowCoin, network)
 
-  const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : [[0]]
-  const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : [[0]]
+  const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : []
+  const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
   return {
     type,
     function: `${mirageAddress()}::vault::add_and_borrow`,
@@ -180,8 +182,8 @@ export const repayDebtAndRemoveCollateral = async (
   const collateralFeed = getPriceFeed(collateralCoin, network)
   const borrowFeed = getPriceFeed(borrowCoin, network)
 
-  const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : [[0]]
-  const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : [[0]]
+  const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : []
+  const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
   return {
     type,
     function: `${mirageAddress()}::vault::repay_and_remove`,
@@ -240,8 +242,8 @@ export const removeCollateralAndBorrow = async (
   const collateralFeed = getPriceFeed(collateralCoin, network)
   const borrowFeed = getPriceFeed(borrowCoin, network)
 
-  const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : [[0]]
-  const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : [[0]]
+  const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : []
+  const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
   return {
     type,
     function: `${mirageAddress()}::vault::remove_and_borrow`,
