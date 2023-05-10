@@ -4,6 +4,7 @@ import BigNumber from 'bignumber.js'
 import { coinInfo, MoveCoin, PRECISION_8 } from '../constants'
 
 export type Payload = Types.TransactionPayload_EntryFunctionPayload
+export type ScriptPayload = Types.TransactionPayload_ScriptPayload
 export type MoveType = Types.MoveType
 
 // Get the proper payload amount
