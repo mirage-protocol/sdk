@@ -10,9 +10,18 @@ import {
   OtherAsset,
 } from '../constants'
 import { TradeSide } from '../entities'
-import { getDecimal8Argument, MoveType, Payload } from './'
+import { getDecimal8Argument, MoveType, Payload, ScriptPayload } from './'
 
 const type = 'entry_function_payload'
+
+const registerAndOpenTradeCode = (): Uint8Array => {
+  return Uint8Array.from(
+    Buffer.from(
+      '0xa11ceb0b060000000601000203020e041004051417072b1b084620000000010301020000000200010200000002010208060c0a0a020a0a02030301030300020900090101060c066d61726b65740872656769737465720a6f70656e5f7472616465a65fdd1605e24fd92f0a50e85d17d36ce32effbf80ea6941ad8531e06465296a02000000010c0a0038000b000b010b020b030b040b050b060b07380102',
+      'hex'
+    )
+  )
+}
 
 // Get the types for this market
 const getMarketTypeArguments = (base: MoveCoin | string, underlying: MoveCoin | string): MoveType[] => {
@@ -20,21 +29,22 @@ const getMarketTypeArguments = (base: MoveCoin | string, underlying: MoveCoin | 
 }
 
 /**
- * Open a trade in a market at the current price
- * @returns payload promise for the transaction
+ * Open a trade in a market at the current price and registers user resources if uninitialized
+ * @returns script or payload promise for the transaction
  */
 export const openTrade = async (
   base: MoveCoin | string,
   underlying: OtherAsset | string,
+  _isInitialized: boolean,
   marginAmount: number,
   positionSize: number,
   tradeSide: TradeSide,
   desired_price: number,
   max_slippage: number,
-  take_profit_price: number,
-  stop_loss_price: number,
+  _take_profit_price: number,
+  _stop_loss_price: number,
   network: Network
-): Promise<Payload> => {
+): Promise<ScriptPayload> => {
   const baseCoin = typeof base === 'string' ? MoveCoin[base] : base
   const underlyingAsset = typeof underlying === 'string' ? OtherAsset[underlying] || MoveCoin[underlying] : underlying
 
@@ -45,8 +55,10 @@ export const openTrade = async (
   const underlyingVaas = underlyingFeed ? await getPriceFeedUpdateData(underlyingFeed, getNetwork(network)) : [[0]]
 
   const payload = {
-    type,
-    function: `${mirageAddress()}::market::open_trade`,
+    type: 'script_payload',
+    code: {
+      bytecode: registerAndOpenTradeCode().toString(),
+    },
     arguments: [
       underlyingVaas,
       baseVaas,
@@ -55,8 +67,6 @@ export const openTrade = async (
       tradeSide == TradeSide.LONG ? true : false,
       getDecimal8Argument(desired_price),
       getDecimal8Argument(max_slippage),
-      getDecimal8Argument(take_profit_price),
-      getDecimal8Argument(stop_loss_price),
     ],
     type_arguments: getMarketTypeArguments(baseCoin, underlyingAsset),
   }

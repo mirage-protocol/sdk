@@ -42,14 +42,14 @@ export const getPriceFeed = (coin: MoveCoin, network: Network | string = Network
 export const getPriceFeedUpdateData = async (
   priceFeedId: string,
   network: Network | string = Network.MAINNET
-): Promise<number[][]> => {
-  if (!priceFeedId) return [[0]]
+): Promise<number[]> => {
+  if (!priceFeedId) return [] 
   try {
     console.debug('Attempting to get pyth vaas')
     const updateData = await pythClient(getNetwork(network)).getPriceFeedsUpdateData([priceFeedId])
-    return updateData
+    return updateData ? updateData[0] : []
   } catch (e) {
-    return [[0]]
+    return []
   }
 }
 

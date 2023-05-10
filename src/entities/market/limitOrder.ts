@@ -1,3 +1,4 @@
+import { AptosTypes } from 'aptos'
 import BigNumber from 'bignumber.js'
 
 import { PRECISION_8 } from '../../constants'
@@ -5,7 +6,6 @@ import { ZERO } from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
 import { assetInfo, coinInfo, MoveCoin, OtherAsset } from '../../constants/coinList'
 import { Market } from './market'
-import { AptosTypes } from 'aptos'
 
 export const U256_MAX = BigNumber('115792089237316195423570985008687907853269984665640564039457584007913129639935')
 
@@ -87,10 +87,11 @@ export class LimitOrder {
         : TradeSide.SHORT
       : TradeSide.UNKNOWN
 
-    this.margin = (this.tradeSide == TradeSide.LONG
-            ? market.longMarginRebase.toElastic(new BigNumber(limitOrderData.margin_part), true)
-            : market.shortMarginRebase.toElastic(new BigNumber(limitOrderData.margin_part), true)
-          ).div(PRECISION_8)
+    this.margin = (
+      this.tradeSide == TradeSide.LONG
+        ? market.longMarginRebase.toElastic(new BigNumber(limitOrderData.margin_part), true)
+        : market.shortMarginRebase.toElastic(new BigNumber(limitOrderData.margin_part), true)
+    ).div(PRECISION_8)
 
     this.positionSize = !!limitOrderData ? BigNumber(limitOrderData.position_size).div(PRECISION_8) : ZERO
     this.maintenanceMargin = !!limitOrderData
@@ -144,8 +145,11 @@ export class LimitOrders {
 
     console.debug(`found trade: ${JSON.stringify(limitOrders)}`)
 
-    this.limitOrders = !!limitOrders && this.market ? (limitOrders.data as any).limit_orders.map(
-        (limitOrderData: AptosTypes.MoveValue) => { return new LimitOrder(this.market, limitOrderData, base, underlying) }
-    ) : []
+    this.limitOrders =
+      !!limitOrders && this.market
+        ? (limitOrders.data as any).limit_orders.map((limitOrderData: AptosTypes.MoveValue) => {
+            return new LimitOrder(this.market, limitOrderData, base, underlying)
+          })
+        : []
   }
 }
