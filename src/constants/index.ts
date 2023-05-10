@@ -9,6 +9,7 @@ export const INTEREST_PRECISION = '1000000000000'
 export const SECONDS_PER_YEAR = 31622400
 export const FUNDING_PRECISION = 1000000
 export const RATE_PRECISION = 100000000
+export const U64_MAX = '18446744073709551616'
 
 export * from './accounts'
 export * from './coinList'

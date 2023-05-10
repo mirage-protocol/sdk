@@ -5,7 +5,6 @@ import { ZERO } from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
 import { assetInfo, coinInfo, MoveCoin, OtherAsset } from '../../constants/coinList'
 import { Market } from './market'
-import { U64 } from '@manahippo/move-to-ts'
 
 export enum TradeSide {
   LONG = 0,
@@ -88,7 +87,7 @@ export class Trade {
 
     console.debug(`found trade: ${JSON.stringify(trade)}`)
 
-    this.id = !!trade ? BigNumber((trade.data as any).id) : U256_MAX
+    this.id = !!trade ? BigNumber((trade.data as any).id) : BigNumber(U64_MAX)
 
     this.openingPrice = !!trade ? BigNumber((trade.data as any).opening_price).div(PRECISION_8) : ZERO
 
