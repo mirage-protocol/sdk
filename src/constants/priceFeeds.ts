@@ -43,7 +43,7 @@ export const getPriceFeedUpdateData = async (
   priceFeedId: string,
   network: Network | string = Network.MAINNET
 ): Promise<number[]> => {
-  if (!priceFeedId) return [] 
+  if (!priceFeedId) return []
   try {
     console.debug('Attempting to get pyth vaas')
     const updateData = await pythClient(getNetwork(network)).getPriceFeedsUpdateData([priceFeedId])

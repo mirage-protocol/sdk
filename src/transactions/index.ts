@@ -1,4 +1,5 @@
 import { Types } from 'aptos'
+import { TxnBuilderTypes } from 'aptos'
 import BigNumber from 'bignumber.js'
 
 import { coinInfo, MoveCoin, PRECISION_8 } from '../constants'
@@ -6,6 +7,7 @@ import { coinInfo, MoveCoin, PRECISION_8 } from '../constants'
 export type Payload = Types.TransactionPayload_EntryFunctionPayload
 export type ScriptPayload = Types.TransactionPayload_ScriptPayload
 export type MoveType = Types.MoveType
+export type Script = TxnBuilderTypes.Script
 
 // Get the proper payload amount
 export const getCoinAmountArgument = (coin: MoveCoin | string, amount: number): string => {

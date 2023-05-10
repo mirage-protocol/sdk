@@ -14,7 +14,7 @@ import { getDecimal8Argument, MoveType, Payload, ScriptPayload } from './'
 
 const type = 'entry_function_payload'
 
-const registerAndOpenTradeCode = (): Uint8Array => {
+export const registerAndOpenTradeCode = (): Uint8Array => {
   return Uint8Array.from(
     Buffer.from(
       '0xa11ceb0b060000000601000203020e041004051417072b1b084620000000010301020000000200010200000002010208060c0a0a020a0a02030301030300020900090101060c066d61726b65740872656769737465720a6f70656e5f7472616465a65fdd1605e24fd92f0a50e85d17d36ce32effbf80ea6941ad8531e06465296a02000000010c0a0038000b000b010b020b030b040b050b060b07380102',
@@ -33,44 +33,45 @@ const getMarketTypeArguments = (base: MoveCoin | string, underlying: MoveCoin | 
  * @returns script or payload promise for the transaction
  */
 export const openTrade = async (
-  base: MoveCoin | string,
-  underlying: OtherAsset | string,
+  _base: MoveCoin | string,
+  _underlying: OtherAsset | string,
   _isInitialized: boolean,
-  marginAmount: number,
-  positionSize: number,
-  tradeSide: TradeSide,
-  desired_price: number,
-  max_slippage: number,
+  _marginAmount: number,
+  _positionSize: number,
+  _tradeSide: TradeSide,
+  _desired_price: number,
+  _max_slippage: number,
   _take_profit_price: number,
   _stop_loss_price: number,
-  network: Network
-): Promise<ScriptPayload> => {
-  const baseCoin = typeof base === 'string' ? MoveCoin[base] : base
-  const underlyingAsset = typeof underlying === 'string' ? OtherAsset[underlying] || MoveCoin[underlying] : underlying
+  _network: Network
+): Promise<ScriptPayload | null> => {
+  // const baseCoin = typeof base === 'string' ? MoveCoin[base] : base
+  // const underlyingAsset = typeof underlying === 'string' ? OtherAsset[underlying] || MoveCoin[underlying] : underlying
 
-  const baseFeed = getPriceFeed(baseCoin, network)
-  const underlyingFeed = getPriceFeed(underlyingAsset, network)
+  // const baseFeed = getPriceFeed(baseCoin, network)
+  // const underlyingFeed = getPriceFeed(underlyingAsset, network)
 
-  const baseVaas = baseFeed ? await getPriceFeedUpdateData(baseFeed, getNetwork(network)) : [[0]]
-  const underlyingVaas = underlyingFeed ? await getPriceFeedUpdateData(underlyingFeed, getNetwork(network)) : [[0]]
+  // const baseVaas = baseFeed ? await getPriceFeedUpdateData(baseFeed, getNetwork(network)) : [[0]]
+  // const underlyingVaas = underlyingFeed ? await getPriceFeedUpdateData(underlyingFeed, getNetwork(network)) : [[0]]
 
-  const payload = {
-    type: 'script_payload',
-    code: {
-      bytecode: registerAndOpenTradeCode().toString(),
-    },
-    arguments: [
-      underlyingVaas,
-      baseVaas,
-      getDecimal8Argument(marginAmount), // always 8 decimals
-      getDecimal8Argument(positionSize),
-      tradeSide == TradeSide.LONG ? true : false,
-      getDecimal8Argument(desired_price),
-      getDecimal8Argument(max_slippage),
-    ],
-    type_arguments: getMarketTypeArguments(baseCoin, underlyingAsset),
-  }
-  return payload
+  // const payload = {
+  //   type: 'script_payload',
+  //   code: {
+  //     bytecode: registerAndOpenTradeCode().toString(),
+  //   },
+  //   arguments: [
+  //     underlyingVaas,
+  //     baseVaas,
+  //     getDecimal8Argument(marginAmount), // always 8 decimals
+  //     getDecimal8Argument(positionSize),
+  //     tradeSide == TradeSide.LONG ? true : false,
+  //     getDecimal8Argument(desired_price),
+  //     getDecimal8Argument(max_slippage),
+  //   ],
+  //   type_arguments: getMarketTypeArguments(baseCoin, underlyingAsset),
+  // }
+  // return payload
+  return null
 }
 
 /**

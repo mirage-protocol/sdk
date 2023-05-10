@@ -7,11 +7,13 @@ import {
   MoveCoin,
   Network,
 } from '../constants'
-import { getCoinAmountArgument, MoveType, Payload } from './'
-
-import {  } from '@pythnetwork/pyth-aptos-js'
+import { getCoinAmountArgument, MoveType, Payload, ScriptPayload } from './'
 
 const type = 'entry_function_payload'
+
+export const removeAndBorrowScript = (): string => {
+  return 'a11ceb0b060000000601000203020e041004051417072b1f084a20000000010301020000000203010200000002010205060c03030a020a0200020900090104060c030a020a02057661756c741172656d6f76655f636f6c6c61746572616c06626f72726f7781a9acc880ed0615231aee895f5129b78b82932b0cbd0daf73dbb6d67ef8842102000000010b0a000b010a030a0438000b000b020b030b04380102'
+}
 
 // Get the types for this vault
 const getVaultTypeArguments = (collateral: MoveCoin | string, borrow: MoveCoin | string): MoveType[] => {
@@ -227,7 +229,7 @@ export const addCollateralAndRepayDebt = async (
  * @param borrowAmount the amount to borrow, no precision
  * @param collateralFeedId the address of the collateral price feed
  * @param borrowFeedId the address of the borrow price feed
- * @returns payload promise for the transaction
+ * @returns script promise for the transaction
  */
 export const removeCollateralAndBorrow = async (
   collateral: MoveCoin | string,
@@ -235,7 +237,7 @@ export const removeCollateralAndBorrow = async (
   removeAmount: number,
   borrowAmount: number,
   network: Network
-): Promise<Payload> => {
+): Promise<ScriptPayload> => {
   const collateralCoin = typeof collateral === 'string' ? MoveCoin[collateral] : collateral
   const borrowCoin = typeof borrow === 'string' ? MoveCoin[borrow] : borrow
 
@@ -244,9 +246,12 @@ export const removeCollateralAndBorrow = async (
 
   const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : []
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
-  return {
-    type,
-    function: `${mirageAddress()}::vault::remove_and_borrow`,
+
+  const payload = {
+    type: 'script_payload',
+    code: {
+      bytecode: removeAndBorrowScript().toString(),
+    },
     arguments: [
       getCoinAmountArgument(collateral, removeAmount),
       getCoinAmountArgument(borrow, borrowAmount),
@@ -255,4 +260,5 @@ export const removeCollateralAndBorrow = async (
     ],
     type_arguments: getVaultTypeArguments(collateral, borrow),
   }
+  return payload
 }
