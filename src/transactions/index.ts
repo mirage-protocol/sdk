@@ -22,5 +22,5 @@ export const getDecimal8Argument = (amount: number): string => {
 }
 
 export * from './marketTransactions'
-export * from './stakingTransactions'
 export * from './vaultTransactions'
+export * from './veTransactions'
