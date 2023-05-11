@@ -21,6 +21,10 @@ export class VeMirage {
    * The total veMira supplied.
    */
   public readonly totalSupply: BigNumber
+  /**
+   * The maximum percentage unlock penalty for withdrawing early
+   */
+  public readonly maxUnlockPenalty: number
 
   /**
    * Construct an instance of UserInfo
@@ -39,7 +43,9 @@ export class VeMirage {
       ? new Rebase(BigNumber((veMirage.data as any).lock.elastic), BigNumber((veMirage.data as any).lock.base))
       : new Rebase(ZERO, ZERO)
 
-    this.totalLocked = !!veMirage ? BigNumber((veMirage.data as any).total_locked) : ZERO
+    this.totalLocked = !!veMirage ? BigNumber((veMirage.data as any).locked.value) : ZERO
     this.totalSupply = !!veMirage ? BigNumber((veMirage.data as any).total_supply) : ZERO
+
+    this.maxUnlockPenalty = !!veMirage ? ((veMirage.data as any).max_unlock_penalty * 100) / 10000 : 0
   }
 }
