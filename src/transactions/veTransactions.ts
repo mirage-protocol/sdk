@@ -1,5 +1,5 @@
 import { mirageAddress, MoveCoin } from '../constants'
-import { getCoinAmountArgument, Payload } from './'
+import { getCoinAmountArgument, Payload } from '.'
 
 const type = 'entry_function_payload'
 
@@ -55,6 +55,19 @@ export const increaseLockTime = async (timeInSeconds: number): Promise<Payload> 
     type,
     function: `${mirageAddress()}::ve_mirage::increase_lock_time`,
     arguments: [timeInSeconds],
+    type_arguments: [],
+  }
+}
+
+/**
+ * Withdraw an early with a penalty
+ * @returns payload promise for the transaction
+ */
+export const withdrawEarly = async (): Promise<Payload> => {
+  return {
+    type,
+    function: `${mirageAddress()}::ve_mirage::withdraw_early_with_penalty`,
+    arguments: [],
     type_arguments: [],
   }
 }
