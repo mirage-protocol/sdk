@@ -9,38 +9,38 @@ import { VeMirage } from './veMirage'
  * Stores info about the global vote-escrow lock data.
  */
 export class VoteLock {
+  /**
+   * The user address for this VoteLock
+   */
   private readonly userAddress: string
+  /**
+   * The current network being used
+   */
   private readonly network: Network
   /**
    * The base amount of MIRA the user has locked.
    */
   public readonly locked: BigNumber
-
   /**
    * The amount of Mirage locked initially.
    */
   public readonly initialLocked: BigNumber
-
   /**
    * The time when the user can withdraw entire all locked MIRA.
    */
   public readonly unlockTime: number
-
   /**
    * The time when the user initially locked MIRA.
    */
   public readonly lockTime: number
-
   /**
    * The users reward multiplier for lock time.
    */
   public readonly multiplier: BigNumber
-
   /**
    * The current percentage penalty for unlocking this stake early
    */
   public readonly currentPenalty: number
-
   /**
    * An instance of VeMirage for this VoteLock
    */
@@ -48,7 +48,10 @@ export class VoteLock {
 
   /**
    * Construct an instance of UserInfo
+   * @param userAddress the address of the userResources's account
+   * @param userResources resources for the user account
    * @param moduleResources resources for the veMirage account (MIRAGE_ACCOUNT)
+   * @param network the current network, defaulting to mainnet
    */
   constructor(
     userAddress: string,
@@ -87,21 +90,29 @@ export class VoteLock {
         : 0
   }
 
+  /**
+   * Get the total earned rewards for this user's locked stake
+   * @returns The user's total earned rewards with no precision
+   */
   public async earnedRewards(): Promise<BigNumber> {
     const ret = await aptosClient(this.network).view({
       function: `${mirageAddress()}::ve_mirage::earned_rewards`,
       type_arguments: [],
       arguments: [this.userAddress],
     })
-    return BigNumber(ret[0] as any)
+    return BigNumber(ret[0] as any).div(BigNumber(10).pow(8))
   }
 
-  public async veBalance(): Promise<BigNumber> {
+  /**
+   * Get the user's current veMirage balance
+   * @returns The user's current veMirage balance with no precision
+   */
+  public async getVeBalance(): Promise<BigNumber> {
     const ret = await aptosClient(this.network).view({
       function: `${mirageAddress()}::ve_mirage::ve_balance`,
       type_arguments: [],
       arguments: [this.userAddress],
     })
-    return BigNumber(ret[0] as any)
+    return BigNumber(ret[0] as any).div(BigNumber(10).pow(8))
   }
 }
