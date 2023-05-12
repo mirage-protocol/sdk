@@ -25,6 +25,14 @@ export class VeMirage {
    * The maximum percentage unlock penalty for withdrawing early
    */
   public readonly maxUnlockPenalty: number
+  /**
+   * The minimum lock time (6 months)
+   */
+  public readonly minLockTime: number = 15780000
+  /**
+   * The maximum lock time (3 years)
+   */
+  public readonly maxLockTime: number = 94608000
 
   /**
    * Construct an instance of UserInfo
