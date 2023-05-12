@@ -1,3 +1,5 @@
+import * as aptos from 'aptos'
+
 import {
   assetInfo,
   coinInfo,
@@ -10,14 +12,14 @@ import {
   OtherAsset,
 } from '../constants'
 import { TradeSide } from '../entities'
-import { getDecimal8Argument, MoveType, Payload, ScriptPayload } from './'
+import { getBCSDecimal8Argument, getDecimal8Argument, MoveType, Payload, PayloadResult } from './'
 
 const type = 'entry_function_payload'
 
 export const registerAndOpenTradeCode = (): Uint8Array => {
   return Uint8Array.from(
     Buffer.from(
-      '0xa11ceb0b060000000601000203020e041004051417072b1b084620000000010301020000000200010200000002010208060c0a0a020a0a02030301030300020900090101060c066d61726b65740872656769737465720a6f70656e5f7472616465a65fdd1605e24fd92f0a50e85d17d36ce32effbf80ea6941ad8531e06465296a02000000010c0a0038000b000b010b020b030b040b050b060b07380102',
+      'a11ceb0b060000000601000203020e04100405141507291b084420000000010301020000000200010200000002010208060c0a020a02030301030300020900090101060c066d61726b65740872656769737465720a6f70656e5f747261646581a9acc880ed0615231aee895f5129b78b82932b0cbd0daf73dbb6d67ef8842102000000010c0a0038000b000b010b020b030b040b050b060b07380102',
       'hex'
     )
   )
@@ -33,45 +35,68 @@ const getMarketTypeArguments = (base: MoveCoin | string, underlying: MoveCoin | 
  * @returns script or payload promise for the transaction
  */
 export const openTrade = async (
-  _base: MoveCoin | string,
-  _underlying: OtherAsset | string,
-  _isInitialized: boolean,
-  _marginAmount: number,
-  _positionSize: number,
-  _tradeSide: TradeSide,
-  _desired_price: number,
-  _max_slippage: number,
-  _take_profit_price: number,
-  _stop_loss_price: number,
-  _network: Network
-): Promise<ScriptPayload | null> => {
-  // const baseCoin = typeof base === 'string' ? MoveCoin[base] : base
-  // const underlyingAsset = typeof underlying === 'string' ? OtherAsset[underlying] || MoveCoin[underlying] : underlying
+  marginType: MoveCoin | string,
+  positionType: OtherAsset | string,
+  isInitialized: boolean,
+  marginAmount: number,
+  positionSize: number,
+  tradeSide: TradeSide,
+  desired_price: number,
+  maxSlippage: number,
+  network: Network
+): Promise<PayloadResult> => {
+  const marginCoin = typeof marginType === 'string' ? MoveCoin[marginType] : marginType
+  const positionAsset =
+    typeof positionType === 'string' ? OtherAsset[positionType] || MoveCoin[positionType] : positionType
 
-  // const baseFeed = getPriceFeed(baseCoin, network)
-  // const underlyingFeed = getPriceFeed(underlyingAsset, network)
+  const marginFeed = getPriceFeed(marginCoin, network)
+  const positionfeed = getPriceFeed(positionAsset, network)
 
-  // const baseVaas = baseFeed ? await getPriceFeedUpdateData(baseFeed, getNetwork(network)) : [[0]]
-  // const underlyingVaas = underlyingFeed ? await getPriceFeedUpdateData(underlyingFeed, getNetwork(network)) : [[0]]
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
+  const positionVaas = positionfeed ? await getPriceFeedUpdateData(positionfeed, getNetwork(network)) : []
 
-  // const payload = {
-  //   type: 'script_payload',
-  //   code: {
-  //     bytecode: registerAndOpenTradeCode().toString(),
-  //   },
-  //   arguments: [
-  //     underlyingVaas,
-  //     baseVaas,
-  //     getDecimal8Argument(marginAmount), // always 8 decimals
-  //     getDecimal8Argument(positionSize),
-  //     tradeSide == TradeSide.LONG ? true : false,
-  //     getDecimal8Argument(desired_price),
-  //     getDecimal8Argument(max_slippage),
-  //   ],
-  //   type_arguments: getMarketTypeArguments(baseCoin, underlyingAsset),
-  // }
-  // return payload
-  return null
+  if (isInitialized) {
+    return {
+      natural: {
+        function: `${mirageAddress()}::market::open_trade`,
+        type,
+        arguments: [
+          positionVaas,
+          marginVaas,
+          getDecimal8Argument(marginAmount), // always 8 decimals
+          getDecimal8Argument(positionSize),
+          tradeSide == TradeSide.LONG ? true : false,
+          getDecimal8Argument(desired_price),
+          getDecimal8Argument(maxSlippage),
+        ],
+        type_arguments: getMarketTypeArguments(marginCoin, positionAsset),
+      },
+    }
+  }
+  return {
+    bcs: new aptos.TxnBuilderTypes.TransactionPayloadScript(
+      new aptos.TxnBuilderTypes.Script(
+        registerAndOpenTradeCode(),
+        [
+          new aptos.TxnBuilderTypes.TypeTagStruct(
+            aptos.TxnBuilderTypes.StructTag.fromString(assetInfo(marginCoin).type)
+          ),
+          new aptos.TxnBuilderTypes.TypeTagStruct(
+            aptos.TxnBuilderTypes.StructTag.fromString(assetInfo(positionAsset).type)
+          ),
+        ],
+        [
+          new aptos.TxnBuilderTypes.TransactionArgumentU8Vector(Uint8Array.from(positionVaas)),
+          new aptos.TxnBuilderTypes.TransactionArgumentU8Vector(Uint8Array.from(marginVaas)),
+          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(marginAmount)),
+          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(positionSize)),
+          new aptos.TxnBuilderTypes.TransactionArgumentBool(false),
+          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(desired_price)),
+          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(maxSlippage)),
+        ]
+      )
+    ),
+  }
 }
 
 /**

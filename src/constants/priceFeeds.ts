@@ -29,7 +29,10 @@ export const hasPriceFeed = (coin: MoveCoin): boolean => {
  * @param network
  * @returns
  */
-export const getPriceFeed = (coin: MoveCoin, network: Network | string = Network.MAINNET): string | undefined => {
+export const getPriceFeed = (
+  coin: MoveCoin | OtherAsset,
+  network: Network | string = Network.MAINNET
+): string | undefined => {
   return !!PRICE_FEEDS[coin.valueOf()] ? PRICE_FEEDS[coin.valueOf()][getNetwork(network)] : undefined
 }
 

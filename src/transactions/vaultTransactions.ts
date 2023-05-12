@@ -1,3 +1,5 @@
+import * as aptos from 'aptos'
+
 import {
   coinInfo,
   getNetwork,
@@ -7,15 +9,19 @@ import {
   MoveCoin,
   Network,
 } from '../constants'
-import { getCoinAmountArgument, MoveType, Payload, ScriptPayload } from './'
+import { getBCSCoinAmountArgument, getCoinAmountArgument, MoveType, Payload, ScriptPayload } from './'
 
 const type = 'entry_function_payload'
 
-export const removeAndBorrowScript = (): string => {
-  return 'a11ceb0b060000000601000203020e041004051417072b1f084a20000000010301020000000203010200000002010205060c03030a020a0200020900090104060c030a020a02057661756c741172656d6f76655f636f6c6c61746572616c06626f72726f7781a9acc880ed0615231aee895f5129b78b82932b0cbd0daf73dbb6d67ef8842102000000010b0a000b010a030a0438000b000b020b030b04380102'
+export const removeAndBorrowScript = (): Uint8Array => {
+  return Uint8Array.from(
+    Buffer.from(
+      'a11ceb0b060000000601000203020e041004051417072b1f084a20000000010301020000000203010200000002010205060c03030a020a0200020900090104060c030a020a02057661756c741172656d6f76655f636f6c6c61746572616c06626f72726f77a65fdd1605e24fd92f0a50e85d17d36ce32effbf80ea6941ad8531e06465296a02000000010b0a000b010a030a0438000b000b020b030b04380102',
+      'hex'
+    )
+  )
 }
 
-// Get the types for this vault
 const getVaultTypeArguments = (collateral: MoveCoin | string, borrow: MoveCoin | string): MoveType[] => {
   return [coinInfo(collateral).type, coinInfo(borrow).type]
 }
@@ -247,18 +253,21 @@ export const removeCollateralAndBorrow = async (
   const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : []
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
 
-  const payload = {
-    type: 'script_payload',
-    code: {
-      bytecode: removeAndBorrowScript().toString(),
-    },
-    arguments: [
-      getCoinAmountArgument(collateral, removeAmount),
-      getCoinAmountArgument(borrow, borrowAmount),
-      collateralVaas,
-      borrowVaas,
-    ],
-    type_arguments: getVaultTypeArguments(collateral, borrow),
-  }
-  return payload
+  return new aptos.TxnBuilderTypes.TransactionPayloadScript(
+    new aptos.TxnBuilderTypes.Script(
+      removeAndBorrowScript(),
+      [
+        new aptos.TxnBuilderTypes.TypeTagStruct(
+          aptos.TxnBuilderTypes.StructTag.fromString(coinInfo(collateralCoin).type)
+        ),
+        new aptos.TxnBuilderTypes.TypeTagStruct(aptos.TxnBuilderTypes.StructTag.fromString(coinInfo(borrowCoin).type)),
+      ],
+      [
+        new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSCoinAmountArgument(collateralCoin, removeAmount)),
+        new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSCoinAmountArgument(borrowCoin, borrowAmount)),
+        new aptos.TxnBuilderTypes.TransactionArgumentU8Vector(Uint8Array.from(collateralVaas)),
+        new aptos.TxnBuilderTypes.TransactionArgumentU8Vector(Uint8Array.from(borrowVaas)),
+      ]
+    )
+  )
 }
