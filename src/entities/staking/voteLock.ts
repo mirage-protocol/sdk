@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-import { aptosClient, getNetwork, Network, ZERO } from '../../constants'
+import { aptosClient, balanceToUi, getNetwork, MoveCoin, Network, ZERO } from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
 import { VeMirage } from './veMirage'
 
@@ -22,10 +22,6 @@ export class VoteLock {
    */
   public readonly locked: BigNumber
   /**
-   * The amount of Mirage locked initially.
-   */
-  public readonly initialLocked: BigNumber
-  /**
    * The time when the user can withdraw entire all locked MIRA.
    */
   public readonly unlockTime: number
@@ -33,6 +29,10 @@ export class VoteLock {
    * The time when the user initially locked MIRA.
    */
   public readonly lockTime: number
+  /**
+   * The length of the lock in seconds
+   */
+  public readonly lockLength: number
   /**
    * The users reward multiplier for lock time.
    */
@@ -62,7 +62,7 @@ export class VoteLock {
     this.userAddress = userAddress
     this.network = getNetwork(network)
 
-    const voteLockType = `${mirageAddress()}::ve_mirage::VeMirage`
+    const voteLockType = `${mirageAddress()}::ve_mirage::VoteLock`
 
     console.debug(`attempting to get data for type: ${voteLockType}`)
 
@@ -72,15 +72,11 @@ export class VoteLock {
 
     this.veMirage = new VeMirage(moduleResources)
 
-    this.locked =
-      !!voteLock && !!this.veMirage
-        ? this.veMirage.lock.toElastic(new BigNumber((voteLock.data as any).locked), true)
-        : ZERO
-
-    this.initialLocked = !!voteLock ? BigNumber((voteLock.data as any).initial_locked) : ZERO
+    this.locked = !!voteLock ? BigNumber((voteLock.data as any).locked) : ZERO
     this.unlockTime = !!voteLock ? (voteLock.data as any).unlock_time : 0
     this.lockTime = !!voteLock ? (voteLock.data as any).lock_time : 0
     this.multiplier = !!voteLock ? BigNumber((voteLock.data as any).multiplier) : ZERO
+    this.lockLength = this.unlockTime - this.lockTime
 
     const now = Date.now() / 1000
 
@@ -91,28 +87,58 @@ export class VoteLock {
   }
 
   /**
-   * Get the total earned rewards for this user's locked stake
-   * @returns The user's total earned rewards with no precision
+   * Get whether or not the user has an open lock
+   * @returns Whether the user has an open lock
    */
-  public async earnedRewards(): Promise<BigNumber> {
+  public lockOpen(): boolean {
+    return !this.locked.eq(ZERO)
+  }
+
+  /**
+   * Get the user's locked amount (no precision)
+   * @returns The ve supply divided by the precision
+   */
+  public getUiLocked(): number {
+    return balanceToUi(this.locked, MoveCoin.MIRA)
+  }
+
+  /**
+   * Get the remaining on the user's lock
+   * @returns The time remaining in seconds
+   */
+  public getTimeRemaining(): number {
+    const now = Date.now() / 1000
+    if (this.unlockTime < now) return 0
+    else return this.unlockTime - now
+  }
+
+  /**
+   * Get the total earned rewards for this user's locked stake (no precision)
+   * @returns The user's total earned rewards
+   */
+  public async earnedRewards(): Promise<number> {
     const ret = await aptosClient(this.network).view({
       function: `${mirageAddress()}::ve_mirage::earned_rewards`,
       type_arguments: [],
       arguments: [this.userAddress],
     })
-    return BigNumber(ret[0] as any).div(BigNumber(10).pow(8))
+    return BigNumber(ret[0] as any)
+      .div(BigNumber(10).pow(8))
+      .toNumber()
   }
 
   /**
-   * Get the user's current veMirage balance
-   * @returns The user's current veMirage balance with no precision
+   * Get the user's current veMirage balance (no precision)
+   * @returns The user's current veMirage balance
    */
-  public async getVeBalance(): Promise<BigNumber> {
+  public async getVeBalance(): Promise<number> {
     const ret = await aptosClient(this.network).view({
       function: `${mirageAddress()}::ve_mirage::ve_balance`,
       type_arguments: [],
       arguments: [this.userAddress],
     })
-    return BigNumber(ret[0] as any).div(BigNumber(10).pow(8))
+    return BigNumber(ret[0] as any)
+      .div(BigNumber(10).pow(8))
+      .toNumber()
   }
 }
