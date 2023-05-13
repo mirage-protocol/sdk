@@ -1,5 +1,5 @@
 export * from './coin'
 export * from './market'
 export * from './rebase'
-export * from './staking'
 export * from './vault'
+export * from './ve'
