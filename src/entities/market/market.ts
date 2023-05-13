@@ -23,14 +23,6 @@ export class Market {
    */
   public readonly underlying: OtherAsset
   /**
-   * All the margin actively being used in the market for longs & shorts
-   */
-  public readonly margin: BigNumber
-  /**
-   * Resting margin waiting for triggers
-   */
-  public readonly restingMargin: BigNumber
-  /**
    * Maximum taker fee at the max_oi_imbalance
    */
   public readonly maxTakerFee: number
@@ -166,9 +158,6 @@ export class Market {
 
     console.debug(`found data: ${market}`)
 
-    this.margin = !!market ? new BigNumber((market.data as any).margin.value) : ZERO
-    this.restingMargin = !!market ? new BigNumber((market.data as any).resting_margin.value) : ZERO
-
     this.maxTakerFee = !!market
       ? new BigNumber((market.data as any).max_taker_fee).div(PERCENT_PRECISION).times(100).toNumber()
       : 0
@@ -250,28 +239,5 @@ export class Market {
    */
   public getUiShortMargin(): number {
     return this.shortMargin.div(PRECISION_8).toNumber()
-  }
-
-  /**
-   * Get a Ui friendly active margin of the market (used in longs & shorts)
-   * @returns the markets active margin
-   */
-  public getUiActiveMargin(): number {
-    return this.margin.div(PRECISION_8).toNumber()
-  }
-
-  /**
-   * Get a Ui friendly resting margin of the market (waiting for triggers)
-   * @returns the markets resting margin
-   */
-  public getUiRestingMargin(): number {
-    return this.restingMargin.div(PRECISION_8).toNumber()
-  }
-  /**
-   * Get a Ui friendly total margin of the market (active and resting)
-   * @returns the markets total margin
-   */
-  public getUiTotalMargin(): number {
-    return this.getUiActiveMargin() + this.getUiRestingMargin()
   }
 }
