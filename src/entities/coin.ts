@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-import { ZERO } from '../constants'
+import { aptosClient, getNetwork, Network, ZERO } from '../constants'
 import { AccountResource } from '../constants/accounts'
 import { balanceToUi, coinInfo, MoveCoin } from '../constants/coinList'
 
@@ -13,6 +13,10 @@ export class Coin {
    * The coin represented by the class
    */
   public readonly coin: MoveCoin
+  /**
+   * The current network being used
+   */
+  private readonly network: Network
   /**
    * The name of the coin
    */
@@ -39,11 +43,16 @@ export class Coin {
    * @param resources resources of some account
    * @param coin which coin to find data for
    */
-  constructor(resources: AccountResource[] | null | undefined, coin: MoveCoin | string) {
+  constructor(
+    resources: AccountResource[] | null | undefined,
+    coin: MoveCoin | string,
+    network: Network | string = Network.MAINNET
+  ) {
     const { name, symbol, decimals, type } = coinInfo(coin)
 
     const precision = BigNumber(10).pow(decimals)
 
+    this.network = getNetwork(network)
     this.name = name
     this.symbol = symbol
     this.decimals = decimals
@@ -63,5 +72,20 @@ export class Coin {
    */
   public getUiBalance(): number {
     return balanceToUi(this.balance, this.coin)
+  }
+
+  /**
+   * Get the coin's total supply (no precision)
+   * @returns The coin's current supply
+   */
+  public async getTotalSupply(): Promise<BigNumber> {
+    const { type } = coinInfo(this.coin)
+    const ret = await aptosClient(this.network).view({
+      function: `0x1::coin::supply`,
+      type_arguments: [type],
+      arguments: [],
+    })
+    const { vec } = ret[0] as any
+    return BigNumber(vec[0]).div(BigNumber(10).pow(8))
   }
 }
