@@ -84,3 +84,18 @@ export const withdraw = async (): Promise<Payload> => {
     type_arguments: [],
   }
 }
+
+/**
+ * Claim a user's rewards from veMirage
+ * @returns payload promise for the transaction
+ */
+export const claimRewards = async (userAddress: string): Promise<Payload> => {
+  return {
+    type,
+    function: `${mirageAddress()}::ve_mirage::claim_rewards`,
+    arguments: [userAddress],
+    type_arguments: [],
+  }
+
+  // TODO: compound rewards
+}
