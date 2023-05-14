@@ -190,7 +190,7 @@ export const repayDebtAndRemoveCollateral = async (
 
   return new aptos.TxnBuilderTypes.TransactionPayloadScript(
     new aptos.TxnBuilderTypes.Script(
-      getScriptBytecode('add_and_borrow'),
+      getScriptBytecode('repay_and_remove'),
       [
         new aptos.TxnBuilderTypes.TypeTagStruct(
           aptos.TxnBuilderTypes.StructTag.fromString(coinInfo(collateralCoin).type)
@@ -226,7 +226,7 @@ export const addCollateralAndRepayDebt = async (
 
   return new aptos.TxnBuilderTypes.TransactionPayloadScript(
     new aptos.TxnBuilderTypes.Script(
-      getScriptBytecode('add_and_borrow'),
+      getScriptBytecode('add_and_repay'),
       [
         new aptos.TxnBuilderTypes.TypeTagStruct(
           aptos.TxnBuilderTypes.StructTag.fromString(coinInfo(collateralCoin).type)
