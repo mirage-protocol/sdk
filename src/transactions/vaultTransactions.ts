@@ -137,7 +137,7 @@ export const addCollateralAndBorrow = async (
   addAmount: number,
   borrowAmount: number,
   network: Network
-): Promise<Payload> => {
+): Promise<ScriptPayload> => {
   const collateralCoin = typeof collateral === 'string' ? MoveCoin[collateral] : collateral
   const borrowCoin = typeof borrow === 'string' ? MoveCoin[borrow] : borrow
 
@@ -146,17 +146,24 @@ export const addCollateralAndBorrow = async (
 
   const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : []
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
-  return {
-    type,
-    function: `${mirageAddress()}::vault::add_and_borrow`,
-    arguments: [
-      getCoinAmountArgument(collateral, addAmount),
-      getCoinAmountArgument(borrow, borrowAmount),
-      collateralVaas,
-      borrowVaas,
-    ],
-    type_arguments: getVaultTypeArguments(collateral, borrow),
-  }
+
+  return new aptos.TxnBuilderTypes.TransactionPayloadScript(
+    new aptos.TxnBuilderTypes.Script(
+      getScriptBytecode('add_and_borrow'),
+      [
+        new aptos.TxnBuilderTypes.TypeTagStruct(
+          aptos.TxnBuilderTypes.StructTag.fromString(coinInfo(collateralCoin).type)
+        ),
+        new aptos.TxnBuilderTypes.TypeTagStruct(aptos.TxnBuilderTypes.StructTag.fromString(coinInfo(borrowCoin).type)),
+      ],
+      [
+        new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSCoinAmountArgument(collateralCoin, addAmount)),
+        new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSCoinAmountArgument(borrowCoin, borrowAmount)),
+        new aptos.TxnBuilderTypes.TransactionArgumentU8Vector(Uint8Array.from(collateralVaas)),
+        new aptos.TxnBuilderTypes.TransactionArgumentU8Vector(Uint8Array.from(borrowVaas)),
+      ]
+    )
+  )
 }
 
 /**
