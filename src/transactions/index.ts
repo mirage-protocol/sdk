@@ -1,7 +1,6 @@
 import { Types } from 'aptos'
 import { TxnBuilderTypes } from 'aptos'
 import BigNumber from 'bignumber.js'
-import fs from 'fs'
 
 import { coinInfo, MoveCoin, PRECISION_8 } from '../constants'
 
@@ -35,16 +34,6 @@ export const getDecimal8Argument = (amount: number): string => {
 // Get the proper payload amount
 export const getBCSDecimal8Argument = (amount: number): bigint => {
   return BigInt(getDecimal8Argument(amount))
-}
-
-export const getScriptBytecode = (name: string): Uint8Array => {
-  try {
-    const bytecode = fs.readFileSync(`./script_bytecode/${name}.txt`, 'utf-8')
-    return Uint8Array.from(Buffer.from(bytecode, 'hex'))
-  } catch (error) {
-    console.error(`Error reading bytecode_script file. Ensure script bytecode has been generated: ${error}`)
-    return Uint8Array.from(Buffer.from('', 'hex'))
-  }
 }
 
 export * from './marketTransactions'
