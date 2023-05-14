@@ -9,14 +9,8 @@ import {
   MoveCoin,
   Network,
 } from '../constants'
-import {
-  getBCSCoinAmountArgument,
-  getCoinAmountArgument,
-  getScriptBytecode,
-  MoveType,
-  Payload,
-  ScriptPayload,
-} from './'
+import { getScriptBytecode } from '../constants/scripts'
+import { getBCSCoinAmountArgument, getCoinAmountArgument, MoveType, Payload, ScriptPayload } from './'
 
 const type = 'entry_function_payload'
 
