@@ -76,7 +76,7 @@ export class UserInfo {
     this.userCollateral = !!user ? new BigNumber((user.data as any).user_collateral.value) : ZERO
     this.userBorrow =
       !!user && !!this.vault
-        ? this.vault.borrowRebase.toElastic(new BigNumber((user.data as any).user_borrow_part), true)
+        ? this.vault.borrowRebase.toElastic(new BigNumber((user.data as any).user_borrow_part.amount), true)
         : ZERO
 
     this.liquidationPrice =
