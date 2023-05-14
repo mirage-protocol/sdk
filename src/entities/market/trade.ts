@@ -106,8 +106,8 @@ export class Trade {
     this.margin =
       !!trade && !!this.market
         ? (this.tradeSide == TradeSide.LONG
-            ? this.market.longMarginRebase.toElastic(new BigNumber((trade.data as any).margin_part), true)
-            : this.market.shortMarginRebase.toElastic(new BigNumber((trade.data as any).margin_part), true)
+            ? this.market.longMarginRebase.toElastic(new BigNumber((trade.data as any).margin_part.amount), true)
+            : this.market.shortMarginRebase.toElastic(new BigNumber((trade.data as any).margin_part.amount), true)
           ).div(PRECISION_8)
         : ZERO
 
