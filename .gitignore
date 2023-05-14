@@ -2,7 +2,7 @@
 /dist
 
 # scripts
-/script_bytecode
+artifacts
 
 # dependencies
 /node_modules
