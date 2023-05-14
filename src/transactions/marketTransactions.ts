@@ -11,8 +11,9 @@ import {
   Network,
   OtherAsset,
 } from '../constants'
+import { getScriptBytecode } from '../constants/scripts'
 import { TradeSide } from '../entities'
-import { getBCSDecimal8Argument, getDecimal8Argument, getScriptBytecode, MoveType, Payload, PayloadResult } from './'
+import { getBCSDecimal8Argument, getDecimal8Argument, MoveType, Payload, PayloadResult } from './'
 
 const type = 'entry_function_payload'
 
