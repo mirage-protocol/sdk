@@ -184,14 +184,14 @@ export class Market {
 
     this.longMarginRebase = !!market
       ? new Rebase(
-          BigNumber((market.data as any).long_margin.elastic),
+          BigNumber((market.data as any).long_margin.elastic.value),
           BigNumber((market.data as any).long_margin.base)
         )
       : new Rebase(ZERO, ZERO)
     this.longMargin = this.longMarginRebase.elastic
     this.shortMarginRebase = !!market
       ? new Rebase(
-          BigNumber((market.data as any).short_margin.elastic),
+          BigNumber((market.data as any).short_margin.elastic.value),
           BigNumber((market.data as any).short_margin.base)
         )
       : new Rebase(ZERO, ZERO)
