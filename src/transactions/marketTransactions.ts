@@ -12,18 +12,9 @@ import {
   OtherAsset,
 } from '../constants'
 import { TradeSide } from '../entities'
-import { getBCSDecimal8Argument, getDecimal8Argument, MoveType, Payload, PayloadResult } from './'
+import { getBCSDecimal8Argument, getDecimal8Argument, getScriptBytecode, MoveType, Payload, PayloadResult } from './'
 
 const type = 'entry_function_payload'
-
-export const registerAndOpenTradeCode = (): Uint8Array => {
-  return Uint8Array.from(
-    Buffer.from(
-      'a11ceb0b060000000601000203020e04100405141507291b084420000000010301020000000200010200000002010208060c0a020a02030301030300020900090101060c066d61726b65740872656769737465720a6f70656e5f747261646555105113b592d67a22f4216be9e1461ab8f3122305adcc101582b7703d7fc45302000000010c0a0038000b000b010b020b030b040b050b060b07380102',
-      'hex'
-    )
-  )
-}
 
 // Get the types for this market
 const getMarketTypeArguments = (base: MoveCoin | string, underlying: MoveCoin | string): MoveType[] => {
@@ -76,7 +67,7 @@ export const openTrade = async (
   return {
     bcs: new aptos.TxnBuilderTypes.TransactionPayloadScript(
       new aptos.TxnBuilderTypes.Script(
-        registerAndOpenTradeCode(),
+        getScriptBytecode('register_and_open_trade'),
         [
           new aptos.TxnBuilderTypes.TypeTagStruct(
             aptos.TxnBuilderTypes.StructTag.fromString(assetInfo(marginCoin).type)
