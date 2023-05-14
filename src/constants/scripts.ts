@@ -25,7 +25,7 @@ export const getScriptBytecode = (script: ModuleScript): Uint8Array => {
   }
 }
 
-const scriptBytecode = {
+const scriptBytecode: { [script in ModuleScript]: string } = {
   // market
   register_and_open_trade: RegisterAndOpenTrade.code as string,
 
