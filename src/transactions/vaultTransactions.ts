@@ -9,7 +9,14 @@ import {
   MoveCoin,
   Network,
 } from '../constants'
-import { getBCSCoinAmountArgument, getCoinAmountArgument, MoveType, Payload, ScriptPayload } from './'
+import {
+  getBCSCoinAmountArgument,
+  getCoinAmountArgument,
+  getScriptBytecode,
+  MoveType,
+  Payload,
+  ScriptPayload,
+} from './'
 
 const type = 'entry_function_payload'
 
@@ -255,7 +262,7 @@ export const removeCollateralAndBorrow = async (
 
   return new aptos.TxnBuilderTypes.TransactionPayloadScript(
     new aptos.TxnBuilderTypes.Script(
-      removeAndBorrowScript(),
+      getScriptBytecode('remove_and_borrow'),
       [
         new aptos.TxnBuilderTypes.TypeTagStruct(
           aptos.TxnBuilderTypes.StructTag.fromString(coinInfo(collateralCoin).type)
