@@ -1,6 +1,9 @@
 # production
 /dist
 
+# scripts
+/script_bytecode
+
 # dependencies
 /node_modules
 /.pnp
