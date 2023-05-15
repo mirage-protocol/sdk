@@ -27,8 +27,8 @@ const getMarketTypeArguments = (base: MoveCoin | string, underlying: MoveCoin | 
  * @returns script or payload promise for the transaction
  */
 export const openTrade = async (
-  marginType: MoveCoin | string,
-  positionType: OtherAsset | string,
+  marginCoin: MoveCoin,
+  positionAsset: MoveCoin | OtherAsset,
   isInitialized: boolean,
   marginAmount: number,
   positionSize: number,
@@ -37,10 +37,6 @@ export const openTrade = async (
   maxSlippage: number,
   network: Network
 ): Promise<PayloadResult> => {
-  const marginCoin = typeof marginType === 'string' ? MoveCoin[marginType] : marginType
-  const positionAsset =
-    typeof positionType === 'string' ? OtherAsset[positionType] || MoveCoin[positionType] : positionType
-
   const marginFeed = getPriceFeed(marginCoin, network)
   const positionfeed = getPriceFeed(positionAsset, network)
 
@@ -124,8 +120,8 @@ export const closeTrade = async (
  * @returns payload promise for the transaction
  */
 export const placeLimitOrder = async (
-  base: MoveCoin | string,
-  underlying: OtherAsset | string,
+  marginCoin: MoveCoin,
+  positionAsset: OtherAsset,
   isInitialized: boolean,
   marginAmount: number,
   positionSize: number,
@@ -135,14 +131,11 @@ export const placeLimitOrder = async (
   stop_loss_price: number,
   network: Network
 ): Promise<PayloadResult> => {
-  const baseCoin = typeof base === 'string' ? MoveCoin[base] : base
-  const underlyingAsset = typeof underlying === 'string' ? OtherAsset[underlying] || MoveCoin[underlying] : underlying
+  const marginFeed = getPriceFeed(marginCoin, network)
+  const positionfeed = getPriceFeed(positionAsset, network)
 
-  const baseFeed = getPriceFeed(baseCoin, network)
-  const underlyingFeed = getPriceFeed(underlyingAsset, network)
-
-  const baseVaas = baseFeed ? await getPriceFeedUpdateData(baseFeed, getNetwork(network)) : [[0]]
-  const underlyingVaas = underlyingFeed ? await getPriceFeedUpdateData(underlyingFeed, getNetwork(network)) : [[0]]
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
+  const positionVaas = positionfeed ? await getPriceFeedUpdateData(positionfeed, getNetwork(network)) : []
 
   if (isInitialized) {
     return {
@@ -150,8 +143,8 @@ export const placeLimitOrder = async (
         type,
         function: `${mirageAddress()}::market::place_limit_order`,
         arguments: [
-          underlyingVaas,
-          baseVaas,
+          marginVaas,
+          positionVaas,
           getDecimal8Argument(marginAmount), // always 8 decimals
           getDecimal8Argument(positionSize),
           tradeSide == TradeSide.LONG ? true : false,
@@ -159,7 +152,7 @@ export const placeLimitOrder = async (
           getDecimal8Argument(take_profit_price),
           getDecimal8Argument(stop_loss_price),
         ],
-        type_arguments: getMarketTypeArguments(baseCoin, underlyingAsset),
+        type_arguments: getMarketTypeArguments(marginCoin, positionAsset),
       },
     }
   }
@@ -182,8 +175,8 @@ export const placeLimitOrder = async (
           new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(marginAmount)),
           new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(positionSize)),
           new aptos.TxnBuilderTypes.TransactionArgumentBool(false),
-          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(desired_price)),
-          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(maxSlippage)),
+          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(0)),
+          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(0)),
         ]
       )
     ),
