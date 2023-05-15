@@ -66,7 +66,6 @@ export class LimitOrder {
   /**
    * An instance of the Market for this Trade
    */
-  public readonly market: Market
 
   constructor(
     market: Market,
@@ -117,6 +116,10 @@ export class LimitOrders {
    */
   public readonly underlying: OtherAsset
   /**
+   * Is the resource initialized
+   */
+  public readonly initialized: boolean
+  /**
    * An instance of the Market for this Trade
    */
   public readonly market: Market
@@ -143,7 +146,9 @@ export class LimitOrders {
 
     const limitOrders = userResource.find((resource) => resource.type === this.limitOrdersType)
 
-    console.debug(`found trade: ${JSON.stringify(limitOrders)}`)
+    console.debug(`found limit orders: ${JSON.stringify(limitOrders)}`)
+
+    this.initialized = limitOrders !== undefined
 
     this.limitOrders =
       !!limitOrders && this.market
