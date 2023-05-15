@@ -26,11 +26,11 @@ export class Rewards {
 
     console.debug(`attempting to get data for type: ${moveType}`)
 
-    const veMirage = moduleResources.find((resource) => resource.type === moveType)
+    const rewards = moduleResources.find((resource) => resource.type === moveType)
 
-    console.debug(`found data: ${veMirage}`)
+    console.debug(`found data: ${rewards}`)
 
-    this.baseRewardRate = !!veMirage ? BigNumber((veMirage.data as any).baseRewardRate) : ZERO
-    this.lastUpdated = !!veMirage ? BigNumber((veMirage.data as any).lastUpdated) : ZERO
+    this.baseRewardRate = !!rewards ? BigNumber((rewards.data as any).baseRewardRate) : ZERO
+    this.lastUpdated = !!rewards ? BigNumber((rewards.data as any).lastUpdated) : ZERO
   }
 }
