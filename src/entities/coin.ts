@@ -10,6 +10,10 @@ import { balanceToUi, coinInfo, MoveCoin } from '../constants/coinList'
  */
 export class Coin {
   /**
+   * The coin type
+   */
+  public readonly type: string
+  /**
    * The coin represented by the class
    */
   public readonly coin: MoveCoin
@@ -53,6 +57,7 @@ export class Coin {
     const precision = BigNumber(10).pow(decimals)
 
     this.network = getNetwork(network)
+    this.type = type
     this.name = name
     this.symbol = symbol
     this.decimals = decimals
@@ -79,13 +84,12 @@ export class Coin {
    * @returns The coin's current supply
    */
   public async getTotalSupply(): Promise<BigNumber> {
-    const { type } = coinInfo(this.coin)
-    const ret = await aptosClient(this.network).view({
+    const view = await aptosClient(this.network).view({
       function: `0x1::coin::supply`,
-      type_arguments: [type],
+      type_arguments: [this.type],
       arguments: [],
     })
-    const { vec } = ret[0] as any
-    return BigNumber(vec[0]).div(BigNumber(10).pow(8))
+    const { vec } = view[0] as any
+    return BigNumber(vec[0]).div(BigNumber(10).pow(this.decimals))
   }
 }
