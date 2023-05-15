@@ -28,13 +28,13 @@ export const getScriptBytecode = (script: ModuleScript): Uint8Array => {
 const scriptBytecode: { [script in ModuleScript]: string } = {
   // market
   register_and_open_trade: RegisterAndOpenTrade.code as string,
+  register_and_place_limit: RegisterAndPlaceLimit.code as string,
 
   // vault
   remove_and_borrow: RemoveAndBorrow.code as string,
   add_and_borrow: AddAndBorrow.code as string,
   add_and_repay: AddAndRepay.code as string,
   repay_and_remove: RepayAndRemove.code as string,
-  register_and_place_limit: RegisterAndPlaceLimit.code as string,
 
   // ve
   compound_ve: CompoundVe.code as string,

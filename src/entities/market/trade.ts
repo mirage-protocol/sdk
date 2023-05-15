@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-import { PRECISION_8, U64_MAX } from '../../constants'
+import { PRECISION_8 } from '../../constants'
 import { ZERO } from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
 import { assetInfo, coinInfo, MoveCoin, OtherAsset } from '../../constants/coinList'
@@ -93,7 +93,7 @@ export class Trade {
 
     this.initialized = trade !== undefined
 
-    this.id = !!trade ? BigNumber((trade.data as any).id) : BigNumber(U64_MAX)
+    this.id = !!trade ? BigNumber((trade.data as any).id) : BigNumber(0)
 
     this.openingPrice = !!trade ? BigNumber((trade.data as any).opening_price).div(PRECISION_8) : ZERO
 
@@ -125,6 +125,6 @@ export class Trade {
 
   public isActive(): boolean {
     // Inactive trades have an id of u64 max
-    return this.id && !this.id.eq(U64_MAX)
+    return this.positionSize && !this.positionSize.eq(0)
   }
 }

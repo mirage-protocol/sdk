@@ -57,7 +57,7 @@ export const openTrade = async (
           marginVaas,
           getDecimal8Argument(marginAmount), // always 8 decimals
           getDecimal8Argument(positionSize),
-          tradeSide == TradeSide.LONG ? true : false,
+          tradeSide == TradeSide.LONG,
           getDecimal8Argument(desired_price),
           getDecimal8Argument(maxSlippage),
         ],
@@ -82,7 +82,7 @@ export const openTrade = async (
           new aptos.TxnBuilderTypes.TransactionArgumentU8Vector(Uint8Array.from(marginVaas)),
           new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(marginAmount)),
           new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(positionSize)),
-          new aptos.TxnBuilderTypes.TransactionArgumentBool(false),
+          new aptos.TxnBuilderTypes.TransactionArgumentBool(tradeSide == TradeSide.LONG),
           new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(desired_price)),
           new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(maxSlippage)),
         ]
@@ -126,6 +126,7 @@ export const closeTrade = async (
 export const placeLimitOrder = async (
   base: MoveCoin | string,
   underlying: OtherAsset | string,
+  isInitialized: boolean,
   marginAmount: number,
   positionSize: number,
   tradeSide: TradeSide,
@@ -133,7 +134,7 @@ export const placeLimitOrder = async (
   take_profit_price: number,
   stop_loss_price: number,
   network: Network
-): Promise<Payload> => {
+): Promise<PayloadResult> => {
   const baseCoin = typeof base === 'string' ? MoveCoin[base] : base
   const underlyingAsset = typeof underlying === 'string' ? OtherAsset[underlying] || MoveCoin[underlying] : underlying
 
@@ -143,22 +144,50 @@ export const placeLimitOrder = async (
   const baseVaas = baseFeed ? await getPriceFeedUpdateData(baseFeed, getNetwork(network)) : [[0]]
   const underlyingVaas = underlyingFeed ? await getPriceFeedUpdateData(underlyingFeed, getNetwork(network)) : [[0]]
 
-  const payload = {
-    type,
-    function: `${mirageAddress()}::market::place_limit_order`,
-    arguments: [
-      underlyingVaas,
-      baseVaas,
-      getDecimal8Argument(marginAmount), // always 8 decimals
-      getDecimal8Argument(positionSize),
-      tradeSide == TradeSide.LONG ? true : false,
-      getDecimal8Argument(triggerPrice),
-      getDecimal8Argument(take_profit_price),
-      getDecimal8Argument(stop_loss_price),
-    ],
-    type_arguments: getMarketTypeArguments(baseCoin, underlyingAsset),
+  if (isInitialized) {
+    return {
+      natural: {
+        type,
+        function: `${mirageAddress()}::market::place_limit_order`,
+        arguments: [
+          underlyingVaas,
+          baseVaas,
+          getDecimal8Argument(marginAmount), // always 8 decimals
+          getDecimal8Argument(positionSize),
+          tradeSide == TradeSide.LONG ? true : false,
+          getDecimal8Argument(triggerPrice),
+          getDecimal8Argument(take_profit_price),
+          getDecimal8Argument(stop_loss_price),
+        ],
+        type_arguments: getMarketTypeArguments(baseCoin, underlyingAsset),
+      },
+    }
   }
-  return payload
+
+  return {
+    bcs: new aptos.TxnBuilderTypes.TransactionPayloadScript(
+      new aptos.TxnBuilderTypes.Script(
+        getScriptBytecode('register_and_place_limit'),
+        [
+          new aptos.TxnBuilderTypes.TypeTagStruct(
+            aptos.TxnBuilderTypes.StructTag.fromString(assetInfo(marginCoin).type)
+          ),
+          new aptos.TxnBuilderTypes.TypeTagStruct(
+            aptos.TxnBuilderTypes.StructTag.fromString(assetInfo(positionAsset).type)
+          ),
+        ],
+        [
+          new aptos.TxnBuilderTypes.TransactionArgumentU8Vector(Uint8Array.from(positionVaas)),
+          new aptos.TxnBuilderTypes.TransactionArgumentU8Vector(Uint8Array.from(marginVaas)),
+          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(marginAmount)),
+          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(positionSize)),
+          new aptos.TxnBuilderTypes.TransactionArgumentBool(false),
+          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(desired_price)),
+          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(maxSlippage)),
+        ]
+      )
+    ),
+  }
 }
 
 export const updateTpsl = async (
