@@ -143,8 +143,8 @@ export const placeLimitOrder = async (
         type,
         function: `${mirageAddress()}::market::place_limit_order`,
         arguments: [
-          marginVaas,
           positionVaas,
+          marginVaas,
           getDecimal8Argument(marginAmount), // always 8 decimals
           getDecimal8Argument(positionSize),
           tradeSide == TradeSide.LONG ? true : false,
