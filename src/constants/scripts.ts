@@ -1,10 +1,10 @@
-import AddAndBorrow from '../../artifacts/script_hex/add_and_borrow.json'
-import AddAndRepay from '../../artifacts/script_hex/add_and_repay.json'
-import CompoundVe from '../../artifacts/script_hex/compound_ve.json'
-import RegisterAndOpenTrade from '../../artifacts/script_hex/register_and_open_trade.json'
-import RegisterAndPlaceLimit from '../../artifacts/script_hex/register_and_place_limit.json'
-import RemoveAndBorrow from '../../artifacts/script_hex/remove_and_borrow.json'
-import RepayAndRemove from '../../artifacts/script_hex/repay_and_remove.json'
+import AddAndBorrow from '../../artifacts/script_code/add_and_borrow.json'
+import AddAndRepay from '../../artifacts/script_code/add_and_repay.json'
+import CompoundVe from '../../artifacts/script_code/compound_ve.json'
+import RegisterAndOpenTrade from '../../artifacts/script_code/register_and_open_trade.json'
+import RegisterAndPlaceLimit from '../../artifacts/script_code/register_and_place_limit.json'
+import RemoveAndBorrow from '../../artifacts/script_code/remove_and_borrow.json'
+import RepayAndRemove from '../../artifacts/script_code/repay_and_remove.json'
 
 export type ModuleScript =
   | 'register_and_open_trade'
