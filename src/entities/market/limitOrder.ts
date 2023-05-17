@@ -1,14 +1,7 @@
 import BigNumber from 'bignumber.js'
 
 import { PRECISION_8 } from '../../constants'
-
-/**
- * Direction of the trade
- */
-export enum TradeSide {
-  LONG,
-  SHORT,
-}
+import { TradeSide } from './trade'
 
 /**
  * LimitOrder struct data
