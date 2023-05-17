@@ -1,32 +1,35 @@
-import { AptosTypes } from 'aptos'
 import BigNumber from 'bignumber.js'
 
 import { PRECISION_8 } from '../../constants'
-import { ZERO } from '../../constants'
-import { AccountResource, mirageAddress } from '../../constants/accounts'
-import { assetInfo, coinInfo, MoveCoin, OtherAsset } from '../../constants/coinList'
-import { Market } from './market'
 
-export const U256_MAX = BigNumber('115792089237316195423570985008687907853269984665640564039457584007913129639935')
-
+/**
+ * Direction of the trade
+ */
 export enum TradeSide {
-  LONG = 0,
-  SHORT = 1,
-  UNKNOWN = 2,
+  LONG,
+  SHORT,
 }
 
 /**
- * Represents a limit order in the a mirage-protocol market.
+ * LimitOrder struct data
+ */
+export type LimitOrderData = {
+  id: BigNumber
+  is_long: boolean
+  is_increase: boolean
+  position_size: BigNumber
+  margin: { value: BigNumber }
+  trigger_price: BigNumber
+  triggers_above: boolean
+  trigger_payment: { payment: { value: BigNumber } }
+  max_price_slippage: BigNumber
+  expiration: number
+}
+
+/**
+ * Represents a LimitOrder struct
  */
 export class LimitOrder {
-  /**
-   * The base asset of the market
-   */
-  public readonly base: MoveCoin
-  /**
-   * The underlying asset of the market
-   */
-  public readonly underlying: OtherAsset
   /**
    * The id of the trade, global across all markets
    */
@@ -34,127 +37,100 @@ export class LimitOrder {
   /**
    * The opening price of the trade (0 if trade is resting)
    */
-  public readonly openingPrice: BigNumber
-  /**
-   * The opening price of the trade (0 if trade is resting)
-   */
   public readonly tradeSide: TradeSide
+
   /**
-   * This trades margin
+   * Is this a limit order to increase or decrease a position
    */
-  public readonly margin: BigNumber
+  public readonly isIncrease: boolean
   /**
-   * Position size in mUSD
+   * Position size in units of the asset
    */
   public readonly positionSize: BigNumber
   /**
-   * maintenance margin in mUSD
+   * This trades margin amount
    */
-  public readonly maintenanceMargin: BigNumber
+  public readonly margin: BigNumber
   /**
-   * The liquidation price of the trade
+   * The price this order gets triggered
    */
-  public readonly liquidationPrice: BigNumber
+  public readonly triggerPrice: BigNumber
   /**
-   * The take profit price of the trade (0 if unused)
+   * Will this order trigger above or below the triggerPrice
    */
-  public readonly takeProfitPrice: BigNumber
+  public readonly triggersAbove: boolean
   /**
-   * The stop loss price of the trade (0 if unused)
+   * The amount of Aptos Coin resting in the order to pay for a trigger
    */
-  public readonly stopLossPrice: BigNumber
-  /**
-   * An instance of the Market for this Trade
-   */
+  public readonly triggerPayment: BigNumber
 
-  constructor(
-    market: Market,
-    limitOrderData: AptosTypes.MoveValue,
-    base: MoveCoin | string,
-    underlying: MoveCoin | OtherAsset | string
-  ) {
-    this.base = base as MoveCoin
-    this.underlying = underlying as OtherAsset
+  /**
+   * The max price slippage on trigger for the order
+   */
+  public readonly maxPriceSlippage: BigNumber
 
+  /**
+   * The expiration time of the order
+   */
+  public readonly expiration: number
+
+  /**
+   * Construct a LimitOrder instance
+   * @param limitOrderData the data to parse
+   */
+  constructor(limitOrderData: LimitOrderData) {
     this.id = BigNumber(limitOrderData.id)
 
-    this.openingPrice = BigNumber(limitOrderData.opening_price).div(PRECISION_8)
-
-    this.tradeSide = !!limitOrderData
-      ? Boolean(limitOrderData.long)
-        ? TradeSide.LONG
-        : TradeSide.SHORT
-      : TradeSide.UNKNOWN
-
-    this.margin = (
-      this.tradeSide == TradeSide.LONG
-        ? market.longMarginRebase.toElastic(new BigNumber(limitOrderData.margin_part), true)
-        : market.shortMarginRebase.toElastic(new BigNumber(limitOrderData.margin_part), true)
-    ).div(PRECISION_8)
-
-    this.positionSize = !!limitOrderData ? BigNumber(limitOrderData.position_size).div(PRECISION_8) : ZERO
-    this.maintenanceMargin = !!limitOrderData
-      ? BigNumber((limitOrderData.data as any).maintenance_margin).div(PRECISION_8)
-      : ZERO
-    this.liquidationPrice = BigNumber(limitOrderData.liquidation_price).div(PRECISION_8)
-    this.takeProfitPrice = BigNumber(limitOrderData.take_profit_price).div(PRECISION_8)
-    this.stopLossPrice = BigNumber(limitOrderData.stop_loss_price).div(PRECISION_8)
+    this.tradeSide = limitOrderData.is_long ? TradeSide.LONG : TradeSide.SHORT
+    this.isIncrease = limitOrderData.is_increase
+    this.positionSize = limitOrderData.position_size
+    this.margin = limitOrderData.margin.value
+    this.triggerPrice = limitOrderData.trigger_price
+    this.triggersAbove = limitOrderData.triggers_above
+    this.triggerPayment = limitOrderData.trigger_payment.payment.value
+    this.maxPriceSlippage = limitOrderData.max_price_slippage
+    this.expiration = limitOrderData.expiration
   }
-}
 
-export class LimitOrders {
   /**
-   * The limit order type
+   * Get position size
+   * @returns Position size (no precision)
    */
-  public readonly limitOrdersType: string
+  public getUiPositionSize(): number {
+    return this.positionSize.div(PRECISION_8).toNumber()
+  }
+
   /**
-   * The base asset of the market
+   * Get margin amount
+   * @returns Margin amount (no precision)
    */
-  public readonly base: MoveCoin
+  public getUiMargin(): number {
+    return this.margin.div(PRECISION_8).toNumber()
+  }
+
   /**
-   * The underlying asset of the market
+   * Get trigger payment amount
+   * @returns Trigger payment amount (no precision)
    */
-  public readonly underlying: OtherAsset
+  public getUiTriggerPayment(): number {
+    return this.margin.div(PRECISION_8).toNumber()
+  }
+
   /**
-   * Is the resource initialized
+   * Get the percent slippage of the trade
+   * @returns The percent slippage in basis points
    */
-  public readonly initialized: boolean
+  public getPercentSlippage(): number {
+    return this.maxPriceSlippage.div(this.triggerPrice).times(10000).toNumber()
+  }
+
   /**
-   * An instance of the Market for this Trade
+   * Turn a percentage slippage into a price slippage
+   * @param triggerPrice The trigger price of the trade
+   * @param percentSlippage The allowed slippage in basis points
+   * @returns The amount of price slippage allowed
    */
-  public readonly market: Market
-  /**
-   * A users limit orders
-   */
-  public readonly limitOrders: LimitOrder[]
-
-  constructor(
-    userResource: AccountResource[],
-    moduleResources: AccountResource[],
-    base: MoveCoin | string,
-    underlying: MoveCoin | OtherAsset | string
-  ) {
-    this.base = base as MoveCoin
-    this.underlying = underlying as OtherAsset
-    this.market = new Market(moduleResources, base, underlying)
-
-    this.limitOrdersType = `${mirageAddress()}::market::LimitOrder<${coinInfo(base).type}, ${
-      assetInfo(underlying).type
-    }>`
-
-    console.debug(`attempting to get data for type: ${this.limitOrdersType}`)
-
-    const limitOrders = userResource.find((resource) => resource.type === this.limitOrdersType)
-
-    console.debug(`found limit orders: ${JSON.stringify(limitOrders)}`)
-
-    this.initialized = limitOrders !== undefined
-
-    this.limitOrders =
-      !!limitOrders && this.market
-        ? (limitOrders.data as any).limit_orders.map((limitOrderData: AptosTypes.MoveValue) => {
-            return new LimitOrder(this.market, limitOrderData, base, underlying)
-          })
-        : []
+  static percentSlippageToPriceSlippage(triggerPrice: BigNumber, percentSlippage: number): BigNumber {
+    return triggerPrice.times(percentSlippage).div(10000)
   }
 }
