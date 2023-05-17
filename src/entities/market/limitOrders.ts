@@ -1,6 +1,10 @@
 import { AccountResource, assetInfo, coinInfo, mirageAddress, MoveCoin, OtherAsset } from '../../constants'
 import { LimitOrder } from './limitOrder'
 
+/**
+ * Representation of the LimitOrders struct, responsible
+ * for holding a user's orders for a given market
+ */
 export class LimitOrders {
   /**
    * The limit order type
@@ -19,6 +23,12 @@ export class LimitOrders {
    */
   public readonly orders: LimitOrder[]
 
+  /**
+   * Create an instance of LimitOrders
+   * @param userResource The user resources
+   * @param base The base coin of the market (margin)
+   * @param underlying The traded asset
+   */
   constructor(userResource: AccountResource[], base: MoveCoin | string, underlying: MoveCoin | OtherAsset | string) {
     this.base = base as MoveCoin
     this.underlying = underlying as OtherAsset
