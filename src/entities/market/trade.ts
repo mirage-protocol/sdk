@@ -6,6 +6,9 @@ import { AccountResource, mirageAddress } from '../../constants/accounts'
 import { assetInfo, coinInfo, MoveCoin, OtherAsset } from '../../constants/coinList'
 import { Market } from './market'
 
+/**
+ * Direction of the trade
+ */
 export enum TradeSide {
   LONG = 0,
   SHORT = 1,
