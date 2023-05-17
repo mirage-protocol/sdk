@@ -82,4 +82,16 @@ export class VeMirage {
   public getUiVeSupply(): number {
     return balanceToUi(this.totalSupply, MoveCoin.MIRA)
   }
+
+  /**
+   * Get the potential ve for a given amount and time locked
+   * @param miraAmount The mira amount (no precision)
+   * @param seconds  The time in seconds
+   * @returns The potential ve amount (no precision)
+   */
+  static getPotentialVeAmount(miraAmount: number, seconds: number): number {
+    const multiplier = (100000 + (seconds * 328450 - 5182941000000) / 129455283) / 100000
+
+    return miraAmount * multiplier
+  }
 }
