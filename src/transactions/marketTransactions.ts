@@ -9,7 +9,7 @@ import {
   mirageAddress,
   MoveCoin,
   Network,
-  OtherAsset,
+  Perpetual,
 } from '../constants'
 import { getScriptBytecode } from '../constants/scripts'
 import { TradeSide } from '../entities'
@@ -28,7 +28,7 @@ const getMarketTypeArguments = (base: MoveCoin | string, underlying: MoveCoin | 
  */
 export const openTrade = async (
   marginCoin: MoveCoin,
-  positionAsset: MoveCoin | OtherAsset,
+  positionAsset: Perpetual,
   isInitialized: boolean,
   marginAmount: number,
   positionSize: number,
@@ -93,11 +93,11 @@ export const openTrade = async (
  */
 export const closeTrade = async (
   base: MoveCoin | string,
-  underlying: OtherAsset | string,
+  underlying: Perpetual | string,
   network: Network
 ): Promise<Payload> => {
   const baseCoin = typeof base === 'string' ? MoveCoin[base] : base
-  const underlyingAsset = typeof underlying === 'string' ? OtherAsset[underlying] || MoveCoin[underlying] : underlying
+  const underlyingAsset = typeof underlying === 'string' ? Perpetual[underlying] || MoveCoin[underlying] : underlying
 
   const baseFeed = getPriceFeed(baseCoin, network)
   const underlyingFeed = getPriceFeed(underlyingAsset, network)
@@ -121,7 +121,7 @@ export const closeTrade = async (
  */
 export const placeLimitOrder = async (
   marginCoin: MoveCoin,
-  positionAsset: OtherAsset,
+  positionAsset: Perpetual,
   isInitialized: boolean,
   marginAmount: number,
   positionSize: number,
@@ -185,13 +185,13 @@ export const placeLimitOrder = async (
 
 export const updateTpsl = async (
   base: MoveCoin | string,
-  underlying: OtherAsset | string,
+  underlying: Perpetual | string,
   take_profit_price: number,
   stop_loss_price: number,
   network: Network
 ): Promise<Payload> => {
   const baseCoin = typeof base === 'string' ? MoveCoin[base] : base
-  const underlyingAsset = typeof underlying === 'string' ? OtherAsset[underlying] || MoveCoin[underlying] : underlying
+  const underlyingAsset = typeof underlying === 'string' ? Perpetual[underlying] || MoveCoin[underlying] : underlying
 
   const underlyingFeed = getPriceFeed(underlyingAsset, network)
   const underlyingVaas = underlyingFeed ? await getPriceFeedUpdateData(underlyingFeed, getNetwork(network)) : [[0]]
@@ -211,12 +211,12 @@ export const updateTpsl = async (
  */
 export const updateMargin = async (
   base: MoveCoin | string,
-  underlying: OtherAsset | string,
+  underlying: Perpetual | string,
   newMarginAmount: number,
   network: Network
 ): Promise<Payload> => {
   const baseCoin = typeof base === 'string' ? MoveCoin[base] : base
-  const underlyingAsset = typeof underlying === 'string' ? OtherAsset[underlying] || MoveCoin[underlying] : underlying
+  const underlyingAsset = typeof underlying === 'string' ? Perpetual[underlying] || MoveCoin[underlying] : underlying
 
   const baseFeed = getPriceFeed(baseCoin, network)
   const underlyingFeed = getPriceFeed(underlyingAsset, network)
@@ -239,12 +239,12 @@ export const updateMargin = async (
  */
 export const updatePositionSize = async (
   base: MoveCoin | string,
-  underlying: OtherAsset | string,
+  underlying: Perpetual | string,
   newPositionSize: number,
   network: Network
 ): Promise<Payload> => {
   const baseCoin = typeof base === 'string' ? MoveCoin[base] : base
-  const underlyingAsset = typeof underlying === 'string' ? OtherAsset[underlying] || MoveCoin[underlying] : underlying
+  const underlyingAsset = typeof underlying === 'string' ? Perpetual[underlying] || MoveCoin[underlying] : underlying
 
   const baseFeed = getPriceFeed(baseCoin, network)
   const underlyingFeed = getPriceFeed(underlyingAsset, network)

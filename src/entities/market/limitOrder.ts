@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 
 import { PRECISION_8 } from '../../constants'
-import { TradeSide } from './trade'
+import { TradeSide } from './trader'
 
 /**
  * LimitOrder struct data
