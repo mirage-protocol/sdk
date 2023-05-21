@@ -25,7 +25,7 @@ export enum TradeSide {
 /**
  * Data for a user's position
  */
-export type Trade = {
+export type Position = {
   id: BigNumber
   openingPrice: BigNumber
   tradeSide: TradeSide
@@ -53,7 +53,7 @@ export class Trader {
   /**
    * The user's current trade if one is open
    */
-  public readonly trade: Trade | undefined
+  public readonly position: Position | undefined
   /**
    * An instance of the Market this Trader is using
    */
@@ -67,22 +67,29 @@ export class Trader {
    */
   public readonly positionLimit: BigNumber
 
+  /**
+   * Construct an instance of a trader
+   * @param userResource Resources for user account
+   * @param moduleResources Resources for Market account
+   * @param marginAsset The margin of the market
+   * @param perpetualAsset The perpetual being traded
+   */
   constructor(
     userResource: AccountResource[],
     moduleResources: AccountResource[],
     marginAsset: MoveCoin | string,
-    perpetualAsset: MoveCoin | Perpetual | string
+    perpetualAsset: Perpetual | string
   ) {
     this.marginAsset = marginAsset as MoveCoin
     this.perpetualAsset = perpetualAsset as Perpetual
     this.market = new Market(moduleResources, this.marginAsset, this.perpetualAsset)
 
-    const userType = `${mirageAddress()}::market::User<${coinInfo(this.marginAsset).type}, ${
+    const userType = `${mirageAddress()}::market::Trader<${coinInfo(this.marginAsset).type}, ${
       assetInfo(this.perpetualAsset).type
     }>`
     const user = userResource.find((resource) => resource.type === userType)
 
-    const tempTrade: Trade = {
+    const tempTrade: Position = {
       id: ZERO,
       openingPrice: ZERO,
       tradeSide: TradeSide.UNKNOWN,
@@ -95,32 +102,38 @@ export class Trader {
       triggerPayment: ZERO,
     }
 
-    tempTrade.id = !!user ? BigNumber((user.data as any).trade.id) : BigNumber(0)
-    tempTrade.openingPrice = !!user ? BigNumber((user.data as any).trade.opening_price).div(PRECISION_8) : ZERO
+    tempTrade.id = !!user ? BigNumber((user.data as any).position.id) : BigNumber(0)
+    tempTrade.openingPrice = !!user ? BigNumber((user.data as any).position.opening_price).div(PRECISION_8) : ZERO
     tempTrade.tradeSide = !!user
-      ? Boolean((user.data as any).trade.is_long)
+      ? Boolean((user.data as any).position.is_long)
         ? TradeSide.LONG
         : TradeSide.SHORT
       : TradeSide.UNKNOWN
     tempTrade.margin =
       !!user && !!this.market
         ? (tempTrade.tradeSide == TradeSide.LONG
-            ? this.market.longMarginRebase.toElastic(BigNumber((user.data as any).trade.margin_part.amount), true)
-            : this.market.shortMarginRebase.toElastic(BigNumber((user.data as any).trade.margin_part.amount), true)
+            ? this.market.longMarginRebase.toElastic(BigNumber((user.data as any).position.margin_part.amount), true)
+            : this.market.shortMarginRebase.toElastic(BigNumber((user.data as any).position.margin_part.amount), true)
           ).div(PRECISION_8)
         : ZERO
-    tempTrade.positionSize = !!user ? BigNumber((user.data as any).trade.position_size).div(PRECISION_8) : ZERO
+    tempTrade.positionSize = !!user ? BigNumber((user.data as any).position.position_size).div(PRECISION_8) : ZERO
     tempTrade.maintenanceMargin = !!user
-      ? BigNumber((user.data as any).trade.maintenance_margin).div(PRECISION_8)
+      ? BigNumber((user.data as any).position.maintenance_margin).div(PRECISION_8)
       : ZERO
-    tempTrade.liquidationPrice = !!user ? BigNumber((user.data as any).trade.liquidation_price).div(PRECISION_8) : ZERO
+    tempTrade.liquidationPrice = !!user
+      ? BigNumber((user.data as any).position.liquidation_price).div(PRECISION_8)
+      : ZERO
     tempTrade.takeProfitPrice = !!user
-      ? BigNumber((user.data as any).trade.tpsl.take_profit_price).div(PRECISION_8)
+      ? BigNumber((user.data as any).position.tpsl.take_profit_price).div(PRECISION_8)
       : ZERO
-    tempTrade.stopLossPrice = !!user ? BigNumber((user.data as any).trade.tpsl.stop_loss_price).div(PRECISION_8) : ZERO
-    tempTrade.triggerPayment = !!user ? BigNumber((user.data as any).trade.tpsl.stop_loss_price).div(PRECISION_8) : ZERO
+    tempTrade.stopLossPrice = !!user
+      ? BigNumber((user.data as any).position.tpsl.stop_loss_price).div(PRECISION_8)
+      : ZERO
+    tempTrade.triggerPayment = !!user
+      ? BigNumber((user.data as any).position.tpsl.stop_loss_price).div(PRECISION_8)
+      : ZERO
 
-    this.trade = !tempTrade.positionSize.eq(0) ? tempTrade : undefined
+    this.position = !tempTrade.positionSize.eq(0) ? tempTrade : undefined
 
     this.positionLimit = !!user ? BigNumber((user.data as any).position_limit) : ZERO
 
@@ -139,7 +152,7 @@ export class Trader {
    */
   public hasOpenPosition(): boolean {
     // Inactive trades have an id of u64 max
-    return this.trade ? this.trade.positionSize && !this.trade.positionSize.eq(0) : false
+    return this.position ? this.position.positionSize && !this.position.positionSize.eq(0) : false
   }
 
   // TODO:
