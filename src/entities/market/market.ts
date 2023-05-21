@@ -11,17 +11,13 @@ import { Rebase } from '../rebase'
  */
 export class Market {
   /**
-   * The market type
-   */
-  public readonly marketType: string
-  /**
    * The base asset of the market
    */
-  public readonly margin: MoveCoin
+  public readonly marginAsset: MoveCoin
   /**
    * The underlying asset of the market
    */
-  public readonly perpetual: Perpetual
+  public readonly perpetualAsset: Perpetual
   /**
    * Maximum taker fee at the max_oi_imbalance
    */
@@ -72,7 +68,7 @@ export class Market {
    */
   public readonly longMargin: BigNumber
   /**
-   * A rebase representing all long margin (in C)
+   * A rebase representing all long margin (in M)
    * elastic = long margin, base = shares of long margin
    */
   public readonly longMarginRebase: Rebase
@@ -81,7 +77,7 @@ export class Market {
    */
   public readonly shortMargin: BigNumber
   /**
-   * A rebase representing all short margin (in C)
+   * A rebase representing all short margin (in M)
    * elastic = short margin, base = shares of short margin
    */
   public readonly shortMarginRebase: Rebase
@@ -110,7 +106,7 @@ export class Market {
    */
   public readonly liquidationFee: number
   /**
-   * The base percent maintence margin
+   * The base percent maintenance margin
    */
   public readonly baseMaintenanceMargin: number
   /**
@@ -141,22 +137,20 @@ export class Market {
   /**
    * Construct an instance of Market
    * @param moduleResources resources for the market account (MIRAGE_ACCOUNT)
-   * @param margin the margin asset of the market
-   * @param perpetual the asset being traded
+   * @param marginAsset the margin asset of the market
+   * @param perpetualAsset the asset being traded
    */
-  constructor(moduleResources: AccountResource[], margin: MoveCoin | string, perpetual: Perpetual | string) {
-    this.margin = margin as MoveCoin
-    this.perpetual = perpetual as Perpetual
+  constructor(moduleResources: AccountResource[], marginAsset: MoveCoin | string, perpetualAsset: Perpetual | string) {
+    this.marginAsset = marginAsset as MoveCoin
+    this.perpetualAsset = perpetualAsset as Perpetual
 
-    this.marketType = `${mirageAddress()}::market::Market<${coinInfo(margin).type}, ${assetInfo(perpetual).type}>`
-    const exchangeRateType = `${mirageAddress()}::market::ExchangeRate<$${assetInfo(perpetual).type}>`
+    const marketType = `${mirageAddress()}::market::Market<${coinInfo(this.marginAsset).type}, ${
+      assetInfo(this.perpetualAsset).type
+    }>`
+    const oracleType = `${mirageAddress()}::pyth_oracle::Oracle<$${assetInfo(this.perpetualAsset).type}>`
 
-    console.debug(`attempting to get data for type: ${this.marketType}`)
-
-    const market = moduleResources.find((resource) => resource.type === this.marketType)
-    const exchangeRate = moduleResources.find((resource) => resource.type === exchangeRateType)
-
-    console.debug(`found data: ${market}`)
+    const market = moduleResources.find((resource) => resource.type === marketType)
+    const oracle = moduleResources.find((resource) => resource.type === oracleType)
 
     // fees
     this.maxTakerFee = !!market
@@ -224,7 +218,7 @@ export class Market {
     this.basePositionLimit = !!market ? new BigNumber((market.data as any).config.base_position_limit) : ZERO
     this.maxPositionLimit = !!market ? new BigNumber((market.data as any).config.max_position_limit) : ZERO
 
-    this.exchangeRate = !!exchangeRate ? new BigNumber((exchangeRate.data as any).cached_exchange_rate) : ZERO
+    this.exchangeRate = !!oracle ? new BigNumber((oracle.data as any).last_parsed_rate) : ZERO
 
     this.minOrderSize = !!market ? new BigNumber((market.data as any).config.min_order_size) : ZERO
 
@@ -247,4 +241,8 @@ export class Market {
   public getUiShortMargin(): number {
     return this.shortMargin.div(PRECISION_8).toNumber()
   }
+
+  // TODO:
+  // estimateNextFunding
+  //
 }
