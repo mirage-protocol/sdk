@@ -21,7 +21,7 @@ export enum MoveCoin {
 /**
  * Other off-chain assets
  */
-export enum OtherAsset {
+export enum Perpetual {
   BTC = 'BTC',
   ETH = 'ETH',
 }
@@ -59,9 +59,9 @@ export const checkSymbol = (symbol: string): MoveCoin | undefined => {
  * @param coin the MoveCoin to get info for
  * @returns the AssetInfo for the specific coin
  */
-export const assetInfo = (asset: MoveCoin | OtherAsset | string): AssetInfo => {
+export const assetInfo = (asset: MoveCoin | Perpetual | string): AssetInfo => {
   if (typeof asset === 'string') {
-    return mirageCoinList[MoveCoin[asset] || OtherAsset[asset]]
+    return mirageCoinList[MoveCoin[asset] || Perpetual[asset]]
   }
   return mirageCoinList[asset]
 }
@@ -89,7 +89,7 @@ export const balanceToUi = (balance: BigNumber, coin: MoveCoin | string): number
 }
 
 // A list of all coins and their info in the Mirage ecosystem
-const mirageCoinList: { readonly [coin in MoveCoin | OtherAsset]: AssetInfo | CoinInfo } = {
+const mirageCoinList: { readonly [coin in MoveCoin | Perpetual]: AssetInfo | CoinInfo } = {
   [MoveCoin.APT]: {
     name: 'Aptos Coin',
     symbol: 'APT',
@@ -139,22 +139,21 @@ const mirageCoinList: { readonly [coin in MoveCoin | OtherAsset]: AssetInfo | Co
     address: getModuleAddress('dev_usdc'),
     type: `${getModuleAddress('dev_usdc')}::devnet_coins::DevnetUSDC`,
   },
-  // TODO
   [MoveCoin.APT_MUSD_LP]: {
-    name: 'MUSD LP Coin',
+    name: 'APT-MUSD LP Coin',
     symbol: 'musd-lp',
     decimals: 8,
-    address: getModuleAddress('pancake'),
-    type: 'TODO',
+    address: getModuleAddress('mirage_lp'),
+    type: `${getModuleAddress('mirage_lp')}::mirage_lp::lp_coin`,
   },
-  [OtherAsset.ETH]: {
+  [Perpetual.ETH]: {
     name: 'Ethereum',
     symbol: 'ETH',
-    type: `${mirageAddress()}::mirage::METH`,
+    type: `${mirageAddress()}::market_types::ETHPERP`,
   },
-  [OtherAsset.BTC]: {
+  [Perpetual.BTC]: {
     name: 'Bitcoin',
     symbol: 'BTC',
-    type: `${mirageAddress()}::mirage::MBTC`, // TODO: doesn't exist
+    type: `${mirageAddress()}::market_types::BTCPERP`,
   },
 }

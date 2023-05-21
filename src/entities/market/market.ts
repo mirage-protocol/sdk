@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 
 import { FUNDING_PRECISION, PERCENT_PRECISION, PRECISION_8, ZERO } from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
-import { MoveCoin, OtherAsset } from '../../constants/coinList'
+import { MoveCoin, Perpetual } from '../../constants/coinList'
 import { assetInfo, coinInfo } from '../../constants/coinList'
 import { Rebase } from '../rebase'
 
@@ -11,17 +11,13 @@ import { Rebase } from '../rebase'
  */
 export class Market {
   /**
-   * The market type
-   */
-  public readonly marketType: string
-  /**
    * The base asset of the market
    */
-  public readonly base: MoveCoin
+  public readonly marginAsset: MoveCoin
   /**
    * The underlying asset of the market
    */
-  public readonly underlying: OtherAsset
+  public readonly perpetualAsset: Perpetual
   /**
    * Maximum taker fee at the max_oi_imbalance
    */
@@ -42,6 +38,11 @@ export class Market {
    * The minimum funding rate
    */
   public readonly minFundingRate: number
+
+  /**
+   * The maximum funding rate
+   */
+  public readonly maxFundingRate: number
   /**
    * The funding that will be taken next payment
    */
@@ -67,7 +68,7 @@ export class Market {
    */
   public readonly longMargin: BigNumber
   /**
-   * A rebase representing all long margin (in C)
+   * A rebase representing all long margin (in M)
    * elastic = long margin, base = shares of long margin
    */
   public readonly longMarginRebase: Rebase
@@ -76,7 +77,7 @@ export class Market {
    */
   public readonly shortMargin: BigNumber
   /**
-   * A rebase representing all short margin (in C)
+   * A rebase representing all short margin (in M)
    * elastic = short margin, base = shares of short margin
    */
   public readonly shortMarginRebase: Rebase
@@ -105,7 +106,7 @@ export class Market {
    */
   public readonly liquidationFee: number
   /**
-   * The base percent maintence margin
+   * The base percent maintenance margin
    */
   public readonly baseMaintenanceMargin: number
   /**
@@ -125,63 +126,67 @@ export class Market {
    */
   public readonly minOrderSize: BigNumber
   /**
-   * The net accumulated debt for this market
-   */
-  public readonly netAccumulatedDebt: BigNumber
-  /**
-   * The net accumulated fees for this market
-   */
-  public readonly netAccumulatedFees: BigNumber
-  /**
    * If the market is frozen
    */
-  public readonly frozen: boolean
+  public readonly longCloseOnly: boolean
   /**
    * If the market is in an emergency
    */
-  public readonly emergency: boolean
+  public readonly shortCloseOnly: boolean
 
   /**
    * Construct an instance of Market
    * @param moduleResources resources for the market account (MIRAGE_ACCOUNT)
-   * @param base the base asset of the market
-   * @param underlying the underlying asset of the market
+   * @param marginAsset the margin asset of the market
+   * @param perpetualAsset the asset being traded
    */
-  constructor(moduleResources: AccountResource[], base: MoveCoin | string, underlying: MoveCoin | OtherAsset | string) {
-    this.base = base as MoveCoin
-    this.underlying = underlying as OtherAsset
-    this.marketType = `${mirageAddress()}::market::Market<${coinInfo(base).type}, ${assetInfo(underlying).type}>`
+  constructor(moduleResources: AccountResource[], marginAsset: MoveCoin | string, perpetualAsset: Perpetual | string) {
+    this.marginAsset = marginAsset as MoveCoin
+    this.perpetualAsset = perpetualAsset as Perpetual
 
-    console.debug(`attempting to get data for type: ${this.marketType}`)
+    const marketType = `${mirageAddress()}::market::Market<${coinInfo(this.marginAsset).type}, ${
+      assetInfo(this.perpetualAsset).type
+    }>`
+    const oracleType = `${mirageAddress()}::pyth_oracle::Oracle<$${assetInfo(this.perpetualAsset).type}>`
 
-    const market = moduleResources.find((resource) => resource.type === this.marketType)
+    const market = moduleResources.find((resource) => resource.type === marketType)
+    const oracle = moduleResources.find((resource) => resource.type === oracleType)
 
-    console.debug(`found data: ${market}`)
-
+    // fees
     this.maxTakerFee = !!market
-      ? new BigNumber((market.data as any).max_taker_fee).div(PERCENT_PRECISION).times(100).toNumber()
+      ? new BigNumber((market.data as any).config.fees.max_taker_fee).div(PERCENT_PRECISION).times(100).toNumber()
       : 0
     this.minTakerFee = !!market
-      ? new BigNumber((market.data as any).min_taker_fee).div(PERCENT_PRECISION).times(100).toNumber()
+      ? new BigNumber((market.data as any).config.fees.min_taker_fee).div(PERCENT_PRECISION).times(100).toNumber()
       : 0
     this.maxMakerFee = !!market
-      ? new BigNumber((market.data as any).max_maker_fee).div(PERCENT_PRECISION).times(100).toNumber()
+      ? new BigNumber((market.data as any).config.fees.max_maker_fee).div(PERCENT_PRECISION).times(100).toNumber()
       : 0
     this.minMakerFee = !!market
-      ? new BigNumber((market.data as any).min_maker_fee).div(PERCENT_PRECISION).times(100).toNumber()
+      ? new BigNumber((market.data as any).config.fees.min_maker_fee).div(PERCENT_PRECISION).times(100).toNumber()
+      : 0
+    this.liquidationFee = !!market
+      ? new BigNumber((market.data as any).config.fees.liquidation_fee).div(PERCENT_PRECISION).times(100).toNumber()
       : 0
 
-    this.minFundingRate = !!market
-      ? new BigNumber((market.data as any).min_funding_rate).div(PERCENT_PRECISION).times(100).toNumber()
-      : 0
+    // funding
     this.nextFundingRate = !!market
       ? new BigNumber((market.data as any).next_funding_rate).div(FUNDING_PRECISION)
       : ZERO
     this.nextFundingPos = !!market ? Boolean((market.data as any).next_funding_pos) : false
-    this.lastFundingUpdate = !!market ? new BigNumber((market.data as any).last_funding_update) : ZERO
-    this.poolFundingDiscount = !!market ? new BigNumber((market.data as any).last_funding_update) : ZERO
-    this.fundingInterval = !!market ? new BigNumber((market.data as any).pool_funding_discount) : ZERO
+    this.lastFundingUpdate = !!market ? new BigNumber((market.data as any).last_funding_round) : ZERO
+    this.fundingInterval = !!market ? new BigNumber((market.data as any).config.funding.funding_interval) : ZERO
+    this.poolFundingDiscount = !!market
+      ? new BigNumber((market.data as any).config.funding.pool_funding_discount)
+      : ZERO
+    this.minFundingRate = !!market
+      ? new BigNumber((market.data as any).config.funding.min_funding_rate).div(PERCENT_PRECISION).times(100).toNumber()
+      : 0
+    this.maxFundingRate = !!market
+      ? new BigNumber((market.data as any).config.funding.max_funding_rate).div(PERCENT_PRECISION).times(100).toNumber()
+      : 0
 
+    // margin
     this.longMarginRebase = !!market
       ? new Rebase(
           BigNumber((market.data as any).long_margin.elastic.value),
@@ -197,32 +202,28 @@ export class Market {
       : new Rebase(ZERO, ZERO)
     this.shortMargin = this.shortMarginRebase.elastic
 
+    // open interest
     this.longOpenInterest = !!market ? new BigNumber((market.data as any).long_oi) : ZERO
     this.shortOpenInterest = !!market ? new BigNumber((market.data as any).short_io) : ZERO
-    this.maxOpenInterest = !!market ? new BigNumber((market.data as any).max_oi) : ZERO
-    this.maxOpenInterestImbalance = !!market ? new BigNumber((market.data as any).max_oi_imbalance) : ZERO
+    this.maxOpenInterest = !!market ? new BigNumber((market.data as any).config.max_oi) : ZERO
+    this.maxOpenInterestImbalance = !!market ? new BigNumber((market.data as any).config.max_oi_imbalance) : ZERO
 
+    // other params
     this.maxLeverage = !!market
-      ? new BigNumber((market.data as any).max_leverage).div(PERCENT_PRECISION).times(100).toNumber()
-      : 0
-    this.liquidationFee = !!market
-      ? new BigNumber((market.data as any).liquidation_fee).div(PERCENT_PRECISION).times(100).toNumber()
+      ? new BigNumber((market.data as any).config.max_leverage).div(PERCENT_PRECISION).times(100).toNumber()
       : 0
     this.baseMaintenanceMargin = !!market
-      ? new BigNumber((market.data as any).base_maintenance_margin).div(PERCENT_PRECISION).times(100).toNumber()
+      ? new BigNumber((market.data as any).config.base_maintenance_margin).div(PERCENT_PRECISION).times(100).toNumber()
       : 0
-    this.basePositionLimit = !!market ? new BigNumber((market.data as any).base_position_limit) : ZERO
-    this.maxPositionLimit = !!market ? new BigNumber((market.data as any).max_position_limit) : ZERO
+    this.basePositionLimit = !!market ? new BigNumber((market.data as any).config.base_position_limit) : ZERO
+    this.maxPositionLimit = !!market ? new BigNumber((market.data as any).config.max_position_limit) : ZERO
 
-    this.exchangeRate = !!market ? new BigNumber((market.data as any).cached_exchange_rate) : ZERO
+    this.exchangeRate = !!oracle ? new BigNumber((oracle.data as any).last_parsed_rate) : ZERO
 
-    this.minOrderSize = !!market ? new BigNumber((market.data as any).min_order_size) : ZERO
+    this.minOrderSize = !!market ? new BigNumber((market.data as any).config.min_order_size) : ZERO
 
-    this.netAccumulatedDebt = !!market ? new BigNumber((market.data as any).net_accumulated_debt) : ZERO
-    this.netAccumulatedFees = !!market ? new BigNumber((market.data as any).net_accumulated_fees) : ZERO
-
-    this.frozen = !!market ? Boolean((market.data as any).frozen) : false
-    this.emergency = !!market ? Boolean((market.data as any).emergency) : false
+    this.longCloseOnly = !!market ? Boolean((market.data as any).long_close_only) : false
+    this.shortCloseOnly = !!market ? Boolean((market.data as any).short_close_only) : false
   }
 
   /**
@@ -240,4 +241,8 @@ export class Market {
   public getUiShortMargin(): number {
     return this.shortMargin.div(PRECISION_8).toNumber()
   }
+
+  // TODO:
+  // estimateNextFunding
+  //
 }

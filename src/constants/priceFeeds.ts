@@ -1,5 +1,5 @@
 import { getNetwork, Network, pythClient } from '../constants/network'
-import { MoveCoin, OtherAsset } from './coinList'
+import { MoveCoin, Perpetual } from './coinList'
 
 /**
  * All the coins with price feeds
@@ -9,7 +9,7 @@ export const coinsWithPriceFeeds = [
   MoveCoin.mAPT,
   MoveCoin.mETH,
   MoveCoin.devUSDC,
-  OtherAsset.ETH,
+  Perpetual.ETH,
 ] as const
 
 type CoinsWithPriceFeeds = (typeof coinsWithPriceFeeds)[number]
@@ -30,7 +30,7 @@ export const hasPriceFeed = (coin: MoveCoin): boolean => {
  * @returns
  */
 export const getPriceFeed = (
-  coin: MoveCoin | OtherAsset,
+  coin: MoveCoin | Perpetual,
   network: Network | string = Network.MAINNET
 ): string | undefined => {
   return !!PRICE_FEEDS[coin.valueOf()] ? PRICE_FEEDS[coin.valueOf()][getNetwork(network)] : undefined
@@ -66,7 +66,7 @@ const PRICE_FEEDS: { readonly [coin in CoinsWithPriceFeeds]: { readonly [network
     [Network.MAINNET]: '0x03ae4db29ed4ae33d323568895aa00337e658e348b37509f5372ae51f0af00d5',
     [Network.TESTNET]: '0x44a93dddd8effa54ea51076c4e851b6cbbfd938e82eb90197de38fe8876bb66e',
   },
-  [OtherAsset.ETH]: {
+  [Perpetual.ETH]: {
     [Network.MAINNET]: '0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace',
     [Network.TESTNET]: '0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6',
   },
