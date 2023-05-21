@@ -31,7 +31,7 @@ export class Rebase {
    * @returns the converted elastic part
    */
   public toElastic(base: BigNumber, roundUp: boolean): BigNumber {
-    if (this.base.isZero() || this.elastic.isZero()) {
+    if (this.base.isZero()) {
       return this.base
     } else {
       const elastic = base.times(this.elastic).div(this.base)
@@ -51,7 +51,7 @@ export class Rebase {
    */
   toBase(elastic: BigNumber, roundUp: boolean): BigNumber {
     let base = new BigNumber(0)
-    if (this.elastic.isZero()) {
+    if (this.base.isZero() || this.elastic.isZero()) {
       base = elastic
     } else {
       base = elastic.times(this.base).div(this.elastic)
