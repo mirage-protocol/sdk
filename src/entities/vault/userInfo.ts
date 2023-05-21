@@ -6,14 +6,10 @@ import { balanceToUi, coinInfo, MoveCoin } from '../../constants/coinList'
 import { Vault } from './vault'
 
 /**
- * Represent an UserInfo struct.
+ * Represent an VaultUser struct.
  * Stores info about a user's deposits and borrows in a specific vault
  */
-export class UserInfo {
-  /**
-   * The UserInfo type for this vault
-   */
-  public readonly userInfoType: string
+export class VaultUser {
   /**
    * The collateral asset of the vault
    */
@@ -48,12 +44,12 @@ export class UserInfo {
    */
   public readonly positionHealth: number // basis points
   /**
-   * An instance of the Vault for this UserInfo
+   * An instance of the Vault for this VaultUser
    */
   public readonly vault: Vault
 
   /**
-   * Construct an instance of UserInfo
+   * Construct an instance of VaultUser
    * @param userResources resources for specific user account
    * @param moduleResources resources for the vault account (MIRAGE_ACCOUNT)
    * @param collateral the collateral asset of the vault
@@ -69,14 +65,19 @@ export class UserInfo {
     this.borrow = borrow as MoveCoin
     this.vault = new Vault(moduleResources, this.collateral, this.borrow)
 
-    this.userInfoType = `${mirageAddress()}::vault::UserInfo<${coinInfo(collateral).type}, ${coinInfo(borrow).type}>`
+    const vaultUserType = `${mirageAddress()}::vault::VaultUser<${coinInfo(collateral).type}, ${coinInfo(borrow).type}>`
 
-    const user = userResources.find((resource) => resource.type === this.userInfoType)
+    const user = userResources.find((resource) => resource.type === vaultUserType)
 
-    this.userCollateral = !!user ? new BigNumber((user.data as any).user_collateral.value) : ZERO
+    this.userCollateral = !!user ? new BigNumber((user.data as any).collateral.value) : ZERO
+
+    // need to use global debt rebase
     this.userBorrow =
       !!user && !!this.vault
-        ? this.vault.borrowRebase.toElastic(new BigNumber((user.data as any).user_borrow_part.amount), true)
+        ? this.vault.mirage.debtRebase.toElastic(
+            this.vault.borrowRebase.toElastic(new BigNumber((user.data as any).borrow_part.amount), true),
+            false
+          )
         : ZERO
 
     this.liquidationPrice =

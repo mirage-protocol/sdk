@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js'
 import { getPriceFeed, INTEREST_PRECISION, PERCENT_PRECISION, SECONDS_PER_YEAR, ZERO } from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
 import { balanceToUi, coinInfo, MoveCoin } from '../../constants/coinList'
+import { Mirage } from '../mirage'
 import { Rebase } from '../rebase'
 
 /**
@@ -10,10 +11,6 @@ import { Rebase } from '../rebase'
  * Deposit collateral and borrow "mirage-assets".
  */
 export class Vault {
-  /**
-   * The vaults type
-   */
-  public readonly vaultType: string
   /**
    * The collateral asset of the vault
    */
@@ -56,6 +53,11 @@ export class Vault {
    */
   public readonly liquidationPercent: number
 
+  /**
+   * A representation of the global mirage module
+   */
+  public readonly mirage: Mirage
+
   public readonly priceFeeds: {
     readonly collateral: string | undefined
     readonly borrow: string | undefined
@@ -70,14 +72,10 @@ export class Vault {
   constructor(moduleResources: AccountResource[], collateral: MoveCoin | string, borrow: MoveCoin | string) {
     this.collateral = collateral as MoveCoin
     this.borrow = borrow as MoveCoin
+    this.mirage = new Mirage(moduleResources, this.borrow)
 
-    this.vaultType = `${mirageAddress()}::vault::Vault<${coinInfo(collateral).type}, ${coinInfo(borrow).type}>`
-
-    console.debug(`attempting to get data for type: ${this.vaultType}`)
-
-    const vault = moduleResources.find((resource) => resource.type === this.vaultType)
-
-    console.debug(`found data: ${vault}`)
+    const vaultType = `${mirageAddress()}::vault::Vault<${coinInfo(collateral).type}, ${coinInfo(borrow).type}>`
+    const vault = moduleResources.find((resource) => resource.type === vaultType)
 
     this.borrowFeePercent = !!vault
       ? BigNumber((vault.data as any).borrow_fee)
@@ -101,7 +99,9 @@ export class Vault {
 
     this.exchangeRate = !!vault ? BigNumber((vault.data as any).cached_exchange_rate) : ZERO
 
-    this.totalBorrow = !!vault ? BigNumber((vault.data as any).borrow.elastic) : ZERO
+    this.totalBorrow = !!vault
+      ? this.mirage.debtRebase.toElastic(BigNumber((vault.data as any).borrow.elastic), false)
+      : ZERO
     this.totalCollateral = !!vault ? BigNumber((vault.data as any).total_collateral) : ZERO
 
     this.borrowRebase = !!vault
@@ -144,5 +144,12 @@ export class Vault {
    */
   public getBorrowRebase(): Rebase {
     return this.borrowRebase
+  }
+
+  /**
+   * Get some amount of vault base in total coin by checking global debt state
+   */
+  public baseToCoin(baseAmount: BigNumber): BigNumber {
+    return this.mirage.debtRebase.toElastic(this.borrowRebase.toElastic(baseAmount, true), false)
   }
 }
