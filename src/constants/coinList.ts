@@ -139,22 +139,21 @@ const mirageCoinList: { readonly [coin in MoveCoin | Perpetual]: AssetInfo | Coi
     address: getModuleAddress('dev_usdc'),
     type: `${getModuleAddress('dev_usdc')}::devnet_coins::DevnetUSDC`,
   },
-  // TODO
   [MoveCoin.APT_MUSD_LP]: {
-    name: 'MUSD LP Coin',
+    name: 'APT-MUSD LP Coin',
     symbol: 'musd-lp',
     decimals: 8,
-    address: getModuleAddress('pancake'),
-    type: 'TODO',
+    address: getModuleAddress('mirage_lp'),
+    type: `${getModuleAddress('mirage_lp')}::mirage_lp::lp_coin`,
   },
   [Perpetual.ETH]: {
     name: 'Ethereum',
     symbol: 'ETH',
-    type: `${mirageAddress()}::mirage::METH`,
+    type: `${mirageAddress()}::market_types::ETHPERP`,
   },
   [Perpetual.BTC]: {
     name: 'Bitcoin',
     symbol: 'BTC',
-    type: `${mirageAddress()}::mirage::MBTC`, // TODO: doesn't exist
+    type: `${mirageAddress()}::market_types::BTCPERP`,
   },
 }
