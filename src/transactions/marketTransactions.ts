@@ -87,7 +87,7 @@ export const openTrade = async (
           new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(maxSlippage)),
           new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(takeProfitPrice)),
           new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(stopLossPrice)),
-         ]
+        ]
       )
     ),
   }
