@@ -66,6 +66,10 @@ export class Trader {
    * The max position size for this Market and account
    */
   public readonly positionLimit: BigNumber
+  /**
+   * Is the trader registered
+   */
+  public readonly isRegistered: boolean
 
   /**
    * Construct an instance of a trader
@@ -88,6 +92,8 @@ export class Trader {
       assetInfo(this.perpetualAsset).type
     }>`
     const user = userResource.find((resource) => resource.type === userType)
+
+    this.isRegistered = user !== undefined
 
     const tempTrade: Position = {
       id: ZERO,
