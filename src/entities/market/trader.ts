@@ -91,6 +91,7 @@ export class Trader {
     const userType = `${mirageAddress()}::market::Trader<${coinInfo(this.marginAsset).type}, ${
       assetInfo(this.perpetualAsset).type
     }>`
+
     const user = userResource.find((resource) => resource.type === userType)
 
     this.isRegistered = user !== undefined
@@ -136,14 +137,21 @@ export class Trader {
       ? BigNumber((user.data as any).position.tpsl.stop_loss_price).div(PRECISION_8)
       : ZERO
     tempTrade.triggerPayment = !!user
-      ? BigNumber((user.data as any).position.tpsl.stop_loss_price).div(PRECISION_8)
+      ? BigNumber((user.data as any).position.tpsl.trigger_payment.value).div(PRECISION_8)
       : ZERO
 
     this.position = !tempTrade.positionSize.eq(0) ? tempTrade : undefined
 
     this.positionLimit = !!user ? BigNumber((user.data as any).position_limit) : ZERO
 
-    const ordersArr = !!user ? (user.data as any).limit_orders : []
+
+    const limitOrderType = `${mirageAddress()}::market::LimitOrders<${coinInfo(this.marginAsset).type}, ${
+      assetInfo(this.perpetualAsset).type
+    }>`
+
+    const limitOrders = userResource.find((resource) => resource.type === limitOrderType)
+
+    const ordersArr = !!limitOrders ? (limitOrders.data as any).orders : []
     const tempOrders: LimitOrder[] = []
 
     for (const restingOrder of ordersArr) {
