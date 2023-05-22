@@ -144,7 +144,6 @@ export class Trader {
 
     this.positionLimit = !!user ? BigNumber((user.data as any).position_limit) : ZERO
 
-
     const limitOrderType = `${mirageAddress()}::market::LimitOrders<${coinInfo(this.marginAsset).type}, ${
       assetInfo(this.perpetualAsset).type
     }>`
