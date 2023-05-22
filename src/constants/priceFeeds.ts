@@ -10,6 +10,7 @@ export const coinsWithPriceFeeds = [
   MoveCoin.mETH,
   MoveCoin.devUSDC,
   Perpetual.ETH,
+  Perpetual.BTC,
 ] as const
 
 type CoinsWithPriceFeeds = (typeof coinsWithPriceFeeds)[number]
@@ -77,5 +78,9 @@ const PRICE_FEEDS: { readonly [coin in CoinsWithPriceFeeds]: { readonly [network
   [MoveCoin.devUSDC]: {
     [Network.MAINNET]: '0xeaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a',
     [Network.TESTNET]: '0x41f3625971ca2ed2263e78573fe5ce23e13d2558ed3f2e47ab0f84fb9e7ae722',
+  },
+  [Perpetual.BTC]: {
+    [Network.MAINNET]: '0xe62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43',
+    [Network.TESTNET]: '0xf9c0172ba10dfa4d19088d94f5bf61d3b54d5bd7483a322a982e1373ee8ea31b',
   },
 }
