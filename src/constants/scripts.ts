@@ -1,6 +1,5 @@
 import AddAndBorrow from '../../artifacts/script_code/add_and_borrow.json'
 import AddAndRepay from '../../artifacts/script_code/add_and_repay.json'
-import CompoundVe from '../../artifacts/script_code/compound_ve.json'
 import RegisterAndOpenTrade from '../../artifacts/script_code/register_and_open_trade.json'
 import RegisterAndPlaceLimit from '../../artifacts/script_code/register_and_place_limit.json'
 import RemoveAndBorrow from '../../artifacts/script_code/remove_and_borrow.json'
@@ -13,7 +12,6 @@ export type ModuleScript =
   | 'add_and_repay'
   | 'repay_and_remove'
   | 'register_and_place_limit'
-  | 'compound_ve'
 
 export const getScriptBytecode = (script: ModuleScript): Uint8Array => {
   try {
@@ -35,7 +33,4 @@ const scriptBytecode: { [script in ModuleScript]: string } = {
   add_and_borrow: AddAndBorrow.code as string,
   add_and_repay: AddAndRepay.code as string,
   repay_and_remove: RepayAndRemove.code as string,
-
-  // ve
-  compound_ve: CompoundVe.code as string,
 }
