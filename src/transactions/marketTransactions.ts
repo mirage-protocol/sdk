@@ -12,7 +12,7 @@ import {
   Perpetual,
 } from '../constants'
 import { getScriptBytecode } from '../constants/scripts'
-import { TradeSide } from '../entities'
+import { PositionSide } from '../entities'
 import { getBCSDecimal8Argument, getDecimal8Argument, MoveType, Payload, PayloadResult } from './'
 
 const type = 'entry_function_payload'
@@ -23,16 +23,16 @@ const getMarketTypeArguments = (base: MoveCoin | string, underlying: MoveCoin | 
 }
 
 /**
- * Open a trade in a market at the current price and registers user resources if uninitialized
+ * Open a position in a market at the current price and registers user resources if uninitialized
  * @returns script or payload promise for the transaction
  */
-export const openTrade = async (
+export const openPosition = async (
   marginCoin: MoveCoin,
   perpetual: Perpetual,
   isInitialized: boolean,
   marginAmount: number,
   positionSize: number,
-  tradeSide: TradeSide,
+  side: PositionSide,
   desired_price: number,
   maxSlippage: number,
   takeProfitPrice: number,
@@ -48,14 +48,14 @@ export const openTrade = async (
   if (isInitialized) {
     return {
       natural: {
-        function: `${mirageAddress()}::market::open_trade`,
+        function: `${mirageAddress()}::market::open_position`,
         type,
         arguments: [
           perpetualVaas,
           marginVaas,
           getDecimal8Argument(marginAmount), // always 8 decimals
           getDecimal8Argument(positionSize),
-          tradeSide == TradeSide.LONG,
+          side == PositionSide.LONG,
           getDecimal8Argument(desired_price),
           getDecimal8Argument(maxSlippage),
           getDecimal8Argument(takeProfitPrice),
@@ -68,7 +68,7 @@ export const openTrade = async (
   return {
     bcs: new aptos.TxnBuilderTypes.TransactionPayloadScript(
       new aptos.TxnBuilderTypes.Script(
-        getScriptBytecode('register_and_open_trade'),
+        getScriptBytecode('register_and_open_position'),
         [
           new aptos.TxnBuilderTypes.TypeTagStruct(
             aptos.TxnBuilderTypes.StructTag.fromString(assetInfo(marginCoin).type)
@@ -82,7 +82,7 @@ export const openTrade = async (
           new aptos.TxnBuilderTypes.TransactionArgumentU8Vector(Uint8Array.from(marginVaas)),
           new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(marginAmount)),
           new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(positionSize)),
-          new aptos.TxnBuilderTypes.TransactionArgumentBool(tradeSide == TradeSide.LONG),
+          new aptos.TxnBuilderTypes.TransactionArgumentBool(side == PositionSide.LONG),
           new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(desired_price)),
           new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(maxSlippage)),
           new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(takeProfitPrice)),
@@ -94,10 +94,10 @@ export const openTrade = async (
 }
 
 /**
- * Close a trade in a market at the current price
+ * Close a position in a market at the current price
  * @returns payload promise for the transaction
  */
-export const closeTrade = async (marginCoin: MoveCoin, perpetual: Perpetual, network: Network): Promise<Payload> => {
+export const closePosition = async (marginCoin: MoveCoin, perpetual: Perpetual, network: Network): Promise<Payload> => {
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetual, network)
 
@@ -106,7 +106,7 @@ export const closeTrade = async (marginCoin: MoveCoin, perpetual: Perpetual, net
 
   const payload = {
     type,
-    function: `${mirageAddress()}::market::close_trade`,
+    function: `${mirageAddress()}::market::close_position`,
     arguments: [perpetualVaas, marginVaas],
     type_arguments: getMarketTypeArguments(marginCoin, perpetual),
   }
@@ -114,7 +114,7 @@ export const closeTrade = async (marginCoin: MoveCoin, perpetual: Perpetual, net
 }
 
 /**
- * Place a trade that can be trigger when the market price
+ * Place a position that can be trigger when the market price
  * of a long/short is below/above a trigger price
  * @returns payload promise for the transaction
  */
@@ -124,7 +124,7 @@ export const placeLimitOrder = async (
   isInitialized: boolean,
   marginAmount: number,
   positionSize: number,
-  tradeSide: TradeSide,
+  side: PositionSide,
   triggerPrice: number,
   take_profit_price: number,
   stop_loss_price: number,
@@ -146,7 +146,7 @@ export const placeLimitOrder = async (
           marginVaas,
           getDecimal8Argument(marginAmount), // always 8 decimals
           getDecimal8Argument(positionSize),
-          tradeSide == TradeSide.LONG ? true : false,
+          side == PositionSide.LONG ? true : false,
           getDecimal8Argument(triggerPrice),
           getDecimal8Argument(take_profit_price),
           getDecimal8Argument(stop_loss_price),
@@ -205,7 +205,7 @@ export const updateTpsl = async (
 }
 
 /**
- * Update the margin of a trade
+ * Update the margin of a position
  * @returns payload promise for the transaction
  */
 export const updateMargin = async (
@@ -233,7 +233,7 @@ export const updateMargin = async (
 }
 
 /**
- * Update the position size of a trade
+ * Update the position size of a position
  * @returns payload promise for the transaction
  */
 export const updatePositionSize = async (
@@ -253,7 +253,7 @@ export const updatePositionSize = async (
 
   const payload = {
     type,
-    function: `${mirageAddress()}::market::close_trade`,
+    function: `${mirageAddress()}::market::close_position`,
     arguments: [perpetualVaas, marginVaas, getDecimal8Argument(newPositionSize)],
     type_arguments: getMarketTypeArguments(baseCoin, underlyingAsset),
   }
