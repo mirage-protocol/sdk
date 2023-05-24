@@ -14,9 +14,9 @@ import { LimitOrder, LimitOrderData } from './limitOrder'
 import { Market } from './market'
 
 /**
- * Direction of a trade
+ * Direction of a position
  */
-export enum TradeSide {
+export enum PositionSide {
   LONG = 0,
   SHORT = 1,
   UNKNOWN = 2,
@@ -28,7 +28,7 @@ export enum TradeSide {
 export type Position = {
   id: BigNumber
   openingPrice: BigNumber
-  tradeSide: TradeSide
+  side: PositionSide
   margin: BigNumber
   positionSize: BigNumber
   maintenanceMargin: BigNumber
@@ -43,7 +43,7 @@ export type Position = {
  */
 export class Trader {
   /**
-   * The margin asset of the trade
+   * The margin asset of the position
    */
   public readonly marginAsset: MoveCoin
   /**
@@ -51,7 +51,7 @@ export class Trader {
    */
   public readonly perpetualAsset: Perpetual
   /**
-   * The user's current trade if one is open
+   * The user's current position if one is open
    */
   public readonly position: Position | undefined
   /**
@@ -99,7 +99,7 @@ export class Trader {
     const tempTrade: Position = {
       id: ZERO,
       openingPrice: ZERO,
-      tradeSide: TradeSide.UNKNOWN,
+      side: PositionSide.UNKNOWN,
       margin: ZERO,
       positionSize: ZERO,
       maintenanceMargin: ZERO,
@@ -111,14 +111,14 @@ export class Trader {
 
     tempTrade.id = !!user ? BigNumber((user.data as any).position.id) : BigNumber(0)
     tempTrade.openingPrice = !!user ? BigNumber((user.data as any).position.opening_price).div(PRECISION_8) : ZERO
-    tempTrade.tradeSide = !!user
+    tempTrade.side = !!user
       ? Boolean((user.data as any).position.is_long)
-        ? TradeSide.LONG
-        : TradeSide.SHORT
-      : TradeSide.UNKNOWN
+        ? PositionSide.LONG
+        : PositionSide.SHORT
+      : PositionSide.UNKNOWN
     tempTrade.margin =
       !!user && !!this.market
-        ? (tempTrade.tradeSide == TradeSide.LONG
+        ? (tempTrade.side == PositionSide.LONG
             ? this.market.longMarginRebase.toElastic(BigNumber((user.data as any).position.margin_part.amount), true)
             : this.market.shortMarginRebase.toElastic(BigNumber((user.data as any).position.margin_part.amount), true)
           ).div(PRECISION_8)

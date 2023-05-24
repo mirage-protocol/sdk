@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 
 import { PRECISION_8 } from '../../constants'
-import { TradeSide } from './trader'
+import { PositionSide } from './trader'
 
 /**
  * LimitOrder struct data
@@ -30,7 +30,7 @@ export class LimitOrder {
   /**
    * The opening price of the trade (0 if trade is resting)
    */
-  public readonly tradeSide: TradeSide
+  public readonly tradeSide: PositionSide
 
   /**
    * Is this a limit order to increase or decrease a position
@@ -74,7 +74,7 @@ export class LimitOrder {
   constructor(limitOrderData: LimitOrderData) {
     this.id = BigNumber(limitOrderData.id)
 
-    this.tradeSide = limitOrderData.is_long ? TradeSide.LONG : TradeSide.SHORT
+    this.tradeSide = limitOrderData.is_long ? PositionSide.LONG : PositionSide.SHORT
     this.isIncrease = limitOrderData.is_increase
     this.positionSize = limitOrderData.position_size
     this.margin = limitOrderData.margin.value
