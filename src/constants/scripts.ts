@@ -1,6 +1,6 @@
 import AddAndBorrow from '../../artifacts/script_code/add_and_borrow.json'
 import AddAndRepay from '../../artifacts/script_code/add_and_repay.json'
-import RegisterAndOpenTrade from '../../artifacts/script_code/register_and_open_position.json'
+import RegisterAndOpenPosition from '../../artifacts/script_code/register_and_open_position.json'
 import RegisterAndPlaceLimit from '../../artifacts/script_code/register_and_place_limit.json'
 import RemoveAndBorrow from '../../artifacts/script_code/remove_and_borrow.json'
 import RepayAndRemove from '../../artifacts/script_code/repay_and_remove.json'
@@ -25,7 +25,7 @@ export const getScriptBytecode = (script: ModuleScript): Uint8Array => {
 
 const scriptBytecode: { [script in ModuleScript]: string } = {
   // market
-  register_and_open_position: RegisterAndOpenTrade.code as string,
+  register_and_open_position: RegisterAndOpenPosition.code as string,
   register_and_place_limit: RegisterAndPlaceLimit.code as string,
 
   // vault
