@@ -21,7 +21,9 @@ export enum MoveModules {
   MIRAGE_LP = 'mirage_lp',
   DEV_USDC = 'dev_usdc', // "devnet_coins",
   LAYER_ZERO = 'layer_zero', // "asset",
-  PANCAKE = 'pancake', // "router"
+  // swap
+  // gov
+  // deployer
 }
 
 /**
@@ -55,7 +57,7 @@ const MODULES: { readonly [module in MoveModules]: Account } = {
   },
   ['mirage_lp']: {
     name: 'mirage_lp',
-    address: new HexString('0xf12f80a44c52384fe514a558d6554a3125735a186ddcb5625c93853ca865f21c'),
+    address: new HexString('0xfb780d33cef0e5dd33f7872da45cb404f07733aa13fbd70c16ad572b7feedc17'),
   },
   ['dev_usdc']: {
     name: 'devnet_coins',
@@ -64,9 +66,5 @@ const MODULES: { readonly [module in MoveModules]: Account } = {
   ['layer_zero']: {
     name: 'asset',
     address: new HexString('0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa'),
-  },
-  ['pancake']: {
-    name: 'router',
-    address: new HexString('c7efb4076dbe143cbcd98cfaaa929ecfc8f299203dfff63b95ccb6bfe19850fa'),
   },
 }
