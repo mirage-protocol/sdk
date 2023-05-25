@@ -22,9 +22,9 @@ export enum MoveCoin {
  * Other off-chain assets
  */
 export enum Perpetual {
-  BTCPERP = 'BTC',
-  ETHPERP = 'ETH',
-  APTPERP = 'APT',
+  BTCPERP = 'BTCPERP',
+  ETHPERP = 'ETHPERP',
+  APTPERP = 'APTPERP',
 }
 
 /**
@@ -149,17 +149,17 @@ const mirageCoinList: { readonly [coin in MoveCoin | Perpetual]: AssetInfo | Coi
   },
   [Perpetual.ETHPERP]: {
     name: 'Ethereum Perpetuals Market',
-    symbol: 'ETHPERP',
+    symbol: 'ETH',
     type: `${mirageAddress()}::market_types::ETHPERP`,
   },
   [Perpetual.BTCPERP]: {
     name: 'Bitcoin Perpetuals Market',
-    symbol: 'BTCPERP',
+    symbol: 'BTC',
     type: `${mirageAddress()}::market_types::BTCPERP`,
   },
   [Perpetual.APTPERP]: {
     name: 'Aptos Perpetuals Market',
-    symbol: 'APTPERP',
+    symbol: 'APT',
     type: `${mirageAddress()}::market_types::APTPERP`,
   },
 }
