@@ -168,6 +168,22 @@ export class Trader {
     return this.position ? this.position.positionSize && !this.position.positionSize.eq(0) : false
   }
 
+  static getLeverage(position: Position, perpetualPrice: number, marginPrice: number): number {
+    return (position.positionSize.div(position.margin).toNumber() * perpetualPrice) / marginPrice
+  }
+
+  static estimatePnl(position: Position, perpetualPrice: number, marginPrice: number): number {
+    return (
+      (position.positionSize.toNumber() * perpetualPrice -
+        position.positionSize.toNumber() * position.openingPrice.toNumber()) /
+      marginPrice
+    )
+  }
+
+  static estimatePercentPnl(position: Position, perpetualPrice: number, marginPrice: number): number {
+    return (Trader.estimatePnl(position, perpetualPrice, marginPrice) * 100) / position.margin.toNumber()
+  }
+
   // TODO:
   // getLeverage()
   //
