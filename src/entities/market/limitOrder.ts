@@ -24,11 +24,15 @@ export type LimitOrderData = {
  */
 export class LimitOrder {
   /**
-   * The id of the trade, global across all markets
+   * The id of the order, global across all markets
    */
   public readonly id: BigNumber
   /**
-   * The opening price of the trade (0 if trade is resting)
+   * The index of the order in the users account
+   */
+  public readonly index: number
+  /**
+   * The opening price of the order (0 if order is resting)
    */
   public readonly tradeSide: PositionSide
 
@@ -71,8 +75,9 @@ export class LimitOrder {
    * Construct a LimitOrder instance
    * @param limitOrderData the data to parse
    */
-  constructor(limitOrderData: LimitOrderData) {
+  constructor(limitOrderData: LimitOrderData, index: number) {
     this.id = BigNumber(limitOrderData.id)
+    this.index = index
 
     this.tradeSide = limitOrderData.is_long ? PositionSide.LONG : PositionSide.SHORT
     this.isIncrease = limitOrderData.is_increase

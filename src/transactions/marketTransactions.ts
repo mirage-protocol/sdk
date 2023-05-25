@@ -174,8 +174,8 @@ export const placeLimitOrder = async (
           new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(marginAmount)),
           new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(positionSize)),
           new aptos.TxnBuilderTypes.TransactionArgumentBool(false),
-          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(0)),
-          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(0)),
+          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(take_profit_price)),
+          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(stop_loss_price)),
         ]
       )
     ),
