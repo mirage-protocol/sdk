@@ -1,9 +1,6 @@
 # production
 /dist
 
-# scripts
-artifacts
-
 # dependencies
 /node_modules
 /.pnp
