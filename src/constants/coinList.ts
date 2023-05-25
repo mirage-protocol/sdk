@@ -22,9 +22,9 @@ export enum MoveCoin {
  * Other off-chain assets
  */
 export enum Perpetual {
-  BTCPERP = 'BTCPERP',
-  ETHPERP = 'ETHPERP',
-  APTPERP = 'APTPERP',
+  BTCPERP = 'BTC',
+  ETHPERP = 'ETH',
+  APTPERP = 'APT',
 }
 
 /**
