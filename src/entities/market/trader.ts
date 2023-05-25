@@ -153,9 +153,10 @@ export class Trader {
     const ordersArr = !!limitOrders ? (limitOrders.data as any).orders : []
     const tempOrders: LimitOrder[] = []
 
-    for (const restingOrder of ordersArr) {
-      tempOrders.push(new LimitOrder(restingOrder as LimitOrderData))
+    for (let index = 0; index < ordersArr.length; ++index) {
+      tempOrders.push(new LimitOrder(ordersArr[index] as LimitOrderData, index))
     }
+
     this.limitOrders = tempOrders
   }
 
