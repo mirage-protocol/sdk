@@ -18,8 +18,8 @@ import { getBCSDecimal8Argument, getDecimal8Argument, MoveType, Payload, Payload
 const type = 'entry_function_payload'
 
 // Get the types for this market
-const getMarketTypeArguments = (base: MoveCoin | string, underlying: MoveCoin | string): MoveType[] => {
-  return [coinInfo(base).type, assetInfo(underlying).type]
+const getMarketTypeArguments = (margin: MoveCoin | string, perpetual: Perpetual): MoveType[] => {
+  return [coinInfo(margin).type, assetInfo(perpetual).type]
 }
 
 /**
@@ -101,8 +101,8 @@ export const closePosition = async (marginCoin: MoveCoin, perpetual: Perpetual, 
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetual, network)
 
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : [[0]]
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : [[0]]
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
 
   const payload = {
     type,
