@@ -13,7 +13,8 @@ import {
 } from '../constants'
 import { getScriptBytecode } from '../constants/scripts'
 import { PositionSide } from '../entities'
-import { getBCSDecimal8Argument, getDecimal8Argument, MoveType, Payload, PayloadResult } from './'
+import { getBCSCoinAmountArgument, getBCSDecimal8Argument, getDecimal8Argument, MoveType, Payload, PayloadResult } from './'
+import { getCoinAmountArgument } from './'
 
 const type = 'entry_function_payload'
 
@@ -37,6 +38,7 @@ export const openPosition = async (
   maxSlippage: number,
   takeProfitPrice: number,
   stopLossPrice: number,
+  triggerPaymentAmount: number,
   network: Network
 ): Promise<PayloadResult> => {
   const marginFeed = getPriceFeed(marginCoin, network)
@@ -60,6 +62,7 @@ export const openPosition = async (
           getDecimal8Argument(maxSlippage),
           getDecimal8Argument(takeProfitPrice),
           getDecimal8Argument(stopLossPrice),
+          getCoinAmountArgument(MoveCoin.APT, triggerPaymentAmount),
         ],
         type_arguments: getMarketTypeArguments(marginCoin, perpetual),
       },
@@ -87,6 +90,7 @@ export const openPosition = async (
           new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(maxSlippage)),
           new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(takeProfitPrice)),
           new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(stopLossPrice)),
+          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSCoinAmountArgument(MoveCoin.APT, triggerPaymentAmount)),
         ]
       )
     ),
