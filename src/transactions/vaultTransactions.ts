@@ -20,41 +20,38 @@ const getVaultTypeArguments = (collateral: MoveCoin | string, borrow: MoveCoin |
 
 /**
  * Build a payload to add collateral to a vault
- * @param collateral the collateral of the vault (e.g APT)
- * @param borrow the borrow of the vault (e.g. mUSD)
+ * @param collateralCoin the collateral of the vault (e.g APT)
+ * @param borrowCoin the borrow of the vault (e.g. mUSD)
  * @param addAmount the amount to add to the vault, no precision
  * @returns payload promise for the transaction
  */
 export const addCollateral = async (
-  collateral: MoveCoin | string,
-  borrow: MoveCoin | string,
+  collateralCoin: MoveCoin,
+  borrowCoin: MoveCoin,
   amount: number
 ): Promise<Payload> => {
   return {
     type,
     function: `${mirageAddress()}::vault::add_collateral`,
-    arguments: [getCoinAmountArgument(collateral, amount)],
-    type_arguments: getVaultTypeArguments(collateral, borrow),
+    arguments: [getCoinAmountArgument(collateralCoin, amount)],
+    type_arguments: getVaultTypeArguments(collateralCoin, borrowCoin),
   }
 }
 
 /**
  * Build a payload to borrow mirage asset
- * @param collateral the collateral of the vault (e.g APT)
- * @param borrow the borrow of the vault (e.g. mUSD)
+ * @param collateralCoin the collateral of the vault (e.g APT)
+ * @param borrowCoin the borrow of the vault (e.g. mUSD)
  * @param borrowAmount the amount to add to the borrow from the vault, no precision
  * @param network the network to process this transaction on
  * @returns payload promise for the transaction
  */
 export const borrow = async (
-  collateral: MoveCoin | string,
-  borrow: MoveCoin | string,
+  collateralCoin: MoveCoin,
+  borrowCoin: MoveCoin,
   borrowAmount: number,
   network: Network | string = Network.MAINNET
 ): Promise<Payload> => {
-  const collateralCoin = typeof collateral === 'string' ? MoveCoin[collateral] : collateral
-  const borrowCoin = typeof borrow === 'string' ? MoveCoin[borrow] : borrow
-
   const collateralFeed = getPriceFeed(collateralCoin, network)
   const borrowFeed = getPriceFeed(borrowCoin, network)
 
@@ -64,28 +61,25 @@ export const borrow = async (
   return {
     type,
     function: `${mirageAddress()}::vault::borrow`,
-    arguments: [getCoinAmountArgument(borrow, borrowAmount), collateralVaas, borrowVaas],
-    type_arguments: getVaultTypeArguments(collateral, borrow),
+    arguments: [getCoinAmountArgument(borrowCoin, borrowAmount), collateralVaas, borrowVaas],
+    type_arguments: getVaultTypeArguments(collateralCoin, borrowCoin),
   }
 }
 
 /**
  * Build a payload to remove collateral from a vault
- * @param collateral the collateral of the vault (e.g APT)
- * @param borrow the borrow of the vault (e.g. mUSD)
+ * @param collateralCoin the collateral of the vault (e.g APT)
+ * @param borrowCoin the borrow of the vault (e.g. mUSD)
  * @param removeAmount the amount to remove from the vault, no precision
  * @param network the network to process this transaction on
  * @returns payload promise for the transaction
  */
 export const removeCollateral = async (
-  collateral: MoveCoin | string,
-  borrow: MoveCoin | string,
+  collateralCoin: MoveCoin,
+  borrowCoin: MoveCoin, 
   removeAmount: number,
   network: Network | string = Network.MAINNET
 ): Promise<Payload> => {
-  const collateralCoin = typeof collateral === 'string' ? MoveCoin[collateral] : collateral
-  const borrowCoin = typeof borrow === 'string' ? MoveCoin[borrow] : borrow
-
   const collateralFeed = getPriceFeed(collateralCoin, network)
   const borrowFeed = getPriceFeed(borrowCoin, network)
 
@@ -94,50 +88,47 @@ export const removeCollateral = async (
   return {
     type,
     function: `${mirageAddress()}::vault::remove_collateral`,
-    arguments: [getCoinAmountArgument(collateral, removeAmount), collateralVaas, borrowVaas],
-    type_arguments: getVaultTypeArguments(collateral, borrow),
+    arguments: [getCoinAmountArgument(collateralCoin, removeAmount), collateralVaas, borrowVaas],
+    type_arguments: getVaultTypeArguments(collateralCoin, borrowCoin),
   }
 }
 
 /**
  * Build a payload to repay a borrow of a mirage asset
- * @param collateral the collateral of the vault (e.g APT)
- * @param borrow the borrow of the vault (e.g. mUSD)
+ * @param collateralCoin the collateral of the vault (e.g APT)
+ * @param borrowCoin the borrow of the vault (e.g. mUSD)
  * @param repayAmount the amount to repay, no precision
  * @returns payload promise for the transaction
  */
 export const repayDebt = async (
-  collateral: MoveCoin | string,
-  borrow: MoveCoin | string,
+  collateralCoin: MoveCoin,
+  borrowCoin: MoveCoin,
   repayAmount: number
 ): Promise<Payload> => {
   return {
     type,
     function: `${mirageAddress()}::vault::repay`,
-    arguments: [getCoinAmountArgument(borrow, repayAmount)],
-    type_arguments: getVaultTypeArguments(collateral, borrow),
+    arguments: [getCoinAmountArgument(borrowCoin, repayAmount)],
+    type_arguments: getVaultTypeArguments(collateralCoin, borrowCoin),
   }
 }
 
 /**
  * Build a payload to add collateral and borrow
- * @param collateral the collateral of the vault (e.g APT)
- * @param borrow the borrow of the vault (e.g. mUSD)
+ * @param collateralCoin the collateral of the vault (e.g APT)
+ * @param borrowCoin the borrow of the vault (e.g. mUSD)
  * @param addAmount the amount to add to vault, no precision
  * @param borrowAmount the amount to borrow, no precision
  * @param network the network to process this transaction on
  * @returns payload promise for the transaction
  */
 export const addCollateralAndBorrow = async (
-  collateral: MoveCoin | string,
-  borrow: MoveCoin | string,
+  collateralCoin: MoveCoin,
+  borrowCoin: MoveCoin,
   addAmount: number,
   borrowAmount: number,
   network: Network | string = Network.MAINNET
 ): Promise<ScriptPayload> => {
-  const collateralCoin = typeof collateral === 'string' ? MoveCoin[collateral] : collateral
-  const borrowCoin = typeof borrow === 'string' ? MoveCoin[borrow] : borrow
-
   const collateralFeed = getPriceFeed(collateralCoin, network)
   const borrowFeed = getPriceFeed(borrowCoin, network)
 
@@ -165,23 +156,20 @@ export const addCollateralAndBorrow = async (
 
 /**
  * Build a payload to add collateral and borrow
- * @param collateral the collateral of the vault (e.g APT)
- * @param borrow the borrow of the vault (e.g. mUSD)
+ * @param collateralCoin the collateral of the vault (e.g APT)
+ * @param borrowCoin the borrow of the vault (e.g. mUSD)
  * @param removeAmount the amount to remove, no precision
  * @param repayAmount the amount to repay, no precision
  * @param network the network to process this transaction on
  * @returns payload promise for the transaction
  */
 export const repayDebtAndRemoveCollateral = async (
-  collateral: MoveCoin | string,
-  borrow: MoveCoin | string,
+  collateralCoin: MoveCoin,
+  borrowCoin: MoveCoin,
   removeAmount: number,
   repayAmount: number,
   network: Network | string = Network.MAINNET
 ): Promise<ScriptPayload> => {
-  const collateralCoin = typeof collateral === 'string' ? MoveCoin[collateral] : collateral
-  const borrowCoin = typeof borrow === 'string' ? MoveCoin[borrow] : borrow
-
   const collateralFeed = getPriceFeed(collateralCoin, network)
   const borrowFeed = getPriceFeed(borrowCoin, network)
 
@@ -209,21 +197,18 @@ export const repayDebtAndRemoveCollateral = async (
 
 /**
  * Build a payload to add collateral and borrow
- * @param collateral the collateral of the vault (e.g APT)
- * @param borrow the borrow of the vault (e.g. mUSD)
+ * @param collateralCoin the collateral of the vault (e.g APT)
+ * @param borrowCoin the borrow of the vault (e.g. mUSD)
  * @param addAmount the amount to add, no precision
  * @param repayAmount the amount to repay, no precision
  * @returns payload promise for the transaction
  */
 export const addCollateralAndRepayDebt = async (
-  collateral: MoveCoin | string,
-  borrow: MoveCoin | string,
+  collateralCoin: MoveCoin,
+  borrowCoin: MoveCoin,
   addAmount: number,
   repayAmount: number
 ): Promise<ScriptPayload> => {
-  const collateralCoin = typeof collateral === 'string' ? MoveCoin[collateral] : collateral
-  const borrowCoin = typeof borrow === 'string' ? MoveCoin[borrow] : borrow
-
   return new aptos.TxnBuilderTypes.TransactionPayloadScript(
     new aptos.TxnBuilderTypes.Script(
       getScriptBytecode('add_and_repay'),
@@ -251,15 +236,12 @@ export const addCollateralAndRepayDebt = async (
  * @returns payload promise for the transaction
  */
 export const removeCollateralAndBorrow = async (
-  collateral: MoveCoin | string,
-  borrow: MoveCoin | string,
+  collateralCoin: MoveCoin,
+  borrowCoin: MoveCoin,
   removeAmount: number,
   borrowAmount: number,
   network: Network | string = Network.MAINNET
 ): Promise<ScriptPayload> => {
-  const collateralCoin = typeof collateral === 'string' ? MoveCoin[collateral] : collateral
-  const borrowCoin = typeof borrow === 'string' ? MoveCoin[borrow] : borrow
-
   const collateralFeed = getPriceFeed(collateralCoin, network)
   const borrowFeed = getPriceFeed(borrowCoin, network)
 
