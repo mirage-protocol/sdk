@@ -27,8 +27,7 @@
     "build": "npm run clean && tsup src/index.ts --format esm,cjs --dts",
     "clean": "rm -rf dist",
     "format": "prettier --check ./src",
-    "lint": "eslint . --ext ts --ext tsx --ext js --quiet",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint . --ext ts --ext tsx --ext js --quiet"
   },
   "dependencies": {
     "@pythnetwork/pyth-aptos-js": "^1.0.2",
