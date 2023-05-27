@@ -13,7 +13,14 @@ import {
 } from '../constants'
 import { getScriptBytecode } from '../constants/scripts'
 import { PositionSide } from '../entities'
-import { getBCSCoinAmountArgument, getBCSDecimal8Argument, getDecimal8Argument, MoveType, Payload, PayloadResult } from './'
+import {
+  getBCSCoinAmountArgument,
+  getBCSDecimal8Argument,
+  getDecimal8Argument,
+  MoveType,
+  Payload,
+  PayloadResult,
+} from './'
 import { getCoinAmountArgument } from './'
 
 const type = 'entry_function_payload'
@@ -90,7 +97,9 @@ export const openPosition = async (
           new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(maxSlippage)),
           new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(takeProfitPrice)),
           new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(stopLossPrice)),
-          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSCoinAmountArgument(MoveCoin.APT, triggerPaymentAmount)),
+          new aptos.TxnBuilderTypes.TransactionArgumentU64(
+            getBCSCoinAmountArgument(MoveCoin.APT, triggerPaymentAmount)
+          ),
         ]
       )
     ),
