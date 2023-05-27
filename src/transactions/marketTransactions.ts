@@ -1,4 +1,4 @@
-import * as aptos from 'aptos'
+import { TxnBuilderTypes } from 'aptos'
 
 import {
   assetInfo,
@@ -76,30 +76,24 @@ export const openPosition = async (
     }
   }
   return {
-    bcs: new aptos.TxnBuilderTypes.TransactionPayloadScript(
-      new aptos.TxnBuilderTypes.Script(
+    bcs: new TxnBuilderTypes.TransactionPayloadScript(
+      new TxnBuilderTypes.Script(
         getScriptBytecode('register_and_open_position'),
         [
-          new aptos.TxnBuilderTypes.TypeTagStruct(
-            aptos.TxnBuilderTypes.StructTag.fromString(assetInfo(marginCoin).type)
-          ),
-          new aptos.TxnBuilderTypes.TypeTagStruct(
-            aptos.TxnBuilderTypes.StructTag.fromString(assetInfo(perpetual).type)
-          ),
+          new TxnBuilderTypes.TypeTagStruct(TxnBuilderTypes.StructTag.fromString(assetInfo(marginCoin).type)),
+          new TxnBuilderTypes.TypeTagStruct(TxnBuilderTypes.StructTag.fromString(assetInfo(perpetual).type)),
         ],
         [
-          new aptos.TxnBuilderTypes.TransactionArgumentU8Vector(Uint8Array.from(perpetualVaas)),
-          new aptos.TxnBuilderTypes.TransactionArgumentU8Vector(Uint8Array.from(marginVaas)),
-          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(marginAmount)),
-          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(positionSize)),
-          new aptos.TxnBuilderTypes.TransactionArgumentBool(side == PositionSide.LONG),
-          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(desired_price)),
-          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(maxSlippage)),
-          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(takeProfitPrice)),
-          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(stopLossPrice)),
-          new aptos.TxnBuilderTypes.TransactionArgumentU64(
-            getBCSCoinAmountArgument(MoveCoin.APT, triggerPaymentAmount)
-          ),
+          new TxnBuilderTypes.TransactionArgumentU8Vector(Uint8Array.from(perpetualVaas)),
+          new TxnBuilderTypes.TransactionArgumentU8Vector(Uint8Array.from(marginVaas)),
+          new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(marginAmount)),
+          new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(positionSize)),
+          new TxnBuilderTypes.TransactionArgumentBool(side == PositionSide.LONG),
+          new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(desired_price)),
+          new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(maxSlippage)),
+          new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(takeProfitPrice)),
+          new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(stopLossPrice)),
+          new TxnBuilderTypes.TransactionArgumentU64(getBCSCoinAmountArgument(MoveCoin.APT, triggerPaymentAmount)),
         ]
       )
     ),
@@ -170,25 +164,21 @@ export const placeLimitOrder = async (
   }
 
   return {
-    bcs: new aptos.TxnBuilderTypes.TransactionPayloadScript(
-      new aptos.TxnBuilderTypes.Script(
+    bcs: new TxnBuilderTypes.TransactionPayloadScript(
+      new TxnBuilderTypes.Script(
         getScriptBytecode('register_and_place_limit'),
         [
-          new aptos.TxnBuilderTypes.TypeTagStruct(
-            aptos.TxnBuilderTypes.StructTag.fromString(assetInfo(marginCoin).type)
-          ),
-          new aptos.TxnBuilderTypes.TypeTagStruct(
-            aptos.TxnBuilderTypes.StructTag.fromString(assetInfo(perpetualAsset).type)
-          ),
+          new TxnBuilderTypes.TypeTagStruct(TxnBuilderTypes.StructTag.fromString(assetInfo(marginCoin).type)),
+          new TxnBuilderTypes.TypeTagStruct(TxnBuilderTypes.StructTag.fromString(assetInfo(perpetualAsset).type)),
         ],
         [
-          new aptos.TxnBuilderTypes.TransactionArgumentU8Vector(Uint8Array.from(perpetualVaas)),
-          new aptos.TxnBuilderTypes.TransactionArgumentU8Vector(Uint8Array.from(marginVaas)),
-          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(marginAmount)),
-          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(positionSize)),
-          new aptos.TxnBuilderTypes.TransactionArgumentBool(false),
-          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(take_profit_price)),
-          new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(stop_loss_price)),
+          new TxnBuilderTypes.TransactionArgumentU8Vector(Uint8Array.from(perpetualVaas)),
+          new TxnBuilderTypes.TransactionArgumentU8Vector(Uint8Array.from(marginVaas)),
+          new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(marginAmount)),
+          new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(positionSize)),
+          new TxnBuilderTypes.TransactionArgumentBool(false),
+          new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(take_profit_price)),
+          new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(stop_loss_price)),
         ]
       )
     ),
