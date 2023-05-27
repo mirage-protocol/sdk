@@ -76,7 +76,7 @@ export const borrow = async (
  */
 export const removeCollateral = async (
   collateralCoin: MoveCoin,
-  borrowCoin: MoveCoin, 
+  borrowCoin: MoveCoin,
   removeAmount: number,
   network: Network | string = Network.MAINNET
 ): Promise<Payload> => {
