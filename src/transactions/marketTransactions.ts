@@ -187,23 +187,20 @@ export const placeLimitOrder = async (
 }
 
 export const updateTpsl = async (
-  base: MoveCoin | string,
-  underlying: Perpetual | string,
+  marginCoin: MoveCoin,
+  perpetualAsset: Perpetual,
   take_profit_price: number,
   stop_loss_price: number,
   network: Network
 ): Promise<Payload> => {
-  const baseCoin = typeof base === 'string' ? MoveCoin[base] : base
-  const underlyingAsset = typeof underlying === 'string' ? Perpetual[underlying] || MoveCoin[underlying] : underlying
-
-  const perpetualFeed = getPriceFeed(underlyingAsset, network)
+  const perpetualFeed = getPriceFeed(marginCoin, network)
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : [[0]]
 
   const payload = {
     type,
     function: `${mirageAddress()}::market::update_tpsl`,
     arguments: [perpetualVaas, getDecimal8Argument(take_profit_price), getDecimal8Argument(stop_loss_price)],
-    type_arguments: getMarketTypeArguments(baseCoin, underlyingAsset),
+    type_arguments: getMarketTypeArguments(marginCoin, perpetualAsset),
   }
   return payload
 }
@@ -213,16 +210,13 @@ export const updateTpsl = async (
  * @returns payload promise for the transaction
  */
 export const updateMargin = async (
-  base: MoveCoin | string,
-  underlying: Perpetual | string,
+  marginCoin: MoveCoin,
+  perpetualAsset: Perpetual,
   newMarginAmount: number,
   network: Network
 ): Promise<Payload> => {
-  const baseCoin = typeof base === 'string' ? MoveCoin[base] : base
-  const underlyingAsset = typeof underlying === 'string' ? Perpetual[underlying] || MoveCoin[underlying] : underlying
-
-  const marginFeed = getPriceFeed(baseCoin, network)
-  const perpetualFeed = getPriceFeed(underlyingAsset, network)
+  const marginFeed = getPriceFeed(marginCoin, network)
+  const perpetualFeed = getPriceFeed(perpetualAsset, network)
 
   const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : [[0]]
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : [[0]]
@@ -231,7 +225,7 @@ export const updateMargin = async (
     type,
     function: `${mirageAddress()}::market::update_margin`,
     arguments: [perpetualVaas, marginVaas, getDecimal8Argument(newMarginAmount)],
-    type_arguments: getMarketTypeArguments(baseCoin, underlyingAsset),
+    type_arguments: getMarketTypeArguments(marginCoin, perpetualAsset),
   }
   return payload
 }
@@ -241,16 +235,13 @@ export const updateMargin = async (
  * @returns payload promise for the transaction
  */
 export const updatePositionSize = async (
-  base: MoveCoin | string,
-  underlying: Perpetual | string,
+  marginCoin: MoveCoin,
+  perpetualAsset: Perpetual,
   newPositionSize: number,
   network: Network
 ): Promise<Payload> => {
-  const baseCoin = typeof base === 'string' ? MoveCoin[base] : base
-  const underlyingAsset = typeof underlying === 'string' ? Perpetual[underlying] || MoveCoin[underlying] : underlying
-
-  const marginFeed = getPriceFeed(baseCoin, network)
-  const perpetualFeed = getPriceFeed(underlyingAsset, network)
+  const marginFeed = getPriceFeed(marginCoin, network)
+  const perpetualFeed = getPriceFeed(perpetualAsset, network)
 
   const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : [[0]]
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : [[0]]
@@ -259,7 +250,7 @@ export const updatePositionSize = async (
     type,
     function: `${mirageAddress()}::market::close_position`,
     arguments: [perpetualVaas, marginVaas, getDecimal8Argument(newPositionSize)],
-    type_arguments: getMarketTypeArguments(baseCoin, underlyingAsset),
+    type_arguments: getMarketTypeArguments(marginCoin, perpetualAsset),
   }
   return payload
 }
