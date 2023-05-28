@@ -247,7 +247,7 @@ export const updatePositionSize = async (
 
   const payload = {
     type,
-    function: `${mirageAddress()}::market::close_position`,
+    function: `${mirageAddress()}::market::update_position_size`,
     arguments: [perpetualVaas, marginVaas, getDecimal8Argument(newPositionSize)],
     type_arguments: getMarketTypeArguments(marginCoin, perpetualAsset),
   }

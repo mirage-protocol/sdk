@@ -45,7 +45,7 @@ export class Trader {
   /**
    * The margin asset of the position
    */
-  public readonly marginAsset: MoveCoin
+  public readonly marginCoin: MoveCoin
   /**
    * The perpetual asset being traded
    */
@@ -75,20 +75,20 @@ export class Trader {
    * Construct an instance of a trader
    * @param userResource Resources for user account
    * @param moduleResources Resources for Market account
-   * @param marginAsset The margin of the market
+   * @param marginCoin The margin of the market
    * @param perpetualAsset The perpetual being traded
    */
   constructor(
     userResource: AccountResource[],
     moduleResources: AccountResource[],
-    marginAsset: MoveCoin | string,
+    marginCoin: MoveCoin | string,
     perpetualAsset: Perpetual | string
   ) {
-    this.marginAsset = marginAsset as MoveCoin
+    this.marginCoin = marginCoin as MoveCoin
     this.perpetualAsset = perpetualAsset as Perpetual
-    this.market = new Market(moduleResources, this.marginAsset, this.perpetualAsset)
+    this.market = new Market(moduleResources, this.marginCoin, this.perpetualAsset)
 
-    const userType = `${mirageAddress()}::market::Trader<${coinInfo(this.marginAsset).type}, ${
+    const userType = `${mirageAddress()}::market::Trader<${coinInfo(this.marginCoin).type}, ${
       assetInfo(this.perpetualAsset).type
     }>`
 
@@ -144,7 +144,7 @@ export class Trader {
 
     this.positionLimit = !!user ? BigNumber((user.data as any).position_limit) : ZERO
 
-    const limitOrderType = `${mirageAddress()}::market::LimitOrders<${coinInfo(this.marginAsset).type}, ${
+    const limitOrderType = `${mirageAddress()}::market::LimitOrders<${coinInfo(this.marginCoin).type}, ${
       assetInfo(this.perpetualAsset).type
     }>`
 
