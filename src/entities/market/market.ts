@@ -13,7 +13,7 @@ export class Market {
   /**
    * The base asset of the market
    */
-  public readonly marginAsset: MoveCoin
+  public readonly marginCoin: MoveCoin
   /**
    * The underlying asset of the market
    */
@@ -137,14 +137,14 @@ export class Market {
   /**
    * Construct an instance of Market
    * @param moduleResources resources for the market account (MIRAGE_ACCOUNT)
-   * @param marginAsset the margin asset of the market
+   * @param marginCoin the margin asset of the market
    * @param perpetualAsset the asset being traded
    */
-  constructor(moduleResources: AccountResource[], marginAsset: MoveCoin | string, perpetualAsset: Perpetual | string) {
-    this.marginAsset = marginAsset as MoveCoin
+  constructor(moduleResources: AccountResource[], marginCoin: MoveCoin | string, perpetualAsset: Perpetual | string) {
+    this.marginCoin = marginCoin as MoveCoin
     this.perpetualAsset = perpetualAsset as Perpetual
 
-    const marketType = `${mirageAddress()}::market::Market<${coinInfo(this.marginAsset).type}, ${
+    const marketType = `${mirageAddress()}::market::Market<${coinInfo(this.marginCoin).type}, ${
       assetInfo(this.perpetualAsset).type
     }>`
     const oracleType = `${mirageAddress()}::pyth_oracle::Oracle<$${assetInfo(this.perpetualAsset).type}>`
