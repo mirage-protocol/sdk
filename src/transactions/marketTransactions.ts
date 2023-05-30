@@ -193,7 +193,7 @@ export const updateTpsl = async (
   network: Network
 ): Promise<Payload> => {
   const perpetualFeed = getPriceFeed(marginCoin, network)
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : [[0]]
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
 
   const payload = {
     type,
@@ -217,8 +217,8 @@ export const updateMargin = async (
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
 
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : [[0]]
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : [[0]]
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
 
   const payload = {
     type,
@@ -242,8 +242,8 @@ export const updatePositionSize = async (
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
 
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : [[0]]
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : [[0]]
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
 
   const payload = {
     type,
