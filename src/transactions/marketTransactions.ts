@@ -188,8 +188,9 @@ export const placeLimitOrder = async (
 export const updateTpsl = async (
   marginCoin: MoveCoin,
   perpetualAsset: Perpetual,
-  take_profit_price: number,
   stop_loss_price: number,
+  take_profit_price: number,
+  trigger_amount: number,
   network: Network
 ): Promise<Payload> => {
   const perpetualFeed = getPriceFeed(marginCoin, network)
@@ -198,7 +199,12 @@ export const updateTpsl = async (
   const payload = {
     type,
     function: `${mirageAddress()}::market::update_tpsl`,
-    arguments: [perpetualVaas, getDecimal8Argument(take_profit_price), getDecimal8Argument(stop_loss_price)],
+    arguments: [
+      perpetualVaas,
+      getDecimal8Argument(stop_loss_price),
+      getDecimal8Argument(take_profit_price),
+      getDecimal8Argument(trigger_amount),
+    ],
     type_arguments: getMarketTypeArguments(marginCoin, perpetualAsset),
   }
   return payload
