@@ -193,7 +193,7 @@ export const updateTpsl = async (
   trigger_amount: number,
   network: Network
 ): Promise<Payload> => {
-  const perpetualFeed = getPriceFeed(marginCoin, network)
+  const perpetualFeed = getPriceFeed(perpetualAsset, network)
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
 
   const payload = {
