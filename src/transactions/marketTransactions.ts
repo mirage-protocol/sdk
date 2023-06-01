@@ -14,6 +14,7 @@ import {
 import { getScriptBytecode } from '../constants/scripts'
 import { PositionSide } from '../entities'
 import {
+  EntryFunctionPayload,
   getBCSCoinAmountArgument,
   getBCSDecimal8Argument,
   getDecimal8Argument,
@@ -26,7 +27,7 @@ import { getCoinAmountArgument } from './'
 const type = 'entry_function_payload'
 
 // Get the types for this market
-const getMarketTypeArguments = (margin: MoveCoin | string, perpetual: Perpetual): MoveType[] => {
+const getMarketTypeArguments = (margin: MoveCoin | string, perpetual: Perpetual): Array<MoveType> => {
   return [coinInfo(margin).type, assetInfo(perpetual).type]
 }
 
@@ -255,6 +256,34 @@ export const updatePositionSize = async (
     type,
     function: `${mirageAddress()}::market::update_position_size`,
     arguments: [perpetualVaas, marginVaas, getDecimal8Argument(newPositionSize)],
+    type_arguments: getMarketTypeArguments(marginCoin, perpetualAsset),
+  }
+  return payload
+}
+
+/**
+ * Trigger a take profit or stop loss of the position at address to_trigger
+ * @returns payload promise for the transaction
+ */
+export const triggerTpsl = async (
+  marginCoin: MoveCoin,
+  perpetualAsset: Perpetual,
+  toTrigger: string,
+  network: Network
+): Promise<EntryFunctionPayload> => {
+  const marginFeed = getPriceFeed(marginCoin, network)
+  const perpetualFeed = getPriceFeed(perpetualAsset, network)
+
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+
+  const payload = {
+    function: `${mirageAddress()}::market::trigger_tpsl`,
+    arguments: [
+      toTrigger,
+      perpetualVaas,
+      marginVaas,
+    ],
     type_arguments: getMarketTypeArguments(marginCoin, perpetualAsset),
   }
   return payload
