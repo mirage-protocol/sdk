@@ -1,9 +1,9 @@
-import { Types } from 'aptos'
-import { TxnBuilderTypes } from 'aptos'
+import { Types, TxnBuilderTypes } from 'aptos'
 import BigNumber from 'bignumber.js'
 
 import { coinInfo, MoveCoin, PRECISION_8 } from '../constants'
 
+export type EntryFunctionPayload = Types.EntryFunctionPayload
 export type Payload = Types.TransactionPayload_EntryFunctionPayload
 export type MoveType = Types.MoveType
 export type ScriptPayload = TxnBuilderTypes.TransactionPayloadScript
