@@ -30,9 +30,9 @@
     "lint": "eslint . --ext ts --ext tsx --ext js --quiet"
   },
   "dependencies": {
-    "@pythnetwork/pyth-aptos-js": "^1.0.2",
+    "@pythnetwork/pyth-aptos-js": "^1.1.0",
     "@pythnetwork/pyth-common-js": "^1.4.0",
-    "aptos": "1.9.0",
+    "aptos": "1.9.1",
     "bignumber.js": "^9.1.1"
   },
   "devDependencies": {
