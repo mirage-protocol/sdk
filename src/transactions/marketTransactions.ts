@@ -155,7 +155,7 @@ export const placeLimitOrder = async (
           getDecimal8Argument(positionSize),
           side == PositionSide.LONG,
           getDecimal8Argument(triggerPrice),
-          maxPriceSlippage,
+          getDecimal8Argument(maxPriceSlippage),
           isIncrease,
           triggersAbove,
           getDecimal8Argument(triggerPaymentAmount),
