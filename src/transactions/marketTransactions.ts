@@ -43,7 +43,7 @@ export const openPosition = async (
   positionSize: number,
   side: PositionSide,
   desired_price: number,
-  maxSlippage: number,
+  maxPriceSlippage: number,
   takeProfitPrice: number,
   stopLossPrice: number,
   triggerPaymentAmount: number,
@@ -67,7 +67,7 @@ export const openPosition = async (
           getDecimal8Argument(positionSize),
           side == PositionSide.LONG,
           getDecimal8Argument(desired_price),
-          getDecimal8Argument(maxSlippage),
+          getDecimal8Argument(maxPriceSlippage),
           getDecimal8Argument(takeProfitPrice),
           getDecimal8Argument(stopLossPrice),
           getCoinAmountArgument(MoveCoin.APT, triggerPaymentAmount),
@@ -91,7 +91,7 @@ export const openPosition = async (
           new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(positionSize)),
           new TxnBuilderTypes.TransactionArgumentBool(side == PositionSide.LONG),
           new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(desired_price)),
-          new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(maxSlippage)),
+          new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(maxPriceSlippage)),
           new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(takeProfitPrice)),
           new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(stopLossPrice)),
           new TxnBuilderTypes.TransactionArgumentU64(getBCSCoinAmountArgument(MoveCoin.APT, triggerPaymentAmount)),
@@ -134,14 +134,14 @@ export const placeLimitOrder = async (
   positionSize: number,
   side: PositionSide,
   triggerPrice: number,
-  take_profit_price: number,
-  stop_loss_price: number,
+  maxPriceSlippage: number,
+  isIncrease: boolean,
+  triggersAbove: boolean,
+  triggerPaymentAmount: number,
+  expiration: number,
   network: Network
 ): Promise<PayloadResult> => {
-  const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
-
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
 
   if (isInitialized) {
@@ -151,13 +151,15 @@ export const placeLimitOrder = async (
         function: `${mirageAddress()}::market::place_limit_order`,
         arguments: [
           perpetualVaas,
-          marginVaas,
           getDecimal8Argument(marginAmount), // always 8 decimals
           getDecimal8Argument(positionSize),
-          side == PositionSide.LONG ? true : false,
+          side == PositionSide.LONG,
           getDecimal8Argument(triggerPrice),
-          getDecimal8Argument(take_profit_price),
-          getDecimal8Argument(stop_loss_price),
+          maxPriceSlippage,
+          isIncrease,
+          triggersAbove,
+          getDecimal8Argument(triggerPaymentAmount),
+          expiration,
         ],
         type_arguments: getMarketTypeArguments(marginCoin, perpetualAsset),
       },
@@ -174,13 +176,16 @@ export const placeLimitOrder = async (
         ],
         [
           new TxnBuilderTypes.TransactionArgumentU8Vector(Uint8Array.from(perpetualVaas)),
-          new TxnBuilderTypes.TransactionArgumentU8Vector(Uint8Array.from(marginVaas)),
           new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(marginAmount)),
           new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(positionSize)),
-          new TxnBuilderTypes.TransactionArgumentBool(false),
-          new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(take_profit_price)),
-          new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(stop_loss_price)),
-        ]
+          new TxnBuilderTypes.TransactionArgumentBool(side == PositionSide.LONG),
+          new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(triggerPrice)),
+          new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(maxPriceSlippage)),
+          new TxnBuilderTypes.TransactionArgumentBool(isIncrease),
+          new TxnBuilderTypes.TransactionArgumentBool(triggersAbove),
+          new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(triggerPaymentAmount)),
+          new TxnBuilderTypes.TransactionArgumentU64(BigInt(expiration)),
+       ]
       )
     ),
   }
