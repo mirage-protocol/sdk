@@ -56,6 +56,15 @@ export const checkSymbol = (symbol: string): MoveCoin | undefined => {
 }
 
 /**
+ * Get the Perpetual of a given symbol
+ * @param symbol string symbol of coin
+ * @returns the Perpetual or undefined if not valid
+ */
+export const checkPerpSymbol = (symbol: string): Perpetual | undefined => {
+  return Perpetual[symbol]
+}
+
+/**
  * Get info about a specific asset
  * @param coin the MoveCoin to get info for
  * @returns the AssetInfo for the specific coin
