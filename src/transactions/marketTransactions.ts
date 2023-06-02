@@ -185,7 +185,7 @@ export const placeLimitOrder = async (
           new TxnBuilderTypes.TransactionArgumentBool(triggersAbove),
           new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(triggerPaymentAmount)),
           new TxnBuilderTypes.TransactionArgumentU64(BigInt(expiration)),
-       ]
+        ]
       )
     ),
   }
@@ -284,11 +284,7 @@ export const triggerTpsl = async (
 
   const payload = {
     function: `${mirageAddress()}::market::trigger_tpsl`,
-    arguments: [
-      toTrigger,
-      perpetualVaas,
-      marginVaas,
-    ],
+    arguments: [toTrigger, perpetualVaas, marginVaas],
     type_arguments: getMarketTypeArguments(marginCoin, perpetualAsset),
   }
   return payload
