@@ -1,4 +1,4 @@
-import { Types, TxnBuilderTypes } from 'aptos'
+import { TxnBuilderTypes, Types } from 'aptos'
 import BigNumber from 'bignumber.js'
 
 import { coinInfo, MoveCoin, PRECISION_8 } from '../constants'

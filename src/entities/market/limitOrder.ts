@@ -14,7 +14,7 @@ export type LimitOrderData = {
   margin: { value: BigNumber }
   trigger_price: BigNumber
   triggers_above: boolean
-  trigger_payment: { payment: { value: BigNumber } }
+  trigger_payment: { value: BigNumber }
   max_price_slippage: BigNumber
   expiration: number
 }
@@ -32,9 +32,9 @@ export class LimitOrder {
    */
   public readonly index: number
   /**
-   * The opening price of the order (0 if order is resting)
+   * The side of the order
    */
-  public readonly tradeSide: PositionSide
+  public readonly side: PositionSide
 
   /**
    * Is this a limit order to increase or decrease a position
@@ -79,13 +79,13 @@ export class LimitOrder {
     this.id = BigNumber(limitOrderData.id)
     this.index = index
 
-    this.tradeSide = limitOrderData.is_long ? PositionSide.LONG : PositionSide.SHORT
+    this.side = limitOrderData.is_long ? PositionSide.LONG : PositionSide.SHORT
     this.isIncrease = limitOrderData.is_increase
     this.positionSize = limitOrderData.position_size
     this.margin = limitOrderData.margin.value
     this.triggerPrice = limitOrderData.trigger_price
     this.triggersAbove = limitOrderData.triggers_above
-    this.triggerPayment = limitOrderData.trigger_payment.payment.value
+    this.triggerPayment = limitOrderData.trigger_payment.value
     this.maxPriceSlippage = limitOrderData.max_price_slippage
     this.expiration = limitOrderData.expiration
   }
