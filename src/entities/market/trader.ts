@@ -153,8 +153,12 @@ export class Trader {
     const ordersArr = !!limitOrders ? (limitOrders.data as any).orders : []
     const tempOrders: LimitOrder[] = []
 
-    for (let index = 0; index < ordersArr.length; ++index) {
-      tempOrders.push(new LimitOrder(ordersArr[index] as LimitOrderData, index))
+    try {
+      for (let index = 0; index < ordersArr.length; ++index) {
+        tempOrders.push(new LimitOrder(ordersArr[index] as LimitOrderData, index))
+      }
+    } catch (error) {
+      console.error(`Error deserializing limit order ${error}`)
     }
 
     this.limitOrders = tempOrders
