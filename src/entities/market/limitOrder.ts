@@ -69,7 +69,7 @@ export class LimitOrder {
   /**
    * The expiration time of the order
    */
-  public readonly expiration: number
+  public readonly expiration: BigNumber
 
   /**
    * Construct a LimitOrder instance
@@ -81,45 +81,13 @@ export class LimitOrder {
 
     this.side = limitOrderData.is_long ? PositionSide.LONG : PositionSide.SHORT
     this.isIncrease = limitOrderData.is_increase
-    this.positionSize = limitOrderData.position_size
-    this.margin = limitOrderData.margin.value
-    this.triggerPrice = limitOrderData.trigger_price
+    this.positionSize = BigNumber(limitOrderData.position_size).div(PRECISION_8)
+    this.margin = BigNumber(limitOrderData.margin.value).div(PRECISION_8)
+    this.triggerPrice = BigNumber(limitOrderData.trigger_price).div(PRECISION_8)
     this.triggersAbove = limitOrderData.triggers_above
-    this.triggerPayment = limitOrderData.trigger_payment.value
-    this.maxPriceSlippage = limitOrderData.max_price_slippage
-    this.expiration = limitOrderData.expiration
-  }
-
-  /**
-   * Get position size
-   * @returns Position size (no precision)
-   */
-  public getUiPositionSize(): number {
-    return this.positionSize.div(PRECISION_8).toNumber()
-  }
-
-  /**
-   * Get margin amount
-   * @returns Margin amount (no precision)
-   */
-  public getUiMargin(): number {
-    return this.margin.div(PRECISION_8).toNumber()
-  }
-
-  /**
-   * Get trigger payment amount
-   * @returns Trigger payment amount (no precision)
-   */
-  public getUiTriggerPayment(): number {
-    return this.margin.div(PRECISION_8).toNumber()
-  }
-
-  /**
-   * Get the percent slippage of the trade
-   * @returns The percent slippage in basis points
-   */
-  public getPercentSlippage(): number {
-    return this.maxPriceSlippage.div(this.triggerPrice).times(10000).toNumber()
+    this.triggerPayment = BigNumber(limitOrderData.trigger_payment.value).div(PRECISION_8)
+    this.maxPriceSlippage = BigNumber(limitOrderData.max_price_slippage).div(PRECISION_8)
+    this.expiration = BigNumber(limitOrderData.expiration)
   }
 
   /**
