@@ -159,7 +159,7 @@ export const placeLimitOrder = async (
           isIncrease,
           triggersAbove,
           getDecimal8Argument(triggerPaymentAmount),
-          expiration,
+          Math.round(expiration),
         ],
         type_arguments: getMarketTypeArguments(marginCoin, perpetualAsset),
       },
@@ -184,7 +184,7 @@ export const placeLimitOrder = async (
           new TxnBuilderTypes.TransactionArgumentBool(isIncrease),
           new TxnBuilderTypes.TransactionArgumentBool(triggersAbove),
           new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(triggerPaymentAmount)),
-          new TxnBuilderTypes.TransactionArgumentU64(BigInt(expiration)),
+          new TxnBuilderTypes.TransactionArgumentU64(BigInt(Math.round(expiration))),
         ]
       )
     ),
