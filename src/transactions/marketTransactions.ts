@@ -122,7 +122,7 @@ export const closePosition = async (marginCoin: MoveCoin, perpetual: Perpetual, 
 }
 
 /**
- * Place a position that can be trigger when the market price
+ * Place a limit order that can be trigger when the market price
  * of a long/short is below/above a trigger price
  * @returns payload promise for the transaction
  */
@@ -189,6 +189,24 @@ export const placeLimitOrder = async (
       )
     ),
   }
+}
+
+/**
+ * Cancel a limit order
+ * @returns payload promise for the transaction
+ */
+export const cancelLimitOrder = async (
+  marginCoin: MoveCoin,
+  perpetualAsset: Perpetual,
+  index: number
+): Promise<Payload> => {
+  const payload = {
+    type,
+    function: `${mirageAddress()}::market::cancel_limit_order`,
+    arguments: [index],
+    type_arguments: getMarketTypeArguments(marginCoin, perpetualAsset),
+  }
+  return payload
 }
 
 export const updateTpsl = async (
