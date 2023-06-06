@@ -12,7 +12,7 @@ import {
 import { AccountResource, mirageAddress } from '../../constants/accounts'
 import { MoveCoin, Perpetual } from '../../constants/coinList'
 import { assetInfo, coinInfo } from '../../constants/coinList'
-import { getMarketTypeArguments } from '../../transactions'
+import { getDecimal8Argument, getMarketTypeArguments } from '../../transactions'
 import { Rebase } from '../rebase'
 
 /**
@@ -265,18 +265,16 @@ export class Market {
    * Get an estimate of the current fee
    * @returns the fee in basis points
    */
-  public async estimate_fee(
+  public async estimateFee(
     positionSize: number,
     perpetualPrice: number,
     isLong: boolean,
     isClose: boolean
   ): Promise<number> {
-    const size = new BigNumber(positionSize).times(BigNumber(10).pow(8)).toFixed(0)
-    const price = new BigNumber(perpetualPrice).times(BigNumber(10).pow(8)).toFixed(0)
     const ret = await aptosClient(this.network).view({
       function: `${mirageAddress()}::market::estimate_fee`,
       type_arguments: getMarketTypeArguments(this.marginCoin, this.perpetualAsset),
-      arguments: [size, price, isLong, isClose],
+      arguments: [getDecimal8Argument(positionSize), getDecimal8Argument(perpetualPrice), isLong, isClose],
     })
     return ret[0] as number
   }
