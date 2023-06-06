@@ -1,6 +1,14 @@
 import BigNumber from 'bignumber.js'
 
-import { FUNDING_PRECISION, PERCENT_PRECISION, PRECISION_8, ZERO } from '../../constants'
+import {
+  aptosClient,
+  FUNDING_PRECISION,
+  getNetwork,
+  Network,
+  PERCENT_PRECISION,
+  PRECISION_8,
+  ZERO,
+} from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
 import { MoveCoin, Perpetual } from '../../constants/coinList'
 import { assetInfo, coinInfo } from '../../constants/coinList'
@@ -18,6 +26,10 @@ export class Market {
    * The underlying asset of the market
    */
   public readonly perpetualAsset: Perpetual
+  /**
+   * The current network being used
+   */
+  private readonly network: Network
   /**
    * Maximum taker fee at the max_oi_imbalance
    */
@@ -140,9 +152,15 @@ export class Market {
    * @param marginCoin the margin asset of the market
    * @param perpetualAsset the asset being traded
    */
-  constructor(moduleResources: AccountResource[], marginCoin: MoveCoin | string, perpetualAsset: Perpetual | string) {
+  constructor(
+    moduleResources: AccountResource[],
+    marginCoin: MoveCoin | string,
+    perpetualAsset: Perpetual | string,
+    network: Network | string = Network.MAINNET
+  ) {
     this.marginCoin = marginCoin as MoveCoin
     this.perpetualAsset = perpetualAsset as Perpetual
+    this.network = getNetwork(network)
 
     const marketType = `${mirageAddress()}::market::Market<${coinInfo(this.marginCoin).type}, ${
       assetInfo(this.perpetualAsset).type
@@ -242,7 +260,23 @@ export class Market {
     return this.shortMargin.div(PRECISION_8).toNumber()
   }
 
-  // TODO:
-  // estimateNextFunding
-  //
+  /**
+   * Get an estimate of the current fee
+   * @returns the fee in basis points
+   */
+  public async estimate_fee(
+    positionSize: number,
+    perpetualPrice: number,
+    isLong: boolean,
+    isClose: boolean
+  ): Promise<number> {
+    const size = new BigNumber(positionSize).times(BigNumber(10).pow(8))
+    const price = new BigNumber(perpetualPrice).times(BigNumber(10).pow(8))
+    const ret = await aptosClient(this.network).view({
+      function: `${mirageAddress()}::market::estimate_fee`,
+      type_arguments: [coinInfo(this.marginCoin).type, assetInfo(this.perpetualAsset).type],
+      arguments: [size, price, isLong, isClose],
+    })
+    return ret[0] as number
+  }
 }
