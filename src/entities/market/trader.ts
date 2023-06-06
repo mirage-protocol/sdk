@@ -173,10 +173,24 @@ export class Trader {
     return this.position ? this.position.positionSize && !this.position.positionSize.eq(0) : false
   }
 
+  /**
+   * Calculates the leverage of a position given the prices
+   * @param position The position
+   * @param perpetualPrice The perpetual price
+   * @param marginPrice The margin price
+   * @returns The leverage, where 1 == 1x leverage
+   */
   static getLeverage(position: Position, perpetualPrice: number, marginPrice: number): number {
     return (position.positionSize.div(position.margin).toNumber() * perpetualPrice) / marginPrice
   }
 
+  /**
+   * Estimates a positions pnl in terms of the margin type
+   * @param position The position
+   * @param perpetualPrice The perpetual price
+   * @param marginPrice The margin price
+   * @returns The amount of pnl in terms of the margin of the market
+   */
   static estimatePnl(position: Position, perpetualPrice: number, marginPrice: number): number {
     return (
       (position.positionSize.toNumber() * perpetualPrice -
@@ -185,15 +199,14 @@ export class Trader {
     )
   }
 
+  /**
+   * Estimates a positions percent pnl in terms of the margin
+   * @param position The position
+   * @param perpetualPrice The perpetual price
+   * @param marginPrice The margin price
+   * @returns The percent pnl in terms of the margin of the market
+   */
   static estimatePercentPnl(position: Position, perpetualPrice: number, marginPrice: number): number {
     return (Trader.estimatePnl(position, perpetualPrice, marginPrice) * 100) / position.margin.toNumber()
   }
-
-  // TODO:
-  // getLeverage()
-  //
-  // pnl calculator implementation
-  // getCurrentLongFee()
-  // getCurrentShortFee() => gets as close as possible
-  //
 }
