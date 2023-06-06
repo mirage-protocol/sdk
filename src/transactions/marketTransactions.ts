@@ -27,7 +27,7 @@ import { getCoinAmountArgument } from './'
 const type = 'entry_function_payload'
 
 // Get the types for this market
-const getMarketTypeArguments = (margin: MoveCoin | string, perpetual: Perpetual): Array<MoveType> => {
+export const getMarketTypeArguments = (margin: MoveCoin | string, perpetual: Perpetual): Array<MoveType> => {
   return [coinInfo(margin).type, assetInfo(perpetual).type]
 }
 
