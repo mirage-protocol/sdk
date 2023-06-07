@@ -262,11 +262,15 @@ export class Market {
   }
 
   /**
-   * Get an estimate of the current fee
-   * @returns the fee in basis points
+   * Get an estimate of the current fee in terms of USD
+   * @param positionSizeUsd the position size in USD
+   * @param perpetualPrice the perpetual price
+   * @param isLong if the trade is long
+   * @param isClose if the trade is an open or close
+   * @returns the fee in USD
    */
   public async estimateFee(
-    positionSize: number,
+    positionSizeUsd: number,
     perpetualPrice: number,
     isLong: boolean,
     isClose: boolean
@@ -274,7 +278,7 @@ export class Market {
     const ret = await aptosClient(this.network).view({
       function: `${mirageAddress()}::market::estimate_fee`,
       type_arguments: getMarketTypeArguments(this.marginCoin, this.perpetualAsset),
-      arguments: [getDecimal8Argument(positionSize), getDecimal8Argument(perpetualPrice), isLong, isClose],
+      arguments: [getDecimal8Argument(positionSizeUsd), getDecimal8Argument(perpetualPrice), isLong, isClose],
     })
     return ret[0] as number
   }
