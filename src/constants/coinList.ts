@@ -98,6 +98,35 @@ export const balanceToUi = (balance: BigNumber, coin: MoveCoin | string): number
   return balance.div(BigNumber(10).pow(coinInfo(coin).decimals)).toNumber()
 }
 
+/**
+ * Convert move coin type to MoveCoin
+ * @param type the type of the perp
+ * @returns a move coin
+ */
+export const typeToMoveCoin = (type: string): MoveCoin | undefined => {
+  for (const asset in mirageCoinList) {
+    if (asset in MoveCoin && mirageCoinList[asset].type == type) {
+      return MoveCoin[asset]
+    }
+  }
+  return undefined
+}
+
+/**
+ * Convert perpetual move type to Perpetual
+ * @param type the type of the perp
+ * @returns a perpetual asset
+ */
+export const typeToPerpetual = (type: string): Perpetual | undefined => {
+  for (const asset in mirageCoinList) {
+    console.log(asset, asset in Perpetual, type)
+    if (asset in Perpetual && mirageCoinList[asset].type == type) {
+      return Perpetual[asset]
+    }
+  }
+  return undefined
+}
+
 // A list of all coins and their info in the Mirage ecosystem
 const mirageCoinList: { readonly [coin in MoveCoin | Perpetual]: AssetInfo | CoinInfo } = {
   [MoveCoin.APT]: {
