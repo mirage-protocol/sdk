@@ -325,7 +325,7 @@ export const liquidatePosition = async (
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
 
   const payload = {
-    function: `${mirageAddress()}::market::trigger_limit_order`,
+    function: `${mirageAddress()}::market::liquidate_position`,
     arguments: [toTrigger, perpetualVaas, marginVaas],
     type_arguments: getMarketTypeArguments(marginCoin, perpetualAsset),
   }
