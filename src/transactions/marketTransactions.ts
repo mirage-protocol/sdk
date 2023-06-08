@@ -307,3 +307,52 @@ export const triggerTpsl = async (
   }
   return payload
 }
+
+/**
+ * Liquidate a position at address to_trigger
+ * @returns payload promise for the transaction
+ */
+export const liquidatePosition = async (
+  marginCoin: MoveCoin,
+  perpetualAsset: Perpetual,
+  toTrigger: string,
+  network: Network
+): Promise<EntryFunctionPayload> => {
+  const marginFeed = getPriceFeed(marginCoin, network)
+  const perpetualFeed = getPriceFeed(perpetualAsset, network)
+
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+
+  const payload = {
+    function: `${mirageAddress()}::market::trigger_limit_order`,
+    arguments: [toTrigger, perpetualVaas, marginVaas],
+    type_arguments: getMarketTypeArguments(marginCoin, perpetualAsset),
+  }
+  return payload
+}
+
+/**
+ * Trigger a limit order at the index at address to_trigger
+ * @returns payload promise for the transaction
+ */
+export const triggerLimitOrder = async (
+  marginCoin: MoveCoin,
+  perpetualAsset: Perpetual,
+  toTrigger: string,
+  index: bigint,
+  network: Network
+): Promise<EntryFunctionPayload> => {
+  const marginFeed = getPriceFeed(marginCoin, network)
+  const perpetualFeed = getPriceFeed(perpetualAsset, network)
+
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+
+  const payload = {
+    function: `${mirageAddress()}::market::trigger_limit_order`,
+    arguments: [toTrigger, index, perpetualVaas, marginVaas],
+    type_arguments: getMarketTypeArguments(marginCoin, perpetualAsset),
+  }
+  return payload
+}
