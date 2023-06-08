@@ -119,7 +119,6 @@ export const typeToMoveCoin = (type: string): MoveCoin | undefined => {
  */
 export const typeToPerpetual = (type: string): Perpetual | undefined => {
   for (const asset in mirageCoinList) {
-    console.log(asset, asset in Perpetual, type)
     if (asset in Perpetual && mirageCoinList[asset].type == type) {
       return Perpetual[asset]
     }
