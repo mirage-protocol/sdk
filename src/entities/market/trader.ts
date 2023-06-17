@@ -155,7 +155,7 @@ export class Trader {
 
     try {
       for (let index = 0; index < ordersArr.length; ++index) {
-        tempOrders.push(new LimitOrder(ordersArr[index] as LimitOrderData, index))
+        tempOrders.push(new LimitOrder(ordersArr[index] as LimitOrderData, index, this.marginCoin, this.perpetualAsset))
       }
     } catch (error) {
       console.error(`Error deserializing limit order ${error}`)
