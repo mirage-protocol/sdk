@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 
 import { aptosClient, getNetwork, Network, ZERO } from '../constants'
 import { AccountResource } from '../constants/accounts'
-import { balanceToUi, coinInfo, MoveCoin } from '../constants/coinList'
+import { coinInfo, MoveCoin } from '../constants/coinList'
 
 /**
  * Represents an on-chain CoinStore with a unique type and stores some metadata.
@@ -69,14 +69,6 @@ export class Coin {
       const coinStore = resources.find((resource) => resource.type === `0x1::coin::CoinStore<${type}>`)
       this.balance = !!coinStore ? new BigNumber((coinStore.data as any).coin.value).div(precision) : ZERO
     }
-  }
-
-  /**
-   * Get a Ui friendly balance
-   * @returns The balance divided by the precision
-   */
-  public getUiBalance(): number {
-    return balanceToUi(this.balance, this.coin)
   }
 
   /**
