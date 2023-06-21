@@ -196,7 +196,7 @@ export class Trader {
       (position.positionSize.toNumber() * perpetualPrice -
         position.positionSize.toNumber() * position.openingPrice.toNumber()) /
       marginPrice
-    )
+    ) * (position.side == PositionSide.LONG ? 1 : -1)
   }
 
   /**
