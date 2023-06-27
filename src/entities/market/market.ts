@@ -223,7 +223,7 @@ export class Market {
 
     // open interest
     this.longOpenInterest = !!market ? new BigNumber((market.data as any).long_oi) : ZERO
-    this.shortOpenInterest = !!market ? new BigNumber((market.data as any).short_io) : ZERO
+    this.shortOpenInterest = !!market ? new BigNumber((market.data as any).short_oi) : ZERO
     this.maxOpenInterest = !!market ? new BigNumber((market.data as any).config.max_oi) : ZERO
     this.maxOpenInterestImbalance = !!market ? new BigNumber((market.data as any).config.max_oi_imbalance) : ZERO
 
