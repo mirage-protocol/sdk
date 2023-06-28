@@ -23,6 +23,7 @@ import {
   PayloadResult,
 } from './'
 import { getCoinAmountArgument } from './'
+import BigNumber from 'bignumber.js'
 
 const type = 'entry_function_payload'
 
@@ -138,7 +139,7 @@ export const placeLimitOrder = async (
   isIncrease: boolean,
   triggersAbove: boolean,
   triggerPaymentAmount: number,
-  expiration: number,
+  expiration: BigNumber, // in seconds
   network: Network
 ): Promise<PayloadResult> => {
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
@@ -159,7 +160,7 @@ export const placeLimitOrder = async (
           isIncrease,
           triggersAbove,
           getDecimal8Argument(triggerPaymentAmount),
-          Math.round(expiration),
+          expiration.toFixed(0),
         ],
         type_arguments: getMarketTypeArguments(marginCoin, perpetualAsset),
       },
@@ -184,7 +185,7 @@ export const placeLimitOrder = async (
           new TxnBuilderTypes.TransactionArgumentBool(isIncrease),
           new TxnBuilderTypes.TransactionArgumentBool(triggersAbove),
           new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(triggerPaymentAmount)),
-          new TxnBuilderTypes.TransactionArgumentU64(BigInt(Math.round(expiration))),
+          new TxnBuilderTypes.TransactionArgumentU64(BigInt(expiration.integerValue().toFixed(0)))
         ]
       )
     ),

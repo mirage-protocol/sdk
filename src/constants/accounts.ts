@@ -53,7 +53,7 @@ export const mirageAddress = (): HexString => {
 const MODULES: { readonly [module in MoveModules]: Account } = {
   ['mirage']: {
     name: 'mirage',
-    address: new HexString('0x25d5d24b786a46c568ca285fa018f38c4738f8aafff117a7794185a2808a81d6'),
+    address: new HexString('0xb201cd062e37cca8002bca61a371ba00ba80364cb578ed5777bd058803f710e5'),
   },
   ['mirage_lp']: {
     name: 'mirage_lp',
