@@ -1,4 +1,5 @@
 import { TxnBuilderTypes } from 'aptos'
+import BigNumber from 'bignumber.js'
 
 import {
   assetInfo,
@@ -23,7 +24,6 @@ import {
   PayloadResult,
 } from './'
 import { getCoinAmountArgument } from './'
-import BigNumber from 'bignumber.js'
 
 const type = 'entry_function_payload'
 
@@ -185,7 +185,7 @@ export const placeLimitOrder = async (
           new TxnBuilderTypes.TransactionArgumentBool(isIncrease),
           new TxnBuilderTypes.TransactionArgumentBool(triggersAbove),
           new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(triggerPaymentAmount)),
-          new TxnBuilderTypes.TransactionArgumentU64(BigInt(expiration.integerValue().toFixed(0)))
+          new TxnBuilderTypes.TransactionArgumentU64(BigInt(expiration.integerValue().toFixed(0))),
         ]
       )
     ),

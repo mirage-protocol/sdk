@@ -1,3 +1,6 @@
+import { Price } from '@pythnetwork/pyth-aptos-js'
+import BigNumber from 'bignumber.js'
+
 import { getNetwork, Network, pythClient } from '../constants/network'
 import { MoveCoin, Perpetual } from './coinList'
 
@@ -56,6 +59,17 @@ export const getPriceFeedUpdateData = async (
   } catch (e) {
     return []
   }
+}
+
+/**
+ * Gets a ui price from a pyth price
+ * @param price the pyth price
+ * @returns the ui price
+ */
+export const getUiPythPrice = ({ price, expo }: Price): number => {
+  return expo >= 0
+    ? BigNumber(price).div(BigNumber(10).pow(expo)).toNumber()
+    : BigNumber(price).times(BigNumber(10).pow(expo)).toNumber()
 }
 
 // Price feeds of coins by network
