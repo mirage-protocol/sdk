@@ -22,9 +22,22 @@ export enum MoveCoin {
  * Other off-chain assets
  */
 export enum Perpetual {
+  // Crypto
+  APTPERP = 'APTPERP',
+  ARBPERP = 'ARBPERP',
   BTCPERP = 'BTCPERP',
   ETHPERP = 'ETHPERP',
-  APTPERP = 'APTPERP',
+  OPPERP = 'OPPERP',
+  PEPE1000PERP = 'PEPE1000PERP',
+  SOLPERP = 'SOLPERP',
+  SUIPERP = 'SUIPERP',
+  // Metals
+  XAGPERP = 'XAGPERP',
+  XAUPERP = 'XAUPERP',
+  // FX
+  EURPERP = 'EURPERP',
+  GBPPERP = 'GBPPERP',
+  JPYPERP = 'JPYPERP',
 }
 
 /**
@@ -85,7 +98,7 @@ export const coinInfo = (coin: MoveCoin | string): CoinInfo => {
   if (typeof coin === 'string') {
     return mirageCoinList[MoveCoin[coin]]
   }
-  return <CoinInfo>mirageCoinList[coin]
+  return mirageCoinList[coin]
 }
 
 /**
@@ -184,19 +197,69 @@ const mirageCoinList: { readonly [coin in MoveCoin | Perpetual]: AssetInfo | Coi
     address: getModuleAddress('mirage_lp'),
     type: `${getModuleAddress('mirage_lp')}::mirage_lp::lp_coin`,
   },
-  [Perpetual.ETHPERP]: {
-    name: 'Ethereum Perpetuals Market',
-    symbol: 'ETH',
-    type: `${mirageAddress()}::market_types::ETHPERP`,
+  [Perpetual.APTPERP]: {
+    name: 'Aptos Perpetuals Market',
+    symbol: 'APT',
+    type: `${mirageAddress()}::market_types::APTPERP`,
+  },
+  [Perpetual.ARBPERP]: {
+    name: 'Arbitrum Perpetuals Market',
+    symbol: 'ARB',
+    type: `${mirageAddress()}::market_types::ARBPERP`,
   },
   [Perpetual.BTCPERP]: {
     name: 'Bitcoin Perpetuals Market',
     symbol: 'BTC',
     type: `${mirageAddress()}::market_types::BTCPERP`,
   },
-  [Perpetual.APTPERP]: {
-    name: 'Aptos Perpetuals Market',
-    symbol: 'APT',
-    type: `${mirageAddress()}::market_types::APTPERP`,
+  [Perpetual.ETHPERP]: {
+    name: 'Ethereum Perpetuals Market',
+    symbol: 'ETH',
+    type: `${mirageAddress()}::market_types::ETHPERP`,
+  },
+  [Perpetual.OPPERP]: {
+    name: 'Optimism Perpetuals Market',
+    symbol: 'OP',
+    type: `${mirageAddress()}::market_types::OPPERP`,
+  },
+  [Perpetual.PEPE1000PERP]: {
+    name: '1000 Pepe Perpetuals Market',
+    symbol: '1000PEPE',
+    type: `${mirageAddress()}::market_types::PEPE1000PERP`,
+  },
+  [Perpetual.SOLPERP]: {
+    name: 'Solana Perpetuals Market',
+    symbol: 'SOL',
+    type: `${mirageAddress()}::market_types::SOLPERP`,
+  },
+  [Perpetual.SUIPERP]: {
+    name: 'Sui Perpetuals Market',
+    symbol: 'SUI',
+    type: `${mirageAddress()}::market_types::SUIPERP`,
+  },
+  [Perpetual.XAGPERP]: {
+    name: 'Silver Perpetuals Market',
+    symbol: 'XAG',
+    type: `${mirageAddress()}::market_types::XAGPERP`,
+  },
+  [Perpetual.XAUPERP]: {
+    name: 'Gold Perpetuals Market',
+    symbol: 'XAU',
+    type: `${mirageAddress()}::market_types::XAUPERP`,
+  },
+  [Perpetual.EURPERP]: {
+    name: 'Euro Perpetuals Market',
+    symbol: 'EUR',
+    type: `${mirageAddress()}::market_types::EURPERP`,
+  },
+  [Perpetual.GBPPERP]: {
+    name: 'British Pound Perpetuals Market',
+    symbol: 'GBP',
+    type: `${mirageAddress()}::market_types::GBPPERP`,
+  },
+  [Perpetual.JPYPERP]: {
+    name: 'Japanese Yen Perpetuals Market',
+    symbol: 'JPY',
+    type: `${mirageAddress()}::market_types::JPYPERP`,
   },
 }
