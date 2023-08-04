@@ -2,8 +2,8 @@ import { AptosPriceServiceConnection } from '@pythnetwork/pyth-aptos-js'
 import { AptosClient } from 'aptos'
 
 // store copies of the client so they don't need to be rebuilt when fetched
-const mainnetClient = new AptosClient(`https://fullnode.mainnet.aptoslabs.com`)
-const testnetClient = new AptosClient(`https://fullnode.testnet.aptoslabs.com`) // new AptosClient(`https://testnet.artifact.systems/aptos`)
+const defaultMainnetClient = new AptosClient(`https://fullnode.mainnet.aptoslabs.com`)
+const defaultTestnetClient = new AptosClient(`https://fullnode.testnet.aptoslabs.com`) // new AptosClient(`https://testnet.artifact.systems/aptos`)
 
 const mainnetPythClient = new AptosPriceServiceConnection(`https://xc-mainnet.pyth.network`)
 const testnetPythClient = new AptosPriceServiceConnection(`https://xc-testnet.pyth.network`)
@@ -21,8 +21,11 @@ export enum Network {
  * @param network the network to use, if not specific = "mainnet"
  * @returns a useable aptos client
  */
-export const aptosClient = (network: Network | string = Network.MAINNET): AptosClient => {
-  return getNetwork(network) === Network.MAINNET ? mainnetClient : testnetClient
+export const aptosClient = (network: Network | string = Network.MAINNET, nodeURI?: string): AptosClient => {
+  if (nodeURI !== undefined) {
+    return new AptosClient(nodeURI)
+  }
+  return getNetwork(network) === Network.MAINNET ? defaultMainnetClient : defaultTestnetClient
 }
 
 /**
