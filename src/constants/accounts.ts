@@ -50,6 +50,7 @@ export const mirageAddress = (): HexString => {
 }
 
 // Relevant modules
+// NOTE: devUSDC is the same as mirage
 const MODULES: { readonly [module in MoveModules]: Account } = {
   ['mirage']: {
     name: 'mirage',
@@ -61,7 +62,7 @@ const MODULES: { readonly [module in MoveModules]: Account } = {
   },
   ['dev_usdc']: {
     name: 'devnet_coins',
-    address: new HexString('0x498d8926f16eb9ca90cab1b3a26aa6f97a080b3fcbe6e83ae150b7243a00fb68'),
+    address: new HexString('0x29e5f75e4ff5f317ba7a9598f389ba672a3716e275654f489c4caee6350517b5'),
   },
   ['layer_zero']: {
     name: 'asset',
