@@ -33,7 +33,7 @@
     "@pythnetwork/pyth-aptos-js": "^1.1.0",
     "@pythnetwork/pyth-common-js": "^1.4.0",
     "aptos": "1.9.1",
-    "bignumber.js": "^9.1.1"
+    "bignumber.js": "9.1.2"
   },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.1",
