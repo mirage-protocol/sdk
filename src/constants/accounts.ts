@@ -19,7 +19,6 @@ export type AccountResource = Types.MoveResource
 export enum MoveModules {
   MIRAGE = 'mirage',
   MIRAGE_LP = 'mirage_lp',
-  DEV_USDC = 'dev_usdc', // "devnet_coins",
   LAYER_ZERO = 'layer_zero', // "asset",
   // swap
   // gov
@@ -59,10 +58,6 @@ const MODULES: { readonly [module in MoveModules]: Account } = {
   ['mirage_lp']: {
     name: 'mirage_lp',
     address: new HexString('0xd3c7b15ac8d701842d98d3649ae75d72417b45aa75a5c00c6ec1385defdb2f9b'),
-  },
-  ['dev_usdc']: {
-    name: 'devnet_coins',
-    address: new HexString('0x29e5f75e4ff5f317ba7a9598f389ba672a3716e275654f489c4caee6350517b5'),
   },
   ['layer_zero']: {
     name: 'asset',
