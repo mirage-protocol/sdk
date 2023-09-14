@@ -2,14 +2,18 @@ import BigNumber from 'bignumber.js'
 
 import {
   AccountResource,
+  aptosClient,
   assetInfo,
   coinInfo,
+  getNetwork,
   mirageAddress,
   MoveCoin,
+  Network,
   Perpetual,
   PRECISION_8,
   ZERO,
 } from '../../constants'
+import { getMarketTypeArguments } from '../../transactions'
 import { LimitOrder, LimitOrderData } from './limitOrder'
 import { Market } from './market'
 
@@ -42,6 +46,14 @@ export type Position = {
  * Represents a trader on a specific Mirage Market
  */
 export class Trader {
+  /**
+   * The user address of this trader
+   */
+  private readonly userAddress: string
+  /**
+   * The current network being used
+   */
+  private readonly network: Network
   /**
    * The margin asset of the position
    */
@@ -79,14 +91,18 @@ export class Trader {
    * @param perpetualAsset The perpetual being traded
    */
   constructor(
+    userAddress: string,
     userResource: AccountResource[],
     moduleResources: AccountResource[],
     marginCoin: MoveCoin | string,
-    perpetualAsset: Perpetual | string
+    perpetualAsset: Perpetual | string,
+    network: Network | string = Network.MAINNET
   ) {
+    this.userAddress = userAddress
     this.marginCoin = marginCoin as MoveCoin
     this.perpetualAsset = perpetualAsset as Perpetual
     this.market = new Market(moduleResources, this.marginCoin, this.perpetualAsset)
+    this.network = getNetwork(network)
 
     const userType = `${mirageAddress()}::market::Trader<${coinInfo(this.marginCoin).type}, ${
       assetInfo(this.perpetualAsset).type
@@ -126,9 +142,6 @@ export class Trader {
     tempTrade.positionSize = !!user ? BigNumber((user.data as any).position.position_size).div(PRECISION_8) : ZERO
     tempTrade.maintenanceMargin = !!user
       ? BigNumber((user.data as any).position.maintenance_margin).div(PRECISION_8)
-      : ZERO
-    tempTrade.liquidationPrice = !!user
-      ? BigNumber((user.data as any).position.liquidation_price).div(PRECISION_8)
       : ZERO
     tempTrade.takeProfitPrice = !!user
       ? BigNumber((user.data as any).position.tpsl.take_profit_price).div(PRECISION_8)
@@ -209,5 +222,14 @@ export class Trader {
    */
   static estimatePercentPnl(position: Position, perpetualPrice: number, marginPrice: number): number {
     return (Trader.estimatePnl(position, perpetualPrice, marginPrice) * 100) / position.margin.toNumber()
+  }
+
+  public async getLiqPrice(): Promise<number> {
+    const ret = await aptosClient(this.network).view({
+      function: `${mirageAddress()}::market::liquidation_price`,
+      type_arguments: getMarketTypeArguments(this.marginCoin, this.perpetualAsset),
+      arguments: [this.userAddress],
+    })
+    return ret[0] as number
   }
 }
