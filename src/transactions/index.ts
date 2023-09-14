@@ -9,11 +9,6 @@ export type MoveType = Types.MoveType
 export type ScriptPayload = TxnBuilderTypes.TransactionPayloadScript
 export type Script = TxnBuilderTypes.Script
 
-export type PayloadResult = {
-  natural?: Payload
-  bcs?: TxnBuilderTypes.TransactionPayload
-}
-
 // Get the proper payload amount
 export const getCoinAmountArgument = (coin: MoveCoin | string, amount: number): string => {
   return BigNumber(amount)
