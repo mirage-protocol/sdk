@@ -188,7 +188,7 @@ const mirageCoinList: { readonly [coin in MoveCoin | Perpetual]: AssetInfo | Coi
     symbol: 'devUSDC',
     decimals: 8,
     address: getModuleAddress('mirage'),
-    type: `${getModuleAddress('mirage')}::mirage_scripts::devUSDC`,
+    type: `${getModuleAddress('mirage')}::devUSDC::DevUSDC`,
   },
   [MoveCoin.APT_MUSD_LP]: {
     name: 'APT-MUSD LP Coin',
