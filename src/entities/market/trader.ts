@@ -225,11 +225,20 @@ export class Trader {
   }
 
   public async getLiqPrice(): Promise<number> {
-    const ret = await aptosClient(this.network).view({
-      function: `${mirageAddress()}::market::liquidation_price`,
-      type_arguments: getMarketTypeArguments(this.marginCoin, this.perpetualAsset),
-      arguments: [this.userAddress],
-    })
-    return ret[0] as number
+    return await getLiqPrice(this.userAddress, this.marginCoin, this.perpetualAsset, this.network)
   }
+}
+
+const getLiqPrice = async (
+  userAddress: string,
+  marginCoin: MoveCoin,
+  perpetualAsset: Perpetual,
+  network: Network
+): Promise<number> => {
+  const ret = await aptosClient(network).view({
+    function: `${mirageAddress()}::market::liquidation_price`,
+    type_arguments: getMarketTypeArguments(marginCoin, perpetualAsset),
+    arguments: [userAddress],
+  })
+  return ret[0] as number
 }
