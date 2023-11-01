@@ -1,5 +1,3 @@
-import BigNumber from 'bignumber.js'
-
 import {
   assetInfo,
   coinInfo,
@@ -128,7 +126,7 @@ export const placeLimitOrder = async (
   isIncrease: boolean,
   triggersAbove: boolean,
   triggerPaymentAmount: number,
-  expiration: BigNumber, // in seconds
+  expiration: bigint, // in seconds
   network: Network
 ): Promise<Payload> => {
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
@@ -149,32 +147,10 @@ export const placeLimitOrder = async (
       isIncrease,
       triggersAbove,
       getDecimal8Argument(triggerPaymentAmount),
-      expiration.toFixed(0),
+      expiration.toString(), // sdk breaks for large non-string integers
     ],
     type_arguments: getMarketTypeArguments(marginCoin, perpetualAsset),
   }
-
-  // if (isInitialized) {
-  //   return {
-  //     natural: {
-  //       type,
-  //       function: `${mirageAddress()}::market::place_limit_order`,
-  //       arguments: [
-  //         perpetualVaas,
-  //         getDecimal8Argument(marginAmount), // always 8 decimals
-  //         getDecimal8Argument(positionSize),
-  //         side == PositionSide.LONG,
-  //         getDecimal8Argument(triggerPrice),
-  //         getDecimal8Argument(maxPriceSlippage),
-  //         isIncrease,
-  //         triggersAbove,
-  //         getDecimal8Argument(triggerPaymentAmount),
-  //         expiration.toFixed(0),
-  //       ],
-  //       type_arguments: getMarketTypeArguments(marginCoin, perpetualAsset),
-  //     },
-  //   }
-  // }
 
   // return {
   //   bcs: new TxnBuilderTypes.TransactionPayloadScript(
