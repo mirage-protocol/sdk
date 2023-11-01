@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-import { MoveCoin, Perpetual, PRECISION_8 } from '../../constants'
+import { MoveCoin, Perpetual, PRECISION_8, U64_MAX } from '../../constants'
 import { PositionSide } from './trader'
 
 /**
@@ -77,7 +77,7 @@ export class LimitOrder {
   /**
    * The expiration time of the order
    */
-  public readonly expiration: BigNumber
+  public readonly expiration: bigint
 
   /**
    * Construct a LimitOrder instance
@@ -98,7 +98,17 @@ export class LimitOrder {
     this.triggersAbove = limitOrderData.triggers_above
     this.triggerPayment = BigNumber(limitOrderData.trigger_payment.value).div(PRECISION_8)
     this.maxPriceSlippage = BigNumber(limitOrderData.max_price_slippage).div(PRECISION_8)
-    this.expiration = BigNumber(limitOrderData.expiration)
+    this.expiration = BigInt(limitOrderData.expiration)
+  }
+
+  // Good-til-cancelled expiration (U64_MAX)
+  static gtcExpiration(): bigint {
+    return BigInt(U64_MAX)
+  }
+
+  // Whether this order has an expiration or is good-til-cancelled
+  isGtc(): boolean {
+    return this.expiration == LimitOrder.gtcExpiration()
   }
 
   /**
