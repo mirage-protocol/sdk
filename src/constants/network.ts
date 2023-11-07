@@ -5,8 +5,24 @@ import { AptosClient } from 'aptos'
 const defaultMainnetClient = new AptosClient(`https://fullnode.mainnet.aptoslabs.com`)
 const defaultTestnetClient = new AptosClient(`https://fullnode.testnet.aptoslabs.com`) // new AptosClient(`https://testnet.artifact.systems/aptos`)
 
-const mainnetPythClient = new AptosPriceServiceConnection(`https://xc-mainnet.pyth.network`)
-const testnetPythClient = new AptosPriceServiceConnection(`https://xc-testnet.pyth.network`)
+const mainnetPythClient = new AptosPriceServiceConnection(`https://hermes.pyth.network`,
+  {
+    priceFeedRequestConfig: {
+      // Provide this option to retrieve signed price updates for on-chain contracts.
+      // Ignore this option for off-chain use.
+      binary: true,
+    },
+  }
+)
+const testnetPythClient = new AptosPriceServiceConnection(`https://hermes-beta.pyth.network`,
+  {
+    priceFeedRequestConfig: {
+      // Provide this option to retrieve signed price updates for on-chain contracts.
+      // Ignore this option for off-chain use.
+      binary: true,
+    },
+  }
+)
 
 /**
  * The network type of the app
