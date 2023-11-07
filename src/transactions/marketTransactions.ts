@@ -278,14 +278,9 @@ export const triggerTpsl = async (
   marginCoin: MoveCoin,
   perpetualAsset: Perpetual,
   toTrigger: string,
-  network: Network
+  perpetualVaas: number[],
+  marginVaas: number[]
 ): Promise<EntryFunctionPayload> => {
-  const marginFeed = getPriceFeed(marginCoin, network)
-  const perpetualFeed = getPriceFeed(perpetualAsset, network)
-
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
-
   const payload = {
     function: `${mirageAddress()}::market::trigger_tpsl`,
     arguments: [toTrigger, perpetualVaas, marginVaas],
@@ -302,14 +297,9 @@ export const liquidatePosition = async (
   marginCoin: MoveCoin,
   perpetualAsset: Perpetual,
   toTrigger: string,
-  network: Network
+  perpetualVaas: number[],
+  marginVaas: number[]
 ): Promise<EntryFunctionPayload> => {
-  const marginFeed = getPriceFeed(marginCoin, network)
-  const perpetualFeed = getPriceFeed(perpetualAsset, network)
-
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
-
   const payload = {
     function: `${mirageAddress()}::market::liquidate_position`,
     arguments: [toTrigger, perpetualVaas, marginVaas],
@@ -327,14 +317,9 @@ export const triggerLimitOrder = async (
   perpetualAsset: Perpetual,
   toTrigger: string,
   index: bigint,
-  network: Network
+  perpetualVaas: number[],
+  marginVaas: number[]
 ): Promise<EntryFunctionPayload> => {
-  const marginFeed = getPriceFeed(marginCoin, network)
-  const perpetualFeed = getPriceFeed(perpetualAsset, network)
-
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
-
   const payload = {
     function: `${mirageAddress()}::market::trigger_limit_order`,
     arguments: [toTrigger, index, perpetualVaas, marginVaas],
