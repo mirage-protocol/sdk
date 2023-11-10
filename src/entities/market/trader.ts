@@ -229,7 +229,7 @@ export class Trader {
   }
 }
 
-const getLiqPrice = async (
+export const getLiqPrice = async (
   userAddress: string,
   marginCoin: MoveCoin,
   perpetualAsset: Perpetual,

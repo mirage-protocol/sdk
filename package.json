@@ -1,7 +1,7 @@
 {
   "name": "@mirage-protocol/sdk",
   "license": "MIT",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "publishConfig": {
     "access": "public"
   },
@@ -30,7 +30,7 @@
     "lint": "eslint . --ext ts --ext tsx --ext js --quiet"
   },
   "dependencies": {
-    "@pythnetwork/pyth-aptos-js": "^1.1.0",
+    "@pythnetwork/pyth-aptos-js": "^1.4.2",
     "@pythnetwork/pyth-common-js": "^1.4.0",
     "aptos": "1.9.1",
     "bignumber.js": "9.1.2"
