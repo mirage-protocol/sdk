@@ -1,6 +1,7 @@
+import { InputViewRequestData, Network } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { aptosClient, getNetwork, Network, ZERO } from '../constants'
+import { aptosClient, getNetwork, ZERO } from '../constants'
 import { AccountResource } from '../constants/accounts'
 import { coinInfo, MoveCoin } from '../constants/coinList'
 
@@ -76,11 +77,11 @@ export class Coin {
    * @returns The coin's current supply
    */
   public async getTotalSupply(): Promise<BigNumber> {
-    const view = await aptosClient(this.network).view({
+    const payload: InputViewRequestData = {
       function: `0x1::coin::supply`,
-      type_arguments: [this.type],
-      arguments: [],
-    })
+      functionArguments: [],
+    }
+    const view = await aptosClient(this.network).view({ payload })
     const { vec } = view[0] as any
     return BigNumber(vec[0]).div(BigNumber(10).pow(this.decimals))
   }

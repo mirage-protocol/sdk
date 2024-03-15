@@ -1,7 +1,8 @@
+import { Network } from '@aptos-labs/ts-sdk'
 import { Price } from '@pythnetwork/pyth-aptos-js'
 import BigNumber from 'bignumber.js'
 
-import { getNetwork, Network, pythClient } from '../constants/network'
+import { getNetwork, pythClient } from '../constants/network'
 import { MoveCoin, Perpetual } from './coinList'
 
 /**
@@ -85,8 +86,11 @@ export const getUiPythPrice = ({ price, expo }: Price): number => {
     : BigNumber(price).times(BigNumber(10).pow(expo)).toNumber()
 }
 
+const USED_NETWORKS = [Network.MAINNET, Network.TESTNET] as const
+type Networks = (typeof USED_NETWORKS)[number]
+
 // Price feeds of coins by network
-const PRICE_FEEDS: { readonly [coin in CoinsWithPriceFeeds]: { readonly [network in Network]: string } } = {
+const PRICE_FEEDS: { readonly [coin in CoinsWithPriceFeeds]: { readonly [network in Networks]: string } } = {
   [MoveCoin.APT]: {
     [Network.MAINNET]: '0x03ae4db29ed4ae33d323568895aa00337e658e348b37509f5372ae51f0af00d5',
     [Network.TESTNET]: '0x44a93dddd8effa54ea51076c4e851b6cbbfd938e82eb90197de38fe8876bb66e',
