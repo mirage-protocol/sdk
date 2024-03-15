@@ -1,3 +1,5 @@
+import { Network } from '@aptos-labs/ts-sdk'
+
 import {
   assetInfo,
   coinInfo,
@@ -6,7 +8,6 @@ import {
   getPriceFeedUpdateData,
   mirageAddress,
   MoveCoin,
-  Network,
   Perpetual,
 } from '../constants'
 import { PositionSide } from '../entities'

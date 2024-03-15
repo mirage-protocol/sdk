@@ -1,18 +1,9 @@
 import BigNumber from 'bignumber.js'
 
-import {
-  aptosClient,
-  FUNDING_PRECISION,
-  getNetwork,
-  Network,
-  PERCENT_PRECISION,
-  PRECISION_8,
-  ZERO,
-} from '../../constants'
+import { FUNDING_PRECISION, PERCENT_PRECISION, PRECISION_8, ZERO } from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
 import { MoveCoin, Perpetual } from '../../constants/coinList'
 import { assetInfo, coinInfo } from '../../constants/coinList'
-import { getDecimal8Argument, getMarketTypeArguments } from '../../transactions'
 import { Rebase } from '../rebase'
 
 /**
@@ -30,7 +21,7 @@ export class Market {
   /**
    * The current network being used
    */
-  private readonly network: Network
+  // private readonly network: Network
   /**
    * Maximum taker fee at the max_oi_imbalance
    */
@@ -156,12 +147,12 @@ export class Market {
   constructor(
     moduleResources: AccountResource[],
     marginCoin: MoveCoin | string,
-    perpetualAsset: Perpetual | string,
-    network: Network | string = Network.MAINNET
+    perpetualAsset: Perpetual | string
+    // network: Network | string = Network.MAINNET
   ) {
     this.marginCoin = marginCoin as MoveCoin
     this.perpetualAsset = perpetualAsset as Perpetual
-    this.network = getNetwork(network)
+    // this.network = getNetwork(network)
 
     const marketType = `${mirageAddress()}::market::Market<${coinInfo(this.marginCoin).type}, ${
       assetInfo(this.perpetualAsset).type
@@ -261,25 +252,25 @@ export class Market {
     return this.shortMargin.div(PRECISION_8).toNumber()
   }
 
-  /**
-   * Get an estimate of the current fee in terms of USD
-   * @param positionSizeUsd the position size in USD
-   * @param perpetualPrice the perpetual price
-   * @param isLong if the trade is long
-   * @param isClose if the trade is an open or close
-   * @returns the fee in USD
-   */
-  public async estimateFee(
-    positionSizeUsd: number,
-    perpetualPrice: number,
-    isLong: boolean,
-    isClose: boolean
-  ): Promise<number> {
-    const ret = await aptosClient(this.network).view({
-      function: `${mirageAddress()}::market::estimate_fee`,
-      type_arguments: getMarketTypeArguments(this.marginCoin, this.perpetualAsset),
-      arguments: [getDecimal8Argument(positionSizeUsd), getDecimal8Argument(perpetualPrice), isLong, isClose],
-    })
-    return ret[0] as number
-  }
+  // /**
+  //  * Get an estimate of the current fee in terms of USD
+  //  * @param positionSizeUsd the position size in USD
+  //  * @param perpetualPrice the perpetual price
+  //  * @param isLong if the trade is long
+  //  * @param isClose if the trade is an open or close
+  //  * @returns the fee in USD
+  //  */
+  // public async estimateFee(
+  //   positionSizeUsd: number,
+  //   perpetualPrice: number,
+  //   isLong: boolean,
+  //   isClose: boolean
+  // ): Promise<number> {
+  //   const ret = await aptosClient(this.network).view({
+  //     function: `${mirageAddress()}::market::estimate_fee`,
+  //     type_arguments: getMarketTypeArguments(this.marginCoin, this.perpetualAsset),
+  //     arguments: [getDecimal8Argument(positionSizeUsd), getDecimal8Argument(perpetualPrice), isLong, isClose],
+  //   })
+  //   return ret[0] as number
+  // }
 }

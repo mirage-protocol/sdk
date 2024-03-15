@@ -1,12 +1,6 @@
-import {
-  coinInfo,
-  getNetwork,
-  getPriceFeed,
-  getPriceFeedUpdateData,
-  mirageAddress,
-  MoveCoin,
-  Network,
-} from '../constants'
+import { Network } from '@aptos-labs/ts-sdk'
+
+import { coinInfo, getNetwork, getPriceFeed, getPriceFeedUpdateData, mirageAddress, MoveCoin } from '../constants'
 import { getCoinAmountArgument, MoveType, Payload } from './'
 
 const type = 'entry_function_payload'
