@@ -1,16 +1,16 @@
 import BigNumber from 'bignumber.js'
 
-import { AccountResource, coinInfo, mirageAddress, MoveCoin, ZERO } from '../constants'
+import { AccountResource, moveAssetInfo, mirageAddress, MoveToken, ZERO } from '../constants'
 import { Rebase } from './rebase'
 
 export class Mirage {
-  public readonly debt: MoveCoin
+  public readonly debt: MoveToken
   public readonly debtRebase: Rebase
 
-  constructor(moduleResources: AccountResource[], debt: MoveCoin | string) {
-    this.debt = debt as MoveCoin
+  constructor(moduleResources: AccountResource[], debt: MoveToken | string) {
+    this.debt = debt as MoveToken
 
-    const debtStoreType = `${mirageAddress()}::mirage::MirageDebtStore<${coinInfo(debt).type}>`
+    const debtStoreType = `${mirageAddress()}::mirage::MirageDebtStore<${moveAssetInfo(debt).type}>`
     const mirage = moduleResources.find((resource) => resource.type === debtStoreType)
 
     this.debtRebase = !!mirage

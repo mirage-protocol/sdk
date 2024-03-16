@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js'
 
 import { aptosClient, getNetwork, ZERO } from '../constants'
 import { AccountResource } from '../constants/accounts'
-import { coinInfo, MoveCoin } from '../constants/coinList'
+import { moveAssetInfo, MoveCoin } from '../constants/assetList'
 
 /**
  * Represents an on-chain CoinStore with a unique type and stores some metadata.
@@ -53,7 +53,7 @@ export class Coin {
     coin: MoveCoin | string,
     network: Network | string = Network.MAINNET
   ) {
-    const { name, symbol, decimals, type } = coinInfo(coin)
+    const { name, symbol, decimals, type } = moveAssetInfo(coin)
 
     const precision = BigNumber(10).pow(decimals)
 

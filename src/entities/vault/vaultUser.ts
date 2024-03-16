@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 
 import { EXCHANGE_RATE_PRECISION, ZERO } from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
-import { balanceToUi, coinInfo, MoveCoin } from '../../constants/coinList'
+import { balanceToUi, moveAssetInfo, MoveToken } from '../../constants/assetList'
 import { Vault } from './vault'
 
 /**
@@ -13,11 +13,11 @@ export class VaultUser {
   /**
    * The collateral asset of the vault
    */
-  public readonly collateral: MoveCoin
+  public readonly collateral: MoveToken
   /**
    * The borrow asset of the vault (a mirage asset e.g. mUSD)
    */
-  public readonly borrow: MoveCoin
+  public readonly borrow: MoveToken
   /**
    * The amount of collateral the user has deposited
    */
@@ -58,14 +58,16 @@ export class VaultUser {
   constructor(
     userResources: AccountResource[],
     moduleResources: AccountResource[],
-    collateral: MoveCoin | string,
-    borrow: MoveCoin | string
+    collateral: MoveToken | string,
+    borrow: MoveToken | string
   ) {
-    this.collateral = collateral as MoveCoin
-    this.borrow = borrow as MoveCoin
+    this.collateral = collateral as MoveToken
+    this.borrow = borrow as MoveToken
     this.vault = new Vault(moduleResources, this.collateral, this.borrow)
 
-    const vaultUserType = `${mirageAddress()}::vault::VaultUser<${coinInfo(collateral).type}, ${coinInfo(borrow).type}>`
+    const vaultUserType = `${mirageAddress()}::vault::VaultUser<${moveAssetInfo(collateral).type}, ${
+      moveAssetInfo(borrow).type
+    }>`
 
     const user = userResources.find((resource) => resource.type === vaultUserType)
 

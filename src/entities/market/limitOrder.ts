@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-import { MoveCoin, Perpetual, PRECISION_8, U64_MAX } from '../../constants'
+import { MoveToken, Perpetual, PRECISION_8, U64_MAX } from '../../constants'
 import { PositionSide } from './trader'
 
 /**
@@ -26,7 +26,7 @@ export class LimitOrder {
   /**
    * The base asset of the market
    */
-  public readonly marginCoin: MoveCoin
+  public readonly marginCoin: MoveToken
   /**
    * The underlying asset of the market
    */
@@ -83,7 +83,7 @@ export class LimitOrder {
    * Construct a LimitOrder instance
    * @param limitOrderData the data to parse
    */
-  constructor(limitOrderData: LimitOrderData, index: number, marginCoin: MoveCoin, perpetualAsset: Perpetual) {
+  constructor(limitOrderData: LimitOrderData, index: number, marginCoin: MoveToken, perpetualAsset: Perpetual) {
     this.marginCoin = marginCoin
     this.perpetualAsset = perpetualAsset
 

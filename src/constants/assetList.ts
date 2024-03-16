@@ -5,17 +5,23 @@ import { MoveType } from '../transactions'
 import { getModuleAddress, mirageAddress } from './accounts'
 
 /**
- * All Coins relevant to the mirage-protocol ecosystem
+ * All Tokens relevant to the mirage-protocol ecosystem
  */
-export enum MoveCoin {
+export enum MoveToken {
   MIRA = 'MIRA', // Mirage coin
-  APT = 'APT', // Aptos coin
   mAPT = 'mAPT', // mirage-Aptos
   mETH = 'mETH', // mirage-Ethereum
   mUSD = 'mUSD', // mirage-Usd
-  zUSDC = 'zUSDC', // Layer-zero USDC
   devUSDC = 'devUSDC', // devnet USDC
   APT_MUSD_LP = 'APT_MUSD_LP', // APT/MUSD LP
+}
+
+/**
+ * All Coins relevant to the mirage-protocol ecosystem
+ */
+export enum MoveCoin {
+  APT = 'APT', // Aptos coin
+  zUSDC = 'zUSDC', // Layer-zero USDC
 }
 
 /**
@@ -43,7 +49,7 @@ export enum Perpetual {
 /**
  * All synthetic mirage assets
  */
-export const MIRAGE_ASSETS: readonly MoveCoin[] = [MoveCoin.mAPT, MoveCoin.mUSD, MoveCoin.mETH]
+export const MIRAGE_ASSETS: readonly MoveToken[] = [MoveToken.mAPT, MoveToken.mUSD, MoveToken.mETH]
 
 export type AssetInfo = {
   readonly name: string
@@ -54,18 +60,20 @@ export type AssetInfo = {
 /**
  * Info for a coin
  */
-export type CoinInfo = AssetInfo & {
+export type MoveAssetInfo = AssetInfo & {
   readonly decimals: number
   readonly address: HexString
 }
 
+export type MoveAsset = MoveCoin | MoveToken
+
 /**
- * Get the MoveCoin of a given symbol
+ * Get the MoveToken or MoveCoin of a given symbol
  * @param symbol string symbol of coin
- * @returns the MoveCoin or undefined if not valid
+ * @returns the MoveToken or undefined if not valid
  */
-export const checkSymbol = (symbol: string): MoveCoin | undefined => {
-  return MoveCoin[symbol]
+export const getMoveAssetFromSymbol = (symbol: string): MoveAsset | undefined => {
+  return MoveToken[symbol] ?? MoveCoin[symbol]
 }
 
 /**
@@ -79,26 +87,26 @@ export const checkPerpSymbol = (symbol: string): Perpetual | undefined => {
 
 /**
  * Get info about a specific asset
- * @param coin the MoveCoin to get info for
+ * @param coin the MoveToken to get info for
  * @returns the AssetInfo for the specific coin
  */
-export const assetInfo = (asset: MoveCoin | Perpetual | string): AssetInfo => {
+export const assetInfo = (asset: MoveAsset | Perpetual | string): AssetInfo => {
   if (typeof asset === 'string') {
-    return mirageCoinList[MoveCoin[asset] || Perpetual[asset]]
+    return mirageAssetList[MoveToken[asset] || Perpetual[asset]]
   }
-  return mirageCoinList[asset]
+  return mirageAssetList[asset]
 }
 
 /**
  * Get info about a specific asset
- * @param coin the MoveCoin to get info for
- * @returns the CoinInfo for the specific coin
+ * @param coin the MoveToken to get info for
+ * @returns the MoveAssetInfo for the specific coin or token
  */
-export const coinInfo = (coin: MoveCoin | string): CoinInfo => {
+export const moveAssetInfo = (coin: MoveAsset | string): MoveAssetInfo => {
   if (typeof coin === 'string') {
-    return mirageCoinList[MoveCoin[coin]]
+    return mirageAssetList[MoveToken[coin]] ?? mirageAssetList[MoveCoin[coin]]
   }
-  return mirageCoinList[coin]
+  return mirageAssetList[coin]
 }
 
 /**
@@ -107,18 +115,32 @@ export const coinInfo = (coin: MoveCoin | string): CoinInfo => {
  * @param coin the coin
  * @returns a human-readable balance value
  */
-export const balanceToUi = (balance: BigNumber, coin: MoveCoin | string): number => {
-  return balance.div(BigNumber(10).pow(coinInfo(coin).decimals)).toNumber()
+export const balanceToUi = (balance: BigNumber, coin: MoveToken | string): number => {
+  return balance.div(BigNumber(10).pow(moveAssetInfo(coin).decimals)).toNumber()
 }
 
 /**
- * Convert move coin type to MoveCoin
+ * Convert move token type to MoveToken
  * @param type the type of the perp
- * @returns a move coin
+ * @returns a move token
+ */
+export const typeToMoveToken = (type: string): MoveToken | undefined => {
+  for (const asset in mirageAssetList) {
+    if (asset in MoveToken && mirageAssetList[asset].type == type) {
+      return MoveToken[asset]
+    }
+  }
+  return undefined
+}
+
+/**
+ * Convert move Coin type to MoveCoin
+ * @param type the type of the perp
+ * @returns a move Coin
  */
 export const typeToMoveCoin = (type: string): MoveCoin | undefined => {
-  for (const asset in mirageCoinList) {
-    if (asset in MoveCoin && mirageCoinList[asset].type == type) {
+  for (const asset in mirageAssetList) {
+    if (asset in MoveCoin && mirageAssetList[asset].type == type) {
       return MoveCoin[asset]
     }
   }
@@ -131,8 +153,8 @@ export const typeToMoveCoin = (type: string): MoveCoin | undefined => {
  * @returns a perpetual asset
  */
 export const typeToPerpetual = (type: string): Perpetual | undefined => {
-  for (const asset in mirageCoinList) {
-    if (asset in Perpetual && mirageCoinList[asset].type == type) {
+  for (const asset in mirageAssetList) {
+    if (asset in Perpetual && mirageAssetList[asset].type == type) {
       return Perpetual[asset]
     }
   }
@@ -140,7 +162,7 @@ export const typeToPerpetual = (type: string): Perpetual | undefined => {
 }
 
 // A list of all coins and their info in the Mirage ecosystem
-const mirageCoinList: { readonly [coin in MoveCoin | Perpetual]: AssetInfo | CoinInfo } = {
+const mirageAssetList: { readonly [coin in MoveAsset | Perpetual]: AssetInfo | MoveAssetInfo } = {
   [MoveCoin.APT]: {
     name: 'Aptos Coin',
     symbol: 'APT',
@@ -148,28 +170,28 @@ const mirageCoinList: { readonly [coin in MoveCoin | Perpetual]: AssetInfo | Coi
     address: new HexString('0x1'),
     type: '0x1::aptos_coin::AptosCoin',
   },
-  [MoveCoin.MIRA]: {
+  [MoveToken.MIRA]: {
     name: 'Mirage Coin',
     symbol: 'MIRA',
     decimals: 8,
     address: mirageAddress(),
     type: `${mirageAddress()}::mirage::Mirage`,
   },
-  [MoveCoin.mUSD]: {
+  [MoveToken.mUSD]: {
     name: 'Mirage USD',
     symbol: 'mUSD',
     decimals: 8,
     address: mirageAddress(),
     type: `${mirageAddress()}::mirage::MUSD`,
   },
-  [MoveCoin.mAPT]: {
+  [MoveToken.mAPT]: {
     name: 'Mirage Aptos',
     symbol: 'mAPT',
     decimals: 8,
     address: mirageAddress(),
     type: `${mirageAddress()}::mirage::MAPT`,
   },
-  [MoveCoin.mETH]: {
+  [MoveToken.mETH]: {
     name: 'Mirage Ethereum',
     symbol: 'mETH',
     decimals: 8,
@@ -183,14 +205,14 @@ const mirageCoinList: { readonly [coin in MoveCoin | Perpetual]: AssetInfo | Coi
     address: getModuleAddress('layer_zero'),
     type: `${getModuleAddress('layer_zero')}::asset::USDC`,
   },
-  [MoveCoin.devUSDC]: {
+  [MoveToken.devUSDC]: {
     name: 'Testnet USDC',
     symbol: 'devUSDC',
     decimals: 8,
     address: getModuleAddress('mirage'),
     type: `${getModuleAddress('mirage')}::devUSDC::DevUSDC`,
   },
-  [MoveCoin.APT_MUSD_LP]: {
+  [MoveToken.APT_MUSD_LP]: {
     name: 'APT-MUSD LP Coin',
     symbol: 'musd-lp',
     decimals: 8,

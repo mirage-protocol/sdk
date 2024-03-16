@@ -1,13 +1,13 @@
-import { Network } from '@aptos-labs/ts-sdk'
+import { InputEntryFunctionData, MoveObjectType, Network } from '@aptos-labs/ts-sdk'
 
-import { coinInfo, getNetwork, getPriceFeed, getPriceFeedUpdateData, mirageAddress, MoveCoin } from '../constants'
-import { getCoinAmountArgument, MoveType, Payload } from './'
+import { getNetwork, getPriceFeed, getPriceFeedUpdateData, mirageAddress, MoveAsset, MoveToken } from '../constants'
+import { getAssetAmountArgument } from './'
 
-const type = 'entry_function_payload'
+// const type = 'entry_function_payload'
 
-const getVaultTypeArguments = (collateral: MoveCoin | string, borrow: MoveCoin | string): MoveType[] => {
-  return [coinInfo(collateral).type, coinInfo(borrow).type]
-}
+// const getVaultTypeArgument = (): MoveType => {
+//   return `${mirageAddress()}::vault::Vault`
+// }
 
 /**
  * Build a payload to add collateral to a vault
@@ -17,15 +17,14 @@ const getVaultTypeArguments = (collateral: MoveCoin | string, borrow: MoveCoin |
  * @returns payload promise for the transaction
  */
 export const addCollateral = async (
-  collateralCoin: MoveCoin,
-  borrowCoin: MoveCoin,
+  vault_object: MoveObjectType,
+  collateralToken: MoveAsset,
   amount: number
-): Promise<Payload> => {
+): Promise<InputEntryFunctionData> => {
   return {
-    type,
     function: `${mirageAddress()}::vault::add_collateral`,
-    arguments: [getCoinAmountArgument(collateralCoin, amount)],
-    type_arguments: getVaultTypeArguments(collateralCoin, borrowCoin),
+    functionArguments: [vault_object, getAssetAmountArgument(collateralToken, amount)],
+    // typeArguments: getVaultTypeArgument(),
   }
 }
 
@@ -38,11 +37,11 @@ export const addCollateral = async (
  * @returns payload promise for the transaction
  */
 export const borrow = async (
-  collateralCoin: MoveCoin,
-  borrowCoin: MoveCoin,
+  collateralCoin: MoveToken,
+  borrowCoin: MoveToken,
   borrowAmount: number,
   network: Network | string = Network.MAINNET
-): Promise<Payload> => {
+): Promise<InputEntryFunctionData> => {
   const collateralFeed = getPriceFeed(collateralCoin, network)
   const borrowFeed = getPriceFeed(borrowCoin, network)
 
@@ -50,10 +49,9 @@ export const borrow = async (
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
 
   return {
-    type,
     function: `${mirageAddress()}::vault::borrow`,
-    arguments: [getCoinAmountArgument(borrowCoin, borrowAmount), collateralVaas, borrowVaas],
-    type_arguments: getVaultTypeArguments(collateralCoin, borrowCoin),
+    functionArguments: [getAssetAmountArgument(borrowCoin, borrowAmount), collateralVaas, borrowVaas],
+    // type_arguments: getVaultTypeArgument(collateralCoin, borrowCoin),
   }
 }
 
@@ -66,21 +64,20 @@ export const borrow = async (
  * @returns payload promise for the transaction
  */
 export const removeCollateral = async (
-  collateralCoin: MoveCoin,
-  borrowCoin: MoveCoin,
+  collateralCoin: MoveToken,
+  borrowCoin: MoveToken,
   removeAmount: number,
   network: Network | string = Network.MAINNET
-): Promise<Payload> => {
+): Promise<InputEntryFunctionData> => {
   const collateralFeed = getPriceFeed(collateralCoin, network)
   const borrowFeed = getPriceFeed(borrowCoin, network)
 
   const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : []
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
   return {
-    type,
     function: `${mirageAddress()}::vault::remove_collateral`,
-    arguments: [getCoinAmountArgument(collateralCoin, removeAmount), collateralVaas, borrowVaas],
-    type_arguments: getVaultTypeArguments(collateralCoin, borrowCoin),
+    functionArguments: [getAssetAmountArgument(collateralCoin, removeAmount), collateralVaas, borrowVaas],
+    // type_arguments: getVaultTypeArgument(collateralCoin, borrowCoin),
   }
 }
 
@@ -92,15 +89,14 @@ export const removeCollateral = async (
  * @returns payload promise for the transaction
  */
 export const repayDebt = async (
-  collateralCoin: MoveCoin,
-  borrowCoin: MoveCoin,
+  // collateralCoin: MoveToken,
+  borrowCoin: MoveToken,
   repayAmount: number
-): Promise<Payload> => {
+): Promise<InputEntryFunctionData> => {
   return {
-    type,
     function: `${mirageAddress()}::vault::repay`,
-    arguments: [getCoinAmountArgument(borrowCoin, repayAmount)],
-    type_arguments: getVaultTypeArguments(collateralCoin, borrowCoin),
+    functionArguments: [getAssetAmountArgument(borrowCoin, repayAmount)],
+    // type_arguments: getVaultTypeArgument(collateralCoin, borrowCoin),
   }
 }
 
@@ -114,12 +110,12 @@ export const repayDebt = async (
  * @returns payload promise for the transaction
  */
 export const addCollateralAndBorrow = async (
-  collateralCoin: MoveCoin,
-  borrowCoin: MoveCoin,
+  collateralCoin: MoveToken,
+  borrowCoin: MoveToken,
   addAmount: number,
   borrowAmount: number,
   network: Network | string = Network.MAINNET
-): Promise<Payload> => {
+): Promise<InputEntryFunctionData> => {
   const collateralFeed = getPriceFeed(collateralCoin, network)
   const borrowFeed = getPriceFeed(borrowCoin, network)
 
@@ -127,15 +123,14 @@ export const addCollateralAndBorrow = async (
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
 
   return {
-    type,
     function: `${mirageAddress()}::vault_scripts::add_and_borrow`,
-    arguments: [
-      getCoinAmountArgument(collateralCoin, addAmount),
-      getCoinAmountArgument(borrowCoin, borrowAmount),
+    functionArguments: [
+      getAssetAmountArgument(collateralCoin, addAmount),
+      getAssetAmountArgument(borrowCoin, borrowAmount),
       collateralVaas,
       borrowVaas,
     ],
-    type_arguments: getVaultTypeArguments(collateralCoin, borrowCoin),
+    // type_arguments: getVaultTypeArgument(collateralCoin, borrowCoin),
   }
 
   // return new aptos.TxnBuilderTypes.TransactionPayloadScript(
@@ -143,9 +138,9 @@ export const addCollateralAndBorrow = async (
   //     getScriptBytecode('add_and_borrow'),
   //     [
   //       new aptos.TxnBuilderTypes.TypeTagStruct(
-  //         aptos.TxnBuilderTypes.StructTag.fromString(coinInfo(collateralCoin).type)
+  //         aptos.TxnBuilderTypes.StructTag.fromString(moveAssetInfo(collateralCoin).type)
   //       ),
-  //       new aptos.TxnBuilderTypes.TypeTagStruct(aptos.TxnBuilderTypes.StructTag.fromString(coinInfo(borrowCoin).type)),
+  //       new aptos.TxnBuilderTypes.TypeTagStruct(aptos.TxnBuilderTypes.StructTag.fromString(moveAssetInfo(borrowCoin).type)),
   //     ],
   //     [
   //       new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSCoinAmountArgument(collateralCoin, addAmount)),
@@ -167,12 +162,12 @@ export const addCollateralAndBorrow = async (
  * @returns payload promise for the transaction
  */
 export const repayDebtAndRemoveCollateral = async (
-  collateralCoin: MoveCoin,
-  borrowCoin: MoveCoin,
+  collateralCoin: MoveToken,
+  borrowCoin: MoveToken,
   removeAmount: number,
   repayAmount: number,
   network: Network | string = Network.MAINNET
-): Promise<Payload> => {
+): Promise<InputEntryFunctionData> => {
   const collateralFeed = getPriceFeed(collateralCoin, network)
   const borrowFeed = getPriceFeed(borrowCoin, network)
 
@@ -180,15 +175,14 @@ export const repayDebtAndRemoveCollateral = async (
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
 
   return {
-    type,
     function: `${mirageAddress()}::vault_scripts::repay_and_remove`,
-    arguments: [
-      getCoinAmountArgument(collateralCoin, removeAmount),
-      getCoinAmountArgument(borrowCoin, repayAmount),
+    functionArguments: [
+      getAssetAmountArgument(collateralCoin, removeAmount),
+      getAssetAmountArgument(borrowCoin, repayAmount),
       collateralVaas,
       borrowVaas,
     ],
-    type_arguments: getVaultTypeArguments(collateralCoin, borrowCoin),
+    // type_arguments: getVaultTypeArgument(collateralCoin, borrowCoin),
   }
 
   // return new aptos.TxnBuilderTypes.TransactionPayloadScript(
@@ -196,9 +190,9 @@ export const repayDebtAndRemoveCollateral = async (
   //     getScriptBytecode('repay_and_remove'),
   //     [
   //       new aptos.TxnBuilderTypes.TypeTagStruct(
-  //         aptos.TxnBuilderTypes.StructTag.fromString(coinInfo(collateralCoin).type)
+  //         aptos.TxnBuilderTypes.StructTag.fromString(moveAssetInfo(collateralCoin).type)
   //       ),
-  //       new aptos.TxnBuilderTypes.TypeTagStruct(aptos.TxnBuilderTypes.StructTag.fromString(coinInfo(borrowCoin).type)),
+  //       new aptos.TxnBuilderTypes.TypeTagStruct(aptos.TxnBuilderTypes.StructTag.fromString(moveAssetInfo(borrowCoin).type)),
   //     ],
   //     [
   //       new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSCoinAmountArgument(collateralCoin, removeAmount)),
@@ -219,16 +213,18 @@ export const repayDebtAndRemoveCollateral = async (
  * @returns payload promise for the transaction
  */
 export const addCollateralAndRepayDebt = async (
-  collateralCoin: MoveCoin,
-  borrowCoin: MoveCoin,
+  collateralCoin: MoveToken,
+  borrowCoin: MoveToken,
   addAmount: number,
   repayAmount: number
-): Promise<Payload> => {
+): Promise<InputEntryFunctionData> => {
   return {
-    type,
     function: `${mirageAddress()}::vault_scripts::add_and_repay`,
-    arguments: [getCoinAmountArgument(collateralCoin, addAmount), getCoinAmountArgument(borrowCoin, repayAmount)],
-    type_arguments: getVaultTypeArguments(collateralCoin, borrowCoin),
+    functionArguments: [
+      getAssetAmountArgument(collateralCoin, addAmount),
+      getAssetAmountArgument(borrowCoin, repayAmount),
+    ],
+    // type_arguments: getVaultTypeArgument(collateralCoin, borrowCoin),
   }
 
   // return new aptos.TxnBuilderTypes.TransactionPayloadScript(
@@ -236,9 +232,9 @@ export const addCollateralAndRepayDebt = async (
   //     getScriptBytecode('add_and_repay'),
   //     [
   //       new aptos.TxnBuilderTypes.TypeTagStruct(
-  //         aptos.TxnBuilderTypes.StructTag.fromString(coinInfo(collateralCoin).type)
+  //         aptos.TxnBuilderTypes.StructTag.fromString(moveAssetInfo(collateralCoin).type)
   //       ),
-  //       new aptos.TxnBuilderTypes.TypeTagStruct(aptos.TxnBuilderTypes.StructTag.fromString(coinInfo(borrowCoin).type)),
+  //       new aptos.TxnBuilderTypes.TypeTagStruct(aptos.TxnBuilderTypes.StructTag.fromString(moveAssetInfo(borrowCoin).type)),
   //     ],
   //     [
   //       new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSCoinAmountArgument(collateralCoin, addAmount)),
@@ -258,12 +254,12 @@ export const addCollateralAndRepayDebt = async (
  * @returns payload promise for the transaction
  */
 export const removeCollateralAndBorrow = async (
-  collateralCoin: MoveCoin,
-  borrowCoin: MoveCoin,
+  collateralCoin: MoveToken,
+  borrowCoin: MoveToken,
   removeAmount: number,
   borrowAmount: number,
   network: Network | string = Network.MAINNET
-): Promise<Payload> => {
+): Promise<InputEntryFunctionData> => {
   const collateralFeed = getPriceFeed(collateralCoin, network)
   const borrowFeed = getPriceFeed(borrowCoin, network)
 
@@ -271,15 +267,14 @@ export const removeCollateralAndBorrow = async (
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
 
   return {
-    type,
     function: `${mirageAddress()}::vault_scripts::remove_and_borrow`,
-    arguments: [
-      getCoinAmountArgument(collateralCoin, removeAmount),
-      getCoinAmountArgument(borrowCoin, borrowAmount),
+    functionArguments: [
+      getAssetAmountArgument(collateralCoin, removeAmount),
+      getAssetAmountArgument(borrowCoin, borrowAmount),
       collateralVaas,
       borrowVaas,
     ],
-    type_arguments: getVaultTypeArguments(collateralCoin, borrowCoin),
+    // type_arguments: getVaultTypeArgument(collateralCoin, borrowCoin),
   }
 
   // return new aptos.TxnBuilderTypes.TransactionPayloadScript(
@@ -287,9 +282,9 @@ export const removeCollateralAndBorrow = async (
   //     getScriptBytecode('remove_and_borrow'),
   //     [
   //       new aptos.TxnBuilderTypes.TypeTagStruct(
-  //         aptos.TxnBuilderTypes.StructTag.fromString(coinInfo(collateralCoin).type)
+  //         aptos.TxnBuilderTypes.StructTag.fromString(moveAssetInfo(collateralCoin).type)
   //       ),
-  //       new aptos.TxnBuilderTypes.TypeTagStruct(aptos.TxnBuilderTypes.StructTag.fromString(coinInfo(borrowCoin).type)),
+  //       new aptos.TxnBuilderTypes.TypeTagStruct(aptos.TxnBuilderTypes.StructTag.fromString(moveAssetInfo(borrowCoin).type)),
   //     ],
   //     [
   //       new aptos.TxnBuilderTypes.TransactionArgumentU64(getBCSCoinAmountArgument(collateralCoin, removeAmount)),

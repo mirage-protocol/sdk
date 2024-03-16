@@ -1,7 +1,7 @@
 import { TxnBuilderTypes, Types } from 'aptos'
 import BigNumber from 'bignumber.js'
 
-import { coinInfo, MoveCoin, PRECISION_8 } from '../constants'
+import { MoveAsset, moveAssetInfo, PRECISION_8 } from '../constants'
 
 export type EntryFunctionPayload = Types.EntryFunctionPayload
 export type Payload = Types.TransactionPayload_EntryFunctionPayload
@@ -10,15 +10,15 @@ export type ScriptPayload = TxnBuilderTypes.TransactionPayloadScript
 export type Script = TxnBuilderTypes.Script
 
 // Get the proper payload amount
-export const getCoinAmountArgument = (coin: MoveCoin | string, amount: number): string => {
+export const getAssetAmountArgument = (coin: MoveAsset | string, amount: number): string => {
   return BigNumber(amount)
-    .times(BigNumber(10).pow(coinInfo(coin).decimals))
+    .times(BigNumber(10).pow(moveAssetInfo(coin).decimals))
     .toFixed(0)
 }
 
 // Get the proper payload amount
-export const getBCSCoinAmountArgument = (coin: MoveCoin | string, amount: number): bigint => {
-  return BigInt(getCoinAmountArgument(coin, amount))
+export const getBCSCoinAmountArgument = (coin: MoveAsset | string, amount: number): bigint => {
+  return BigInt(getAssetAmountArgument(coin, amount))
 }
 
 // Get the proper payload amount

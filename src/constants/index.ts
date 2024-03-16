@@ -13,6 +13,6 @@ export const U64_MAX = '18446744073709551615'
 export const MIN_TRIGGER_PAYMENT = 1000000
 
 export * from './accounts'
-export * from './coinList'
+export * from './assetList'
 export * from './network'
 export * from './priceFeeds'

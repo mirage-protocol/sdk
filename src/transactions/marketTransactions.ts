@@ -2,23 +2,24 @@ import { Network } from '@aptos-labs/ts-sdk'
 
 import {
   assetInfo,
-  coinInfo,
+  moveAssetInfo,
   getNetwork,
   getPriceFeed,
   getPriceFeedUpdateData,
   mirageAddress,
   MoveCoin,
+  MoveToken,
   Perpetual,
 } from '../constants'
 import { PositionSide } from '../entities'
 import { EntryFunctionPayload, getDecimal8Argument, MoveType, Payload } from './'
-import { getCoinAmountArgument } from './'
+import { getAssetAmountArgument } from './'
 
 const type = 'entry_function_payload'
 
 // Get the types for this market
-export const getMarketTypeArguments = (margin: MoveCoin | string, perpetual: Perpetual): Array<MoveType> => {
-  return [coinInfo(margin).type, assetInfo(perpetual).type]
+export const getMarketTypeArguments = (margin: MoveToken | string, perpetual: Perpetual): Array<MoveType> => {
+  return [moveAssetInfo(margin).type, assetInfo(perpetual).type]
 }
 
 /**
@@ -26,7 +27,7 @@ export const getMarketTypeArguments = (margin: MoveCoin | string, perpetual: Per
  * @returns script or payload promise for the transaction
  */
 export const openPosition = async (
-  marginCoin: MoveCoin,
+  marginCoin: MoveToken,
   perpetual: Perpetual,
   isInitialized: boolean,
   marginAmount: number,
@@ -60,7 +61,7 @@ export const openPosition = async (
       getDecimal8Argument(maxPriceSlippage),
       getDecimal8Argument(takeProfitPrice),
       getDecimal8Argument(stopLossPrice),
-      getCoinAmountArgument(MoveCoin.APT, triggerPaymentAmount),
+      getAssetAmountArgument(MoveCoin.APT, triggerPaymentAmount),
     ],
     type_arguments: getMarketTypeArguments(marginCoin, perpetual),
   }
@@ -83,7 +84,7 @@ export const openPosition = async (
   //         new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(maxPriceSlippage)),
   //         new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(takeProfitPrice)),
   //         new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(stopLossPrice)),
-  //         new TxnBuilderTypes.TransactionArgumentU64(getBCSCoinAmountArgument(MoveCoin.APT, triggerPaymentAmount)),
+  //         new TxnBuilderTypes.TransactionArgumentU64(getBCSCoinAmountArgument(MoveToken.APT, triggerPaymentAmount)),
   //       ]
   //     )
   //   ),
@@ -94,7 +95,11 @@ export const openPosition = async (
  * Close a position in a market at the current price
  * @returns payload promise for the transaction
  */
-export const closePosition = async (marginCoin: MoveCoin, perpetual: Perpetual, network: Network): Promise<Payload> => {
+export const closePosition = async (
+  marginCoin: MoveToken,
+  perpetual: Perpetual,
+  network: Network
+): Promise<Payload> => {
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetual, network)
 
@@ -116,7 +121,7 @@ export const closePosition = async (marginCoin: MoveCoin, perpetual: Perpetual, 
  * @returns payload promise for the transaction
  */
 export const placeLimitOrder = async (
-  marginCoin: MoveCoin,
+  marginCoin: MoveToken,
   perpetualAsset: Perpetual,
   isInitialized: boolean,
   marginAmount: number,
@@ -183,7 +188,7 @@ export const placeLimitOrder = async (
  * @returns payload promise for the transaction
  */
 export const cancelLimitOrder = async (
-  marginCoin: MoveCoin,
+  marginCoin: MoveToken,
   perpetualAsset: Perpetual,
   index: number
 ): Promise<Payload> => {
@@ -197,7 +202,7 @@ export const cancelLimitOrder = async (
 }
 
 export const updateTpsl = async (
-  marginCoin: MoveCoin,
+  marginCoin: MoveToken,
   perpetualAsset: Perpetual,
   stop_loss_price: number,
   take_profit_price: number,
@@ -226,7 +231,7 @@ export const updateTpsl = async (
  * @returns payload promise for the transaction
  */
 export const updateMargin = async (
-  marginCoin: MoveCoin,
+  marginCoin: MoveToken,
   perpetualAsset: Perpetual,
   newMarginAmount: number,
   network: Network
@@ -251,7 +256,7 @@ export const updateMargin = async (
  * @returns payload promise for the transaction
  */
 export const updatePositionSize = async (
-  marginCoin: MoveCoin,
+  marginCoin: MoveToken,
   perpetualAsset: Perpetual,
   newPositionSize: number,
   network: Network
@@ -276,7 +281,7 @@ export const updatePositionSize = async (
  * @returns payload promise for the transaction
  */
 export const triggerTpsl = async (
-  marginCoin: MoveCoin,
+  marginCoin: MoveToken,
   perpetualAsset: Perpetual,
   toTrigger: string,
   perpetualVaas: number[],
@@ -295,7 +300,7 @@ export const triggerTpsl = async (
  * @returns payload promise for the transaction
  */
 export const liquidatePosition = async (
-  marginCoin: MoveCoin,
+  marginCoin: MoveToken,
   perpetualAsset: Perpetual,
   toTrigger: string,
   perpetualVaas: number[],
@@ -314,7 +319,7 @@ export const liquidatePosition = async (
  * @returns payload promise for the transaction
  */
 export const triggerLimitOrder = async (
-  marginCoin: MoveCoin,
+  marginCoin: MoveToken,
   perpetualAsset: Perpetual,
   toTrigger: string,
   index: bigint,
