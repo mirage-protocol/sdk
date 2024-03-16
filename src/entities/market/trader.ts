@@ -3,9 +3,9 @@ import BigNumber from 'bignumber.js'
 import {
   AccountResource,
   assetInfo,
-  coinInfo,
+  moveAssetInfo,
   mirageAddress,
-  MoveCoin,
+  MoveToken,
   Perpetual,
   PRECISION_8,
   ZERO,
@@ -53,7 +53,7 @@ export class Trader {
   /**
    * The margin asset of the position
    */
-  public readonly marginCoin: MoveCoin
+  public readonly marginCoin: MoveToken
   /**
    * The perpetual asset being traded
    */
@@ -90,17 +90,17 @@ export class Trader {
     // userAddress: string,
     userResource: AccountResource[],
     moduleResources: AccountResource[],
-    marginCoin: MoveCoin | string,
+    marginCoin: MoveToken | string,
     perpetualAsset: Perpetual | string
     // network: Network | string = Network.MAINNET
   ) {
     // this.userAddress = userAddress
-    this.marginCoin = marginCoin as MoveCoin
+    this.marginCoin = marginCoin as MoveToken
     this.perpetualAsset = perpetualAsset as Perpetual
     this.market = new Market(moduleResources, this.marginCoin, this.perpetualAsset)
     // this.network = getNetwork(network)
 
-    const userType = `${mirageAddress()}::market::Trader<${coinInfo(this.marginCoin).type}, ${
+    const userType = `${mirageAddress()}::market::Trader<${moveAssetInfo(this.marginCoin).type}, ${
       assetInfo(this.perpetualAsset).type
     }>`
 
@@ -153,7 +153,7 @@ export class Trader {
 
     this.positionLimit = !!user ? BigNumber((user.data as any).position_limit) : ZERO
 
-    const limitOrderType = `${mirageAddress()}::market::LimitOrders<${coinInfo(this.marginCoin).type}, ${
+    const limitOrderType = `${mirageAddress()}::market::LimitOrders<${moveAssetInfo(this.marginCoin).type}, ${
       assetInfo(this.perpetualAsset).type
     }>`
 
@@ -227,7 +227,7 @@ export class Trader {
 
   // export const getLiqPrice = async (
   //   userAddress: string,
-  //   marginCoin: MoveCoin,
+  //   marginCoin: MoveToken,
   //   perpetualAsset: Perpetual,
   //   network: Network
   // ): Promise<number> => {

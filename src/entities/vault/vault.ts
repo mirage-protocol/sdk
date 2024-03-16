@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 
 import { getPriceFeed, INTEREST_PRECISION, PERCENT_PRECISION, SECONDS_PER_YEAR, ZERO } from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
-import { balanceToUi, coinInfo, MoveCoin } from '../../constants/coinList'
+import { balanceToUi, moveAssetInfo, MoveToken } from '../../constants/assetList'
 import { Mirage } from '../mirage'
 import { Rebase } from '../rebase'
 
@@ -14,11 +14,11 @@ export class Vault {
   /**
    * The collateral asset of the vault
    */
-  public readonly collateral: MoveCoin
+  public readonly collateral: MoveToken
   /**
    * The borrow asset of the vault (a mirage asset e.g. mUSD)
    */
-  public readonly borrow: MoveCoin
+  public readonly borrow: MoveToken
   /**
    * The rebase representing the total borrow in the vault
    */
@@ -69,12 +69,14 @@ export class Vault {
    * @param collateral the collateral asset of the vault
    * @param borrow the borrow asset of the vault
    */
-  constructor(moduleResources: AccountResource[], collateral: MoveCoin | string, borrow: MoveCoin | string) {
-    this.collateral = collateral as MoveCoin
-    this.borrow = borrow as MoveCoin
+  constructor(moduleResources: AccountResource[], collateral: MoveToken | string, borrow: MoveToken | string) {
+    this.collateral = collateral as MoveToken
+    this.borrow = borrow as MoveToken
     this.mirage = new Mirage(moduleResources, this.borrow)
 
-    const vaultType = `${mirageAddress()}::vault::Vault<${coinInfo(collateral).type}, ${coinInfo(borrow).type}>`
+    const vaultType = `${mirageAddress()}::vault::Vault<${moveAssetInfo(collateral).type}, ${
+      moveAssetInfo(borrow).type
+    }>`
     const vault = moduleResources.find((resource) => resource.type === vaultType)
 
     this.borrowFeePercent = !!vault

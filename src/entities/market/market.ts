@@ -2,8 +2,8 @@ import BigNumber from 'bignumber.js'
 
 import { FUNDING_PRECISION, PERCENT_PRECISION, PRECISION_8, ZERO } from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
-import { MoveCoin, Perpetual } from '../../constants/coinList'
-import { assetInfo, coinInfo } from '../../constants/coinList'
+import { MoveToken, Perpetual } from '../../constants/assetList'
+import { assetInfo, moveAssetInfo } from '../../constants/assetList'
 import { Rebase } from '../rebase'
 
 /**
@@ -13,7 +13,7 @@ export class Market {
   /**
    * The base asset of the market
    */
-  public readonly marginCoin: MoveCoin
+  public readonly marginCoin: MoveToken
   /**
    * The underlying asset of the market
    */
@@ -146,15 +146,15 @@ export class Market {
    */
   constructor(
     moduleResources: AccountResource[],
-    marginCoin: MoveCoin | string,
+    marginCoin: MoveToken | string,
     perpetualAsset: Perpetual | string
     // network: Network | string = Network.MAINNET
   ) {
-    this.marginCoin = marginCoin as MoveCoin
+    this.marginCoin = marginCoin as MoveToken
     this.perpetualAsset = perpetualAsset as Perpetual
     // this.network = getNetwork(network)
 
-    const marketType = `${mirageAddress()}::market::Market<${coinInfo(this.marginCoin).type}, ${
+    const marketType = `${mirageAddress()}::market::Market<${moveAssetInfo(this.marginCoin).type}, ${
       assetInfo(this.perpetualAsset).type
     }>`
     const oracleType = `${mirageAddress()}::pyth_oracle::Oracle<$${assetInfo(this.perpetualAsset).type}>`
