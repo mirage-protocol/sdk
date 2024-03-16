@@ -5,9 +5,9 @@ import { getAssetAmountArgument } from './'
 
 // const type = 'entry_function_payload'
 
-// const getVaultTypeArgument = (): MoveType => {
-//   return `${mirageAddress()}::vault::Vault`
-// }
+const getVaultTypeArgument = (): string[] => {
+  return [`${mirageAddress()}::vault::Vault`]
+}
 
 /**
  * Build a payload to add collateral to a vault
@@ -22,9 +22,9 @@ export const addCollateral = async (
   amount: number
 ): Promise<InputEntryFunctionData> => {
   return {
-    function: `${mirageAddress()}::vault::add_collateral`,
+    function: `${mirageAddress()}::vault::add_collateral_entry`,
     functionArguments: [vault_object, getAssetAmountArgument(collateralToken, amount)],
-    // typeArguments: getVaultTypeArgument(),
+    typeArguments: getVaultTypeArgument(),
   }
 }
 

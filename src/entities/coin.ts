@@ -1,4 +1,4 @@
-import { InputViewRequestData, Network } from '@aptos-labs/ts-sdk'
+import { InputViewRequestData, MoveOption, Network, U128 } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import { aptosClient, getNetwork, ZERO } from '../constants'
@@ -78,11 +78,12 @@ export class Coin {
    */
   public async getTotalSupply(): Promise<BigNumber> {
     const payload: InputViewRequestData = {
-      function: `0x1::coin::supply`,
+      function: '0x1::coin::supply' as `${string}::${string}::${string}`,
       functionArguments: [],
     }
-    const view = await aptosClient(this.network).view({ payload })
-    const { vec } = view[0] as any
-    return BigNumber(vec[0]).div(BigNumber(10).pow(this.decimals))
+    const [val] = await aptosClient(this.network).view({ payload })
+    const val_option = val as MoveOption<U128>
+    const val_raw_num = val_option.unwrap() as unknown as number
+    return BigNumber(val_raw_num).div(BigNumber(10).pow(this.decimals))
   }
 }

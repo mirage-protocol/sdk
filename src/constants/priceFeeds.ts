@@ -86,6 +86,8 @@ export const getUiPythPrice = ({ price, expo }: Price): number => {
     : BigNumber(price).times(BigNumber(10).pow(expo)).toNumber()
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 const USED_NETWORKS = [Network.MAINNET, Network.TESTNET] as const
 type Networks = (typeof USED_NETWORKS)[number]
 
