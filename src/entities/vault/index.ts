@@ -1,2 +1,2 @@
+export * from './vaultCollection'
 export * from './vault'
-export * from './vaultUser'

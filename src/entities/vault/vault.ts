@@ -1,157 +1,158 @@
 import BigNumber from 'bignumber.js'
 
-import { getPriceFeed, INTEREST_PRECISION, PERCENT_PRECISION, SECONDS_PER_YEAR, ZERO } from '../../constants'
+import { EXCHANGE_RATE_PRECISION, ZERO } from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
-import { balanceToUi, MoveAsset, moveAssetInfo, MoveToken } from '../../constants/assetList'
-import { Mirage } from '../mirage'
-import { Rebase } from '../rebase'
+import { balanceToUi, moveAssetInfo, MoveToken } from '../../constants/assetList'
+import { VaultCollection } from './vaultCollection'
 
 /**
- * Represents a mirage-protocol Vault.
- * Deposit collateral and borrow "mirage-assets".
+ * Represent an VaultUser struct.
+ * Stores info about a user's deposits and borrows in a specific vault
  */
 export class Vault {
   /**
    * The collateral asset of the vault
    */
-  public readonly collateral: MoveAsset
+  public readonly collateral: MoveToken
   /**
    * The borrow asset of the vault (a mirage asset e.g. mUSD)
    */
   public readonly borrow: MoveToken
   /**
-   * The rebase representing the total borrow in the vault
+   * The amount of collateral the user has deposited
    */
-  public readonly borrowRebase: Rebase
+  public readonly userCollateral: BigNumber
   /**
-   * The total collateral deposited in this vault
+   * The amount the user has borrowed
    */
-  public readonly totalCollateral: BigNumber
+  public readonly userBorrow: BigNumber
   /**
-   * The total borrowed from this vault
+   * The liquidation price of this user's position (precision: 1e8)
    */
-  public readonly totalBorrow: BigNumber
+  public readonly liquidationPrice: BigNumber
   /**
-   * The interest rate of this vault (precision: 1e12)
+   * The user's max borrowable amount to still be solvent
    */
-  public readonly interestPerSecond: BigNumber
+  public readonly remainingBorrowable: BigNumber
   /**
-   * The minimum a position must be collateralized in the vault (percent)
+   * The user's max withdrawable amount to still be solvent
    */
-  public readonly collateralizationPercent: number
+  public readonly withdrawableAmount: BigNumber
   /**
-   * The flat borrow fee for the vault (percent)
+   * A scale of how healthy the users position is (precision: 1e5)
+   * Position health of 0 => the position can be liquidation
    */
-  public readonly borrowFeePercent: number
+  public readonly positionHealth: number // basis points
   /**
-   * The last cached exchange rate of the vault (precision: 1e8)
-   * This price is collateral / borrow
+   * An instance of the Vault for this VaultUser
    */
-  public readonly exchangeRate: BigNumber
-  /**
-   * The percent taken as a protocol/liquidator cut during a liquidation
-   */
-  public readonly liquidationPercent: number
+  public readonly vault: VaultCollection
 
   /**
-   * A representation of the global mirage module
-   */
-  public readonly mirage: Mirage
-
-  public readonly priceFeeds: {
-    readonly collateral: string | undefined
-    readonly borrow: string | undefined
-  }
-
-  /**
-   * Construct an instance of Vault
+   * Construct an instance of VaultUser
+   * @param userResources resources for specific user account
    * @param moduleResources resources for the vault account (MIRAGE_ACCOUNT)
    * @param collateral the collateral asset of the vault
    * @param borrow the borrow asset of the vault
    */
-  constructor(moduleResources: AccountResource[], collateral: MoveToken | string, borrow: MoveToken | string) {
+  constructor(
+    userResources: AccountResource[],
+    moduleResources: AccountResource[],
+    collateral: MoveToken | string,
+    borrow: MoveToken | string
+  ) {
     this.collateral = collateral as MoveToken
     this.borrow = borrow as MoveToken
-    this.mirage = new Mirage(moduleResources, this.borrow)
+    this.vault = new VaultCollection(moduleResources, this.collateral, this.borrow)
 
-    const vaultType = `${mirageAddress()}::vault::Vault<${moveAssetInfo(collateral).type}, ${
+    const vaultUserType = `${mirageAddress()}::vault::VaultUser<${moveAssetInfo(collateral).type}, ${
       moveAssetInfo(borrow).type
     }>`
-    const vault = moduleResources.find((resource) => resource.type === vaultType)
 
-    this.borrowFeePercent = !!vault
-      ? BigNumber((vault.data as any).borrow_fee)
-          .div(PERCENT_PRECISION)
-          .times(100)
-          .toNumber()
-      : 0
-    this.interestPerSecond = !!vault ? BigNumber((vault.data as any).interest_per_second) : ZERO
-    this.collateralizationPercent = !!vault
-      ? BigNumber((vault.data as any).collateralization_rate)
-          .div(PERCENT_PRECISION)
-          .times(100)
-          .toNumber()
-      : 0
-    this.liquidationPercent = !!vault
-      ? BigNumber((vault.data as any).liquidation_multiplier)
-          .div(PERCENT_PRECISION)
-          .times(100)
-          .toNumber()
-      : 0
+    const user = userResources.find((resource) => resource.type === vaultUserType)
 
-    this.exchangeRate = !!vault ? BigNumber((vault.data as any).cached_exchange_rate) : ZERO
+    this.userCollateral = !!user ? new BigNumber((user.data as any).collateral.value) : ZERO
 
-    this.totalBorrow = !!vault
-      ? this.mirage.debtRebase.toElastic(BigNumber((vault.data as any).borrow.elastic), false)
-      : ZERO
-    this.totalCollateral = !!vault ? BigNumber((vault.data as any).total_collateral) : ZERO
+    // need to use global debt rebase
+    this.userBorrow =
+      !!user && !!this.vault
+        ? this.vault.mirage.debtRebase.toElastic(
+            this.vault.borrowRebase.toElastic(new BigNumber((user.data as any).borrow_part.amount), true),
+            false
+          )
+        : ZERO
 
-    this.borrowRebase = !!vault
-      ? new Rebase(BigNumber((vault.data as any).borrow.elastic), BigNumber((vault.data as any).borrow.base))
-      : new Rebase(ZERO, ZERO)
+    this.liquidationPrice =
+      !!user && !!this.vault
+        ? this.userBorrow.div(this.userCollateral).times(this.vault.collateralizationPercent / 100)
+        : ZERO
 
-    this.priceFeeds = {
-      collateral: getPriceFeed(this.collateral),
-      borrow: getPriceFeed(this.borrow),
-    }
+    const maxBorrow =
+      !!user && !!this.vault
+        ? this.userCollateral
+            .times(this.vault.exchangeRate)
+            .div(EXCHANGE_RATE_PRECISION)
+            .times(this.vault.collateralizationPercent)
+            .div(100)
+        : ZERO
+
+    const maxCollateral =
+      !!user && !!this.vault ? this.userCollateral.times(this.vault.collateralizationPercent).div(100) : ZERO
+
+    const ratio =
+      !!user && !!this.vault
+        ? this.userBorrow
+            .times(EXCHANGE_RATE_PRECISION)
+            .div(this.vault.exchangeRate)
+            .times(10000)
+            .div(maxCollateral)
+            .toNumber()
+        : 0
+
+    const minCollateral =
+      !!user && !!this.vault
+        ? this.userBorrow
+            .times(EXCHANGE_RATE_PRECISION)
+            .div(this.vault.exchangeRate)
+            .div(this.vault.collateralizationPercent)
+            .div(100)
+        : ZERO
+
+    this.positionHealth = ratio > 10000 ? 0 : 10000 - ratio
+    this.remainingBorrowable = !!user ? maxBorrow.minus(this.userBorrow) : ZERO
+    this.withdrawableAmount = !!user ? this.userCollateral.minus(minCollateral) : ZERO
   }
 
   /**
-   * Get a Ui friendly total collateral of the vault
-   * @returns the vault's total collateral
+   * Get a Ui friendly total collateral of the user
+   * @returns the users total collateral
    */
-  public getUiTotalCollateral(): number {
-    return balanceToUi(this.totalCollateral, this.collateral)
+  public getUiUserCollateral(): number {
+    return balanceToUi(this.userCollateral, this.collateral)
   }
 
   /**
-   * Get a Ui friendly total borrow of the vault
-   * @returns the vault's total borrow
+   * Get a Ui friendly total borrow of the user
+   * @returns the users total borrow
    */
-  public getUiTotalBorrow(): number {
-    return balanceToUi(this.totalBorrow, this.borrow)
+  public getUiUserBorrow(): number {
+    return balanceToUi(this.userBorrow, this.borrow)
   }
 
   /**
-   * Get a Ui friendly vault interest rate
-   * @returns the interest rate in a percent
+   * Checks if a user is solvent with a hypothetical exchange rate.
+   * @param exchangeRate the rate to test the solvency of the user position against
+   * @returns is the user solvent at this rate
    */
-  public getUiInterestRate(): number {
-    return (Number(this.interestPerSecond) / Number(INTEREST_PRECISION)) * SECONDS_PER_YEAR * 100
+  public simulateIsSolvent(exchangeRate: BigNumber): boolean {
+    return this.userCollateral
+      .div(this.vault.collateralizationPercent)
+      .times(exchangeRate)
+      .times(100)
+      .isGreaterThan(this.userBorrow)
   }
 
-  /**
-   * Get the rebase representing this vaults borrows
-   * @returns the vault borrow elastic numbers
-   */
-  public getBorrowRebase(): Rebase {
-    return this.borrowRebase
-  }
-
-  /**
-   * Get some amount of vault base in total coin by checking global debt state
-   */
-  public baseToCoin(baseAmount: BigNumber): BigNumber {
-    return this.mirage.debtRebase.toElastic(this.borrowRebase.toElastic(baseAmount, true), false)
+  public calculateHypotheticalLiquidationPrice(borrow: BigNumber, collateral: BigNumber): BigNumber {
+    return borrow.div(collateral).times(this.vault.collateralizationPercent / 100)
   }
 }
