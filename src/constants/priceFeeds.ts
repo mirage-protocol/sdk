@@ -3,7 +3,7 @@ import { Price } from '@pythnetwork/pyth-aptos-js'
 import BigNumber from 'bignumber.js'
 
 import { getNetwork, pythClient } from '../constants/network'
-import { MoveCoin, MoveToken, Perpetual } from './assetList'
+import { MoveAsset, MoveCoin, MoveToken, Perpetual } from './assetList'
 
 /**
  * All the coins with price feeds
@@ -49,7 +49,7 @@ export const hasPriceFeed = (coin: MoveToken): boolean => {
  * @returns
  */
 export const getPriceFeed = (
-  coin: MoveToken | Perpetual,
+  coin: MoveAsset | Perpetual,
   network: Network | string = Network.MAINNET
 ): string | undefined => {
   return !!PRICE_FEEDS[coin.valueOf()] ? PRICE_FEEDS[coin.valueOf()][getNetwork(network)] : undefined
