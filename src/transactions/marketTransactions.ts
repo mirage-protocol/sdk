@@ -2,11 +2,11 @@ import { Network } from '@aptos-labs/ts-sdk'
 
 import {
   assetInfo,
-  moveAssetInfo,
   getNetwork,
   getPriceFeed,
   getPriceFeedUpdateData,
   mirageAddress,
+  moveAssetInfo,
   MoveCoin,
   MoveToken,
   Perpetual,
@@ -66,29 +66,6 @@ export const openPosition = async (
     type_arguments: getMarketTypeArguments(marginCoin, perpetual),
   }
 
-  // return {
-  //   bcs: new TxnBuilderTypes.TransactionPayloadScript(
-  //     new TxnBuilderTypes.Script(
-  //       getScriptBytecode('register_and_open_position'),
-  //       [
-  //         new TxnBuilderTypes.TypeTagStruct(TxnBuilderTypes.StructTag.fromString(assetInfo(marginCoin).type)),
-  //         new TxnBuilderTypes.TypeTagStruct(TxnBuilderTypes.StructTag.fromString(assetInfo(perpetual).type)),
-  //       ],
-  //       [
-  //         new TxnBuilderTypes.TransactionArgumentU8Vector(Uint8Array.from(perpetualVaas)),
-  //         new TxnBuilderTypes.TransactionArgumentU8Vector(Uint8Array.from(marginVaas)),
-  //         new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(marginAmount)),
-  //         new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(positionSize)),
-  //         new TxnBuilderTypes.TransactionArgumentBool(side == PositionSide.LONG),
-  //         new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(desired_price)),
-  //         new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(maxPriceSlippage)),
-  //         new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(takeProfitPrice)),
-  //         new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(stopLossPrice)),
-  //         new TxnBuilderTypes.TransactionArgumentU64(getBCSCoinAmountArgument(MoveToken.APT, triggerPaymentAmount)),
-  //       ]
-  //     )
-  //   ),
-  // }
 }
 
 /**
@@ -158,29 +135,6 @@ export const placeLimitOrder = async (
     type_arguments: getMarketTypeArguments(marginCoin, perpetualAsset),
   }
 
-  // return {
-  //   bcs: new TxnBuilderTypes.TransactionPayloadScript(
-  //     new TxnBuilderTypes.Script(
-  //       getScriptBytecode('register_and_place_limit'),
-  //       [
-  //         new TxnBuilderTypes.TypeTagStruct(TxnBuilderTypes.StructTag.fromString(assetInfo(marginCoin).type)),
-  //         new TxnBuilderTypes.TypeTagStruct(TxnBuilderTypes.StructTag.fromString(assetInfo(perpetualAsset).type)),
-  //       ],
-  //       [
-  //         new TxnBuilderTypes.TransactionArgumentU8Vector(Uint8Array.from(perpetualVaas)),
-  //         new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(marginAmount)),
-  //         new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(positionSize)),
-  //         new TxnBuilderTypes.TransactionArgumentBool(side == PositionSide.LONG),
-  //         new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(triggerPrice)),
-  //         new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(maxPriceSlippage)),
-  //         new TxnBuilderTypes.TransactionArgumentBool(isIncrease),
-  //         new TxnBuilderTypes.TransactionArgumentBool(triggersAbove),
-  //         new TxnBuilderTypes.TransactionArgumentU64(getBCSDecimal8Argument(triggerPaymentAmount)),
-  //         new TxnBuilderTypes.TransactionArgumentU64(BigInt(expiration.integerValue().toFixed(0))),
-  //       ]
-  //     )
-  //   ),
-  // }
 }
 
 /**

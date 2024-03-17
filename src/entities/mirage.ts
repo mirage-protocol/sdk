@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-import { AccountResource, moveAssetInfo, mirageAddress, MoveToken, ZERO } from '../constants'
+import { AccountResource, mirageAddress, moveAssetInfo, MoveToken, ZERO } from '../constants'
 import { Rebase } from './rebase'
 
 export class Mirage {
