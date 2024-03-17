@@ -65,7 +65,6 @@ export const openPosition = async (
     ],
     type_arguments: getMarketTypeArguments(marginCoin, perpetual),
   }
-
 }
 
 /**
@@ -134,7 +133,6 @@ export const placeLimitOrder = async (
     ],
     type_arguments: getMarketTypeArguments(marginCoin, perpetualAsset),
   }
-
 }
 
 /**
