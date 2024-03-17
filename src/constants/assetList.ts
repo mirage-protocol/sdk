@@ -67,6 +67,15 @@ export type MoveAssetInfo = AssetInfo & {
 
 export type MoveAsset = MoveCoin | MoveToken
 
+export const getTypeFromMoveAsset = (asset: MoveAsset): string => {
+  if (MoveToken[asset] != undefined) {
+    return 'MoveToken'
+  } else if (MoveCoin[asset] != undefined) {
+    return 'MoveCoin'
+  }
+  throw new Error('Not a valid move asset!')
+}
+
 /**
  * Get the MoveToken or MoveCoin of a given symbol
  * @param symbol string symbol of coin
