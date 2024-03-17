@@ -39,6 +39,20 @@ const getFunctionSuffix = (type: string): string => {
   }
 }
 
+export const createVaultAndAddCollateral = async (
+  collectionObject: MoveObjectType,
+  collateralAsset: MoveAsset,
+  amount: number
+): Promise<InputEntryFunctionData> => {
+  return {
+    function: `${mirageAddress()}::vault::register_and_add_collateral_${getFunctionSuffix(
+      getTypeFromMoveAsset(collateralAsset)
+    )}`,
+    functionArguments: [collectionObject, getAssetAmountArgument(collateralAsset, amount)],
+    typeArguments: getVaultTypeArgument(),
+  }
+}
+
 /**
  * Build a payload to add collateral to a vault
  * @param vaultObject the address of the vault to interact with
