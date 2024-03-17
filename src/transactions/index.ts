@@ -34,4 +34,3 @@ export const getBCSDecimal8Argument = (amount: number): bigint => {
 export * from './distributor'
 export * from './marketTransactions'
 export * from './vaultTransactions'
-export * from './veTransactions'

@@ -3,8 +3,8 @@ import BigNumber from 'bignumber.js'
 import {
   AccountResource,
   assetInfo,
-  moveAssetInfo,
   mirageAddress,
+  moveAssetInfo,
   MoveToken,
   Perpetual,
   PRECISION_8,
