@@ -2,30 +2,30 @@ import BigNumber from 'bignumber.js'
 
 import { EXCHANGE_RATE_PRECISION, ZERO } from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
-import { balanceToUi, moveAssetInfo, MoveToken } from '../../constants/assetList'
+import { balanceToUi, MoveAsset, moveAssetInfo, MoveToken } from '../../constants/assetList'
 import { VaultCollection } from './vaultCollection'
 
 /**
- * Represent an VaultUser struct.
- * Stores info about a user's deposits and borrows in a specific vault
+ * Represents a Vault struct.
+ * Stores info about a vault's deposits and borrows
  */
 export class Vault {
   /**
    * The collateral asset of the vault
    */
-  public readonly collateral: MoveToken
+  public readonly collateralAsset: MoveAsset
   /**
-   * The borrow asset of the vault (a mirage asset e.g. mUSD)
+   * The borrow token of the vault (a mirage asset e.g. mUSD)
    */
-  public readonly borrow: MoveToken
+  public readonly borrowToken: MoveToken
   /**
-   * The amount of collateral the user has deposited
+   * The amount of collateral deposited
    */
-  public readonly userCollateral: BigNumber
+  public readonly collateralAmount: BigNumber
   /**
-   * The amount the user has borrowed
+   * The amount borrowed
    */
-  public readonly userBorrow: BigNumber
+  public readonly borrowAmount: BigNumber
   /**
    * The liquidation price of this user's position (precision: 1e8)
    */
@@ -61,9 +61,9 @@ export class Vault {
     collateral: MoveToken | string,
     borrow: MoveToken | string
   ) {
-    this.collateral = collateral as MoveToken
-    this.borrow = borrow as MoveToken
-    this.vault = new VaultCollection(moduleResources, this.collateral, this.borrow)
+    this.collateralAsset = collateral as MoveToken
+    this.borrowToken = borrow as MoveToken
+    this.vault = new VaultCollection(moduleResources, this.collateralAsset, this.borrowToken)
 
     const vaultUserType = `${mirageAddress()}::vault::VaultUser<${moveAssetInfo(collateral).type}, ${
       moveAssetInfo(borrow).type
@@ -71,10 +71,10 @@ export class Vault {
 
     const user = userResources.find((resource) => resource.type === vaultUserType)
 
-    this.userCollateral = !!user ? new BigNumber((user.data as any).collateral.value) : ZERO
+    this.collateralAmount = !!user ? new BigNumber((user.data as any).collateral.value) : ZERO
 
     // need to use global debt rebase
-    this.userBorrow =
+    this.borrowAmount =
       !!user && !!this.vault
         ? this.vault.mirage.debtRebase.toElastic(
             this.vault.borrowRebase.toElastic(new BigNumber((user.data as any).borrow_part.amount), true),
@@ -84,24 +84,26 @@ export class Vault {
 
     this.liquidationPrice =
       !!user && !!this.vault
-        ? this.userBorrow.div(this.userCollateral).times(this.vault.collateralizationPercent / 100)
+        ? this.borrowAmount.div(this.collateralAmount).times(this.vault.liquidationCollateralizationPercent / 100)
         : ZERO
 
     const maxBorrow =
       !!user && !!this.vault
-        ? this.userCollateral
+        ? this.collateralAmount
             .times(this.vault.exchangeRate)
             .div(EXCHANGE_RATE_PRECISION)
-            .times(this.vault.collateralizationPercent)
+            .times(this.vault.liquidationCollateralizationPercent)
             .div(100)
         : ZERO
 
     const maxCollateral =
-      !!user && !!this.vault ? this.userCollateral.times(this.vault.collateralizationPercent).div(100) : ZERO
+      !!user && !!this.vault
+        ? this.collateralAmount.times(this.vault.liquidationCollateralizationPercent).div(100)
+        : ZERO
 
     const ratio =
       !!user && !!this.vault
-        ? this.userBorrow
+        ? this.borrowAmount
             .times(EXCHANGE_RATE_PRECISION)
             .div(this.vault.exchangeRate)
             .times(10000)
@@ -111,16 +113,16 @@ export class Vault {
 
     const minCollateral =
       !!user && !!this.vault
-        ? this.userBorrow
+        ? this.borrowAmount
             .times(EXCHANGE_RATE_PRECISION)
             .div(this.vault.exchangeRate)
-            .div(this.vault.collateralizationPercent)
+            .div(this.vault.liquidationCollateralizationPercent)
             .div(100)
         : ZERO
 
     this.positionHealth = ratio > 10000 ? 0 : 10000 - ratio
-    this.remainingBorrowable = !!user ? maxBorrow.minus(this.userBorrow) : ZERO
-    this.withdrawableAmount = !!user ? this.userCollateral.minus(minCollateral) : ZERO
+    this.remainingBorrowable = !!user ? maxBorrow.minus(this.borrowAmount) : ZERO
+    this.withdrawableAmount = !!user ? this.collateralAmount.minus(minCollateral) : ZERO
   }
 
   /**
@@ -128,7 +130,7 @@ export class Vault {
    * @returns the users total collateral
    */
   public getUiUserCollateral(): number {
-    return balanceToUi(this.userCollateral, this.collateral)
+    return balanceToUi(this.collateralAmount, this.collateralAsset)
   }
 
   /**
@@ -136,7 +138,7 @@ export class Vault {
    * @returns the users total borrow
    */
   public getUiUserBorrow(): number {
-    return balanceToUi(this.userBorrow, this.borrow)
+    return balanceToUi(this.borrowAmount, this.borrowToken)
   }
 
   /**
@@ -145,14 +147,14 @@ export class Vault {
    * @returns is the user solvent at this rate
    */
   public simulateIsSolvent(exchangeRate: BigNumber): boolean {
-    return this.userCollateral
-      .div(this.vault.collateralizationPercent)
+    return this.collateralAmount
+      .div(this.vault.liquidationCollateralizationPercent)
       .times(exchangeRate)
       .times(100)
-      .isGreaterThan(this.userBorrow)
+      .isGreaterThan(this.borrowAmount)
   }
 
   public calculateHypotheticalLiquidationPrice(borrow: BigNumber, collateral: BigNumber): BigNumber {
-    return borrow.div(collateral).times(this.vault.collateralizationPercent / 100)
+    return borrow.div(collateral).times(this.vault.liquidationCollateralizationPercent / 100)
   }
 }
