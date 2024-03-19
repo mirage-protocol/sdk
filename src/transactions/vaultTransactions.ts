@@ -13,6 +13,30 @@ import { getAssetAmountArgument } from './'
 
 // const type = 'entry_function_payload'
 
+const getCollectionAndCoinTypeArgument = (collateralAsset: MoveAsset): string[] => {
+  switch (getTypeFromMoveAsset(collateralAsset)) {
+    case 'MoveToken':
+      return [`${mirageAddress()}::vault::VaultCollection`]
+    case 'MoveCoin':
+      return ['0x1::aptos_coin::AptosCoin', `${mirageAddress()}::vault::VaultCollection`]
+    default:
+      return [`${mirageAddress()}::vault::VaultCollection`]
+  }
+}
+const getVaultAndCoinTypeArgument = (collateralAsset: MoveAsset): string[] => {
+  switch (getTypeFromMoveAsset(collateralAsset)) {
+    case 'MoveToken':
+      return [`${mirageAddress()}::vault::Vault`]
+    case 'MoveCoin':
+      return ['0x1::aptos_coin::AptosCoin', `${mirageAddress()}::vault::Vault`]
+    default:
+      return [`${mirageAddress()}::vault::Vault`]
+  }
+}
+
+// const getVaultCollectionTypeArgument = (): string[] => {
+//   return [`${mirageAddress()}::vault::VaultCollection`]
+// }
 const getVaultTypeArgument = (): string[] => {
   return [`${mirageAddress()}::vault::Vault`]
 }
@@ -49,7 +73,7 @@ export const createVaultAndAddCollateral = async (
       getTypeFromMoveAsset(collateralAsset)
     )}`,
     functionArguments: [collectionObject, getAssetAmountArgument(collateralAsset, amount)],
-    typeArguments: getVaultTypeArgument(),
+    typeArguments: getCollectionAndCoinTypeArgument(collateralAsset),
   }
 }
 
@@ -68,7 +92,7 @@ export const addCollateral = async (
   return {
     function: `${mirageAddress()}::vault::add_collateral_${getFunctionSuffix(getTypeFromMoveAsset(collateralAsset))}`,
     functionArguments: [vaultObject, getAssetAmountArgument(collateralAsset, amount)],
-    typeArguments: getVaultTypeArgument(),
+    typeArguments: getVaultAndCoinTypeArgument(collateralAsset),
   }
 }
 
@@ -127,7 +151,7 @@ export const removeCollateral = async (
       getTypeFromMoveAsset(collateralAsset)
     )}`,
     functionArguments: [vaultObject, getAssetAmountArgument(collateralAsset, removeAmount), collateralVaas, borrowVaas],
-    typeArguments: getVaultTypeArgument(),
+    typeArguments: getVaultAndCoinTypeArgument(collateralAsset),
   }
 }
 
@@ -185,7 +209,7 @@ export const addCollateralAndBorrow = async (
       collateralVaas,
       borrowVaas,
     ],
-    typeArguments: getVaultTypeArgument(),
+    typeArguments: getVaultAndCoinTypeArgument(collateralAsset),
   }
 }
 
@@ -224,7 +248,7 @@ export const repayDebtAndRemoveCollateral = async (
       collateralVaas,
       borrowVaas,
     ],
-    typeArguments: getVaultTypeArgument(),
+    typeArguments: getVaultAndCoinTypeArgument(collateralAsset),
   }
 }
 
@@ -253,7 +277,7 @@ export const addCollateralAndRepayDebt = async (
       getAssetAmountArgument(collateralAsset, addAmount),
       getAssetAmountArgument(borrowToken, repayAmount),
     ],
-    typeArguments: getVaultTypeArgument(),
+    typeArguments: getVaultAndCoinTypeArgument(collateralAsset),
   }
 }
 
@@ -292,6 +316,6 @@ export const removeCollateralAndBorrow = async (
       collateralVaas,
       borrowVaas,
     ],
-    typeArguments: getVaultTypeArgument(),
+    typeArguments: getVaultAndCoinTypeArgument(collateralAsset),
   }
 }

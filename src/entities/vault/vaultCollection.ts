@@ -2,12 +2,12 @@ import BigNumber from 'bignumber.js'
 
 import { getPriceFeed, INTEREST_PRECISION, PERCENT_PRECISION, SECONDS_PER_YEAR, ZERO } from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
-import { balanceToUi, MoveAsset, moveAssetInfo, MoveToken } from '../../constants/assetList'
+import { balanceToUi, MoveAsset, MoveToken } from '../../constants/assetList'
 import { Mirage } from '../mirage'
 import { Rebase } from '../rebase'
 
 /**
- * Represents a mirage-protocol Vault.
+ * Represents a mirage-protocol VaultCollection.
  * Deposit collateral and borrow "mirage-assets".
  */
 export class VaultCollection {
@@ -36,9 +36,13 @@ export class VaultCollection {
    */
   public readonly interestPerSecond: BigNumber
   /**
-   * The minimum a position must be collateralized in the vault (percent)
+   * The minimum a position must be collateralized in the vault to update vault position (remove collateral, borrow more) (percent)
    */
-  public readonly collateralizationPercent: number
+  public readonly maintenanceCollateralizationPercent: number
+  /**
+   * The minimum a position must be collateralized in the vault to avoid liquidation (percent)
+   */
+  public readonly liquidationCollateralizationPercent: number
   /**
    * The flat borrow fee for the vault (percent)
    */
@@ -48,6 +52,10 @@ export class VaultCollection {
    * This price is collateral / borrow
    */
   public readonly exchangeRate: BigNumber
+  /**
+   * If this collection is in an emergency and is frozen
+   */
+  public readonly isEmergency: boolean
   /**
    * The percent taken as a protocol/liquidator cut during a liquidation
    */
@@ -64,51 +72,60 @@ export class VaultCollection {
   }
 
   /**
-   * Construct an instance of Vault
-   * @param moduleResources resources for the vault account (MIRAGE_ACCOUNT)
-   * @param collateral the collateral asset of the vault
-   * @param borrow the borrow asset of the vault
+   * Construct an instance of VaultCollection
+   * @param moduleResources resources for the VaultCollection account (MIRAGE_ACCOUNT)
+   * @param collateral the collateral asset of the VaultCollection
+   * @param borrow the borrow asset of the VaultCollection
    */
   constructor(moduleResources: AccountResource[], collateral: MoveToken | string, borrow: MoveToken | string) {
     this.collateral = collateral as MoveToken
     this.borrow = borrow as MoveToken
     this.mirage = new Mirage(moduleResources, this.borrow)
 
-    const vaultType = `${mirageAddress()}::vault::Vault<${moveAssetInfo(collateral).type}, ${
-      moveAssetInfo(borrow).type
-    }>`
-    const vault = moduleResources.find((resource) => resource.type === vaultType)
+    const vaultCollectionType = `${mirageAddress()}::vault::VaultCollection`
+    const vaultCollection = moduleResources.find((resource) => resource.type === vaultCollectionType)
 
-    this.borrowFeePercent = !!vault
-      ? BigNumber((vault.data as any).borrow_fee)
+    this.borrowFeePercent = !!vaultCollection
+      ? BigNumber((vaultCollection.data as any).borrow_fee)
           .div(PERCENT_PRECISION)
           .times(100)
           .toNumber()
       : 0
-    this.interestPerSecond = !!vault ? BigNumber((vault.data as any).interest_per_second) : ZERO
-    this.collateralizationPercent = !!vault
-      ? BigNumber((vault.data as any).collateralization_rate)
+    this.interestPerSecond = !!vaultCollection ? BigNumber((vaultCollection.data as any).interest_per_second) : ZERO
+    this.liquidationCollateralizationPercent = !!vaultCollection
+      ? BigNumber((vaultCollection.data as any).liquidation_collateralization_rate)
           .div(PERCENT_PRECISION)
           .times(100)
           .toNumber()
       : 0
-    this.liquidationPercent = !!vault
-      ? BigNumber((vault.data as any).liquidation_multiplier)
+    this.maintenanceCollateralizationPercent = !!vaultCollection
+      ? BigNumber((vaultCollection.data as any).maintenance_collateralization_rate)
+          .div(PERCENT_PRECISION)
+          .times(100)
+          .toNumber()
+      : 0
+    this.liquidationPercent = !!vaultCollection
+      ? BigNumber((vaultCollection.data as any).liquidation_multiplier)
           .div(PERCENT_PRECISION)
           .times(100)
           .toNumber()
       : 0
 
-    this.exchangeRate = !!vault ? BigNumber((vault.data as any).cached_exchange_rate) : ZERO
+    this.exchangeRate = !!vaultCollection ? BigNumber((vaultCollection.data as any).cached_exchange_rate) : ZERO
 
-    this.totalBorrow = !!vault
-      ? this.mirage.debtRebase.toElastic(BigNumber((vault.data as any).borrow.elastic), false)
+    this.totalBorrow = !!vaultCollection
+      ? this.mirage.debtRebase.toElastic(BigNumber((vaultCollection.data as any).borrow.elastic), false)
       : ZERO
-    this.totalCollateral = !!vault ? BigNumber((vault.data as any).total_collateral) : ZERO
+    this.totalCollateral = !!vaultCollection ? BigNumber((vaultCollection.data as any).total_collateral) : ZERO
 
-    this.borrowRebase = !!vault
-      ? new Rebase(BigNumber((vault.data as any).borrow.elastic), BigNumber((vault.data as any).borrow.base))
+    this.borrowRebase = !!vaultCollection
+      ? new Rebase(
+          BigNumber((vaultCollection.data as any).borrow.elastic),
+          BigNumber((vaultCollection.data as any).borrow.base)
+        )
       : new Rebase(ZERO, ZERO)
+
+    this.isEmergency = !!vaultCollection ? (vaultCollection.data as any).is_emergency : false
 
     this.priceFeeds = {
       collateral: getPriceFeed(this.collateral),

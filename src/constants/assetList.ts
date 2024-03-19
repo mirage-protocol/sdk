@@ -58,11 +58,12 @@ export type AssetInfo = {
 }
 
 /**
- * Info for a coin
+ * Info for a move asset
  */
 export type MoveAssetInfo = AssetInfo & {
   readonly decimals: number
   readonly address: HexString
+  readonly metadataAddress: string
 }
 
 export type MoveAsset = MoveCoin | MoveToken
@@ -178,6 +179,7 @@ const mirageAssetList: { readonly [coin in MoveAsset | Perpetual]: AssetInfo | M
     decimals: 8,
     address: new HexString('0x1'),
     type: '0x1::aptos_coin::AptosCoin',
+    metadataAddress: '0x4a0a186b29e215b343ad3fa04a63afa030eba07f174ef63216022754c70acadd',
   },
   [MoveToken.MIRA]: {
     name: 'Mirage Coin',
@@ -192,6 +194,7 @@ const mirageAssetList: { readonly [coin in MoveAsset | Perpetual]: AssetInfo | M
     decimals: 8,
     address: mirageAddress(),
     type: `${mirageAddress()}::mirage::MUSD`,
+    metadataAddress: '0xde6de53919dffb3e900c1cbc46f4a89bca26d809d6c1fabb27d20fe14fe6f1c',
   },
   [MoveToken.mAPT]: {
     name: 'Mirage Aptos',
@@ -225,8 +228,9 @@ const mirageAssetList: { readonly [coin in MoveAsset | Perpetual]: AssetInfo | M
     name: 'APT-MUSD LP Coin',
     symbol: 'musd-lp',
     decimals: 8,
-    address: getModuleAddress('mirage_lp'),
-    type: `${getModuleAddress('mirage_lp')}::mirage_lp::lp_coin`,
+    // TODO FIX WITH MIRAGE SWAP
+    address: getModuleAddress('mirage'),
+    type: `${getModuleAddress('mirage')}::devUSDC::DevUSDC`,
   },
   [Perpetual.APTPERP]: {
     name: 'Aptos Perpetuals Market',
