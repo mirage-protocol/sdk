@@ -12,7 +12,7 @@ export const coinsWithPriceFeeds = [
   MoveCoin.APT,
   MoveToken.mAPT,
   MoveToken.mETH,
-  MoveToken.devUSDC,
+  MoveToken.tUSDC,
   // Crypto perps
   Perpetual.APTPERP,
   Perpetual.ARBPERP,
@@ -105,7 +105,7 @@ const PRICE_FEEDS: { readonly [coin in CoinsWithPriceFeeds]: { readonly [network
     [Network.MAINNET]: '0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace',
     [Network.TESTNET]: '0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6',
   },
-  [MoveToken.devUSDC]: {
+  [MoveToken.tUSDC]: {
     [Network.MAINNET]: '0xeaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a',
     [Network.TESTNET]: '0x41f3625971ca2ed2263e78573fe5ce23e13d2558ed3f2e47ab0f84fb9e7ae722',
   },

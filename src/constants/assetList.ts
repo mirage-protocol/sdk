@@ -5,6 +5,65 @@ import { MoveType } from '../transactions'
 import { getModuleAddress, mirageAddress } from './accounts'
 
 /**
+ * All collectionIDs for Perp Positions
+ */
+export const getCollectionIdForPerpPair = (marginToken: MoveToken, perp: Perpetual): string => {
+  if (marginToken == MoveToken.mUSD) {
+    switch (perp) {
+      case Perpetual.APTPERP:
+        return '0xde4c97dfbf59dda1b301da9bef34a295d5394cc30420cd854b5278c56d217536'
+      case Perpetual.ARBPERP:
+        return '0x9dc7b62db44058027f7d778616ca4cc8953a7749cd2fdf9b2bc552d2bc21b8a9'
+      case Perpetual.BTCPERP:
+        return '0xfb1d573c3bb267d5a41fad7c2212d620bd06b994b128d26ea51e781c15200a87'
+      case Perpetual.ETHPERP:
+        return '0xb260d176e554363a838f4adba5e501cbc0909a0e714e50189e3a0d11770a67fc'
+      case Perpetual.OPPERP:
+        return '0x78fa605693bcd2770a075b4d79bb52e4fc637b54a265aec627fe573a7307cffa'
+      case Perpetual.PEPE1000PERP:
+        return '0x385d667a8a21a3257730e2b878dcafc3a4db1fdf1fe346d2f1cef2b91000cb1e'
+      case Perpetual.SOLPERP:
+        return '0xa2547040dd2650749eea3d66ecf6a38fc8267d94609eba43e28cba3e0bae5989'
+      case Perpetual.SUIPERP:
+        return '0xa8c61030272bc88bfb262076d9d94200e20a0d90c2761617134fc836043e4aa5'
+      case Perpetual.XAGPERP:
+        return '0x229315f3317a605451dea118efd6d00ca199d41a8a2be8bc06e3c73c3678bc3e'
+      case Perpetual.XAUPERP:
+        return '0xc434110bfd84d987163b7b1ec822565f7fc0d5306defaf33894ebe80482bc1e2'
+      case Perpetual.EURPERP:
+        return '0x960f1e0cb1297f08631ca4c669dc523323cbff925861b1ec988a507d7e2f40ea'
+      case Perpetual.GBPPERP:
+        return '0x064090e05078483ff421b9e699cbc3e714d44c81ce3c9577af5974141d1d1ea8'
+      case Perpetual.JPYPERP:
+        return '0xbdd89f8e95c96f5016863a08d775f128e1e68db6f27421581254dd4d939c6534'
+      default:
+    }
+  }
+  throw new Error('Not a valid perp pair')
+}
+
+/**
+ * All collectionIDs for Perp Positions
+ */
+
+export const getCollectionIdForVaultPair = (collateralAsset: MoveAsset, borrowToken: MoveToken): string => {
+  if (collateralAsset == MoveCoin.APT) {
+    switch (borrowToken) {
+      case MoveToken.mUSD:
+        return '0x83456a03ae604ebbc4bb199854844e2f18cb43f1468be604c142c79c3ff35dfa'
+      default:
+    }
+  } else if (collateralAsset == MoveToken.tUSDC) {
+    switch (borrowToken) {
+      case MoveToken.mUSD:
+        return '0xc434110bfd84d987163b7b1ec822565f7fc0d5306defaf33894ebe80482bc1e2'
+      default:
+    }
+  }
+  throw new Error('Not a valid vault pair')
+}
+
+/**
  * All Tokens relevant to the mirage-protocol ecosystem
  */
 export enum MoveToken {
@@ -12,7 +71,7 @@ export enum MoveToken {
   mAPT = 'mAPT', // mirage-Aptos
   mETH = 'mETH', // mirage-Ethereum
   mUSD = 'mUSD', // mirage-Usd
-  devUSDC = 'devUSDC', // devnet USDC
+  tUSDC = 'tUSDC', // testnet USDC
   APT_MUSD_LP = 'APT_MUSD_LP', // APT/MUSD LP
 }
 
@@ -217,7 +276,7 @@ const mirageAssetList: { readonly [coin in MoveAsset | Perpetual]: AssetInfo | M
     address: getModuleAddress('layer_zero'),
     type: `${getModuleAddress('layer_zero')}::asset::USDC`,
   },
-  [MoveToken.devUSDC]: {
+  [MoveToken.tUSDC]: {
     name: 'Testnet USDC',
     symbol: 'devUSDC',
     decimals: 8,
