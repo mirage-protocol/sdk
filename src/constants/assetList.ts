@@ -50,7 +50,7 @@ export const getCollectionIdForVaultPair = (collateralAsset: MoveAsset, borrowTo
   if (collateralAsset == MoveCoin.APT) {
     switch (borrowToken) {
       case MoveToken.mUSD:
-        return '0x83456a03ae604ebbc4bb199854844e2f18cb43f1468be604c142c79c3ff35dfa'
+        return '0x99af39ba3f14da43ec85e26f285b4cb771833d6ef2c889bd125d0f77b228bd93'
       default:
     }
   } else if (collateralAsset == MoveToken.tUSDC) {
@@ -238,7 +238,7 @@ const mirageAssetList: { readonly [coin in MoveAsset | Perpetual]: AssetInfo | M
     decimals: 8,
     address: new HexString('0x1'),
     type: '0x1::aptos_coin::AptosCoin',
-    metadataAddress: '0x4a0a186b29e215b343ad3fa04a63afa030eba07f174ef63216022754c70acadd',
+    metadataAddress: '0x9ecf4715e8e8b797828d3441bc64e23745af326fefc5112b8932c3c0a1cb6d06',
   },
   [MoveToken.MIRA]: {
     name: 'Mirage Coin',
@@ -253,7 +253,7 @@ const mirageAssetList: { readonly [coin in MoveAsset | Perpetual]: AssetInfo | M
     decimals: 8,
     address: mirageAddress(),
     type: `${mirageAddress()}::mirage::MUSD`,
-    metadataAddress: '0xde6de53919dffb3e900c1cbc46f4a89bca26d809d6c1fabb27d20fe14fe6f1c',
+    metadataAddress: '0xf44da8c88daa9b65e78cf58dc634a69ce4b6eebe34269b29445963d17be6994e',
   },
   [MoveToken.mAPT]: {
     name: 'Mirage Aptos',
