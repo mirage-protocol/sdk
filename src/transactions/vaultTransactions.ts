@@ -6,6 +6,7 @@ import {
   getPriceFeedUpdateData,
   getTypeFromMoveAsset,
   mirageAddress,
+  MODULES,
   MoveAsset,
   MoveToken,
 } from '../constants'
@@ -199,7 +200,7 @@ export const addCollateralAndBorrow = async (
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
 
   return {
-    function: `${mirageAddress()}::vault_scripts::add${getScriptMiddle(
+    function: `${MODULES.mirage_scripts.address}::vault_scripts::add${getScriptMiddle(
       getTypeFromMoveAsset(collateralAsset)
     )}_and_borrow`,
     functionArguments: [
@@ -238,7 +239,7 @@ export const repayDebtAndRemoveCollateral = async (
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
 
   return {
-    function: `${mirageAddress()}::vault_scripts::remove${getScriptMiddle(
+    function: `${MODULES.mirage_scripts.address}::vault_scripts::remove${getScriptMiddle(
       getTypeFromMoveAsset(collateralAsset)
     )}_and_repay`,
     functionArguments: [
@@ -269,7 +270,7 @@ export const addCollateralAndRepayDebt = async (
   repayAmount: number
 ): Promise<InputEntryFunctionData> => {
   return {
-    function: `${mirageAddress()}::vault_scripts::add${getScriptMiddle(
+    function: `${MODULES.mirage_scripts.address}::vault_scripts::add${getScriptMiddle(
       getTypeFromMoveAsset(collateralAsset)
     )}_and_repay`,
     functionArguments: [
@@ -306,7 +307,7 @@ export const removeCollateralAndBorrow = async (
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
 
   return {
-    function: `${mirageAddress()}::vault_scripts::remove${getScriptMiddle(
+    function: `${MODULES.mirage_scripts.address}::vault_scripts::remove${getScriptMiddle(
       getTypeFromMoveAsset(collateralAsset)
     )}_and_borrow`,
     functionArguments: [
