@@ -53,7 +53,7 @@ export const mirageAddress = (): HexString => {
 
 // Relevant modules
 // NOTE: devUSDC is the same as mirage
-const MODULES: { readonly [module in MoveModules]: Account } = {
+export const MODULES: { readonly [module in MoveModules]: Account } = {
   ['mirage']: {
     name: 'mirage',
     address: new HexString('0x62c3fa6e1fb661f39aebc1270f3a3de46c719481dd6c6cafdf10b7e61dcc77f8'),

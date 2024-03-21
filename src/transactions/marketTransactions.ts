@@ -5,6 +5,7 @@ import {
   getPriceFeed,
   getPriceFeedUpdateData,
   mirageAddress,
+  MODULES,
   MoveCoin,
   MoveToken,
   Perpetual,
@@ -46,7 +47,7 @@ export const openPosition = async (
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
 
   return {
-    function: `${mirageAddress()}::market_scripts::open_position_entry`,
+    function: `${MODULES.mirage_scripts.address}::market_scripts::open_position_entry`,
 
     functionArguments: [
       marketObject,
@@ -87,7 +88,7 @@ export const openPositionWithTpsl = async (
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
 
   return {
-    function: `${mirageAddress()}::market_scripts::open_position_entry_with_tpsl`,
+    function: `${MODULES.mirage_scripts.address}::market_scripts::open_position_entry_with_tpsl`,
 
     functionArguments: [
       marketObject,
@@ -197,7 +198,8 @@ export const updateTpsl = async (
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
 
   const payload = {
-    function: `${mirageAddress()}::market_scripts::place_tpsl_entry` as `${string}::${string}::${string}`,
+    function:
+      `${MODULES.mirage_scripts.address}::market_scripts::place_tpsl_entry` as `${string}::${string}::${string}`,
     functionArguments: [
       positionObject,
       perpetualVaas,
