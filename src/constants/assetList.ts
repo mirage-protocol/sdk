@@ -4,63 +4,61 @@ import BigNumber from 'bignumber.js'
 import { MoveType } from '../transactions'
 import { getModuleAddress, mirageAddress } from './accounts'
 
-/**
- * All collectionIDs for Perp Positions
- */
-export const getCollectionIdForPerpPair = (marginToken: MoveToken, perp: Perpetual): string => {
-  if (marginToken == MoveToken.mUSD) {
-    switch (perp) {
-      case Perpetual.APTPERP:
-        return '0xde4c97dfbf59dda1b301da9bef34a295d5394cc30420cd854b5278c56d217536'
-      case Perpetual.ARBPERP:
-        return '0x9dc7b62db44058027f7d778616ca4cc8953a7749cd2fdf9b2bc552d2bc21b8a9'
-      case Perpetual.BTCPERP:
-        return '0xfb1d573c3bb267d5a41fad7c2212d620bd06b994b128d26ea51e781c15200a87'
-      case Perpetual.ETHPERP:
-        return '0xb260d176e554363a838f4adba5e501cbc0909a0e714e50189e3a0d11770a67fc'
-      case Perpetual.OPPERP:
-        return '0x78fa605693bcd2770a075b4d79bb52e4fc637b54a265aec627fe573a7307cffa'
-      case Perpetual.PEPE1000PERP:
-        return '0x385d667a8a21a3257730e2b878dcafc3a4db1fdf1fe346d2f1cef2b91000cb1e'
-      case Perpetual.SOLPERP:
-        return '0xa2547040dd2650749eea3d66ecf6a38fc8267d94609eba43e28cba3e0bae5989'
-      case Perpetual.SUIPERP:
-        return '0xa8c61030272bc88bfb262076d9d94200e20a0d90c2761617134fc836043e4aa5'
-      case Perpetual.XAGPERP:
-        return '0x229315f3317a605451dea118efd6d00ca199d41a8a2be8bc06e3c73c3678bc3e'
-      case Perpetual.XAUPERP:
-        return '0xc434110bfd84d987163b7b1ec822565f7fc0d5306defaf33894ebe80482bc1e2'
-      case Perpetual.EURPERP:
-        return '0x960f1e0cb1297f08631ca4c669dc523323cbff925861b1ec988a507d7e2f40ea'
-      case Perpetual.GBPPERP:
-        return '0x064090e05078483ff421b9e699cbc3e714d44c81ce3c9577af5974141d1d1ea8'
-      case Perpetual.JPYPERP:
-        return '0xbdd89f8e95c96f5016863a08d775f128e1e68db6f27421581254dd4d939c6534'
-      default:
-    }
-  }
-  throw new Error('Not a valid perp pair')
+const mirageConfig = {
+  markets: {
+    mUSD: {
+      PEPE1000PERP: '0x0ca7c97176121f307b0072513e435fd77e7e43b9891e371486ee7d5c554d8170',
+      APTPERP: '0xfe3e05f40ad205c074626987c18533d6833513f517ac4924dde998a86b472680',
+      ARBPERP: '0xc345c378ba2482dd5760054d69452742572d383f36ca1f7d4bdd1222383f12f2',
+      BTCPERP: '0x59b5934e2ca3cf4055c144eb09144dee2c71fe51cc4d53e1155beb8058325a4c',
+      ETHPERP: '0x2842528b2a01da8bac056671a0eabd5cc06ef748221f9bdc351f9675666fd69b',
+      EURPERP: '0xea8f39d66538bceef804b9631ebbffee5f18b57ef89b3770db5d62af76065379',
+      GBPPERP: '0x2e4b9632e494da8f4fac289419cab805d3cbda9ec5424f3d9905fccbd6e09f83',
+      JPYPERP: '0x2f7b9828b62b17ce786fb6bddff5e8e3d9b4525a9c6432d73b9f02e7aeb4670a',
+      OPPERP: '0x45a5a88dec9437268d8eb3b100c542e0627d57d508c47f603f52ce514ef46e1d',
+      SOLPERP: '0xcc1b2faf53de7bb63f3ad7ae8d0c701a0584e1b81b9d9ce8d3da5ed88b17324e',
+      SUIPERP: '0x501b3ec0372e6486fc746590fc520f18b61ec54695a1d65db5c877f3707abe9f',
+      XAGPERP: '0x7d816fd40dfd70c06119d4766a58cc2c5fe44b6e300b6d82dc942805a959bb15',
+      XAUPERP: '0x7bd1fb61ad56f8af4906679feeea115f4261f1b3b313a755623140dbd293b566',
+    },
+  },
+  vaults: {
+    APT: {
+      mUSD: '0x99af39ba3f14da43ec85e26f285b4cb771833d6ef2c889bd125d0f77b228bd93',
+    },
+    tUSDC: {
+      mUSD: '0x7fd5ae5befa88b90efebdc438bbdc01455ed49792abb6f3df1cbea59d576cd10',
+    },
+  },
+  tokens: {
+    mUSD: '0xf44da8c88daa9b65e78cf58dc634a69ce4b6eebe34269b29445963d17be6994e',
+    APT: '0x9ecf4715e8e8b797828d3441bc64e23745af326fefc5112b8932c3c0a1cb6d06',
+    tUSDC: '0xbe76f22d4b713dbf38673bc62ec4eee1243939a5747ccc50947cb6380d9faa03',
+  },
 }
 
-/**
- * All collectionIDs for Perp Positions
- */
+export const getAllVaultCollectionObjectAddresses = (): string[] => {
+  const vaultCollectionAddresses: string[] = []
 
-export const getCollectionIdForVaultPair = (collateralAsset: MoveAsset, borrowToken: MoveToken): string => {
-  if (collateralAsset == MoveCoin.APT) {
-    switch (borrowToken) {
-      case MoveToken.mUSD:
-        return '0x99af39ba3f14da43ec85e26f285b4cb771833d6ef2c889bd125d0f77b228bd93'
-      default:
-    }
-  } else if (collateralAsset == MoveToken.tUSDC) {
-    switch (borrowToken) {
-      case MoveToken.mUSD:
-        return '0xc434110bfd84d987163b7b1ec822565f7fc0d5306defaf33894ebe80482bc1e2'
-      default:
-    }
-  }
-  throw new Error('Not a valid vault pair')
+  Object.values(mirageConfig.vaults).forEach((vault) => {
+    Object.values(vault).forEach((address) => {
+      vaultCollectionAddresses.push(address)
+    })
+  })
+
+  return vaultCollectionAddresses
+}
+
+export const getAllMarketObjectAddresses = (): string[] => {
+  const marketAddresses: string[] = []
+
+  Object.values(mirageConfig.markets).forEach((market) => {
+    Object.values(market).forEach((address) => {
+      marketAddresses.push(address)
+    })
+  })
+
+  return marketAddresses
 }
 
 /**
@@ -122,7 +120,6 @@ export type AssetInfo = {
 export type MoveAssetInfo = AssetInfo & {
   readonly decimals: number
   readonly address: HexString
-  readonly metadataAddress: string
 }
 
 export type MoveAsset = MoveCoin | MoveToken
@@ -230,6 +227,35 @@ export const typeToPerpetual = (type: string): Perpetual | undefined => {
   return undefined
 }
 
+export const getCollectionIdForPerpPair = (marginToken: MoveToken, perp: Perpetual): string => {
+  if (!(Perpetual[perp] in mirageConfig.markets[MoveToken[marginToken]])) throw new Error('Not a valid perp pair')
+  return mirageConfig.markets[MoveToken[marginToken]][Perpetual[perp]]
+}
+
+export const getCollectionIdForVaultPair = (collateralAsset: MoveAsset, borrowToken: MoveToken): string => {
+  if (getTypeFromMoveAsset(collateralAsset) == 'MoveCoin') {
+    if (!(MoveToken[borrowToken] in mirageConfig.vaults[MoveCoin[collateralAsset]]))
+      throw new Error('Not a valid vault pair')
+    return mirageConfig.vaults[MoveCoin[collateralAsset]][MoveToken[borrowToken]]
+  } else if (getTypeFromMoveAsset(collateralAsset) == 'MoveToken') {
+    if (!(MoveToken[borrowToken] in mirageConfig.vaults[MoveToken[collateralAsset]]))
+      throw new Error('Not a valid vault pair')
+    return mirageConfig.vaults[MoveToken[collateralAsset]][MoveToken[borrowToken]]
+  }
+  throw new Error('Not a valid vault pair')
+}
+
+export const getAssetTokenMetadata = (asset: MoveAsset): string => {
+  if (getTypeFromMoveAsset(asset) == 'MoveCoin') {
+    if (!(MoveCoin[asset] in mirageConfig.tokens)) throw new Error('token metadata not found')
+    return mirageConfig.tokens[MoveCoin[asset]]
+  } else if (getTypeFromMoveAsset(asset) == 'MoveToken') {
+    if (!(MoveToken[asset] in mirageConfig.tokens)) throw new Error('token metadata not found')
+    return mirageConfig.tokens[MoveToken[asset]]
+  }
+  throw new Error('token metadata not found')
+}
+
 // A list of all coins and their info in the Mirage ecosystem
 const mirageAssetList: { readonly [coin in MoveAsset | Perpetual]: AssetInfo | MoveAssetInfo } = {
   [MoveCoin.APT]: {
@@ -238,7 +264,6 @@ const mirageAssetList: { readonly [coin in MoveAsset | Perpetual]: AssetInfo | M
     decimals: 8,
     address: new HexString('0x1'),
     type: '0x1::aptos_coin::AptosCoin',
-    metadataAddress: '0x9ecf4715e8e8b797828d3441bc64e23745af326fefc5112b8932c3c0a1cb6d06',
   },
   [MoveToken.MIRA]: {
     name: 'Mirage Coin',
@@ -253,7 +278,6 @@ const mirageAssetList: { readonly [coin in MoveAsset | Perpetual]: AssetInfo | M
     decimals: 8,
     address: mirageAddress(),
     type: `${mirageAddress()}::mirage::MUSD`,
-    metadataAddress: '0xf44da8c88daa9b65e78cf58dc634a69ce4b6eebe34269b29445963d17be6994e',
   },
   [MoveToken.mAPT]: {
     name: 'Mirage Aptos',

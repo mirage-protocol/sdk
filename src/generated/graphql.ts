@@ -11653,6 +11653,14 @@ export type GetTokenIdsFromCollectionByOwnerQueryVariables = Exact<{
 
 export type GetTokenIdsFromCollectionByOwnerQuery = { __typename?: 'query_root', current_token_datas_v2: Array<{ __typename?: 'current_token_datas_v2', token_data_id: string }> };
 
+export type GetTokenIdsFromCollectionsByOwnerQueryVariables = Exact<{
+  COLLECTIONS: Array<Scalars['String']['input']> | Scalars['String']['input'];
+  OWNER: Scalars['String']['input'];
+}>;
+
+
+export type GetTokenIdsFromCollectionsByOwnerQuery = { __typename?: 'query_root', current_token_datas_v2: Array<{ __typename?: 'current_token_datas_v2', token_data_id: string }> };
+
 
 export const GetCollectionsByOwnerDocument = gql`
     query GetCollectionsByOwner($OWNER: String!) {
@@ -11678,4 +11686,17 @@ export const GetTokenIdsFromCollectionByOwnerDocument = gql`
 
 export function useGetTokenIdsFromCollectionByOwnerQuery(options: Omit<Urql.UseQueryArgs<GetTokenIdsFromCollectionByOwnerQueryVariables>, 'query'>) {
   return Urql.useQuery<GetTokenIdsFromCollectionByOwnerQuery, GetTokenIdsFromCollectionByOwnerQueryVariables>({ query: GetTokenIdsFromCollectionByOwnerDocument, ...options });
+};
+export const GetTokenIdsFromCollectionsByOwnerDocument = gql`
+    query GetTokenIdsFromCollectionsByOwner($COLLECTIONS: [String!]!, $OWNER: String!) {
+  current_token_datas_v2(
+    where: {collection_id: {_in: $COLLECTIONS}, current_token_ownership: {owner_address: {_eq: $OWNER}}}
+  ) {
+    token_data_id
+  }
+}
+    `;
+
+export function useGetTokenIdsFromCollectionsByOwnerQuery(options: Omit<Urql.UseQueryArgs<GetTokenIdsFromCollectionsByOwnerQueryVariables>, 'query'>) {
+  return Urql.useQuery<GetTokenIdsFromCollectionsByOwnerQuery, GetTokenIdsFromCollectionsByOwnerQueryVariables>({ query: GetTokenIdsFromCollectionsByOwnerDocument, ...options });
 };
