@@ -6,7 +6,11 @@ const config: CodegenConfig = {
   documents: 'src/graphql/**/*.{graphql,gql}',
   generates: {
     'src/generated/graphql.ts': {
-      plugins: ['typescript', 'typescript-operations'],
+      plugins: [
+        'typescript', // for TypeScript types
+        'typescript-operations', // for operation types like queries and mutations
+        'typescript-urql', // for generating urql hooks
+      ],
     },
     './graphql.schema.json': {
       plugins: ['introspection'],

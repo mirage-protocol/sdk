@@ -14,12 +14,10 @@
     ".vscode/",
     "package-lock.json",
     "yarn.lock",
-    "dist"
+    "dist",
+    "src/generated/"
   ],
-  "extends": [
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended"
-  ],
+  "extends": ["plugin:@typescript-eslint/recommended", "plugin:prettier/recommended"],
   "plugins": ["simple-import-sort", "unused-imports"],
   "rules": {
     "@typescript-eslint/no-explicit-any": "off",

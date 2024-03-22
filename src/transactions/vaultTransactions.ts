@@ -35,9 +35,6 @@ const getVaultAndCoinTypeArgument = (collateralAsset: MoveAsset): string[] => {
   }
 }
 
-// const getVaultCollectionTypeArgument = (): string[] => {
-//   return [`${mirageAddress()}::vault::VaultCollection`]
-// }
 const getVaultTypeArgument = (): string[] => {
   return [`${mirageAddress()}::vault::Vault`]
 }

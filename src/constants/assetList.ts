@@ -278,7 +278,7 @@ const mirageAssetList: { readonly [coin in MoveAsset | Perpetual]: AssetInfo | M
   },
   [MoveToken.tUSDC]: {
     name: 'Testnet USDC',
-    symbol: 'devUSDC',
+    symbol: 'tUSDC',
     decimals: 8,
     address: getModuleAddress('mirage'),
     type: `${getModuleAddress('mirage')}::devUSDC::DevUSDC`,

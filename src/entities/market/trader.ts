@@ -22,6 +22,13 @@ export enum PositionSide {
   UNKNOWN = 2,
 }
 
+export const stringToPositionSide = (str: string): PositionSide => {
+  str = str.toLowerCase()
+  if (str == 'l' || str == 'long') return PositionSide.LONG
+  else if (str == 's' || str == 'short') return PositionSide.SHORT
+  return PositionSide.UNKNOWN
+}
+
 /**
  * Data for a user's position
  */
