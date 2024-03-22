@@ -1,10 +1,18 @@
 import { InputViewRequestData, MoveObjectType } from '@aptos-labs/ts-sdk'
 import { cacheExchange, createClient, errorExchange, fetchExchange } from 'urql'
 
-import { mirageAddress, MoveAsset, moveAssetInfo, MoveCoin, MoveToken } from '../constants'
+import {
+  getAllVaultCollectionObjectAddresses,
+  getCollectionIdForVaultPair,
+  mirageAddress,
+  MoveAsset,
+  MoveToken,
+} from '../constants'
 import {
   GetTokenIdsFromCollectionByOwnerDocument,
   GetTokenIdsFromCollectionByOwnerQueryVariables,
+  GetTokenIdsFromCollectionsByOwnerDocument,
+  GetTokenIdsFromCollectionsByOwnerQueryVariables,
 } from '../generated/graphql'
 
 export const graphqlClient = createClient({
@@ -24,11 +32,29 @@ const getVaultCollectionTypeArgument = (): `${string}::${string}::${string}`[] =
   return [`${mirageAddress()}::vault::VaultCollection`]
 }
 
-export const getVaultCollectionObjectAddress = (collateralAsset: MoveAsset, borrowToken: MoveToken): string => {
-  if (collateralAsset == MoveCoin.APT && borrowToken == MoveToken.mUSD) {
-    return ''
+export const getAllVaultIdsByOwner = async (owner: string): Promise<string[]> => {
+  const variables: GetTokenIdsFromCollectionsByOwnerQueryVariables = {
+    COLLECTIONS: getAllVaultCollectionObjectAddresses(),
+    OWNER: owner,
   }
-  return '.'
+  try {
+    const result = await graphqlClient.query(GetTokenIdsFromCollectionsByOwnerDocument, variables).toPromise()
+
+    if (result.error) {
+      console.error('GraphQL Error:', result.error)
+      throw new Error(`GraphQL Error: ${result.error.message}`)
+    }
+
+    if (!result.data) {
+      throw new Error('No data returned from GraphQL query')
+    }
+
+    // Assuming 'current_token_datas_v2' is the correct field name based on your GraphQL query
+    const tokenIds = result.data.current_token_datas_v2.map((tokenData) => tokenData.token_data_id)
+    return tokenIds
+  } catch (error) {
+    return []
+  }
 }
 
 export const getVaultTokenIdsByCollectionAndOwner = async (
@@ -37,7 +63,7 @@ export const getVaultTokenIdsByCollectionAndOwner = async (
   owner: string
 ): Promise<string[]> => {
   const variables: GetTokenIdsFromCollectionByOwnerQueryVariables = {
-    COLLECTION: getVaultCollectionObjectAddress(collateralAsset, borrowToken),
+    COLLECTION: getCollectionIdForVaultPair(collateralAsset, borrowToken),
     OWNER: owner,
   }
   try {
@@ -78,12 +104,12 @@ export const getCollateralTokenFromCollection = async (
   }
 }
 
-export const getVaultCollection = async (
-  collateralAsset: MoveAsset,
-  borrowToken: MoveToken
-): Promise<InputViewRequestData> => {
-  return {
-    function: `${mirageAddress()}::vault::get_vault_collection`,
-    functionArguments: [moveAssetInfo(collateralAsset).metadataAddress, moveAssetInfo(borrowToken).metadataAddress],
-  }
-}
+// export const getVaultCollection = async (
+//   collateralAsset: MoveAsset,
+//   borrowToken: MoveToken
+// ): Promise<InputViewRequestData> => {
+//   return {
+//     function: `${mirageAddress()}::vault::get_vault_collection`,
+//     functionArguments: [moveAssetInfo(collateralAsset).metadataAddress, moveAssetInfo(borrowToken).metadataAddress],
+//   }
+// }
