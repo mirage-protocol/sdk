@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js'
 import { getPriceFeed, INTEREST_PRECISION, PERCENT_PRECISION, SECONDS_PER_YEAR, ZERO } from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
 import { balanceToUi, MoveAsset, MoveToken } from '../../constants/assetList'
-import { Mirage } from '../mirage'
+import { MirageAsset } from '../mirage_asset'
 import { Rebase } from '../rebase'
 
 /**
@@ -64,7 +64,7 @@ export class VaultCollection {
   /**
    * A representation of the global mirage module
    */
-  public readonly mirage: Mirage
+  public readonly mirage: MirageAsset
 
   public readonly priceFeeds: {
     readonly collateral: string | undefined
@@ -73,39 +73,47 @@ export class VaultCollection {
 
   /**
    * Construct an instance of VaultCollection
-   * @param moduleResources resources for the VaultCollection account (MIRAGE_ACCOUNT)
+   * @param collectionObjectResources resources from the VaultCollection account
+   * @param borrowTokenObjectResources resources from the borrow token and its debt store
    * @param collateral the collateral asset of the VaultCollection
    * @param borrow the borrow asset of the VaultCollection
    */
-  constructor(moduleResources: AccountResource[], collateral: MoveToken | string, borrow: MoveToken | string) {
+  constructor(
+    collectionObjectResources: AccountResource[],
+    borrowTokenObjectResources: AccountResource[],
+    collateral: MoveToken | string,
+    borrow: MoveToken | string
+  ) {
     this.collateral = collateral as MoveToken
     this.borrow = borrow as MoveToken
-    this.mirage = new Mirage(moduleResources, this.borrow)
+    this.mirage = new MirageAsset(borrowTokenObjectResources, this.borrow)
 
     const vaultCollectionType = `${mirageAddress()}::vault::VaultCollection`
-    const vaultCollection = moduleResources.find((resource) => resource.type === vaultCollectionType)
+    const vaultCollection = collectionObjectResources.find((resource) => resource.type === vaultCollectionType)
 
     this.borrowFeePercent = !!vaultCollection
-      ? BigNumber((vaultCollection.data as any).borrow_fee)
+      ? BigNumber((vaultCollection.data as any).config.borrow_fee)
           .div(PERCENT_PRECISION)
           .times(100)
           .toNumber()
       : 0
-    this.interestPerSecond = !!vaultCollection ? BigNumber((vaultCollection.data as any).interest_per_second) : ZERO
+    this.interestPerSecond = !!vaultCollection
+      ? BigNumber((vaultCollection.data as any).config.interest_per_second)
+      : ZERO
     this.liquidationCollateralizationPercent = !!vaultCollection
-      ? BigNumber((vaultCollection.data as any).liquidation_collateralization_rate)
+      ? BigNumber((vaultCollection.data as any).config.liquidation_collateralization_rate)
           .div(PERCENT_PRECISION)
           .times(100)
           .toNumber()
       : 0
     this.maintenanceCollateralizationPercent = !!vaultCollection
-      ? BigNumber((vaultCollection.data as any).maintenance_collateralization_rate)
+      ? BigNumber((vaultCollection.data as any).config.maintenance_collateralization_rate)
           .div(PERCENT_PRECISION)
           .times(100)
           .toNumber()
       : 0
     this.liquidationPercent = !!vaultCollection
-      ? BigNumber((vaultCollection.data as any).liquidation_multiplier)
+      ? BigNumber((vaultCollection.data as any).config.liquidation_multiplier)
           .div(PERCENT_PRECISION)
           .times(100)
           .toNumber()
