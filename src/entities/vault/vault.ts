@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 
 import { EXCHANGE_RATE_PRECISION, ZERO } from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
-import { balanceToUi, MoveAsset, moveAssetInfo, MoveToken } from '../../constants/assetList'
+import { balanceToUi, MoveAsset, MoveToken } from '../../constants/assetList'
 import { VaultCollection } from './vaultCollection'
 
 /**
@@ -65,7 +65,12 @@ export class Vault {
   ) {
     this.collateralAsset = collateral as MoveToken
     this.borrowToken = borrow as MoveToken
-    this.vault = new VaultCollection(collectionObjectResources, borrowTokenObjectResources, this.collateralAsset, this.borrowToken)
+    this.vault = new VaultCollection(
+      collectionObjectResources,
+      borrowTokenObjectResources,
+      this.collateralAsset,
+      this.borrowToken
+    )
 
     const vaultUserType = `${mirageAddress()}::vault::Vault`
 
@@ -157,8 +162,4 @@ export class Vault {
   public calculateHypotheticalLiquidationPrice(borrow: BigNumber, collateral: BigNumber): BigNumber {
     return borrow.div(collateral).times(this.vault.liquidationCollateralizationPercent / 100)
   }
-// }
-
-// export const loadVault = async (vaultObjectAddress: string): Promise<Vault> => {
-
-// }
+}
