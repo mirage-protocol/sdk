@@ -50,26 +50,26 @@ export class Vault {
 
   /**
    * Construct an instance of VaultUser
-   * @param userResources resources for specific user account
-   * @param moduleResources resources for the vault account (MIRAGE_ACCOUNT)
+   * @param vaultObjectResources resources from vault token account
+   * @param collectionObjectResources resources from the VaultCollection account
+   * @param borrowTokenObjectResources resources from the borrow token and its debt store
    * @param collateral the collateral asset of the vault
    * @param borrow the borrow asset of the vault
    */
   constructor(
-    userResources: AccountResource[],
-    moduleResources: AccountResource[],
+    vaultObjectResources: AccountResource[],
+    collectionObjectResources: AccountResource[],
+    borrowTokenObjectResources: AccountResource[],
     collateral: MoveToken | string,
     borrow: MoveToken | string
   ) {
     this.collateralAsset = collateral as MoveToken
     this.borrowToken = borrow as MoveToken
-    this.vault = new VaultCollection(moduleResources, this.collateralAsset, this.borrowToken)
+    this.vault = new VaultCollection(collectionObjectResources, borrowTokenObjectResources, this.collateralAsset, this.borrowToken)
 
-    const vaultUserType = `${mirageAddress()}::vault::VaultUser<${moveAssetInfo(collateral).type}, ${
-      moveAssetInfo(borrow).type
-    }>`
+    const vaultUserType = `${mirageAddress()}::vault::Vault`
 
-    const user = userResources.find((resource) => resource.type === vaultUserType)
+    const user = vaultObjectResources.find((resource) => resource.type === vaultUserType)
 
     this.collateralAmount = !!user ? new BigNumber((user.data as any).collateral.value) : ZERO
 
@@ -157,4 +157,8 @@ export class Vault {
   public calculateHypotheticalLiquidationPrice(borrow: BigNumber, collateral: BigNumber): BigNumber {
     return borrow.div(collateral).times(this.vault.liquidationCollateralizationPercent / 100)
   }
-}
+// }
+
+// export const loadVault = async (vaultObjectAddress: string): Promise<Vault> => {
+
+// }

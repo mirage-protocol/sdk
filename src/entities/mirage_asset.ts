@@ -1,0 +1,20 @@
+import BigNumber from 'bignumber.js'
+
+import { AccountResource, mirageAddress, MoveToken, ZERO } from '../constants'
+import { Rebase } from './rebase'
+
+export class MirageAsset {
+  public readonly debt: MoveToken
+  public readonly debtRebase: Rebase
+
+  constructor(tokenObjectResources: AccountResource[], debt: MoveToken | string) {
+    this.debt = debt as MoveToken
+
+    const debtStoreType = `${mirageAddress()}::mirage::MirageDebtStore`
+    const mirage = tokenObjectResources.find((resource) => resource.type === debtStoreType)
+
+    this.debtRebase = !!mirage
+      ? new Rebase(BigNumber((mirage.data as any).debt.elastic), BigNumber((mirage.data as any).debt.base))
+      : new Rebase(ZERO, ZERO)
+  }
+}
