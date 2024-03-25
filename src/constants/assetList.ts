@@ -158,7 +158,7 @@ export const checkPerpSymbol = (symbol: string): Perpetual | undefined => {
  */
 export const assetInfo = (asset: MoveAsset | Perpetual | string): AssetInfo => {
   if (typeof asset === 'string') {
-    return mirageAssetList[MoveToken[asset] || Perpetual[asset]]
+    return mirageAssetList[MoveToken[asset] || Perpetual[asset] || MoveCoin[asset]]
   }
   return mirageAssetList[asset]
 }
