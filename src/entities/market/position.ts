@@ -88,15 +88,15 @@ export class Trader {
 
   /**
    * Construct an instance of a trader
-   * @param userResource Resources for user account
-   * @param moduleResources Resources for Market account
+   * @param positionObjectResources Resources from position object account
+   * @param marketObjectResources Resources from market object account
    * @param marginCoin The margin of the market
    * @param perpetualAsset The perpetual being traded
    */
   constructor(
     // userAddress: string,
-    userResource: AccountResource[],
-    moduleResources: AccountResource[],
+    positionObjectResources: AccountResource[],
+    marketObjectResources: AccountResource[],
     marginCoin: MoveToken | string,
     perpetualAsset: Perpetual | string
     // network: Network | string = Network.MAINNET
@@ -104,16 +104,14 @@ export class Trader {
     // this.userAddress = userAddress
     this.marginCoin = marginCoin as MoveToken
     this.perpetualAsset = perpetualAsset as Perpetual
-    this.market = new Market(moduleResources, this.marginCoin, this.perpetualAsset)
+    this.market = new Market(marketObjectResources, this.marginCoin, this.perpetualAsset)
     // this.network = getNetwork(network)
 
-    const userType = `${mirageAddress()}::market::Trader<${moveAssetInfo(this.marginCoin).type}, ${
-      assetInfo(this.perpetualAsset).type
-    }>`
+    const positionType = `${mirageAddress()}::market::Position`
 
-    const user = userResource.find((resource) => resource.type === userType)
+    const position = positionObjectResources.find((resource) => resource.type === positionType)
 
-    this.isRegistered = user !== undefined
+    this.isRegistered = position !== undefined
 
     const tempTrade: Position = {
       id: ZERO,
@@ -128,43 +126,53 @@ export class Trader {
       triggerPayment: ZERO,
     }
 
-    tempTrade.id = !!user ? BigNumber((user.data as any).position.id) : BigNumber(0)
-    tempTrade.openingPrice = !!user ? BigNumber((user.data as any).position.opening_price).div(PRECISION_8) : ZERO
-    tempTrade.side = !!user
-      ? Boolean((user.data as any).position.is_long)
+    tempTrade.id = !!position ? BigNumber((position.data as any).position.id) : BigNumber(0)
+    tempTrade.openingPrice = !!position
+      ? BigNumber((position.data as any).position.opening_price).div(PRECISION_8)
+      : ZERO
+    tempTrade.side = !!position
+      ? Boolean((position.data as any).position.is_long)
         ? PositionSide.LONG
         : PositionSide.SHORT
       : PositionSide.UNKNOWN
-    tempTrade.margin =
-      !!user && !!this.market
-        ? (tempTrade.side == PositionSide.LONG
-            ? this.market.longMarginRebase.toElastic(BigNumber((user.data as any).position.margin_part.amount), true)
-            : this.market.shortMarginRebase.toElastic(BigNumber((user.data as any).position.margin_part.amount), true)
-          ).div(PRECISION_8)
-        : ZERO
-    tempTrade.positionSize = !!user ? BigNumber((user.data as any).position.position_size).div(PRECISION_8) : ZERO
-    tempTrade.maintenanceMargin = !!user
-      ? BigNumber((user.data as any).position.maintenance_margin).div(PRECISION_8)
+    tempTrade.margin = ZERO
+    // !!position && !!this.market
+    //   ? (tempTrade.side == PositionSide.LONG
+    //       ? this.market.longMarginRebase.toElastic(
+    //           BigNumber((position.data as any).position.margin_part.amount),
+    //           true
+    //         )
+    //       : this.market.shortMarginRebase.toElastic(
+    //           BigNumber((position.data as any).position.margin_part.amount),
+    //           true
+    //         )
+    //     ).div(PRECISION_8)
+    //   : ZERO
+    tempTrade.positionSize = !!position
+      ? BigNumber((position.data as any).position.position_size).div(PRECISION_8)
       : ZERO
-    tempTrade.takeProfitPrice = !!user
-      ? BigNumber((user.data as any).position.tpsl.take_profit_price).div(PRECISION_8)
+    tempTrade.maintenanceMargin = !!position
+      ? BigNumber((position.data as any).position.maintenance_margin).div(PRECISION_8)
       : ZERO
-    tempTrade.stopLossPrice = !!user
-      ? BigNumber((user.data as any).position.tpsl.stop_loss_price).div(PRECISION_8)
+    tempTrade.takeProfitPrice = !!position
+      ? BigNumber((position.data as any).position.tpsl.take_profit_price).div(PRECISION_8)
       : ZERO
-    tempTrade.triggerPayment = !!user
-      ? BigNumber((user.data as any).position.tpsl.trigger_payment.value).div(PRECISION_8)
+    tempTrade.stopLossPrice = !!position
+      ? BigNumber((position.data as any).position.tpsl.stop_loss_price).div(PRECISION_8)
+      : ZERO
+    tempTrade.triggerPayment = !!position
+      ? BigNumber((position.data as any).position.tpsl.trigger_payment.value).div(PRECISION_8)
       : ZERO
 
     this.position = !tempTrade.positionSize.eq(0) ? tempTrade : undefined
 
-    this.positionLimit = !!user ? BigNumber((user.data as any).position_limit) : ZERO
+    this.positionLimit = !!position ? BigNumber((position.data as any).position_limit) : ZERO
 
     const limitOrderType = `${mirageAddress()}::market::LimitOrders<${moveAssetInfo(this.marginCoin).type}, ${
       assetInfo(this.perpetualAsset).type
     }>`
 
-    const limitOrders = userResource.find((resource) => resource.type === limitOrderType)
+    const limitOrders = positionObjectResources.find((resource) => resource.type === limitOrderType)
 
     const ordersArr = !!limitOrders ? (limitOrders.data as any).orders : []
     const tempOrders: LimitOrder[] = []

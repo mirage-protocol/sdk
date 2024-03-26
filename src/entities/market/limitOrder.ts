@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 
 import { MoveToken, Perpetual, PRECISION_8, U64_MAX } from '../../constants'
-import { PositionSide } from './trader'
+import { PositionSide } from './position'
 
 /**
  * LimitOrder struct data

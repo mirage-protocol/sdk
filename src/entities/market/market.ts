@@ -1,10 +1,9 @@
 import BigNumber from 'bignumber.js'
 
-import { FUNDING_PRECISION, PERCENT_PRECISION, PRECISION_8, ZERO } from '../../constants'
+import { FUNDING_PRECISION, PERCENT_PRECISION, ZERO } from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
 import { MoveToken, Perpetual } from '../../constants/assetList'
 import { assetInfo, moveAssetInfo } from '../../constants/assetList'
-import { Rebase } from '../rebase'
 
 /**
  * Represents a mirage-protocol perpetuals market.
@@ -62,29 +61,29 @@ export class Market {
   /**
    * The discount percent of the protocol on funding payments
    */
-  public readonly poolFundingDiscount: BigNumber
+  // public readonly poolFundingDiscount: BigNumber
   /**
    * The interval between funding payments
    */
   public readonly fundingInterval: BigNumber
-  /**
-   * The total long margin of this market
-   */
-  public readonly longMargin: BigNumber
-  /**
-   * A rebase representing all long margin (in M)
-   * elastic = long margin, base = shares of long margin
-   */
-  public readonly longMarginRebase: Rebase
-  /**
-   * The total short margin of this market
-   */
-  public readonly shortMargin: BigNumber
-  /**
-   * A rebase representing all short margin (in M)
-   * elastic = short margin, base = shares of short margin
-   */
-  public readonly shortMarginRebase: Rebase
+  // /**
+  //  * The total long margin of this market
+  //  */
+  // public readonly longMargin: BigNumber
+  // /**
+  //  * A rebase representing all long margin (in M)
+  //  * elastic = long margin, base = shares of long margin
+  //  */
+  // public readonly longMarginRebase: Rebase
+  // /**
+  //  * The total short margin of this market
+  //  */
+  // public readonly shortMargin: BigNumber
+  // /**
+  //  * A rebase representing all short margin (in M)
+  //  * elastic = short margin, base = shares of short margin
+  //  */
+  // public readonly shortMarginRebase: Rebase
   /**
    * Long open interest in musd
    */
@@ -121,10 +120,10 @@ export class Market {
    * The max mUSD position limit for a new trade
    */
   public readonly maxPositionLimit: BigNumber
-  /**
-   * The exchange rate of the asset A
-   */
-  public readonly exchangeRate: BigNumber
+  // /**
+  //  * The exchange rate of the asset A
+  //  */
+  // public readonly exchangeRate: BigNumber
   /**
    * The min mUSD order size for this market
    */
@@ -140,12 +139,12 @@ export class Market {
 
   /**
    * Construct an instance of Market
-   * @param moduleResources resources for the market account (MIRAGE_ACCOUNT)
+   * @param marketObjectResources resources from  the market token collection account
    * @param marginCoin the margin asset of the market
    * @param perpetualAsset the asset being traded
    */
   constructor(
-    moduleResources: AccountResource[],
+    marketObjectResources: AccountResource[],
     marginCoin: MoveToken | string,
     perpetualAsset: Perpetual | string
     // network: Network | string = Network.MAINNET
@@ -157,10 +156,10 @@ export class Market {
     const marketType = `${mirageAddress()}::market::Market<${moveAssetInfo(this.marginCoin).type}, ${
       assetInfo(this.perpetualAsset).type
     }>`
-    const oracleType = `${mirageAddress()}::pyth_oracle::Oracle<$${assetInfo(this.perpetualAsset).type}>`
+    // const oracleType = `${mirageAddress()}::mirage_oracle::Oracle`
 
-    const market = moduleResources.find((resource) => resource.type === marketType)
-    const oracle = moduleResources.find((resource) => resource.type === oracleType)
+    const market = marketObjectResources.find((resource) => resource.type === marketType)
+    // const oracle = marketObjectResources.find((resource) => resource.type === oracleType)
 
     // fees
     this.maxTakerFee = !!market
@@ -186,9 +185,9 @@ export class Market {
     this.nextFundingPos = !!market ? Boolean((market.data as any).next_funding_pos) : false
     this.lastFundingUpdate = !!market ? new BigNumber((market.data as any).last_funding_round) : ZERO
     this.fundingInterval = !!market ? new BigNumber((market.data as any).config.funding.funding_interval) : ZERO
-    this.poolFundingDiscount = !!market
-      ? new BigNumber((market.data as any).config.funding.pool_funding_discount)
-      : ZERO
+    // this.poolFundingDiscount = !!market
+    //   ? new BigNumber((market.data as any).config.funding.pool_funding_discount)
+    //   : ZERO
     this.minFundingRate = !!market
       ? new BigNumber((market.data as any).config.funding.min_funding_rate).div(PERCENT_PRECISION).times(100).toNumber()
       : 0
@@ -197,20 +196,20 @@ export class Market {
       : 0
 
     // margin
-    this.longMarginRebase = !!market
-      ? new Rebase(
-          BigNumber((market.data as any).long_margin.elastic.value),
-          BigNumber((market.data as any).long_margin.base)
-        )
-      : new Rebase(ZERO, ZERO)
-    this.longMargin = this.longMarginRebase.elastic
-    this.shortMarginRebase = !!market
-      ? new Rebase(
-          BigNumber((market.data as any).short_margin.elastic.value),
-          BigNumber((market.data as any).short_margin.base)
-        )
-      : new Rebase(ZERO, ZERO)
-    this.shortMargin = this.shortMarginRebase.elastic
+    // this.longMarginRebase = !!market
+    //   ? new Rebase(
+    //       BigNumber((market.data as any).long_margin.elastic.value),
+    //       BigNumber((market.data as any).long_margin.base)
+    //     )
+    //   : new Rebase(ZERO, ZERO)
+    // this.longMargin = this.longMarginRebase.elastic
+    // this.shortMarginRebase = !!market
+    //   ? new Rebase(
+    //       BigNumber((market.data as any).short_margin.elastic.value),
+    //       BigNumber((market.data as any).short_margin.base)
+    //     )
+    //   : new Rebase(ZERO, ZERO)
+    // this.shortMargin = this.shortMarginRebase.elastic
 
     // open interest
     this.longOpenInterest = !!market ? new BigNumber((market.data as any).long_oi) : ZERO
@@ -223,34 +222,34 @@ export class Market {
       ? new BigNumber((market.data as any).config.max_leverage).div(PERCENT_PRECISION).times(100).toNumber()
       : 0
     this.baseMaintenanceMargin = !!market
-      ? new BigNumber((market.data as any).config.base_maintenance_margin).div(PERCENT_PRECISION).times(100).toNumber()
+      ? new BigNumber((market.data as any).config.maintenance_margin).div(PERCENT_PRECISION).times(100).toNumber()
       : 0
-    this.basePositionLimit = !!market ? new BigNumber((market.data as any).config.base_position_limit) : ZERO
-    this.maxPositionLimit = !!market ? new BigNumber((market.data as any).config.max_position_limit) : ZERO
+    this.basePositionLimit = !!market ? new BigNumber((market.data as any).config.min_order_size) : ZERO
+    this.maxPositionLimit = !!market ? new BigNumber((market.data as any).config.max_order_size) : ZERO
 
-    this.exchangeRate = !!oracle ? new BigNumber((oracle.data as any).last_parsed_rate) : ZERO
+    // this.exchangeRate = !!oracle ? new BigNumber((oracle.data as any).last_parsed_rate) : ZERO
 
     this.minOrderSize = !!market ? new BigNumber((market.data as any).config.min_order_size) : ZERO
 
-    this.longCloseOnly = !!market ? Boolean((market.data as any).long_close_only) : false
-    this.shortCloseOnly = !!market ? Boolean((market.data as any).short_close_only) : false
+    this.longCloseOnly = !!market ? Boolean((market.data as any).is_long_close_only) : false
+    this.shortCloseOnly = !!market ? Boolean((market.data as any).is_short_close_only) : false
   }
 
-  /**
-   * Get a Ui friendly long margin of the market
-   * @returns the markets long margin
-   */
-  public getUiLongMargin(): number {
-    return this.longMargin.div(PRECISION_8).toNumber()
-  }
+  // /**
+  //  * Get a Ui friendly long margin of the market
+  //  * @returns the markets long margin
+  //  */
+  // public getUiLongMargin(): number {
+  //   return this.longMargin.div(PRECISION_8).toNumber()
+  // }
 
-  /**
-   * Get a Ui friendly short margin of the market
-   * @returns the markets short margin
-   */
-  public getUiShortMargin(): number {
-    return this.shortMargin.div(PRECISION_8).toNumber()
-  }
+  // /**
+  //  * Get a Ui friendly short margin of the market
+  //  * @returns the markets short margin
+  //  */
+  // public getUiShortMargin(): number {
+  //   return this.shortMargin.div(PRECISION_8).toNumber()
+  // }
 
   // /**
   //  * Get an estimate of the current fee in terms of USD
