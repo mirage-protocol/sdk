@@ -1,3 +1,3 @@
 export * from './limitOrder'
 export * from './market'
-export * from './trader'
+export * from './position'
