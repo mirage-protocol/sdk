@@ -1,4 +1,13 @@
-import { getAllMarketObjectAddresses, getCollectionIdForPerpPair, MoveToken, Perpetual } from '../constants'
+import { Network } from 'aptos'
+
+import {
+  aptosClient,
+  getAllMarketObjectAddresses,
+  getCollectionIdForPerpPair,
+  mirageAddress,
+  MoveToken,
+  Perpetual,
+} from '../constants'
 import {
   GetTokenIdsFromCollectionByOwnerDocument,
   GetTokenIdsFromCollectionByOwnerQueryVariables,
@@ -6,6 +15,18 @@ import {
   GetTokenIdsFromCollectionsByOwnerQueryVariables,
 } from '../generated/graphql'
 import { graphqlClient } from './vaultViews'
+
+export const getMarginTokenFromPosition = async (positionObjectAddress: string, network: Network): Promise<string> => {
+  return (
+    await aptosClient(network).view({
+      payload: {
+        function: `${mirageAddress()}::market::position_margin_token`,
+        functionArguments: [positionObjectAddress],
+        typeArguments: [`${mirageAddress()}::market::Position`],
+      },
+    })
+  )[0] as string
+}
 
 export const getAllPositionIdsByOwner = async (owner: string): Promise<string[]> => {
   const variables: GetTokenIdsFromCollectionsByOwnerQueryVariables = {

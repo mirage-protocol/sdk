@@ -1,15 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-import {
-  AccountResource,
-  assetInfo,
-  mirageAddress,
-  moveAssetInfo,
-  MoveToken,
-  Perpetual,
-  PRECISION_8,
-  ZERO,
-} from '../../constants'
+import { AccountResource, mirageAddress, MoveToken, Perpetual, PRECISION_8, ZERO } from '../../constants'
 import { LimitOrder, LimitOrderData } from './limitOrder'
 import { Market } from './market'
 
@@ -32,7 +23,7 @@ export const stringToPositionSide = (str: string): PositionSide => {
 /**
  * Data for a user's position
  */
-export type Position = {
+export type PositionData = {
   id: BigNumber
   openingPrice: BigNumber
   side: PositionSide
@@ -46,11 +37,11 @@ export type Position = {
 }
 
 /**
- * Represents a trader on a specific Mirage Market
+ * Represents a position on a specific Mirage Market
  */
-export class Trader {
+export class Position {
   /**
-   * The user address of this trader
+   * The user address of the owner of this position
    */
   // private readonly userAddress: string
   /**
@@ -60,7 +51,7 @@ export class Trader {
   /**
    * The margin asset of the position
    */
-  public readonly marginCoin: MoveToken
+  public readonly marginToken: MoveToken
   /**
    * The perpetual asset being traded
    */
@@ -68,7 +59,7 @@ export class Trader {
   /**
    * The user's current position if one is open
    */
-  public readonly position: Position | undefined
+  public readonly position: PositionData | undefined
   /**
    * An instance of the Market this Trader is using
    */
@@ -77,14 +68,10 @@ export class Trader {
    * A users limit orders
    */
   public readonly limitOrders: LimitOrder[]
-  /**
-   * The max position size for this Market and account
-   */
-  public readonly positionLimit: BigNumber
-  /**
-   * Is the trader registered
-   */
-  public readonly isRegistered: boolean
+  // /**
+  //  * The max position size for this Market and account
+  //  */
+  // public readonly positionLimit: BigNumber
 
   /**
    * Construct an instance of a trader
@@ -102,18 +89,18 @@ export class Trader {
     // network: Network | string = Network.MAINNET
   ) {
     // this.userAddress = userAddress
-    this.marginCoin = marginCoin as MoveToken
+    this.marginToken = marginCoin as MoveToken
     this.perpetualAsset = perpetualAsset as Perpetual
-    this.market = new Market(marketObjectResources, this.marginCoin, this.perpetualAsset)
+    this.market = new Market(marketObjectResources, this.marginToken, this.perpetualAsset)
     // this.network = getNetwork(network)
 
     const positionType = `${mirageAddress()}::market::Position`
+    const tokenIdsType = '0x4::token::TokenIdentifiers'
 
     const position = positionObjectResources.find((resource) => resource.type === positionType)
+    const tokenIdentifiers = positionObjectResources.find((resource) => resource.type === tokenIdsType)
 
-    this.isRegistered = position !== undefined
-
-    const tempTrade: Position = {
+    const tempTrade: PositionData = {
       id: ZERO,
       openingPrice: ZERO,
       side: PositionSide.UNKNOWN,
@@ -126,7 +113,7 @@ export class Trader {
       triggerPayment: ZERO,
     }
 
-    tempTrade.id = !!position ? BigNumber((position.data as any).position.id) : BigNumber(0)
+    tempTrade.id = !!tokenIdentifiers ? BigNumber((tokenIdentifiers.data as any).index.value) : ZERO
     tempTrade.openingPrice = !!position
       ? BigNumber((position.data as any).position.opening_price).div(PRECISION_8)
       : ZERO
@@ -135,42 +122,26 @@ export class Trader {
         ? PositionSide.LONG
         : PositionSide.SHORT
       : PositionSide.UNKNOWN
-    tempTrade.margin = ZERO
-    // !!position && !!this.market
-    //   ? (tempTrade.side == PositionSide.LONG
-    //       ? this.market.longMarginRebase.toElastic(
-    //           BigNumber((position.data as any).position.margin_part.amount),
-    //           true
-    //         )
-    //       : this.market.shortMarginRebase.toElastic(
-    //           BigNumber((position.data as any).position.margin_part.amount),
-    //           true
-    //         )
-    //     ).div(PRECISION_8)
-    //   : ZERO
-    tempTrade.positionSize = !!position
-      ? BigNumber((position.data as any).position.position_size).div(PRECISION_8)
-      : ZERO
+    tempTrade.margin = !!position ? BigNumber((position.data as any).margin_amount) : ZERO
+    tempTrade.positionSize = !!position ? BigNumber((position.data as any).position_size).div(PRECISION_8) : ZERO
+
+    // TODO
     tempTrade.maintenanceMargin = !!position
       ? BigNumber((position.data as any).position.maintenance_margin).div(PRECISION_8)
       : ZERO
-    tempTrade.takeProfitPrice = !!position
-      ? BigNumber((position.data as any).position.tpsl.take_profit_price).div(PRECISION_8)
-      : ZERO
-    tempTrade.stopLossPrice = !!position
-      ? BigNumber((position.data as any).position.tpsl.stop_loss_price).div(PRECISION_8)
-      : ZERO
-    tempTrade.triggerPayment = !!position
-      ? BigNumber((position.data as any).position.tpsl.trigger_payment.value).div(PRECISION_8)
-      : ZERO
+
+    const tpslType = `${mirageAddress()}::market::TpSl`
+    const tpsl = positionObjectResources.find((resource) => resource.type === tpslType)
+    tempTrade.takeProfitPrice = !!position ? BigNumber((tpsl as any).take_profit_price).div(PRECISION_8) : ZERO
+    tempTrade.stopLossPrice = !!position ? BigNumber((tpsl as any).stop_loss_price).div(PRECISION_8) : ZERO
+    tempTrade.triggerPayment = !!position ? BigNumber((tpsl as any).trigger_payment_amount).div(PRECISION_8) : ZERO
 
     this.position = !tempTrade.positionSize.eq(0) ? tempTrade : undefined
 
-    this.positionLimit = !!position ? BigNumber((position.data as any).position_limit) : ZERO
+    // TODO unused in frontend - needed?
+    // this.positionLimit = !!position ? BigNumber((position.data as any).position_limit) : ZERO
 
-    const limitOrderType = `${mirageAddress()}::market::LimitOrders<${moveAssetInfo(this.marginCoin).type}, ${
-      assetInfo(this.perpetualAsset).type
-    }>`
+    const limitOrderType = `${mirageAddress()}::market::LimitOrders`
 
     const limitOrders = positionObjectResources.find((resource) => resource.type === limitOrderType)
 
@@ -179,7 +150,9 @@ export class Trader {
 
     try {
       for (let index = 0; index < ordersArr.length; ++index) {
-        tempOrders.push(new LimitOrder(ordersArr[index] as LimitOrderData, index, this.marginCoin, this.perpetualAsset))
+        tempOrders.push(
+          new LimitOrder(ordersArr[index] as LimitOrderData, index, this.marginToken, this.perpetualAsset)
+        )
       }
     } catch (error) {
       console.error(`Error deserializing limit order ${error}`)
@@ -204,7 +177,7 @@ export class Trader {
    * @param marginPrice The margin price
    * @returns The leverage, where 1 == 1x leverage
    */
-  static getLeverage(position: Position, perpetualPrice: number, marginPrice: number): number {
+  static getLeverage(position: PositionData, perpetualPrice: number, marginPrice: number): number {
     return (position.positionSize.div(position.margin).toNumber() * perpetualPrice) / marginPrice
   }
 
@@ -215,7 +188,7 @@ export class Trader {
    * @param marginPrice The margin price
    * @returns The amount of pnl in terms of the margin of the market
    */
-  static estimatePnl(position: Position, perpetualPrice: number, marginPrice: number): number {
+  static estimatePnl(position: PositionData, perpetualPrice: number, marginPrice: number): number {
     return (
       ((position.positionSize.toNumber() * perpetualPrice -
         position.positionSize.toNumber() * position.openingPrice.toNumber()) /
@@ -231,8 +204,8 @@ export class Trader {
    * @param marginPrice The margin price
    * @returns The percent pnl in terms of the margin of the market
    */
-  static estimatePercentPnl(position: Position, perpetualPrice: number, marginPrice: number): number {
-    return (Trader.estimatePnl(position, perpetualPrice, marginPrice) * 100) / position.margin.toNumber()
+  static estimatePercentPnl(position: PositionData, perpetualPrice: number, marginPrice: number): number {
+    return (Position.estimatePnl(position, perpetualPrice, marginPrice) * 100) / position.margin.toNumber()
   }
 
   //   public async getLiqPrice(): Promise<number> {
