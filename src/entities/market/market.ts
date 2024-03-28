@@ -1,9 +1,10 @@
+import { Network } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { FUNDING_PRECISION, PERCENT_PRECISION, ZERO } from '../../constants'
+import { aptosClient, FUNDING_PRECISION, PERCENT_PRECISION, ZERO } from '../../constants'
 import { AccountResource, mirageAddress } from '../../constants/accounts'
 import { MoveToken, Perpetual } from '../../constants/assetList'
-import { assetInfo, moveAssetInfo } from '../../constants/assetList'
+import { getDecimal8Argument, getMarketTypeArgument } from '../../transactions'
 
 /**
  * Represents a mirage-protocol perpetuals market.
@@ -12,7 +13,7 @@ export class Market {
   /**
    * The base asset of the market
    */
-  public readonly marginCoin: MoveToken
+  public readonly marginToken: MoveToken
   /**
    * The underlying asset of the market
    */
@@ -137,6 +138,9 @@ export class Market {
    */
   public readonly shortCloseOnly: boolean
 
+  public readonly objectAddress: string
+
+  public readonly network: Network
   /**
    * Construct an instance of Market
    * @param marketObjectResources resources from  the market token collection account
@@ -146,16 +150,17 @@ export class Market {
   constructor(
     marketObjectResources: AccountResource[],
     marginCoin: MoveToken | string,
-    perpetualAsset: Perpetual | string
-    // network: Network | string = Network.MAINNET
+    perpetualAsset: Perpetual | string,
+    network: Network,
+    objectAddress: string
   ) {
-    this.marginCoin = marginCoin as MoveToken
+    this.marginToken = marginCoin as MoveToken
     this.perpetualAsset = perpetualAsset as Perpetual
     // this.network = getNetwork(network)
+    this.objectAddress = objectAddress
+    this.network = network
 
-    const marketType = `${mirageAddress()}::market::Market<${moveAssetInfo(this.marginCoin).type}, ${
-      assetInfo(this.perpetualAsset).type
-    }>`
+    const marketType = `${mirageAddress()}::market::Market`
     // const oracleType = `${mirageAddress()}::mirage_oracle::Oracle`
 
     const market = marketObjectResources.find((resource) => resource.type === marketType)
@@ -251,25 +256,26 @@ export class Market {
   //   return this.shortMargin.div(PRECISION_8).toNumber()
   // }
 
-  // /**
-  //  * Get an estimate of the current fee in terms of USD
-  //  * @param positionSizeUsd the position size in USD
-  //  * @param perpetualPrice the perpetual price
-  //  * @param isLong if the trade is long
-  //  * @param isClose if the trade is an open or close
-  //  * @returns the fee in USD
-  //  */
-  // public async estimateFee(
-  //   positionSizeUsd: number,
-  //   perpetualPrice: number,
-  //   isLong: boolean,
-  //   isClose: boolean
-  // ): Promise<number> {
-  //   const ret = await aptosClient(this.network).view({
-  //     function: `${mirageAddress()}::market::estimate_fee`,
-  //     type_arguments: getMarketTypeArguments(this.marginCoin, this.perpetualAsset),
-  //     arguments: [getDecimal8Argument(positionSizeUsd), getDecimal8Argument(perpetualPrice), isLong, isClose],
-  //   })
-  //   return ret[0] as number
-  // }
+  /**
+   * Get an estimate of the current fee in terms of USD
+   * @param positionSizeAsset the position size
+   * @param isLong if the trade is long
+   * @param isClose if the trade is an open or close
+   * @returns the fee in USD
+   */
+  public async estimateFee(
+    marketObjectAddress: string,
+    positionSizeAsset: number,
+    isLong: boolean,
+    isClose: boolean
+  ): Promise<number> {
+    const ret = await aptosClient(this.network).view({
+      payload: {
+        function: `${mirageAddress()}::market::get_open_close_fee`,
+        typeArguments: getMarketTypeArgument() as `${string}::${string}::${string}`[],
+        functionArguments: [marketObjectAddress, isLong, isClose, getDecimal8Argument(positionSizeAsset)],
+      },
+    })
+    return ret[0] as number
+  }
 }

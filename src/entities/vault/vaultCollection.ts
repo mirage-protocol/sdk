@@ -71,6 +71,8 @@ export class VaultCollection {
     readonly borrow: string | undefined
   }
 
+  public readonly objectAddress: string
+
   /**
    * Construct an instance of VaultCollection
    * @param collectionObjectResources resources from the VaultCollection account
@@ -82,11 +84,13 @@ export class VaultCollection {
     collectionObjectResources: AccountResource[],
     borrowTokenObjectResources: AccountResource[],
     collateral: MoveToken | string,
-    borrow: MoveToken | string
+    borrow: MoveToken | string,
+    objectAddress: string
   ) {
     this.collateral = collateral as MoveToken
     this.borrow = borrow as MoveToken
     this.mirage = new MirageAsset(borrowTokenObjectResources, this.borrow)
+    this.objectAddress = objectAddress
 
     const vaultCollectionType = `${mirageAddress()}::vault::VaultCollection`
     const vaultCollection = collectionObjectResources.find((resource) => resource.type === vaultCollectionType)

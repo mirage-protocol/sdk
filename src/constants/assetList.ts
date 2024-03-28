@@ -7,33 +7,33 @@ import { getModuleAddress, mirageAddress } from './accounts'
 const mirageConfig = {
   markets: {
     mUSD: {
-      PEPE1000PERP: '0xe1b96d2f55c62a0172cd2f78d4861f9e3e5cc786285f00b07a9f6457974fbe44',
-      APTPERP: '0xe989883d3eb1e55c3c708f5ba8150db7877ba4176853a9f7a01f4d153df56add',
-      ARBPERP: '0xee0e4ec9727c57a9bd5949281e3e2c2dfbb81290f22b138b4c0f6aff33020746',
-      BTCPERP: '0xabcf03c6b243348dc50d076e3c1aca8848440bdf4a9887564a0a02a167426c15',
-      ETHPERP: '0x4f0fe3bbe329a140ca3305c0f9ddde5fc04b38bbf11123bd11122689008a021e',
-      EURPERP: '0x26d5685ea0e6c9ecb768af0c182513075e4f0cc8756114b7f531a515745cd5e8',
-      GBPPERP: '0x70f97a058647f567b0752dee51a1f61584fa688780dc22ec05c51079e5cbf9cf',
-      JPYPERP: '0xb5c29821d799f00d072278391fb3f80b0a4330fdae3416aabbd2c3cbbf294a29',
-      OPPERP: '0x94790488d9e8d39cbe870fa8e39315f0e7fcfd84edeff6f819c1c42d9e11afa7',
-      SOLPERP: '0x8e614d7e91dfbfdb6c3d3dfe4e0fea775f16c13686f52bc5a8a06329da2a5ef3',
-      SUIPERP: '0xcf1bd7eb837da7f994529e53eb9c34a7ed65a29125c5b5821d3ddec329e80d99',
-      XAGPERP: '0xce669baad201e6ecd5b6c12576f6ce62c742333181dfd9a187c8e8439e264287',
-      XAUPERP: '0x796d59260e01037ab3600266bc8d15a931f3f2114c2b794130d918b627f4d7bc',
+      PEPE1000PERP: '0x7712e115e3c47f3c14530a71c0a56a6a26d377f00a6e9849d195247e3f99ddc5',
+      APTPERP: '0x7a65bd339ae5d1b31367a4b832c430bd99f468797850fe305c948408c8564a71',
+      ARBPERP: '0x002f1b187c3e6e91d1f98cc960f41ac17f62dd7c3c990eb62ac220f8084fd128',
+      BTCPERP: '0xb4c72b50d1a263054fbc47453cbe3de74f6cc60792de4f065ad3d5bb4a5f7f6a',
+      ETHPERP: '0xf1b1318978d7a3d2216684f799e1b8540f8a2bc77b693c9034747299eca649f2',
+      EURPERP: '0xc1e902dc3748a255c1747d6cf7eb10110a14633a4b0a65cd6eb383831dcb8c46',
+      GBPPERP: '0x53c8678a0531c2fe2ceae680ef95cff4eb72229ee777ac84364842a11b64b133',
+      JPYPERP: '0xc6099ff805323814a0ce57ddcc6add6b74960d8de26c476d6fd8e0ae21ff7897',
+      OPPERP: '0xb5324dff8c9bb8b9e8a983257bae76e3ce3c9a1b70e96ef6b9b8b0f9e0a22803',
+      SOLPERP: '0xc56d133c26fb1a416128fc83af1040b36f3bffc434873be8f21c6d673c5a152e',
+      SUIPERP: '0xcd4ba75849788f47bdb92643eeb8f5095a49585d952f6d1b76164b382661e4af',
+      XAGPERP: '0x28d760f507f16a8f93e622003a933bae72b99029f119605903b23a0b451ce335',
+      XAUPERP: '0x7980c67b55cc75d5bab466364fdefa906424482692480042e0fd8e9f0631bc0a',
     },
   },
   vaults: {
     APT: {
-      mUSD: '0x891928ce14eb525e4feaad39014ac32d219645905451285990bf850bbb15ee19',
+      mUSD: '0x7d569cb6958a1767941aafb1302498f9059563beb581eac2e421d7e09a7c5f49',
     },
     tUSDC: {
-      mUSD: '0x741380d97dd7de756fc52348d3fd605a81dfcea4a2abede3cf631b485bdd9a84',
+      mUSD: '0xecc1d638b076cbfe297892267310800674a53ff83db0b9590bccb455ff46824a',
     },
   },
   tokens: {
-    mUSD: '0x2ecc745ae9165ca23db8c194e59511235b4a126e9b00f7d17c9d34123a17777f',
-    APT: '0x55995df143dfae5da0576c7f0e81e08fa7a695d5fc952751ee1afe8f08cba9d2',
-    tUSDC: '0x993842edefb3dc0fbde5bfd2e76f422d4e3a2bfad0398491946cfd6593c3c080',
+    mUSD: '0x2cbe7a9934f26fcb210bb79bbdaaade72bf7d73abc9a4271676d84a564138975',
+    APT: '0xd9fbaaea72d84b9cb5454a19a3a328467ac70fe571f9d6681410585cd90cea3e',
+    tUSDC: '0xe205600757fe58ac11ad10c479df0c20e380f0c5a67d266f37d2823704cb3d63',
   },
 }
 
@@ -59,6 +59,18 @@ export const getAllMarketObjectAddresses = (): string[] => {
   })
 
   return marketAddresses
+}
+
+export const getPairFromMarketAddress = (marketObjectAddress: string): { marginToken: MoveToken; perp: Perpetual } => {
+  for (const marginToken in mirageConfig.markets) {
+    for (const perp in mirageConfig.markets[marginToken]) {
+      if (mirageConfig.markets[marginToken][perp] === marketObjectAddress) {
+        // Assuming Perpetual is a more complex type, you might need to instantiate it or fetch it from somewhere
+        return { marginToken: getMoveAssetFromSymbol(marginToken) as MoveToken, perp: checkPerpSymbolUnSafe(perp) }
+      }
+    }
+  }
+  throw new Error('no pair found for address')
 }
 
 /**
@@ -149,6 +161,14 @@ export const getMoveAssetFromSymbol = (symbol: string): MoveAsset | undefined =>
  */
 export const checkPerpSymbol = (symbol: string): Perpetual | undefined => {
   return Perpetual[symbol]
+}
+
+const checkPerpSymbolUnSafe = (symbol: string): Perpetual => {
+  const perp = checkPerpSymbol(symbol)
+  if (perp == undefined) {
+    throw new Error(`perp not found for ${symbol}`)
+  }
+  return perp
 }
 
 /**

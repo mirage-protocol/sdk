@@ -26,7 +26,7 @@ export class LimitOrder {
   /**
    * The base asset of the market
    */
-  public readonly marginCoin: MoveToken
+  public readonly marginToken: MoveToken
   /**
    * The underlying asset of the market
    */
@@ -84,7 +84,7 @@ export class LimitOrder {
    * @param limitOrderData the data to parse
    */
   constructor(limitOrderData: LimitOrderData, index: number, marginCoin: MoveToken, perpetualAsset: Perpetual) {
-    this.marginCoin = marginCoin
+    this.marginToken = marginCoin
     this.perpetualAsset = perpetualAsset
 
     this.id = BigNumber(limitOrderData.id)
