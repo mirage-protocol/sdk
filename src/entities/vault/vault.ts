@@ -48,6 +48,8 @@ export class Vault {
    */
   public readonly vault: VaultCollection
 
+  public readonly objectAddress: string
+
   /**
    * Construct an instance of VaultUser
    * @param vaultObjectResources resources from vault token account
@@ -61,7 +63,9 @@ export class Vault {
     collectionObjectResources: AccountResource[],
     borrowTokenObjectResources: AccountResource[],
     collateral: MoveToken | string,
-    borrow: MoveToken | string
+    borrow: MoveToken | string,
+    objectAddress: string,
+    collectionObjectAddress: string
   ) {
     this.collateralAsset = collateral as MoveToken
     this.borrowToken = borrow as MoveToken
@@ -69,8 +73,10 @@ export class Vault {
       collectionObjectResources,
       borrowTokenObjectResources,
       this.collateralAsset,
-      this.borrowToken
+      this.borrowToken,
+      collectionObjectAddress
     )
+    this.objectAddress = objectAddress
 
     const vaultUserType = `${mirageAddress()}::vault::Vault`
 

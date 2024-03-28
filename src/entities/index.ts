@@ -1,4 +1,4 @@
-export * from './coin'
+export * from './asset'
 export * from './distributor'
 export * from './market'
 export * from './rebase'

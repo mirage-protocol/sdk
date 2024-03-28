@@ -1,4 +1,4 @@
-import { Network } from 'aptos'
+import { Network } from '@aptos-labs/ts-sdk'
 
 import {
   aptosClient,

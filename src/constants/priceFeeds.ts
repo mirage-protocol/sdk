@@ -34,12 +34,12 @@ export const coinsWithPriceFeeds = [
 type CoinsWithPriceFeeds = (typeof coinsWithPriceFeeds)[number]
 
 /**
- * Check if a coin has a price feed
- * @param coin the coin to check
- * @returns if a mirage protocol price feed exists for the coin
+ * Check if a asset has a price feed
+ * @param asset the asset to check
+ * @returns if a mirage protocol price feed exists for the asset
  */
-export const hasPriceFeed = (coin: MoveToken): boolean => {
-  return !!PRICE_FEEDS[coin.valueOf()]
+export const hasPriceFeed = (asset: MoveAsset): boolean => {
+  return !!PRICE_FEEDS[asset.valueOf()]
 }
 
 /**

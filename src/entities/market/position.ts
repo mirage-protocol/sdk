@@ -1,6 +1,9 @@
+import { InputViewRequestData } from '@aptos-labs/ts-sdk'
+import { Network } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { AccountResource, mirageAddress, MoveToken, Perpetual, PRECISION_8, ZERO } from '../../constants'
+import { AccountResource, aptosClient, mirageAddress, MoveToken, Perpetual, PRECISION_8, ZERO } from '../../constants'
+import { getPositionTypeArgument } from '../../transactions'
 import { LimitOrder, LimitOrderData } from './limitOrder'
 import { Market } from './market'
 
@@ -68,6 +71,10 @@ export class Position {
    * A users limit orders
    */
   public readonly limitOrders: LimitOrder[]
+
+  public readonly objectAddress: string
+
+  public readonly network: Network
   // /**
   //  * The max position size for this Market and account
   //  */
@@ -83,16 +90,17 @@ export class Position {
   constructor(
     // userAddress: string,
     positionObjectResources: AccountResource[],
-    marketObjectResources: AccountResource[],
+    market: Market,
     marginCoin: MoveToken | string,
-    perpetualAsset: Perpetual | string
-    // network: Network | string = Network.MAINNET
+    perpetualAsset: Perpetual | string,
+    objectAddress: string
   ) {
     // this.userAddress = userAddress
     this.marginToken = marginCoin as MoveToken
     this.perpetualAsset = perpetualAsset as Perpetual
-    this.market = new Market(marketObjectResources, this.marginToken, this.perpetualAsset)
-    // this.network = getNetwork(network)
+    this.market = market
+    this.objectAddress = objectAddress
+    this.network = market.network
 
     const positionType = `${mirageAddress()}::market::Position`
     const tokenIdsType = '0x4::token::TokenIdentifiers'
@@ -162,10 +170,10 @@ export class Position {
   }
 
   /**
-   * Get if the Trader has an active position
-   * @returns If the trader has an open position now
+   * Returns bool on if the position is open
+   * @returns If the position is open
    */
-  public hasOpenPosition(): boolean {
+  public isOpen(): boolean {
     // Inactive trades have an id of u64 max
     return this.position ? this.position.positionSize && !this.position.positionSize.eq(0) : false
   }
@@ -208,22 +216,17 @@ export class Position {
     return (Position.estimatePnl(position, perpetualPrice, marginPrice) * 100) / position.margin.toNumber()
   }
 
-  //   public async getLiqPrice(): Promise<number> {
-  //     return await getLiqPrice(this.userAddress, this.marginCoin, this.perpetualAsset, this.network)
-  //   }
-  // }
+  public async getLiqPrice(): Promise<number> {
+    return await getLiqPrice(this.objectAddress, this.network)
+  }
+}
 
-  // export const getLiqPrice = async (
-  //   userAddress: string,
-  //   marginCoin: MoveToken,
-  //   perpetualAsset: Perpetual,
-  //   network: Network
-  // ): Promise<number> => {
-  //   const payload: InputViewRequestData = {
-  //     function: `${mirageAddress()}::market::liquidation_price`,
-  //     typeArguments: getMarketTypeArguments(marginCoin, perpetualAsset),
-  //     functionArguments: [userAddress],
-  //   }
-  //   const ret = await aptosClient(network).view({ payload })
-  //   return ret[0] as number
+export const getLiqPrice = async (positionObjectAddress: string, network: Network): Promise<number> => {
+  const payload: InputViewRequestData = {
+    function: `${mirageAddress()}::market::get_liquidation_price`,
+    typeArguments: getPositionTypeArgument() as `${string}::${string}::${string}`[],
+    functionArguments: [positionObjectAddress],
+  }
+  const ret = await aptosClient(network).view({ payload })
+  return ret[0] as number
 }
