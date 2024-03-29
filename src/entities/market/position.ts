@@ -106,7 +106,9 @@ export class Position {
     const tokenIdsType = '0x4::token::TokenIdentifiers'
 
     const position = positionObjectResources.find((resource) => resource.type === positionType)
+    if (position == undefined) throw new Error('position object not found')
     const tokenIdentifiers = positionObjectResources.find((resource) => resource.type === tokenIdsType)
+    if (tokenIdentifiers == undefined) throw new Error('tokenIdentifiers object not found')
 
     const tempTrade: PositionData = {
       id: ZERO,
@@ -122,11 +124,9 @@ export class Position {
     }
 
     tempTrade.id = !!tokenIdentifiers ? BigNumber((tokenIdentifiers.data as any).index.value) : ZERO
-    tempTrade.openingPrice = !!position
-      ? BigNumber((position.data as any).position.opening_price).div(PRECISION_8)
-      : ZERO
+    tempTrade.openingPrice = !!position ? BigNumber((position.data as any).opening_price).div(PRECISION_8) : ZERO
     tempTrade.side = !!position
-      ? Boolean((position.data as any).position.is_long)
+      ? Boolean((position.data as any).is_long)
         ? PositionSide.LONG
         : PositionSide.SHORT
       : PositionSide.UNKNOWN
@@ -134,15 +134,16 @@ export class Position {
     tempTrade.positionSize = !!position ? BigNumber((position.data as any).position_size).div(PRECISION_8) : ZERO
 
     // TODO
-    tempTrade.maintenanceMargin = !!position
-      ? BigNumber((position.data as any).position.maintenance_margin).div(PRECISION_8)
-      : ZERO
+    // tempTrade.maintenanceMargin = !!position
+    //   ? BigNumber((position.data as any).position.maintenance_margin).div(PRECISION_8)
+    //   : ZERO
+    tempTrade.maintenanceMargin = tempTrade.margin.times(3)
 
     const tpslType = `${mirageAddress()}::market::TpSl`
     const tpsl = positionObjectResources.find((resource) => resource.type === tpslType)
-    tempTrade.takeProfitPrice = !!position ? BigNumber((tpsl as any).take_profit_price).div(PRECISION_8) : ZERO
-    tempTrade.stopLossPrice = !!position ? BigNumber((tpsl as any).stop_loss_price).div(PRECISION_8) : ZERO
-    tempTrade.triggerPayment = !!position ? BigNumber((tpsl as any).trigger_payment_amount).div(PRECISION_8) : ZERO
+    tempTrade.takeProfitPrice = !!tpsl ? BigNumber((tpsl as any).take_profit_price).div(PRECISION_8) : ZERO
+    tempTrade.stopLossPrice = !!tpsl ? BigNumber((tpsl as any).stop_loss_price).div(PRECISION_8) : ZERO
+    tempTrade.triggerPayment = !!tpsl ? BigNumber((tpsl as any).trigger_payment_amount).div(PRECISION_8) : ZERO
 
     this.position = !tempTrade.positionSize.eq(0) ? tempTrade : undefined
 

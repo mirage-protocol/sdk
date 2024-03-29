@@ -3648,8 +3648,6 @@ export type Current_Token_Datas_V2 = {
   collection_id: Scalars['String']['output'];
   /** An object relationship */
   current_collection?: Maybe<Current_Collections_V2>;
-  /** An object relationship */
-  current_token_ownership?: Maybe<Current_Token_Ownerships_V2>;
   /** An array relationship */
   current_token_ownerships: Array<Current_Token_Ownerships_V2>;
   /** An aggregate relationship */
@@ -3704,7 +3702,6 @@ export type Current_Token_Datas_V2_Bool_Exp = {
   cdn_asset_uris?: InputMaybe<Nft_Metadata_Crawler_Parsed_Asset_Uris_Bool_Exp>;
   collection_id?: InputMaybe<String_Comparison_Exp>;
   current_collection?: InputMaybe<Current_Collections_V2_Bool_Exp>;
-  current_token_ownership?: InputMaybe<Current_Token_Ownerships_V2_Bool_Exp>;
   current_token_ownerships?: InputMaybe<Current_Token_Ownerships_V2_Bool_Exp>;
   current_token_ownerships_aggregate?: InputMaybe<Current_Token_Ownerships_V2_Aggregate_Bool_Exp>;
   decimals?: InputMaybe<Bigint_Comparison_Exp>;
@@ -3728,7 +3725,6 @@ export type Current_Token_Datas_V2_Order_By = {
   cdn_asset_uris?: InputMaybe<Nft_Metadata_Crawler_Parsed_Asset_Uris_Order_By>;
   collection_id?: InputMaybe<Order_By>;
   current_collection?: InputMaybe<Current_Collections_V2_Order_By>;
-  current_token_ownership?: InputMaybe<Current_Token_Ownerships_V2_Order_By>;
   current_token_ownerships_aggregate?: InputMaybe<Current_Token_Ownerships_V2_Aggregate_Order_By>;
   decimals?: InputMaybe<Order_By>;
   description?: InputMaybe<Order_By>;
@@ -4132,6 +4128,7 @@ export type Current_Token_Ownerships_V2 = {
   is_soulbound_v2?: Maybe<Scalars['Boolean']['output']>;
   last_transaction_timestamp: Scalars['timestamp']['output'];
   last_transaction_version: Scalars['bigint']['output'];
+  non_transferrable_by_owner?: Maybe<Scalars['Boolean']['output']>;
   owner_address: Scalars['String']['output'];
   property_version_v1: Scalars['numeric']['output'];
   storage_id: Scalars['String']['output'];
@@ -4267,6 +4264,7 @@ export type Current_Token_Ownerships_V2_Bool_Exp = {
   is_soulbound_v2?: InputMaybe<Boolean_Comparison_Exp>;
   last_transaction_timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
   last_transaction_version?: InputMaybe<Bigint_Comparison_Exp>;
+  non_transferrable_by_owner?: InputMaybe<Boolean_Comparison_Exp>;
   owner_address?: InputMaybe<String_Comparison_Exp>;
   property_version_v1?: InputMaybe<Numeric_Comparison_Exp>;
   storage_id?: InputMaybe<String_Comparison_Exp>;
@@ -4339,6 +4337,7 @@ export type Current_Token_Ownerships_V2_Order_By = {
   is_soulbound_v2?: InputMaybe<Order_By>;
   last_transaction_timestamp?: InputMaybe<Order_By>;
   last_transaction_version?: InputMaybe<Order_By>;
+  non_transferrable_by_owner?: InputMaybe<Order_By>;
   owner_address?: InputMaybe<Order_By>;
   property_version_v1?: InputMaybe<Order_By>;
   storage_id?: InputMaybe<Order_By>;
@@ -4361,6 +4360,8 @@ export enum Current_Token_Ownerships_V2_Select_Column {
   /** column name */
   LastTransactionVersion = 'last_transaction_version',
   /** column name */
+  NonTransferrableByOwner = 'non_transferrable_by_owner',
+  /** column name */
   OwnerAddress = 'owner_address',
   /** column name */
   PropertyVersionV1 = 'property_version_v1',
@@ -4381,7 +4382,9 @@ export enum Current_Token_Ownerships_V2_Select_Column_Current_Token_Ownerships_V
   /** column name */
   IsFungibleV2 = 'is_fungible_v2',
   /** column name */
-  IsSoulboundV2 = 'is_soulbound_v2'
+  IsSoulboundV2 = 'is_soulbound_v2',
+  /** column name */
+  NonTransferrableByOwner = 'non_transferrable_by_owner'
 }
 
 /** select "current_token_ownerships_v2_aggregate_bool_exp_bool_or_arguments_columns" columns of table "current_token_ownerships_v2" */
@@ -4389,7 +4392,9 @@ export enum Current_Token_Ownerships_V2_Select_Column_Current_Token_Ownerships_V
   /** column name */
   IsFungibleV2 = 'is_fungible_v2',
   /** column name */
-  IsSoulboundV2 = 'is_soulbound_v2'
+  IsSoulboundV2 = 'is_soulbound_v2',
+  /** column name */
+  NonTransferrableByOwner = 'non_transferrable_by_owner'
 }
 
 /** aggregate stddev on columns */
@@ -4452,6 +4457,7 @@ export type Current_Token_Ownerships_V2_Stream_Cursor_Value_Input = {
   is_soulbound_v2?: InputMaybe<Scalars['Boolean']['input']>;
   last_transaction_timestamp?: InputMaybe<Scalars['timestamp']['input']>;
   last_transaction_version?: InputMaybe<Scalars['bigint']['input']>;
+  non_transferrable_by_owner?: InputMaybe<Scalars['Boolean']['input']>;
   owner_address?: InputMaybe<Scalars['String']['input']>;
   property_version_v1?: InputMaybe<Scalars['numeric']['input']>;
   storage_id?: InputMaybe<Scalars['String']['input']>;
@@ -7366,6 +7372,10 @@ export type Query_Root = {
   proposal_votes_aggregate: Proposal_Votes_Aggregate;
   /** fetch data from the table: "proposal_votes" using primary key columns */
   proposal_votes_by_pk?: Maybe<Proposal_Votes>;
+  /** fetch data from the table: "signatures" */
+  signatures: Array<Signatures>;
+  /** fetch data from the table: "signatures" using primary key columns */
+  signatures_by_pk?: Maybe<Signatures>;
   /** fetch data from the table: "table_items" */
   table_items: Array<Table_Items>;
   /** fetch data from the table: "table_items" using primary key columns */
@@ -8199,6 +8209,23 @@ export type Query_RootProposal_Votes_By_PkArgs = {
 };
 
 
+export type Query_RootSignaturesArgs = {
+  distinct_on?: InputMaybe<Array<Signatures_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Signatures_Order_By>>;
+  where?: InputMaybe<Signatures_Bool_Exp>;
+};
+
+
+export type Query_RootSignatures_By_PkArgs = {
+  is_sender_primary: Scalars['Boolean']['input'];
+  multi_agent_index: Scalars['bigint']['input'];
+  multi_sig_index: Scalars['bigint']['input'];
+  transaction_version: Scalars['bigint']['input'];
+};
+
+
 export type Query_RootTable_ItemsArgs = {
   distinct_on?: InputMaybe<Array<Table_Items_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -8337,6 +8364,110 @@ export type Query_RootUser_TransactionsArgs = {
 
 export type Query_RootUser_Transactions_By_PkArgs = {
   version: Scalars['bigint']['input'];
+};
+
+/** columns and relationships of "signatures" */
+export type Signatures = {
+  __typename?: 'signatures';
+  is_sender_primary: Scalars['Boolean']['output'];
+  multi_agent_index: Scalars['bigint']['output'];
+  multi_sig_index: Scalars['bigint']['output'];
+  public_key: Scalars['String']['output'];
+  public_key_indices: Scalars['jsonb']['output'];
+  signature: Scalars['String']['output'];
+  signer: Scalars['String']['output'];
+  threshold: Scalars['bigint']['output'];
+  transaction_block_height: Scalars['bigint']['output'];
+  transaction_version: Scalars['bigint']['output'];
+  type: Scalars['String']['output'];
+};
+
+
+/** columns and relationships of "signatures" */
+export type SignaturesPublic_Key_IndicesArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Boolean expression to filter rows from the table "signatures". All fields are combined with a logical 'AND'. */
+export type Signatures_Bool_Exp = {
+  _and?: InputMaybe<Array<Signatures_Bool_Exp>>;
+  _not?: InputMaybe<Signatures_Bool_Exp>;
+  _or?: InputMaybe<Array<Signatures_Bool_Exp>>;
+  is_sender_primary?: InputMaybe<Boolean_Comparison_Exp>;
+  multi_agent_index?: InputMaybe<Bigint_Comparison_Exp>;
+  multi_sig_index?: InputMaybe<Bigint_Comparison_Exp>;
+  public_key?: InputMaybe<String_Comparison_Exp>;
+  public_key_indices?: InputMaybe<Jsonb_Comparison_Exp>;
+  signature?: InputMaybe<String_Comparison_Exp>;
+  signer?: InputMaybe<String_Comparison_Exp>;
+  threshold?: InputMaybe<Bigint_Comparison_Exp>;
+  transaction_block_height?: InputMaybe<Bigint_Comparison_Exp>;
+  transaction_version?: InputMaybe<Bigint_Comparison_Exp>;
+  type?: InputMaybe<String_Comparison_Exp>;
+};
+
+/** Ordering options when selecting data from "signatures". */
+export type Signatures_Order_By = {
+  is_sender_primary?: InputMaybe<Order_By>;
+  multi_agent_index?: InputMaybe<Order_By>;
+  multi_sig_index?: InputMaybe<Order_By>;
+  public_key?: InputMaybe<Order_By>;
+  public_key_indices?: InputMaybe<Order_By>;
+  signature?: InputMaybe<Order_By>;
+  signer?: InputMaybe<Order_By>;
+  threshold?: InputMaybe<Order_By>;
+  transaction_block_height?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  type?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "signatures" */
+export enum Signatures_Select_Column {
+  /** column name */
+  IsSenderPrimary = 'is_sender_primary',
+  /** column name */
+  MultiAgentIndex = 'multi_agent_index',
+  /** column name */
+  MultiSigIndex = 'multi_sig_index',
+  /** column name */
+  PublicKey = 'public_key',
+  /** column name */
+  PublicKeyIndices = 'public_key_indices',
+  /** column name */
+  Signature = 'signature',
+  /** column name */
+  Signer = 'signer',
+  /** column name */
+  Threshold = 'threshold',
+  /** column name */
+  TransactionBlockHeight = 'transaction_block_height',
+  /** column name */
+  TransactionVersion = 'transaction_version',
+  /** column name */
+  Type = 'type'
+}
+
+/** Streaming cursor of the table "signatures" */
+export type Signatures_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Signatures_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Signatures_Stream_Cursor_Value_Input = {
+  is_sender_primary?: InputMaybe<Scalars['Boolean']['input']>;
+  multi_agent_index?: InputMaybe<Scalars['bigint']['input']>;
+  multi_sig_index?: InputMaybe<Scalars['bigint']['input']>;
+  public_key?: InputMaybe<Scalars['String']['input']>;
+  public_key_indices?: InputMaybe<Scalars['jsonb']['input']>;
+  signature?: InputMaybe<Scalars['String']['input']>;
+  signer?: InputMaybe<Scalars['String']['input']>;
+  threshold?: InputMaybe<Scalars['bigint']['input']>;
+  transaction_block_height?: InputMaybe<Scalars['bigint']['input']>;
+  transaction_version?: InputMaybe<Scalars['bigint']['input']>;
+  type?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Subscription_Root = {
@@ -8641,6 +8772,12 @@ export type Subscription_Root = {
   proposal_votes_by_pk?: Maybe<Proposal_Votes>;
   /** fetch data from the table in a streaming manner: "proposal_votes" */
   proposal_votes_stream: Array<Proposal_Votes>;
+  /** fetch data from the table: "signatures" */
+  signatures: Array<Signatures>;
+  /** fetch data from the table: "signatures" using primary key columns */
+  signatures_by_pk?: Maybe<Signatures>;
+  /** fetch data from the table in a streaming manner: "signatures" */
+  signatures_stream: Array<Signatures>;
   /** fetch data from the table: "table_items" */
   table_items: Array<Table_Items>;
   /** fetch data from the table: "table_items" using primary key columns */
@@ -9823,6 +9960,30 @@ export type Subscription_RootProposal_Votes_StreamArgs = {
   batch_size: Scalars['Int']['input'];
   cursor: Array<InputMaybe<Proposal_Votes_Stream_Cursor_Input>>;
   where?: InputMaybe<Proposal_Votes_Bool_Exp>;
+};
+
+
+export type Subscription_RootSignaturesArgs = {
+  distinct_on?: InputMaybe<Array<Signatures_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Signatures_Order_By>>;
+  where?: InputMaybe<Signatures_Bool_Exp>;
+};
+
+
+export type Subscription_RootSignatures_By_PkArgs = {
+  is_sender_primary: Scalars['Boolean']['input'];
+  multi_agent_index: Scalars['bigint']['input'];
+  multi_sig_index: Scalars['bigint']['input'];
+  transaction_version: Scalars['bigint']['input'];
+};
+
+
+export type Subscription_RootSignatures_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Signatures_Stream_Cursor_Input>>;
+  where?: InputMaybe<Signatures_Bool_Exp>;
 };
 
 
@@ -11677,7 +11838,7 @@ export function useGetCollectionsByOwnerQuery(options: Omit<Urql.UseQueryArgs<Ge
 export const GetTokenIdsFromCollectionByOwnerDocument = gql`
     query GetTokenIdsFromCollectionByOwner($COLLECTION: String!, $OWNER: String!) {
   current_token_datas_v2(
-    where: {collection_id: {_eq: $COLLECTION}, current_token_ownership: {owner_address: {_eq: $OWNER}}}
+    where: {collection_id: {_eq: $COLLECTION}, current_token_ownerships: {owner_address: {_eq: $OWNER}}}
   ) {
     token_data_id
   }
@@ -11690,7 +11851,7 @@ export function useGetTokenIdsFromCollectionByOwnerQuery(options: Omit<Urql.UseQ
 export const GetTokenIdsFromCollectionsByOwnerDocument = gql`
     query GetTokenIdsFromCollectionsByOwner($COLLECTIONS: [String!]!, $OWNER: String!) {
   current_token_datas_v2(
-    where: {collection_id: {_in: $COLLECTIONS}, current_token_ownership: {owner_address: {_eq: $OWNER}}}
+    where: {collection_id: {_in: $COLLECTIONS}, current_token_ownerships: {owner_address: {_eq: $OWNER}}}
   ) {
     token_data_id
   }

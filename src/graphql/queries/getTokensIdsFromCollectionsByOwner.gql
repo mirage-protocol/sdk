@@ -1,6 +1,6 @@
 query GetTokenIdsFromCollectionsByOwner($COLLECTIONS: [String!]!, $OWNER: String!) {
   current_token_datas_v2(
-    where: { collection_id: { _in: $COLLECTIONS }, current_token_ownership: { owner_address: { _eq: $OWNER } } }
+    where: { collection_id: { _in: $COLLECTIONS }, current_token_ownerships: { owner_address: { _eq: $OWNER } } }
   ) {
     token_data_id
   }
