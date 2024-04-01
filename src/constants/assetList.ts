@@ -73,6 +73,22 @@ export const getPairFromMarketAddress = (marketObjectAddress: string): { marginT
   throw new Error('no pair found for address')
 }
 
+export const getPairFromVaultCollectionAddress = (
+  vaultObjectAddress: string
+): { collateralAsset: MoveAsset; borrow: MoveToken } => {
+  for (const collateralAsset in mirageConfig.vaults) {
+    for (const borrow in mirageConfig.vaults[collateralAsset]) {
+      if (mirageConfig.vaults[collateralAsset][borrow] === vaultObjectAddress) {
+        return {
+          collateralAsset: getMoveAssetFromSymbol(collateralAsset) as MoveAsset,
+          borrow: getMoveAssetFromSymbol(borrow) as MoveToken,
+        }
+      }
+    }
+  }
+  throw new Error('no pair found for address')
+}
+
 /**
  * All Tokens relevant to the mirage-protocol ecosystem
  */

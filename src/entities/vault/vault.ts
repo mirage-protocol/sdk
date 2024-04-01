@@ -44,9 +44,9 @@ export class Vault {
    */
   public readonly positionHealth: number // basis points
   /**
-   * An instance of the Vault for this VaultUser
+   * An instance of the VaultCollection for this Vault
    */
-  public readonly vault: VaultCollection
+  public readonly vaultCollection: VaultCollection
 
   public readonly objectAddress: string
 
@@ -60,22 +60,14 @@ export class Vault {
    */
   constructor(
     vaultObjectResources: AccountResource[],
-    collectionObjectResources: AccountResource[],
-    borrowTokenObjectResources: AccountResource[],
+    vaultCollection: VaultCollection,
     collateral: MoveToken | string,
     borrow: MoveToken | string,
-    objectAddress: string,
-    collectionObjectAddress: string
+    objectAddress: string
   ) {
     this.collateralAsset = collateral as MoveToken
     this.borrowToken = borrow as MoveToken
-    this.vault = new VaultCollection(
-      collectionObjectResources,
-      borrowTokenObjectResources,
-      this.collateralAsset,
-      this.borrowToken,
-      collectionObjectAddress
-    )
+    this.vaultCollection = vaultCollection
     this.objectAddress = objectAddress
 
     const vaultUserType = `${mirageAddress()}::vault::Vault`
@@ -86,48 +78,50 @@ export class Vault {
 
     // need to use global debt rebase
     this.borrowAmount =
-      !!user && !!this.vault
-        ? this.vault.mirage.debtRebase.toElastic(
-            this.vault.borrowRebase.toElastic(new BigNumber((user.data as any).borrow_part.amount), true),
+      !!user && !!this.vaultCollection
+        ? this.vaultCollection.mirage.debtRebase.toElastic(
+            this.vaultCollection.borrowRebase.toElastic(new BigNumber((user.data as any).borrow_part.amount), true),
             false
           )
         : ZERO
 
     this.liquidationPrice =
-      !!user && !!this.vault
-        ? this.borrowAmount.div(this.collateralAmount).times(this.vault.liquidationCollateralizationPercent / 100)
+      !!user && !!this.vaultCollection
+        ? this.borrowAmount
+            .div(this.collateralAmount)
+            .times(this.vaultCollection.liquidationCollateralizationPercent / 100)
         : ZERO
 
     const maxBorrow =
-      !!user && !!this.vault
+      !!user && !!this.vaultCollection
         ? this.collateralAmount
-            .times(this.vault.exchangeRate)
+            .times(this.vaultCollection.exchangeRate)
             .div(EXCHANGE_RATE_PRECISION)
-            .times(this.vault.liquidationCollateralizationPercent)
+            .times(this.vaultCollection.liquidationCollateralizationPercent)
             .div(100)
         : ZERO
 
     const maxCollateral =
-      !!user && !!this.vault
-        ? this.collateralAmount.times(this.vault.liquidationCollateralizationPercent).div(100)
+      !!user && !!this.vaultCollection
+        ? this.collateralAmount.times(this.vaultCollection.liquidationCollateralizationPercent).div(100)
         : ZERO
 
     const ratio =
-      !!user && !!this.vault
+      !!user && !!this.vaultCollection
         ? this.borrowAmount
             .times(EXCHANGE_RATE_PRECISION)
-            .div(this.vault.exchangeRate)
+            .div(this.vaultCollection.exchangeRate)
             .times(10000)
             .div(maxCollateral)
             .toNumber()
         : 0
 
     const minCollateral =
-      !!user && !!this.vault
+      !!user && !!this.vaultCollection
         ? this.borrowAmount
             .times(EXCHANGE_RATE_PRECISION)
-            .div(this.vault.exchangeRate)
-            .div(this.vault.liquidationCollateralizationPercent)
+            .div(this.vaultCollection.exchangeRate)
+            .div(this.vaultCollection.liquidationCollateralizationPercent)
             .div(100)
         : ZERO
 
@@ -159,13 +153,13 @@ export class Vault {
    */
   public simulateIsSolvent(exchangeRate: BigNumber): boolean {
     return this.collateralAmount
-      .div(this.vault.liquidationCollateralizationPercent)
+      .div(this.vaultCollection.liquidationCollateralizationPercent)
       .times(exchangeRate)
       .times(100)
       .isGreaterThan(this.borrowAmount)
   }
 
   public calculateHypotheticalLiquidationPrice(borrow: BigNumber, collateral: BigNumber): BigNumber {
-    return borrow.div(collateral).times(this.vault.liquidationCollateralizationPercent / 100)
+    return borrow.div(collateral).times(this.vaultCollection.liquidationCollateralizationPercent / 100)
   }
 }

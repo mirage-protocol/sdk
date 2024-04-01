@@ -130,7 +130,7 @@ export class Position {
         ? PositionSide.LONG
         : PositionSide.SHORT
       : PositionSide.UNKNOWN
-    tempTrade.margin = !!position ? BigNumber((position.data as any).margin_amount) : ZERO
+    tempTrade.margin = !!position ? BigNumber((position.data as any).margin_amount).div(PRECISION_8) : ZERO
     tempTrade.positionSize = !!position ? BigNumber((position.data as any).position_size).div(PRECISION_8) : ZERO
 
     // TODO
