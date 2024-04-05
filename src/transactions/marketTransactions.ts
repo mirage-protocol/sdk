@@ -191,8 +191,31 @@ export const cancelLimitOrder = async (
 export const updateTpsl = async (
   positionObject: MoveObjectType,
   perpetualAsset: Perpetual,
-  stop_loss_price: number,
   take_profit_price: number,
+  stop_loss_price: number,
+  network: Network
+): Promise<InputEntryFunctionData> => {
+  const perpetualFeed = getPriceFeed(perpetualAsset, network)
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+
+  const payload = {
+    function: `${mirageAddress()}::market::update_tpsl` as `${string}::${string}::${string}`,
+    functionArguments: [
+      positionObject,
+      perpetualVaas,
+      getDecimal8Argument(take_profit_price),
+      getDecimal8Argument(stop_loss_price),
+    ],
+    typeArguments: getPositionTypeArgument(),
+  }
+  return payload
+}
+
+export const placeTpsl = async (
+  positionObject: MoveObjectType,
+  perpetualAsset: Perpetual,
+  take_profit_price: number,
+  stop_loss_price: number,
   trigger_amount: number,
   network: Network
 ): Promise<InputEntryFunctionData> => {
@@ -275,28 +298,29 @@ export const updatePositionSize = async (
   return payload
 }
 
-// /**
-//  * Trigger a take profit or stop loss of the position at address to_trigger
-//  * @returns payload promise for the transaction
-//  */
-// export const triggerTpsl = async (
-//   positionObject: MoveObjectType,
-//   marginCoin: MoveToken,
-//   perpetualAsset: Perpetual,
-//   network: Network
-//   // TODO RETURN TYPE MAY BE WRONG BC THIS IS NOT AN ENTRY FUN
-// ): Promise<InputEntryFunctionData> => {
-//   const marginFeed = getPriceFeed(marginCoin, network)
-//   const perpetualFeed = getPriceFeed(perpetualAsset, network)
-//   const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
-//   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
-//   const payload = {
-//     function: `${MODULES.mirage_scripts.address}::market_scripts::trigger_tpsl` as `${string}::${string}::${string}`,
-//     functionArguments: [positionObject, perpetualVaas, marginVaas],
-//     typeArguments: getPositionTypeArgument(),
-//   }
-//   return payload
-// }
+/**
+ * Trigger a take profit or stop loss of the position at address to_trigger
+ * @returns payload promise for the transaction
+ */
+export const triggerTpsl = async (
+  triggererAddress: string,
+  positionObject: MoveObjectType,
+  marginCoin: MoveToken,
+  perpetualAsset: Perpetual,
+  network: Network
+): Promise<InputEntryFunctionData> => {
+  const marginFeed = getPriceFeed(marginCoin, network)
+  const perpetualFeed = getPriceFeed(perpetualAsset, network)
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+  const payload = {
+    function:
+      `${MODULES.mirage_scripts.address}::market_scripts::trigger_tpsl_entry` as `${string}::${string}::${string}`,
+    functionArguments: [triggererAddress, positionObject, perpetualVaas, marginVaas],
+    typeArguments: getPositionTypeArgument(),
+  }
+  return payload
+}
 
 /**
  * Liquidate a position at address to_trigger
@@ -322,26 +346,28 @@ export const liquidatePosition = async (
   return payload
 }
 
-// /**
-//  * Trigger a limit order at the index at address to_trigger
-//  * @returns payload promise for the transaction
-//  */
-// export const triggerLimitOrder = async (
-//   positionObject: MoveObjectType,
-//   marginCoin: MoveToken,
-//   perpetualAsset: Perpetual,
-//   index: bigint,
-//   network: Network
-// ): Promise<InputEntryFunctionData> => {
-//   const marginFeed = getPriceFeed(marginCoin, network)
-//   const perpetualFeed = getPriceFeed(perpetualAsset, network)
-//   const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
-//   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+/**
+ * Trigger a limit order at the index at address to_trigger
+ * @returns payload promise for the transaction
+ */
+export const triggerLimitOrder = async (
+  triggererAddress: string,
+  positionObject: MoveObjectType,
+  marginCoin: MoveToken,
+  perpetualAsset: Perpetual,
+  index: bigint,
+  network: Network
+): Promise<InputEntryFunctionData> => {
+  const marginFeed = getPriceFeed(marginCoin, network)
+  const perpetualFeed = getPriceFeed(perpetualAsset, network)
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
 
-//   const payload = {
-//     function: `${mirageAddress()}::market::trigger_limit_order` as `${string}::${string}::${string}`,
-//     functionArguments: [positionObject, index, perpetualVaas, marginVaas],
-//     typeArguments: getPositionTypeArgument(),
-//   }
-//   return payload
-// }
+  const payload = {
+    function:
+      `${MODULES.mirage_scripts.address}::market_scripts::trigger_limit_order_entry` as `${string}::${string}::${string}`,
+    functionArguments: [triggererAddress, positionObject, index, perpetualVaas, marginVaas],
+    typeArguments: getPositionTypeArgument(),
+  }
+  return payload
+}

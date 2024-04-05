@@ -34,6 +34,7 @@ export type PositionData = {
   positionSize: BigNumber
   maintenanceMargin: BigNumber
   liquidationPrice: BigNumber
+  tpslExists: boolean
   takeProfitPrice: BigNumber
   stopLossPrice: BigNumber
   triggerPayment: BigNumber
@@ -118,6 +119,7 @@ export class Position {
       positionSize: ZERO,
       maintenanceMargin: ZERO,
       liquidationPrice: ZERO,
+      tpslExists: false,
       takeProfitPrice: ZERO,
       stopLossPrice: ZERO,
       triggerPayment: ZERO,
@@ -141,9 +143,14 @@ export class Position {
 
     const tpslType = `${mirageAddress()}::market::TpSl`
     const tpsl = positionObjectResources.find((resource) => resource.type === tpslType)
-    tempTrade.takeProfitPrice = !!tpsl ? BigNumber((tpsl as any).take_profit_price).div(PRECISION_8) : ZERO
-    tempTrade.stopLossPrice = !!tpsl ? BigNumber((tpsl as any).stop_loss_price).div(PRECISION_8) : ZERO
-    tempTrade.triggerPayment = !!tpsl ? BigNumber((tpsl as any).trigger_payment_amount).div(PRECISION_8) : ZERO
+    tempTrade.tpslExists = !!tpsl
+    tempTrade.takeProfitPrice = tempTrade.tpslExists
+      ? BigNumber((tpsl as any).take_profit_price).div(PRECISION_8)
+      : ZERO
+    tempTrade.stopLossPrice = tempTrade.tpslExists ? BigNumber((tpsl as any).stop_loss_price).div(PRECISION_8) : ZERO
+    tempTrade.triggerPayment = tempTrade.tpslExists
+      ? BigNumber((tpsl as any).trigger_payment_amount).div(PRECISION_8)
+      : ZERO
 
     this.position = !tempTrade.positionSize.eq(0) ? tempTrade : undefined
 

@@ -23,6 +23,7 @@ export const getBCSCoinAmountArgument = (coin: MoveAsset | string, amount: numbe
 
 // Get the proper payload amount
 export const getDecimal8Argument = (amount: number): string => {
+  if (amount == undefined || amount == null || Number.isNaN(amount)) return '0'
   return BigNumber(PRECISION_8).times(amount).toFixed(0)
 }
 
