@@ -163,13 +163,19 @@ export class Position {
 
     const limitOrders = positionObjectResources.find((resource) => resource.type === limitOrderType)
 
-    const ordersArr = !!limitOrders ? (limitOrders.data as any).orders : []
+    const ordersArr = limitOrders != undefined ? (limitOrders.data as any).orders : []
     const tempOrders: LimitOrder[] = []
 
     try {
-      for (let index = 0; index < ordersArr.length; ++index) {
+      for (let index = 0; index < ordersArr.length; index++) {
         tempOrders.push(
-          new LimitOrder(ordersArr[index] as LimitOrderData, index, this.marginToken, this.perpetualAsset)
+          new LimitOrder(
+            ordersArr[index] as LimitOrderData,
+            index,
+            this.marginToken,
+            this.perpetualAsset,
+            tempTrade.side
+          )
         )
       }
     } catch (error) {

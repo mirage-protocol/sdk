@@ -133,6 +133,46 @@ export const closePosition = async (
 }
 
 /**
+ * Place a limit order on a new position that can be trigger when the market price
+ * of a long/short is below/above a trigger price
+ * @returns payload promise for the transaction
+ */
+export const openPositionAndPlaceLimitOrder = async (
+  marketObject: MoveObjectType,
+  perpetualAsset: Perpetual,
+  marginAmount: number,
+  positionSize: number,
+  triggerPrice: number,
+  maxPriceSlippage: number,
+  triggersAbove: boolean,
+  triggerPaymentAmount: number,
+  expiration: bigint, // in seconds,
+  isLong: boolean,
+  network: Network
+): Promise<InputEntryFunctionData> => {
+  const perpetualFeed = getPriceFeed(perpetualAsset, network)
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+
+  return {
+    function: `${MODULES.mirage_scripts.address}::market_scripts::create_position_and_place_limit_order`,
+    functionArguments: [
+      marketObject,
+      perpetualVaas,
+      getDecimal8Argument(marginAmount), // always 8 decimals
+      getDecimal8Argument(positionSize),
+      getDecimal8Argument(triggerPrice),
+      getDecimal8Argument(maxPriceSlippage),
+      true, // always is increase when creating a new position
+      triggersAbove,
+      getDecimal8Argument(triggerPaymentAmount),
+      expiration.toString(), // sdk breaks for large non-string integers
+      isLong,
+    ],
+    typeArguments: getMarketTypeArgument(),
+  }
+}
+
+/**
  * Place a limit order that can be trigger when the market price
  * of a long/short is below/above a trigger price
  * @returns payload promise for the transaction

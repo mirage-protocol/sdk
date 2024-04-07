@@ -11,10 +11,10 @@ export type LimitOrderData = {
   is_long: boolean
   is_increase: boolean
   position_size: BigNumber
-  margin: { value: BigNumber }
+  margin_amount: BigNumber
   trigger_price: BigNumber
   triggers_above: boolean
-  trigger_payment: { value: BigNumber }
+  trigger_payment_amount: BigNumber
   max_price_slippage: BigNumber
   expiration: number
 }
@@ -83,20 +83,26 @@ export class LimitOrder {
    * Construct a LimitOrder instance
    * @param limitOrderData the data to parse
    */
-  constructor(limitOrderData: LimitOrderData, index: number, marginCoin: MoveToken, perpetualAsset: Perpetual) {
-    this.marginToken = marginCoin
+  constructor(
+    limitOrderData: LimitOrderData,
+    index: number,
+    marginToken: MoveToken,
+    perpetualAsset: Perpetual,
+    positionSide: PositionSide
+  ) {
+    this.marginToken = marginToken
     this.perpetualAsset = perpetualAsset
 
     this.id = BigNumber(limitOrderData.id)
     this.index = index
 
-    this.side = limitOrderData.is_long ? PositionSide.LONG : PositionSide.SHORT
+    this.side = positionSide
     this.isIncrease = limitOrderData.is_increase
     this.positionSize = BigNumber(limitOrderData.position_size).div(PRECISION_8)
-    this.margin = BigNumber(limitOrderData.margin.value).div(PRECISION_8)
+    this.margin = BigNumber(limitOrderData.margin_amount).div(PRECISION_8)
     this.triggerPrice = BigNumber(limitOrderData.trigger_price).div(PRECISION_8)
     this.triggersAbove = limitOrderData.triggers_above
-    this.triggerPayment = BigNumber(limitOrderData.trigger_payment.value).div(PRECISION_8)
+    this.triggerPayment = BigNumber(limitOrderData.trigger_payment_amount).div(PRECISION_8)
     this.maxPriceSlippage = BigNumber(limitOrderData.max_price_slippage).div(PRECISION_8)
     this.expiration = BigInt(limitOrderData.expiration)
   }
