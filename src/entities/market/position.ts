@@ -174,7 +174,8 @@ export class Position {
             index,
             this.marginToken,
             this.perpetualAsset,
-            tempTrade.side
+            tempTrade.side,
+            this.objectAddress
           )
         )
       }

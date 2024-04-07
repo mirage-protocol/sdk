@@ -79,6 +79,8 @@ export class LimitOrder {
    */
   public readonly expiration: bigint
 
+  public readonly objectAddress: string
+
   /**
    * Construct a LimitOrder instance
    * @param limitOrderData the data to parse
@@ -88,13 +90,16 @@ export class LimitOrder {
     index: number,
     marginToken: MoveToken,
     perpetualAsset: Perpetual,
-    positionSide: PositionSide
+    positionSide: PositionSide,
+    objectAddress: string
   ) {
     this.marginToken = marginToken
     this.perpetualAsset = perpetualAsset
 
     this.id = BigNumber(limitOrderData.id)
     this.index = index
+
+    this.objectAddress = objectAddress
 
     this.side = positionSide
     this.isIncrease = limitOrderData.is_increase
