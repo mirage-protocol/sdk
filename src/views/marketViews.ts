@@ -75,7 +75,6 @@ export const getPositionIdsByMarketAndOwner = async (
 
     // Assuming 'current_token_datas_v2' is the correct field name based on your GraphQL query
     const tokenIds = result.data.current_token_datas_v2.map((tokenData) => tokenData.token_data_id)
-    console.log('TOKEN IDS', tokenIds)
     return tokenIds
   } catch (error) {
     return []

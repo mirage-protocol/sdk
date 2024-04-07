@@ -79,8 +79,6 @@ export const getPrice = async (priceFeedId: string, network: Network | string = 
   if (!priceFeedId) return 0
   const response = await pythClient(getNetwork(network)).getLatestPriceFeeds([priceFeedId])
   if (response == undefined || response?.length == 0) return 0
-  console.log(JSON.stringify(response[0], null, 2))
-  console.log(JSON.stringify(response[0].getMetadata(), null, 2))
   return getContractPrice(response[0].getPriceUnchecked())
 }
 

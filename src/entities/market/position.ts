@@ -143,13 +143,15 @@ export class Position {
 
     const tpslType = `${mirageAddress()}::market::TpSl`
     const tpsl = positionObjectResources.find((resource) => resource.type === tpslType)
-    tempTrade.tpslExists = !!tpsl
+    tempTrade.tpslExists = tpsl != undefined
     tempTrade.takeProfitPrice = tempTrade.tpslExists
-      ? BigNumber((tpsl as any).take_profit_price).div(PRECISION_8)
+      ? BigNumber((tpsl as any).data.take_profit_price).div(PRECISION_8)
       : ZERO
-    tempTrade.stopLossPrice = tempTrade.tpslExists ? BigNumber((tpsl as any).stop_loss_price).div(PRECISION_8) : ZERO
+    tempTrade.stopLossPrice = tempTrade.tpslExists
+      ? BigNumber((tpsl as any).data.stop_loss_price).div(PRECISION_8)
+      : ZERO
     tempTrade.triggerPayment = tempTrade.tpslExists
-      ? BigNumber((tpsl as any).trigger_payment_amount).div(PRECISION_8)
+      ? BigNumber((tpsl as any).data.trigger_payment_amount).div(PRECISION_8)
       : ZERO
 
     this.position = !tempTrade.positionSize.eq(0) ? tempTrade : undefined
