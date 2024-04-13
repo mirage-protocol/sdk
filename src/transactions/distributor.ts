@@ -1,17 +1,19 @@
-import { mirageAddress } from '../constants'
-import { Payload } from './'
+import { InputEntryFunctionData, Network } from '@aptos-labs/ts-sdk'
 
-const type = 'entry_function_payload'
+import { getPriceFeed, getPriceFeedUpdateData, MODULES, MoveToken } from '../constants'
 
 /**
- * Claims devnet USDC tokens
+ * Claims testnet airdrop (creates vault if first claim, always deposits tusdc and borrows musd)
  * @returns payload for the transaction
  */
-export const claimTokens = (): Payload => {
+export const claimAirdrop = async (): Promise<InputEntryFunctionData> => {
+  const collateralFeed = getPriceFeed(MoveToken.tUSDC, Network.TESTNET)
+  const borrowFeed = getPriceFeed(MoveToken.mUSD, Network.TESTNET)
+  const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, Network.TESTNET) : []
+  const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, Network.TESTNET) : []
   return {
-    type,
-    function: `${mirageAddress()}::distributor::claim_tokens`,
-    arguments: [],
-    type_arguments: [],
+    function: `${MODULES.mirage_scripts.address}::testnet_airdropper::claim_airdrop`,
+    functionArguments: [collateralVaas, borrowVaas],
+    typeArguments: [],
   }
 }

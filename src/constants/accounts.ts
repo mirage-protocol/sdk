@@ -56,23 +56,23 @@ export const mirageAddress = (): HexString => {
 export const MODULES: { readonly [module in MoveModules]: Account } = {
   ['mirage']: {
     name: 'mirage',
-    address: new HexString('0xc82629078e8256abb72d2e3561a9e0b17c812f64ec222d5cf5bda68675f9ade2'),
+    address: new HexString('0xd6a262378c0e76b931433d85f4fa02a1529ac1fd16dd47ce0717fab7adb9f798'),
   },
   ['mirage_scripts']: {
     name: 'mirage_scripts',
-    address: new HexString('0x077895f892f1f192e7d9aaa40bd39a373cf83cd693a2d65382672e5711f91f22'),
+    address: new HexString('0x18ff04b8da539e86e56fa8f9afa70269c08b09580d24e95582459b9c9b53a440'),
   },
   ['mirage_core']: {
     name: 'mirage_core',
-    address: new HexString('0x7d935c35a1756550fe8ea06ac06a243f58655ee5e1d127dae6e4018f9732d58e'),
+    address: new HexString('0xa7e37f348dbba9e58ea8a2809c522136a2f44adfd9fefe7c8289a694c19ff0b3'),
   },
   ['mirage_oracle']: {
     name: 'mirage_oracle',
-    address: new HexString('0x0c0801df42f5999f643b6cbb4c874430c53822d57a3f97aa571d9fe1e072652d'),
+    address: new HexString('0xca2b80226d7344ec05702434808a4a42a069bc1f7b2bae397f7e1febb661140c'),
   },
   ['mirage_swap']: {
     name: 'mirage_swap',
-    address: new HexString('0xd3590267e3428d5ee14c01a4475a9028725a711cc91c1b9482d40f1c7f9ccb9d'),
+    address: new HexString('0xda061dab5e2ed4e62233f60ef1a29aa9d50960f4dec7fcfd3e6eaf00fe36a905'),
   },
   ['layer_zero']: {
     name: 'asset',

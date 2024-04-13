@@ -306,6 +306,56 @@ export const updateMargin = async (
 }
 
 /**
+ * increase the margin of a position
+ * @returns payload promise for the transaction
+ */
+export const increaseMargin = async (
+  positionObject: MoveObjectType,
+  marginCoin: MoveToken,
+  perpetualAsset: Perpetual,
+  increaseMarginAmount: number,
+  network: Network
+): Promise<InputEntryFunctionData> => {
+  const marginFeed = getPriceFeed(marginCoin, network)
+  const perpetualFeed = getPriceFeed(perpetualAsset, network)
+
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+  const payload = {
+    function:
+      `${MODULES.mirage_scripts.address}::market_scripts::increase_margin_entry` as `${string}::${string}::${string}`,
+    functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(increaseMarginAmount)],
+    typeArguments: getPositionTypeArgument(),
+  }
+  return payload
+}
+
+/**
+ * decrease the margin of a position
+ * @returns payload promise for the transaction
+ */
+export const decreaseMargin = async (
+  positionObject: MoveObjectType,
+  marginCoin: MoveToken,
+  perpetualAsset: Perpetual,
+  decreaseMarginAmount: number,
+  network: Network
+): Promise<InputEntryFunctionData> => {
+  const marginFeed = getPriceFeed(marginCoin, network)
+  const perpetualFeed = getPriceFeed(perpetualAsset, network)
+
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+  const payload = {
+    function:
+      `${MODULES.mirage_scripts.address}::market_scripts::decrease_margin_entry` as `${string}::${string}::${string}`,
+    functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(decreaseMarginAmount)],
+    typeArguments: getPositionTypeArgument(),
+  }
+  return payload
+}
+
+/**
  * Update the position size of a position
  * @returns payload promise for the transaction
  */
@@ -333,6 +383,57 @@ export const updatePositionSize = async (
       newPositionSize > oldPositionSize ? mirageAddress() : MODULES.mirage_scripts.address
     }::${functionName}` as `${string}::${string}::${string}`,
     functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(diff)],
+    typeArguments: getPositionTypeArgument(),
+  }
+  return payload
+}
+
+/**
+ * increase the position size of a position
+ * @returns payload promise for the transaction
+ */
+export const increasePositionSize = async (
+  positionObject: MoveObjectType,
+  marginCoin: MoveToken,
+  perpetualAsset: Perpetual,
+  increasePositionSize: number,
+  network: Network
+): Promise<InputEntryFunctionData> => {
+  const marginFeed = getPriceFeed(marginCoin, network)
+  const perpetualFeed = getPriceFeed(perpetualAsset, network)
+
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+
+  const payload = {
+    function: `${mirageAddress()}::market::increase_position_size` as `${string}::${string}::${string}`,
+    functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(increasePositionSize)],
+    typeArguments: getPositionTypeArgument(),
+  }
+  return payload
+}
+
+/**
+ * decrease the position size of a position
+ * @returns payload promise for the transaction
+ */
+export const decreasePositionSize = async (
+  positionObject: MoveObjectType,
+  marginCoin: MoveToken,
+  perpetualAsset: Perpetual,
+  decreasePositionSize: number,
+  network: Network
+): Promise<InputEntryFunctionData> => {
+  const marginFeed = getPriceFeed(marginCoin, network)
+  const perpetualFeed = getPriceFeed(perpetualAsset, network)
+
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+
+  const payload = {
+    function:
+      `${MODULES.mirage_scripts.address}::market_scripts::decrease_position_size_entry` as `${string}::${string}::${string}`,
+    functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(decreasePositionSize)],
     typeArguments: getPositionTypeArgument(),
   }
   return payload
