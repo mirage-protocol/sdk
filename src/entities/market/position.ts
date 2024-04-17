@@ -1,4 +1,4 @@
-import { InputViewRequestData } from '@aptos-labs/ts-sdk'
+import { InputViewFunctionData } from '@aptos-labs/ts-sdk'
 import { Network } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
@@ -239,7 +239,7 @@ export class Position {
 }
 
 export const getLiqPrice = async (positionObjectAddress: string, network: Network): Promise<number> => {
-  const payload: InputViewRequestData = {
+  const payload: InputViewFunctionData = {
     function: `${mirageAddress()}::market::get_liquidation_price`,
     typeArguments: getPositionTypeArgument() as `${string}::${string}::${string}`[],
     functionArguments: [positionObjectAddress],

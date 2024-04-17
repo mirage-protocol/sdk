@@ -1,4 +1,4 @@
-import { InputViewRequestData, MoveObjectType } from '@aptos-labs/ts-sdk'
+import { InputViewFunctionData, MoveObjectType } from '@aptos-labs/ts-sdk'
 import { cacheExchange, createClient, errorExchange, fetchExchange } from 'urql'
 
 import {
@@ -86,7 +86,9 @@ export const getVaultTokenIdsByCollectionAndOwner = async (
   }
 }
 
-export const getBorrowTokenFromCollection = async (collectionObject: MoveObjectType): Promise<InputViewRequestData> => {
+export const getBorrowTokenFromCollection = async (
+  collectionObject: MoveObjectType
+): Promise<InputViewFunctionData> => {
   return {
     function: `${mirageAddress()}::vault::borrow_token`,
     functionArguments: [collectionObject],
@@ -96,7 +98,7 @@ export const getBorrowTokenFromCollection = async (collectionObject: MoveObjectT
 
 export const getCollateralTokenFromCollection = async (
   collectionObject: MoveObjectType
-): Promise<InputViewRequestData> => {
+): Promise<InputViewFunctionData> => {
   return {
     function: `${mirageAddress()}::vault::collateral_token`,
     functionArguments: [collectionObject],
@@ -107,7 +109,7 @@ export const getCollateralTokenFromCollection = async (
 // export const getVaultCollection = async (
 //   collateralAsset: MoveAsset,
 //   borrowToken: MoveToken
-// ): Promise<InputViewRequestData> => {
+// ): Promise<InputViewFunctionData> => {
 //   return {
 //     function: `${mirageAddress()}::vault::get_vault_collection`,
 //     functionArguments: [moveAssetInfo(collateralAsset).metadataAddress, moveAssetInfo(borrowToken).metadataAddress],

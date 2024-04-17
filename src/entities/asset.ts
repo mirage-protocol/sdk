@@ -1,4 +1,4 @@
-import { InputViewRequestData, MoveOption, Network, U128 } from '@aptos-labs/ts-sdk'
+import { InputViewFunctionData, MoveOption, Network, U128 } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import { aptosClient, getNetwork } from '../constants'
@@ -68,7 +68,7 @@ export class Asset {
    */
   public async getTotalSupply(): Promise<BigNumber> {
     const isToken = getTypeFromMoveAsset(this.asset) == 'MoveToken'
-    const payload: InputViewRequestData = {
+    const payload: InputViewFunctionData = {
       function: (isToken ? '0x1::fungible_asset::supply' : '0x1::coin::supply') as `${string}::${string}::${string}`,
       functionArguments: isToken ? [getAssetTokenMetadata(this.asset)] : [],
     }
