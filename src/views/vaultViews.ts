@@ -1,4 +1,5 @@
 import { InputViewFunctionData, MoveObjectType } from '@aptos-labs/ts-sdk'
+import BigNumber from 'bignumber.js'
 import { cacheExchange, createClient, errorExchange, fetchExchange } from 'urql'
 
 import {
@@ -14,9 +15,23 @@ import {
   GetTokenIdsFromCollectionsByOwnerDocument,
   GetTokenIdsFromCollectionsByOwnerQueryVariables,
 } from '../generated/graphql'
+import { GetVaultCollectionAprDocument, GetVaultCollectionAprQueryVariables } from '../generated/mirage/graphql'
 
 export const graphqlClient = createClient({
   url: 'https://api.testnet.aptoslabs.com/v1/graphql',
+  exchanges: [
+    fetchExchange,
+    cacheExchange,
+    errorExchange({
+      onError: (error) => {
+        console.error('GraphQL Error:', error)
+      },
+    }),
+  ],
+})
+
+export const mirageGraphQlClient = createClient({
+  url: 'https://api.mirage.money/v1/graphql',
   exchanges: [
     fetchExchange,
     cacheExchange,
@@ -104,6 +119,32 @@ export const getCollateralTokenFromCollection = async (
     functionArguments: [collectionObject],
     typeArguments: getVaultCollectionTypeArgument(),
   }
+}
+
+export const getWeeklyAPR = async (): Promise<number> => {
+  const weekOffset = 24 * 60 * 60 * 7
+  const lastWeekTimestamp = new Date()
+  lastWeekTimestamp.setTime(lastWeekTimestamp.getTime() - weekOffset)
+
+  const variables: GetVaultCollectionAprQueryVariables = {
+    prevDebtTimestamp: lastWeekTimestamp,
+  }
+
+  const result = await mirageGraphQlClient.query(GetVaultCollectionAprDocument, variables)
+
+  if (result.error) {
+    console.error('GraphQL Error:', result.error)
+    throw new Error(`GraphQL Error: ${result.error.message}`)
+  }
+
+  if (!result.data || result.data.prevDebt.length == 0 || result.data.currentDebt.length == 0) {
+    throw new Error('No data returned from GraphQL query')
+  }
+
+  return BigNumber(result.data.prevDebt[0].elastic)
+    .div(result.data.prevDebt[0].debtBase)
+    .div(BigNumber(result.data.prevDebt[0].elastic).div(result.data.prevDebt[0].debtBase))
+    .toNumber()
 }
 
 // export const getVaultCollection = async (

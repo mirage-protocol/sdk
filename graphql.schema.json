@@ -2300,6 +2300,18 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "user_transaction",
+            "description": "An object relationship",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "user_transactions",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "inputFields": null,
@@ -2734,6 +2746,18 @@
             "defaultValue": null,
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "user_transaction",
+            "description": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "user_transactions_bool_exp",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "interfaces": null,
@@ -2894,6 +2918,18 @@
             "type": {
               "kind": "ENUM",
               "name": "order_by",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "user_transaction",
+            "description": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "user_transactions_order_by",
               "ofType": null
             },
             "defaultValue": null,
@@ -15576,6 +15612,18 @@
             "deprecationReason": null
           },
           {
+            "name": "domain_expiration_timestamp",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "timestamp",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "domain_with_suffix",
             "description": null,
             "args": [],
@@ -15678,6 +15726,18 @@
             "type": {
               "kind": "SCALAR",
               "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "subdomain_expiration_policy",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
               "ofType": null
             },
             "isDeprecated": false,
@@ -16351,6 +16411,18 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "subdomain_expiration_policy",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "inputFields": null,
@@ -16366,6 +16438,18 @@
         "inputFields": [
           {
             "name": "last_transaction_version",
+            "description": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "subdomain_expiration_policy",
             "description": null,
             "type": {
               "kind": "ENUM",
@@ -16445,6 +16529,18 @@
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "String_comparison_exp",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "domain_expiration_timestamp",
+            "description": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "timestamp_comparison_exp",
               "ofType": null
             },
             "defaultValue": null,
@@ -16560,6 +16656,18 @@
             "deprecationReason": null
           },
           {
+            "name": "subdomain_expiration_policy",
+            "description": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "bigint_comparison_exp",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "token_name",
             "description": null,
             "type": {
@@ -16600,6 +16708,18 @@
             "type": {
               "kind": "SCALAR",
               "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "domain_expiration_timestamp",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "timestamp",
               "ofType": null
             },
             "isDeprecated": false,
@@ -16678,6 +16798,18 @@
             "deprecationReason": null
           },
           {
+            "name": "subdomain_expiration_policy",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "token_name",
             "description": null,
             "args": [],
@@ -16715,6 +16847,18 @@
         "inputFields": [
           {
             "name": "domain",
+            "description": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "domain_expiration_timestamp",
             "description": null,
             "type": {
               "kind": "ENUM",
@@ -16787,6 +16931,18 @@
           },
           {
             "name": "subdomain",
+            "description": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "subdomain_expiration_policy",
             "description": null,
             "type": {
               "kind": "ENUM",
@@ -16844,6 +17000,18 @@
             "deprecationReason": null
           },
           {
+            "name": "domain_expiration_timestamp",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "timestamp",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "domain_with_suffix",
             "description": null,
             "args": [],
@@ -16916,6 +17084,18 @@
             "deprecationReason": null
           },
           {
+            "name": "subdomain_expiration_policy",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "token_name",
             "description": null,
             "args": [],
@@ -16953,6 +17133,18 @@
         "inputFields": [
           {
             "name": "domain",
+            "description": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "domain_expiration_timestamp",
             "description": null,
             "type": {
               "kind": "ENUM",
@@ -17036,6 +17228,18 @@
             "deprecationReason": null
           },
           {
+            "name": "subdomain_expiration_policy",
+            "description": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "token_name",
             "description": null,
             "type": {
@@ -17072,6 +17276,18 @@
         "inputFields": [
           {
             "name": "domain",
+            "description": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "domain_expiration_timestamp",
             "description": null,
             "type": {
               "kind": "ENUM",
@@ -17191,6 +17407,18 @@
             "deprecationReason": null
           },
           {
+            "name": "subdomain_expiration_policy",
+            "description": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "token_name",
             "description": null,
             "type": {
@@ -17229,6 +17457,12 @@
         "enumValues": [
           {
             "name": "domain",
+            "description": "column name",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "domain_expiration_timestamp",
             "description": "column name",
             "isDeprecated": false,
             "deprecationReason": null
@@ -17277,6 +17511,12 @@
           },
           {
             "name": "subdomain",
+            "description": "column name",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "subdomain_expiration_policy",
             "description": "column name",
             "isDeprecated": false,
             "deprecationReason": null
@@ -17358,6 +17598,18 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "subdomain_expiration_policy",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "inputFields": null,
@@ -17382,6 +17634,18 @@
             "defaultValue": null,
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "subdomain_expiration_policy",
+            "description": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "interfaces": null,
@@ -17395,6 +17659,18 @@
         "fields": [
           {
             "name": "last_transaction_version",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "subdomain_expiration_policy",
             "description": null,
             "args": [],
             "type": {
@@ -17428,6 +17704,18 @@
             "defaultValue": null,
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "subdomain_expiration_policy",
+            "description": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "interfaces": null,
@@ -17441,6 +17729,18 @@
         "fields": [
           {
             "name": "last_transaction_version",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "subdomain_expiration_policy",
             "description": null,
             "args": [],
             "type": {
@@ -17465,6 +17765,18 @@
         "inputFields": [
           {
             "name": "last_transaction_version",
+            "description": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "subdomain_expiration_policy",
             "description": null,
             "type": {
               "kind": "ENUM",
@@ -17531,6 +17843,18 @@
             "type": {
               "kind": "SCALAR",
               "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "domain_expiration_timestamp",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "timestamp",
               "ofType": null
             },
             "defaultValue": null,
@@ -17634,6 +17958,18 @@
             "deprecationReason": null
           },
           {
+            "name": "subdomain_expiration_policy",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "token_name",
             "description": null,
             "type": {
@@ -17678,6 +18014,18 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "subdomain_expiration_policy",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "inputFields": null,
@@ -17702,6 +18050,18 @@
             "defaultValue": null,
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "subdomain_expiration_policy",
+            "description": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "interfaces": null,
@@ -17715,6 +18075,18 @@
         "fields": [
           {
             "name": "last_transaction_version",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "subdomain_expiration_policy",
             "description": null,
             "args": [],
             "type": {
@@ -17748,6 +18120,18 @@
             "defaultValue": null,
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "subdomain_expiration_policy",
+            "description": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "interfaces": null,
@@ -17761,6 +18145,18 @@
         "fields": [
           {
             "name": "last_transaction_version",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "subdomain_expiration_policy",
             "description": null,
             "args": [],
             "type": {
@@ -17794,6 +18190,18 @@
             "defaultValue": null,
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "subdomain_expiration_policy",
+            "description": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "interfaces": null,
@@ -17807,6 +18215,18 @@
         "fields": [
           {
             "name": "last_transaction_version",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "subdomain_expiration_policy",
             "description": null,
             "args": [],
             "type": {
@@ -17831,6 +18251,18 @@
         "inputFields": [
           {
             "name": "last_transaction_version",
+            "description": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "subdomain_expiration_policy",
             "description": null,
             "type": {
               "kind": "ENUM",

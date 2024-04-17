@@ -1,0 +1,25 @@
+query GetVaultCollectionAPR($prevDebtTimestamp: timestamp) {
+  prevDebt: mirage_debt_store_datas(
+    order_by: [{asset_type: asc},
+    {transaction_version: desc}],
+    distinct_on: [asset_type],
+    where: {transaction_timestamp: {_gte: $prevDebtTimestamp}}
+  ) {
+    transactionTimestamp: transaction_timestamp
+    transactionVersion: transaction_version
+    debtBase: debt_base
+    debtElastic: debt_elastic
+    assetType: asset_type
+  }
+  currentDebt: mirage_debt_store_datas(
+    order_by: [{asset_type: asc},
+    {transaction_version: desc}],
+    distinct_on: [asset_type],
+  ) {
+    transactionTimestamp: transaction_timestamp
+    transactionVersion: transaction_version
+    debtBase: debt_base
+    debtElastic: debt_elastic
+    assetType: asset_type
+  }
+}
