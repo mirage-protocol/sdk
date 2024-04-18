@@ -74,7 +74,7 @@ export class Vault {
 
     const user = vaultObjectResources.find((resource) => resource.type === vaultUserType)
 
-    this.collateralAmount = !!user ? new BigNumber((user.data as any).collateral.value) : ZERO
+    this.collateralAmount = !!user ? new BigNumber((user.data as any).collateral_amount) : ZERO
 
     // need to use global debt rebase
     this.borrowAmount =

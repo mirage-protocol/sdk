@@ -1745,7 +1745,7 @@ __metadata:
     "@pythnetwork/pyth-aptos-js": "npm:^1.4.2"
     "@pythnetwork/pyth-common-js": "npm:^1.4.0"
     "@tsconfig/recommended": "npm:^1.0.1"
-    "@types/node": "npm:^18.7.11"
+    "@types/node": "npm:^18.11.9"
     "@types/styled-components": "npm:^5.1.26"
     "@typescript-eslint/eslint-plugin": "npm:^5.34.0"
     "@typescript-eslint/parser": "npm:^5.34.0"
@@ -2070,7 +2070,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^18.7.11":
+"@types/node@npm:^18.11.9":
   version: 18.19.31
   resolution: "@types/node@npm:18.19.31"
   dependencies:
