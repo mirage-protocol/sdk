@@ -121,7 +121,7 @@ export const getCollateralTokenFromCollection = async (
   }
 }
 
-export const getVaultCollectionAPR = async (beginDate: Date): Promise<{ apr: number; apy: number }> => {
+export const getVaultCollectionAnnualizedReturn = async (beginDate: Date): Promise<{ apr: number; apy: number }> => {
   const variables: GetVaultCollectionAprQueryVariables = {
     prevDebtTimestamp: beginDate.toISOString(),
   }
