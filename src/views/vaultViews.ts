@@ -121,30 +121,51 @@ export const getCollateralTokenFromCollection = async (
   }
 }
 
-export const getWeeklyAPR = async (): Promise<number> => {
-  const weekOffset = 24 * 60 * 60 * 7
-  const lastWeekTimestamp = new Date()
-  lastWeekTimestamp.setTime(lastWeekTimestamp.getTime() - weekOffset)
-
+export const getVaultCollectionAPR = async (beginDate: Date): Promise<{ apr: number; apy: number }> => {
   const variables: GetVaultCollectionAprQueryVariables = {
-    prevDebtTimestamp: lastWeekTimestamp,
+    prevDebtTimestamp: beginDate.toISOString(),
   }
 
-  const result = await mirageGraphQlClient.query(GetVaultCollectionAprDocument, variables)
+  const result = await mirageGraphQlClient.query(GetVaultCollectionAprDocument, variables).toPromise()
 
   if (result.error) {
     console.error('GraphQL Error:', result.error)
     throw new Error(`GraphQL Error: ${result.error.message}`)
   }
 
-  if (!result.data || result.data.prevDebt.length == 0 || result.data.currentDebt.length == 0) {
+  if (!result.data || result.data.prevDebt === undefined || result.data.currentDebt === undefined) {
     throw new Error('No data returned from GraphQL query')
   }
 
-  return BigNumber(result.data.prevDebt[0].elastic)
-    .div(result.data.prevDebt[0].debtBase)
-    .div(BigNumber(result.data.prevDebt[0].elastic).div(result.data.prevDebt[0].debtBase))
-    .toNumber()
+  if (result.data.prevDebt.length == 0 && result.data.currentDebt.length == 0) {
+    return { apr: 0, apy: 0 }
+  }
+
+  /// Ownership value can be calculated as:
+  /// base_part * total_elastic / total_base
+
+  let lastBaseValue = BigNumber(1)
+  if (result.data.prevDebt[0].debtBase > 0) {
+    lastBaseValue = BigNumber(result.data.prevDebt[0].debtElastic).div(result.data.prevDebt[0].debtBase)
+  }
+  let currentBaseValue = BigNumber(1)
+  if (result.data.currentDebt[0].debtBase > 0) {
+    currentBaseValue = BigNumber(result.data.currentDebt[0].debtElastic).div(result.data.currentDebt[0].debtBase)
+  }
+
+  const interestEarned = currentBaseValue.minus(lastBaseValue).toNumber()
+  const duration =
+    new Date(result.data.currentDebt[0].transactionTimestamp).getTime() -
+    new Date(result.data.prevDebt[0].transactionTimestamp).getTime()
+
+  const year = 60 * 60 * 24 * 365 * 1000
+
+  const apr = interestEarned / (duration / year)
+  const apy = Math.exp(apr) - 1
+  return {
+    apr: apr * 100,
+    apy: apy * 100,
+  }
 }
 
 // export const getVaultCollection = async (

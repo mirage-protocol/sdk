@@ -1,7 +1,7 @@
-query GetVaultCollectionAPR($prevDebtTimestamp: timestamp) {
+query GetVaultCollectionAPR($prevDebtTimestamp: timestamp!) {
   prevDebt: mirage_debt_store_datas(
     order_by: [{asset_type: asc},
-    {transaction_version: desc}],
+    {transaction_version: asc}],
     distinct_on: [asset_type],
     where: {transaction_timestamp: {_gte: $prevDebtTimestamp}}
   ) {

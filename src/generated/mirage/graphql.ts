@@ -34,6 +34,19 @@ export type Boolean_Comparison_Exp = {
   _nin?: InputMaybe<Array<Scalars['Boolean']['input']>>;
 };
 
+/** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
+export type Int_Comparison_Exp = {
+  _eq?: InputMaybe<Scalars['Int']['input']>;
+  _gt?: InputMaybe<Scalars['Int']['input']>;
+  _gte?: InputMaybe<Scalars['Int']['input']>;
+  _in?: InputMaybe<Array<Scalars['Int']['input']>>;
+  _is_null?: InputMaybe<Scalars['Boolean']['input']>;
+  _lt?: InputMaybe<Scalars['Int']['input']>;
+  _lte?: InputMaybe<Scalars['Int']['input']>;
+  _neq?: InputMaybe<Scalars['Int']['input']>;
+  _nin?: InputMaybe<Array<Scalars['Int']['input']>>;
+};
+
 /** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
 export type String_Comparison_Exp = {
   _eq?: InputMaybe<Scalars['String']['input']>;
@@ -1342,6 +1355,502 @@ export type Jsonb_Comparison_Exp = {
   _nin?: InputMaybe<Array<Scalars['jsonb']['input']>>;
 };
 
+/** columns and relationships of "limit_order_datas" */
+export type Limit_Order_Datas = {
+  __typename?: 'limit_order_datas';
+  expiration: Scalars['numeric']['output'];
+  is_increase: Scalars['Boolean']['output'];
+  limit_order_id: Scalars['numeric']['output'];
+  margin: Scalars['numeric']['output'];
+  market_id: Scalars['String']['output'];
+  max_price_slippage: Scalars['numeric']['output'];
+  owner_addr: Scalars['String']['output'];
+  position_id: Scalars['String']['output'];
+  position_size: Scalars['numeric']['output'];
+  transaction_timestamp: Scalars['timestamp']['output'];
+  transaction_version: Scalars['bigint']['output'];
+  trigger_payment: Scalars['numeric']['output'];
+  trigger_price: Scalars['numeric']['output'];
+  triggers_above: Scalars['Boolean']['output'];
+  write_set_change_index: Scalars['bigint']['output'];
+};
+
+/** aggregated selection of "limit_order_datas" */
+export type Limit_Order_Datas_Aggregate = {
+  __typename?: 'limit_order_datas_aggregate';
+  aggregate?: Maybe<Limit_Order_Datas_Aggregate_Fields>;
+  nodes: Array<Limit_Order_Datas>;
+};
+
+export type Limit_Order_Datas_Aggregate_Bool_Exp = {
+  bool_and?: InputMaybe<Limit_Order_Datas_Aggregate_Bool_Exp_Bool_And>;
+  bool_or?: InputMaybe<Limit_Order_Datas_Aggregate_Bool_Exp_Bool_Or>;
+  count?: InputMaybe<Limit_Order_Datas_Aggregate_Bool_Exp_Count>;
+};
+
+export type Limit_Order_Datas_Aggregate_Bool_Exp_Bool_And = {
+  arguments: Limit_Order_Datas_Select_Column_Limit_Order_Datas_Aggregate_Bool_Exp_Bool_And_Arguments_Columns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Limit_Order_Datas_Bool_Exp>;
+  predicate: Boolean_Comparison_Exp;
+};
+
+export type Limit_Order_Datas_Aggregate_Bool_Exp_Bool_Or = {
+  arguments: Limit_Order_Datas_Select_Column_Limit_Order_Datas_Aggregate_Bool_Exp_Bool_Or_Arguments_Columns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Limit_Order_Datas_Bool_Exp>;
+  predicate: Boolean_Comparison_Exp;
+};
+
+export type Limit_Order_Datas_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Limit_Order_Datas_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Limit_Order_Datas_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
+};
+
+/** aggregate fields of "limit_order_datas" */
+export type Limit_Order_Datas_Aggregate_Fields = {
+  __typename?: 'limit_order_datas_aggregate_fields';
+  avg?: Maybe<Limit_Order_Datas_Avg_Fields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<Limit_Order_Datas_Max_Fields>;
+  min?: Maybe<Limit_Order_Datas_Min_Fields>;
+  stddev?: Maybe<Limit_Order_Datas_Stddev_Fields>;
+  stddev_pop?: Maybe<Limit_Order_Datas_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Limit_Order_Datas_Stddev_Samp_Fields>;
+  sum?: Maybe<Limit_Order_Datas_Sum_Fields>;
+  var_pop?: Maybe<Limit_Order_Datas_Var_Pop_Fields>;
+  var_samp?: Maybe<Limit_Order_Datas_Var_Samp_Fields>;
+  variance?: Maybe<Limit_Order_Datas_Variance_Fields>;
+};
+
+
+/** aggregate fields of "limit_order_datas" */
+export type Limit_Order_Datas_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Limit_Order_Datas_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** order by aggregate values of table "limit_order_datas" */
+export type Limit_Order_Datas_Aggregate_Order_By = {
+  avg?: InputMaybe<Limit_Order_Datas_Avg_Order_By>;
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<Limit_Order_Datas_Max_Order_By>;
+  min?: InputMaybe<Limit_Order_Datas_Min_Order_By>;
+  stddev?: InputMaybe<Limit_Order_Datas_Stddev_Order_By>;
+  stddev_pop?: InputMaybe<Limit_Order_Datas_Stddev_Pop_Order_By>;
+  stddev_samp?: InputMaybe<Limit_Order_Datas_Stddev_Samp_Order_By>;
+  sum?: InputMaybe<Limit_Order_Datas_Sum_Order_By>;
+  var_pop?: InputMaybe<Limit_Order_Datas_Var_Pop_Order_By>;
+  var_samp?: InputMaybe<Limit_Order_Datas_Var_Samp_Order_By>;
+  variance?: InputMaybe<Limit_Order_Datas_Variance_Order_By>;
+};
+
+/** aggregate avg on columns */
+export type Limit_Order_Datas_Avg_Fields = {
+  __typename?: 'limit_order_datas_avg_fields';
+  expiration?: Maybe<Scalars['Float']['output']>;
+  limit_order_id?: Maybe<Scalars['Float']['output']>;
+  margin?: Maybe<Scalars['Float']['output']>;
+  max_price_slippage?: Maybe<Scalars['Float']['output']>;
+  position_size?: Maybe<Scalars['Float']['output']>;
+  transaction_version?: Maybe<Scalars['Float']['output']>;
+  trigger_payment?: Maybe<Scalars['Float']['output']>;
+  trigger_price?: Maybe<Scalars['Float']['output']>;
+  write_set_change_index?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by avg() on columns of table "limit_order_datas" */
+export type Limit_Order_Datas_Avg_Order_By = {
+  expiration?: InputMaybe<Order_By>;
+  limit_order_id?: InputMaybe<Order_By>;
+  margin?: InputMaybe<Order_By>;
+  max_price_slippage?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  trigger_payment?: InputMaybe<Order_By>;
+  trigger_price?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
+/** Boolean expression to filter rows from the table "limit_order_datas". All fields are combined with a logical 'AND'. */
+export type Limit_Order_Datas_Bool_Exp = {
+  _and?: InputMaybe<Array<Limit_Order_Datas_Bool_Exp>>;
+  _not?: InputMaybe<Limit_Order_Datas_Bool_Exp>;
+  _or?: InputMaybe<Array<Limit_Order_Datas_Bool_Exp>>;
+  expiration?: InputMaybe<Numeric_Comparison_Exp>;
+  is_increase?: InputMaybe<Boolean_Comparison_Exp>;
+  limit_order_id?: InputMaybe<Numeric_Comparison_Exp>;
+  margin?: InputMaybe<Numeric_Comparison_Exp>;
+  market_id?: InputMaybe<String_Comparison_Exp>;
+  max_price_slippage?: InputMaybe<Numeric_Comparison_Exp>;
+  owner_addr?: InputMaybe<String_Comparison_Exp>;
+  position_id?: InputMaybe<String_Comparison_Exp>;
+  position_size?: InputMaybe<Numeric_Comparison_Exp>;
+  transaction_timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
+  transaction_version?: InputMaybe<Bigint_Comparison_Exp>;
+  trigger_payment?: InputMaybe<Numeric_Comparison_Exp>;
+  trigger_price?: InputMaybe<Numeric_Comparison_Exp>;
+  triggers_above?: InputMaybe<Boolean_Comparison_Exp>;
+  write_set_change_index?: InputMaybe<Bigint_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Limit_Order_Datas_Max_Fields = {
+  __typename?: 'limit_order_datas_max_fields';
+  expiration?: Maybe<Scalars['numeric']['output']>;
+  limit_order_id?: Maybe<Scalars['numeric']['output']>;
+  margin?: Maybe<Scalars['numeric']['output']>;
+  market_id?: Maybe<Scalars['String']['output']>;
+  max_price_slippage?: Maybe<Scalars['numeric']['output']>;
+  owner_addr?: Maybe<Scalars['String']['output']>;
+  position_id?: Maybe<Scalars['String']['output']>;
+  position_size?: Maybe<Scalars['numeric']['output']>;
+  transaction_timestamp?: Maybe<Scalars['timestamp']['output']>;
+  transaction_version?: Maybe<Scalars['bigint']['output']>;
+  trigger_payment?: Maybe<Scalars['numeric']['output']>;
+  trigger_price?: Maybe<Scalars['numeric']['output']>;
+  write_set_change_index?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** order by max() on columns of table "limit_order_datas" */
+export type Limit_Order_Datas_Max_Order_By = {
+  expiration?: InputMaybe<Order_By>;
+  limit_order_id?: InputMaybe<Order_By>;
+  margin?: InputMaybe<Order_By>;
+  market_id?: InputMaybe<Order_By>;
+  max_price_slippage?: InputMaybe<Order_By>;
+  owner_addr?: InputMaybe<Order_By>;
+  position_id?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  transaction_timestamp?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  trigger_payment?: InputMaybe<Order_By>;
+  trigger_price?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Limit_Order_Datas_Min_Fields = {
+  __typename?: 'limit_order_datas_min_fields';
+  expiration?: Maybe<Scalars['numeric']['output']>;
+  limit_order_id?: Maybe<Scalars['numeric']['output']>;
+  margin?: Maybe<Scalars['numeric']['output']>;
+  market_id?: Maybe<Scalars['String']['output']>;
+  max_price_slippage?: Maybe<Scalars['numeric']['output']>;
+  owner_addr?: Maybe<Scalars['String']['output']>;
+  position_id?: Maybe<Scalars['String']['output']>;
+  position_size?: Maybe<Scalars['numeric']['output']>;
+  transaction_timestamp?: Maybe<Scalars['timestamp']['output']>;
+  transaction_version?: Maybe<Scalars['bigint']['output']>;
+  trigger_payment?: Maybe<Scalars['numeric']['output']>;
+  trigger_price?: Maybe<Scalars['numeric']['output']>;
+  write_set_change_index?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** order by min() on columns of table "limit_order_datas" */
+export type Limit_Order_Datas_Min_Order_By = {
+  expiration?: InputMaybe<Order_By>;
+  limit_order_id?: InputMaybe<Order_By>;
+  margin?: InputMaybe<Order_By>;
+  market_id?: InputMaybe<Order_By>;
+  max_price_slippage?: InputMaybe<Order_By>;
+  owner_addr?: InputMaybe<Order_By>;
+  position_id?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  transaction_timestamp?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  trigger_payment?: InputMaybe<Order_By>;
+  trigger_price?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
+/** Ordering options when selecting data from "limit_order_datas". */
+export type Limit_Order_Datas_Order_By = {
+  expiration?: InputMaybe<Order_By>;
+  is_increase?: InputMaybe<Order_By>;
+  limit_order_id?: InputMaybe<Order_By>;
+  margin?: InputMaybe<Order_By>;
+  market_id?: InputMaybe<Order_By>;
+  max_price_slippage?: InputMaybe<Order_By>;
+  owner_addr?: InputMaybe<Order_By>;
+  position_id?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  transaction_timestamp?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  trigger_payment?: InputMaybe<Order_By>;
+  trigger_price?: InputMaybe<Order_By>;
+  triggers_above?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "limit_order_datas" */
+export enum Limit_Order_Datas_Select_Column {
+  /** column name */
+  Expiration = 'expiration',
+  /** column name */
+  IsIncrease = 'is_increase',
+  /** column name */
+  LimitOrderId = 'limit_order_id',
+  /** column name */
+  Margin = 'margin',
+  /** column name */
+  MarketId = 'market_id',
+  /** column name */
+  MaxPriceSlippage = 'max_price_slippage',
+  /** column name */
+  OwnerAddr = 'owner_addr',
+  /** column name */
+  PositionId = 'position_id',
+  /** column name */
+  PositionSize = 'position_size',
+  /** column name */
+  TransactionTimestamp = 'transaction_timestamp',
+  /** column name */
+  TransactionVersion = 'transaction_version',
+  /** column name */
+  TriggerPayment = 'trigger_payment',
+  /** column name */
+  TriggerPrice = 'trigger_price',
+  /** column name */
+  TriggersAbove = 'triggers_above',
+  /** column name */
+  WriteSetChangeIndex = 'write_set_change_index'
+}
+
+/** select "limit_order_datas_aggregate_bool_exp_bool_and_arguments_columns" columns of table "limit_order_datas" */
+export enum Limit_Order_Datas_Select_Column_Limit_Order_Datas_Aggregate_Bool_Exp_Bool_And_Arguments_Columns {
+  /** column name */
+  IsIncrease = 'is_increase',
+  /** column name */
+  TriggersAbove = 'triggers_above'
+}
+
+/** select "limit_order_datas_aggregate_bool_exp_bool_or_arguments_columns" columns of table "limit_order_datas" */
+export enum Limit_Order_Datas_Select_Column_Limit_Order_Datas_Aggregate_Bool_Exp_Bool_Or_Arguments_Columns {
+  /** column name */
+  IsIncrease = 'is_increase',
+  /** column name */
+  TriggersAbove = 'triggers_above'
+}
+
+/** aggregate stddev on columns */
+export type Limit_Order_Datas_Stddev_Fields = {
+  __typename?: 'limit_order_datas_stddev_fields';
+  expiration?: Maybe<Scalars['Float']['output']>;
+  limit_order_id?: Maybe<Scalars['Float']['output']>;
+  margin?: Maybe<Scalars['Float']['output']>;
+  max_price_slippage?: Maybe<Scalars['Float']['output']>;
+  position_size?: Maybe<Scalars['Float']['output']>;
+  transaction_version?: Maybe<Scalars['Float']['output']>;
+  trigger_payment?: Maybe<Scalars['Float']['output']>;
+  trigger_price?: Maybe<Scalars['Float']['output']>;
+  write_set_change_index?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev() on columns of table "limit_order_datas" */
+export type Limit_Order_Datas_Stddev_Order_By = {
+  expiration?: InputMaybe<Order_By>;
+  limit_order_id?: InputMaybe<Order_By>;
+  margin?: InputMaybe<Order_By>;
+  max_price_slippage?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  trigger_payment?: InputMaybe<Order_By>;
+  trigger_price?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Limit_Order_Datas_Stddev_Pop_Fields = {
+  __typename?: 'limit_order_datas_stddev_pop_fields';
+  expiration?: Maybe<Scalars['Float']['output']>;
+  limit_order_id?: Maybe<Scalars['Float']['output']>;
+  margin?: Maybe<Scalars['Float']['output']>;
+  max_price_slippage?: Maybe<Scalars['Float']['output']>;
+  position_size?: Maybe<Scalars['Float']['output']>;
+  transaction_version?: Maybe<Scalars['Float']['output']>;
+  trigger_payment?: Maybe<Scalars['Float']['output']>;
+  trigger_price?: Maybe<Scalars['Float']['output']>;
+  write_set_change_index?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev_pop() on columns of table "limit_order_datas" */
+export type Limit_Order_Datas_Stddev_Pop_Order_By = {
+  expiration?: InputMaybe<Order_By>;
+  limit_order_id?: InputMaybe<Order_By>;
+  margin?: InputMaybe<Order_By>;
+  max_price_slippage?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  trigger_payment?: InputMaybe<Order_By>;
+  trigger_price?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Limit_Order_Datas_Stddev_Samp_Fields = {
+  __typename?: 'limit_order_datas_stddev_samp_fields';
+  expiration?: Maybe<Scalars['Float']['output']>;
+  limit_order_id?: Maybe<Scalars['Float']['output']>;
+  margin?: Maybe<Scalars['Float']['output']>;
+  max_price_slippage?: Maybe<Scalars['Float']['output']>;
+  position_size?: Maybe<Scalars['Float']['output']>;
+  transaction_version?: Maybe<Scalars['Float']['output']>;
+  trigger_payment?: Maybe<Scalars['Float']['output']>;
+  trigger_price?: Maybe<Scalars['Float']['output']>;
+  write_set_change_index?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev_samp() on columns of table "limit_order_datas" */
+export type Limit_Order_Datas_Stddev_Samp_Order_By = {
+  expiration?: InputMaybe<Order_By>;
+  limit_order_id?: InputMaybe<Order_By>;
+  margin?: InputMaybe<Order_By>;
+  max_price_slippage?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  trigger_payment?: InputMaybe<Order_By>;
+  trigger_price?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
+/** Streaming cursor of the table "limit_order_datas" */
+export type Limit_Order_Datas_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Limit_Order_Datas_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Limit_Order_Datas_Stream_Cursor_Value_Input = {
+  expiration?: InputMaybe<Scalars['numeric']['input']>;
+  is_increase?: InputMaybe<Scalars['Boolean']['input']>;
+  limit_order_id?: InputMaybe<Scalars['numeric']['input']>;
+  margin?: InputMaybe<Scalars['numeric']['input']>;
+  market_id?: InputMaybe<Scalars['String']['input']>;
+  max_price_slippage?: InputMaybe<Scalars['numeric']['input']>;
+  owner_addr?: InputMaybe<Scalars['String']['input']>;
+  position_id?: InputMaybe<Scalars['String']['input']>;
+  position_size?: InputMaybe<Scalars['numeric']['input']>;
+  transaction_timestamp?: InputMaybe<Scalars['timestamp']['input']>;
+  transaction_version?: InputMaybe<Scalars['bigint']['input']>;
+  trigger_payment?: InputMaybe<Scalars['numeric']['input']>;
+  trigger_price?: InputMaybe<Scalars['numeric']['input']>;
+  triggers_above?: InputMaybe<Scalars['Boolean']['input']>;
+  write_set_change_index?: InputMaybe<Scalars['bigint']['input']>;
+};
+
+/** aggregate sum on columns */
+export type Limit_Order_Datas_Sum_Fields = {
+  __typename?: 'limit_order_datas_sum_fields';
+  expiration?: Maybe<Scalars['numeric']['output']>;
+  limit_order_id?: Maybe<Scalars['numeric']['output']>;
+  margin?: Maybe<Scalars['numeric']['output']>;
+  max_price_slippage?: Maybe<Scalars['numeric']['output']>;
+  position_size?: Maybe<Scalars['numeric']['output']>;
+  transaction_version?: Maybe<Scalars['bigint']['output']>;
+  trigger_payment?: Maybe<Scalars['numeric']['output']>;
+  trigger_price?: Maybe<Scalars['numeric']['output']>;
+  write_set_change_index?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** order by sum() on columns of table "limit_order_datas" */
+export type Limit_Order_Datas_Sum_Order_By = {
+  expiration?: InputMaybe<Order_By>;
+  limit_order_id?: InputMaybe<Order_By>;
+  margin?: InputMaybe<Order_By>;
+  max_price_slippage?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  trigger_payment?: InputMaybe<Order_By>;
+  trigger_price?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
+/** aggregate var_pop on columns */
+export type Limit_Order_Datas_Var_Pop_Fields = {
+  __typename?: 'limit_order_datas_var_pop_fields';
+  expiration?: Maybe<Scalars['Float']['output']>;
+  limit_order_id?: Maybe<Scalars['Float']['output']>;
+  margin?: Maybe<Scalars['Float']['output']>;
+  max_price_slippage?: Maybe<Scalars['Float']['output']>;
+  position_size?: Maybe<Scalars['Float']['output']>;
+  transaction_version?: Maybe<Scalars['Float']['output']>;
+  trigger_payment?: Maybe<Scalars['Float']['output']>;
+  trigger_price?: Maybe<Scalars['Float']['output']>;
+  write_set_change_index?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by var_pop() on columns of table "limit_order_datas" */
+export type Limit_Order_Datas_Var_Pop_Order_By = {
+  expiration?: InputMaybe<Order_By>;
+  limit_order_id?: InputMaybe<Order_By>;
+  margin?: InputMaybe<Order_By>;
+  max_price_slippage?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  trigger_payment?: InputMaybe<Order_By>;
+  trigger_price?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
+/** aggregate var_samp on columns */
+export type Limit_Order_Datas_Var_Samp_Fields = {
+  __typename?: 'limit_order_datas_var_samp_fields';
+  expiration?: Maybe<Scalars['Float']['output']>;
+  limit_order_id?: Maybe<Scalars['Float']['output']>;
+  margin?: Maybe<Scalars['Float']['output']>;
+  max_price_slippage?: Maybe<Scalars['Float']['output']>;
+  position_size?: Maybe<Scalars['Float']['output']>;
+  transaction_version?: Maybe<Scalars['Float']['output']>;
+  trigger_payment?: Maybe<Scalars['Float']['output']>;
+  trigger_price?: Maybe<Scalars['Float']['output']>;
+  write_set_change_index?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by var_samp() on columns of table "limit_order_datas" */
+export type Limit_Order_Datas_Var_Samp_Order_By = {
+  expiration?: InputMaybe<Order_By>;
+  limit_order_id?: InputMaybe<Order_By>;
+  margin?: InputMaybe<Order_By>;
+  max_price_slippage?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  trigger_payment?: InputMaybe<Order_By>;
+  trigger_price?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
+/** aggregate variance on columns */
+export type Limit_Order_Datas_Variance_Fields = {
+  __typename?: 'limit_order_datas_variance_fields';
+  expiration?: Maybe<Scalars['Float']['output']>;
+  limit_order_id?: Maybe<Scalars['Float']['output']>;
+  margin?: Maybe<Scalars['Float']['output']>;
+  max_price_slippage?: Maybe<Scalars['Float']['output']>;
+  position_size?: Maybe<Scalars['Float']['output']>;
+  transaction_version?: Maybe<Scalars['Float']['output']>;
+  trigger_payment?: Maybe<Scalars['Float']['output']>;
+  trigger_price?: Maybe<Scalars['Float']['output']>;
+  write_set_change_index?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by variance() on columns of table "limit_order_datas" */
+export type Limit_Order_Datas_Variance_Order_By = {
+  expiration?: InputMaybe<Order_By>;
+  limit_order_id?: InputMaybe<Order_By>;
+  margin?: InputMaybe<Order_By>;
+  max_price_slippage?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  trigger_payment?: InputMaybe<Order_By>;
+  trigger_price?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
 /** columns and relationships of "mirage_debt_store_datas" */
 export type Mirage_Debt_Store_Datas = {
   __typename?: 'mirage_debt_store_datas';
@@ -1547,13 +2056,232 @@ export type Numeric_Comparison_Exp = {
   _nin?: InputMaybe<Array<Scalars['numeric']['input']>>;
 };
 
+/** columns and relationships of "open_limit_orders" */
+export type Open_Limit_Orders = {
+  __typename?: 'open_limit_orders';
+  last_transaction_version: Scalars['bigint']['output'];
+  limit_order_id: Scalars['numeric']['output'];
+  market_id: Scalars['String']['output'];
+  /** An array relationship */
+  open_limit_orders_data: Array<Limit_Order_Datas>;
+  /** An aggregate relationship */
+  open_limit_orders_data_aggregate: Limit_Order_Datas_Aggregate;
+  position_id: Scalars['String']['output'];
+  transaction_timestamp: Scalars['timestamp']['output'];
+};
+
+
+/** columns and relationships of "open_limit_orders" */
+export type Open_Limit_OrdersOpen_Limit_Orders_DataArgs = {
+  distinct_on?: InputMaybe<Array<Limit_Order_Datas_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Limit_Order_Datas_Order_By>>;
+  where?: InputMaybe<Limit_Order_Datas_Bool_Exp>;
+};
+
+
+/** columns and relationships of "open_limit_orders" */
+export type Open_Limit_OrdersOpen_Limit_Orders_Data_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Limit_Order_Datas_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Limit_Order_Datas_Order_By>>;
+  where?: InputMaybe<Limit_Order_Datas_Bool_Exp>;
+};
+
+/** aggregated selection of "open_limit_orders" */
+export type Open_Limit_Orders_Aggregate = {
+  __typename?: 'open_limit_orders_aggregate';
+  aggregate?: Maybe<Open_Limit_Orders_Aggregate_Fields>;
+  nodes: Array<Open_Limit_Orders>;
+};
+
+/** aggregate fields of "open_limit_orders" */
+export type Open_Limit_Orders_Aggregate_Fields = {
+  __typename?: 'open_limit_orders_aggregate_fields';
+  avg?: Maybe<Open_Limit_Orders_Avg_Fields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<Open_Limit_Orders_Max_Fields>;
+  min?: Maybe<Open_Limit_Orders_Min_Fields>;
+  stddev?: Maybe<Open_Limit_Orders_Stddev_Fields>;
+  stddev_pop?: Maybe<Open_Limit_Orders_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Open_Limit_Orders_Stddev_Samp_Fields>;
+  sum?: Maybe<Open_Limit_Orders_Sum_Fields>;
+  var_pop?: Maybe<Open_Limit_Orders_Var_Pop_Fields>;
+  var_samp?: Maybe<Open_Limit_Orders_Var_Samp_Fields>;
+  variance?: Maybe<Open_Limit_Orders_Variance_Fields>;
+};
+
+
+/** aggregate fields of "open_limit_orders" */
+export type Open_Limit_Orders_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Open_Limit_Orders_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type Open_Limit_Orders_Avg_Fields = {
+  __typename?: 'open_limit_orders_avg_fields';
+  last_transaction_version?: Maybe<Scalars['Float']['output']>;
+  limit_order_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "open_limit_orders". All fields are combined with a logical 'AND'. */
+export type Open_Limit_Orders_Bool_Exp = {
+  _and?: InputMaybe<Array<Open_Limit_Orders_Bool_Exp>>;
+  _not?: InputMaybe<Open_Limit_Orders_Bool_Exp>;
+  _or?: InputMaybe<Array<Open_Limit_Orders_Bool_Exp>>;
+  last_transaction_version?: InputMaybe<Bigint_Comparison_Exp>;
+  limit_order_id?: InputMaybe<Numeric_Comparison_Exp>;
+  market_id?: InputMaybe<String_Comparison_Exp>;
+  open_limit_orders_data?: InputMaybe<Limit_Order_Datas_Bool_Exp>;
+  open_limit_orders_data_aggregate?: InputMaybe<Limit_Order_Datas_Aggregate_Bool_Exp>;
+  position_id?: InputMaybe<String_Comparison_Exp>;
+  transaction_timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Open_Limit_Orders_Max_Fields = {
+  __typename?: 'open_limit_orders_max_fields';
+  last_transaction_version?: Maybe<Scalars['bigint']['output']>;
+  limit_order_id?: Maybe<Scalars['numeric']['output']>;
+  market_id?: Maybe<Scalars['String']['output']>;
+  position_id?: Maybe<Scalars['String']['output']>;
+  transaction_timestamp?: Maybe<Scalars['timestamp']['output']>;
+};
+
+/** aggregate min on columns */
+export type Open_Limit_Orders_Min_Fields = {
+  __typename?: 'open_limit_orders_min_fields';
+  last_transaction_version?: Maybe<Scalars['bigint']['output']>;
+  limit_order_id?: Maybe<Scalars['numeric']['output']>;
+  market_id?: Maybe<Scalars['String']['output']>;
+  position_id?: Maybe<Scalars['String']['output']>;
+  transaction_timestamp?: Maybe<Scalars['timestamp']['output']>;
+};
+
+/** Ordering options when selecting data from "open_limit_orders". */
+export type Open_Limit_Orders_Order_By = {
+  last_transaction_version?: InputMaybe<Order_By>;
+  limit_order_id?: InputMaybe<Order_By>;
+  market_id?: InputMaybe<Order_By>;
+  open_limit_orders_data_aggregate?: InputMaybe<Limit_Order_Datas_Aggregate_Order_By>;
+  position_id?: InputMaybe<Order_By>;
+  transaction_timestamp?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "open_limit_orders" */
+export enum Open_Limit_Orders_Select_Column {
+  /** column name */
+  LastTransactionVersion = 'last_transaction_version',
+  /** column name */
+  LimitOrderId = 'limit_order_id',
+  /** column name */
+  MarketId = 'market_id',
+  /** column name */
+  PositionId = 'position_id',
+  /** column name */
+  TransactionTimestamp = 'transaction_timestamp'
+}
+
+/** aggregate stddev on columns */
+export type Open_Limit_Orders_Stddev_Fields = {
+  __typename?: 'open_limit_orders_stddev_fields';
+  last_transaction_version?: Maybe<Scalars['Float']['output']>;
+  limit_order_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Open_Limit_Orders_Stddev_Pop_Fields = {
+  __typename?: 'open_limit_orders_stddev_pop_fields';
+  last_transaction_version?: Maybe<Scalars['Float']['output']>;
+  limit_order_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Open_Limit_Orders_Stddev_Samp_Fields = {
+  __typename?: 'open_limit_orders_stddev_samp_fields';
+  last_transaction_version?: Maybe<Scalars['Float']['output']>;
+  limit_order_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "open_limit_orders" */
+export type Open_Limit_Orders_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Open_Limit_Orders_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Open_Limit_Orders_Stream_Cursor_Value_Input = {
+  last_transaction_version?: InputMaybe<Scalars['bigint']['input']>;
+  limit_order_id?: InputMaybe<Scalars['numeric']['input']>;
+  market_id?: InputMaybe<Scalars['String']['input']>;
+  position_id?: InputMaybe<Scalars['String']['input']>;
+  transaction_timestamp?: InputMaybe<Scalars['timestamp']['input']>;
+};
+
+/** aggregate sum on columns */
+export type Open_Limit_Orders_Sum_Fields = {
+  __typename?: 'open_limit_orders_sum_fields';
+  last_transaction_version?: Maybe<Scalars['bigint']['output']>;
+  limit_order_id?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** aggregate var_pop on columns */
+export type Open_Limit_Orders_Var_Pop_Fields = {
+  __typename?: 'open_limit_orders_var_pop_fields';
+  last_transaction_version?: Maybe<Scalars['Float']['output']>;
+  limit_order_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate var_samp on columns */
+export type Open_Limit_Orders_Var_Samp_Fields = {
+  __typename?: 'open_limit_orders_var_samp_fields';
+  last_transaction_version?: Maybe<Scalars['Float']['output']>;
+  limit_order_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type Open_Limit_Orders_Variance_Fields = {
+  __typename?: 'open_limit_orders_variance_fields';
+  last_transaction_version?: Maybe<Scalars['Float']['output']>;
+  limit_order_id?: Maybe<Scalars['Float']['output']>;
+};
+
 /** columns and relationships of "open_positions" */
 export type Open_Positions = {
   __typename?: 'open_positions';
   last_transaction_version: Scalars['bigint']['output'];
   market_id: Scalars['String']['output'];
+  /** An array relationship */
+  open_position_datas: Array<Position_Datas>;
+  /** An aggregate relationship */
+  open_position_datas_aggregate: Position_Datas_Aggregate;
   position_id: Scalars['String']['output'];
   transaction_timestamp: Scalars['timestamp']['output'];
+};
+
+
+/** columns and relationships of "open_positions" */
+export type Open_PositionsOpen_Position_DatasArgs = {
+  distinct_on?: InputMaybe<Array<Position_Datas_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Position_Datas_Order_By>>;
+  where?: InputMaybe<Position_Datas_Bool_Exp>;
+};
+
+
+/** columns and relationships of "open_positions" */
+export type Open_PositionsOpen_Position_Datas_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Position_Datas_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Position_Datas_Order_By>>;
+  where?: InputMaybe<Position_Datas_Bool_Exp>;
 };
 
 /** aggregated selection of "open_positions" */
@@ -1599,6 +2327,8 @@ export type Open_Positions_Bool_Exp = {
   _or?: InputMaybe<Array<Open_Positions_Bool_Exp>>;
   last_transaction_version?: InputMaybe<Bigint_Comparison_Exp>;
   market_id?: InputMaybe<String_Comparison_Exp>;
+  open_position_datas?: InputMaybe<Position_Datas_Bool_Exp>;
+  open_position_datas_aggregate?: InputMaybe<Position_Datas_Aggregate_Bool_Exp>;
   position_id?: InputMaybe<String_Comparison_Exp>;
   transaction_timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
 };
@@ -1625,6 +2355,7 @@ export type Open_Positions_Min_Fields = {
 export type Open_Positions_Order_By = {
   last_transaction_version?: InputMaybe<Order_By>;
   market_id?: InputMaybe<Order_By>;
+  open_position_datas_aggregate?: InputMaybe<Position_Datas_Aggregate_Order_By>;
   position_id?: InputMaybe<Order_By>;
   transaction_timestamp?: InputMaybe<Order_By>;
 };
@@ -1715,6 +2446,414 @@ export enum Order_By {
   DescNullsLast = 'desc_nulls_last'
 }
 
+/** columns and relationships of "position_datas" */
+export type Position_Datas = {
+  __typename?: 'position_datas';
+  is_long: Scalars['Boolean']['output'];
+  last_funding_accumulated: Scalars['numeric']['output'];
+  margin_amount: Scalars['numeric']['output'];
+  market_id: Scalars['String']['output'];
+  opening_price: Scalars['numeric']['output'];
+  owner_addr: Scalars['String']['output'];
+  position_id: Scalars['String']['output'];
+  position_size: Scalars['numeric']['output'];
+  transaction_timestamp: Scalars['timestamp']['output'];
+  transaction_version: Scalars['bigint']['output'];
+  write_set_change_index: Scalars['bigint']['output'];
+};
+
+/** aggregated selection of "position_datas" */
+export type Position_Datas_Aggregate = {
+  __typename?: 'position_datas_aggregate';
+  aggregate?: Maybe<Position_Datas_Aggregate_Fields>;
+  nodes: Array<Position_Datas>;
+};
+
+export type Position_Datas_Aggregate_Bool_Exp = {
+  bool_and?: InputMaybe<Position_Datas_Aggregate_Bool_Exp_Bool_And>;
+  bool_or?: InputMaybe<Position_Datas_Aggregate_Bool_Exp_Bool_Or>;
+  count?: InputMaybe<Position_Datas_Aggregate_Bool_Exp_Count>;
+};
+
+export type Position_Datas_Aggregate_Bool_Exp_Bool_And = {
+  arguments: Position_Datas_Select_Column_Position_Datas_Aggregate_Bool_Exp_Bool_And_Arguments_Columns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Position_Datas_Bool_Exp>;
+  predicate: Boolean_Comparison_Exp;
+};
+
+export type Position_Datas_Aggregate_Bool_Exp_Bool_Or = {
+  arguments: Position_Datas_Select_Column_Position_Datas_Aggregate_Bool_Exp_Bool_Or_Arguments_Columns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Position_Datas_Bool_Exp>;
+  predicate: Boolean_Comparison_Exp;
+};
+
+export type Position_Datas_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Position_Datas_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Position_Datas_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
+};
+
+/** aggregate fields of "position_datas" */
+export type Position_Datas_Aggregate_Fields = {
+  __typename?: 'position_datas_aggregate_fields';
+  avg?: Maybe<Position_Datas_Avg_Fields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<Position_Datas_Max_Fields>;
+  min?: Maybe<Position_Datas_Min_Fields>;
+  stddev?: Maybe<Position_Datas_Stddev_Fields>;
+  stddev_pop?: Maybe<Position_Datas_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Position_Datas_Stddev_Samp_Fields>;
+  sum?: Maybe<Position_Datas_Sum_Fields>;
+  var_pop?: Maybe<Position_Datas_Var_Pop_Fields>;
+  var_samp?: Maybe<Position_Datas_Var_Samp_Fields>;
+  variance?: Maybe<Position_Datas_Variance_Fields>;
+};
+
+
+/** aggregate fields of "position_datas" */
+export type Position_Datas_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Position_Datas_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** order by aggregate values of table "position_datas" */
+export type Position_Datas_Aggregate_Order_By = {
+  avg?: InputMaybe<Position_Datas_Avg_Order_By>;
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<Position_Datas_Max_Order_By>;
+  min?: InputMaybe<Position_Datas_Min_Order_By>;
+  stddev?: InputMaybe<Position_Datas_Stddev_Order_By>;
+  stddev_pop?: InputMaybe<Position_Datas_Stddev_Pop_Order_By>;
+  stddev_samp?: InputMaybe<Position_Datas_Stddev_Samp_Order_By>;
+  sum?: InputMaybe<Position_Datas_Sum_Order_By>;
+  var_pop?: InputMaybe<Position_Datas_Var_Pop_Order_By>;
+  var_samp?: InputMaybe<Position_Datas_Var_Samp_Order_By>;
+  variance?: InputMaybe<Position_Datas_Variance_Order_By>;
+};
+
+/** aggregate avg on columns */
+export type Position_Datas_Avg_Fields = {
+  __typename?: 'position_datas_avg_fields';
+  last_funding_accumulated?: Maybe<Scalars['Float']['output']>;
+  margin_amount?: Maybe<Scalars['Float']['output']>;
+  opening_price?: Maybe<Scalars['Float']['output']>;
+  position_size?: Maybe<Scalars['Float']['output']>;
+  transaction_version?: Maybe<Scalars['Float']['output']>;
+  write_set_change_index?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by avg() on columns of table "position_datas" */
+export type Position_Datas_Avg_Order_By = {
+  last_funding_accumulated?: InputMaybe<Order_By>;
+  margin_amount?: InputMaybe<Order_By>;
+  opening_price?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
+/** Boolean expression to filter rows from the table "position_datas". All fields are combined with a logical 'AND'. */
+export type Position_Datas_Bool_Exp = {
+  _and?: InputMaybe<Array<Position_Datas_Bool_Exp>>;
+  _not?: InputMaybe<Position_Datas_Bool_Exp>;
+  _or?: InputMaybe<Array<Position_Datas_Bool_Exp>>;
+  is_long?: InputMaybe<Boolean_Comparison_Exp>;
+  last_funding_accumulated?: InputMaybe<Numeric_Comparison_Exp>;
+  margin_amount?: InputMaybe<Numeric_Comparison_Exp>;
+  market_id?: InputMaybe<String_Comparison_Exp>;
+  opening_price?: InputMaybe<Numeric_Comparison_Exp>;
+  owner_addr?: InputMaybe<String_Comparison_Exp>;
+  position_id?: InputMaybe<String_Comparison_Exp>;
+  position_size?: InputMaybe<Numeric_Comparison_Exp>;
+  transaction_timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
+  transaction_version?: InputMaybe<Bigint_Comparison_Exp>;
+  write_set_change_index?: InputMaybe<Bigint_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Position_Datas_Max_Fields = {
+  __typename?: 'position_datas_max_fields';
+  last_funding_accumulated?: Maybe<Scalars['numeric']['output']>;
+  margin_amount?: Maybe<Scalars['numeric']['output']>;
+  market_id?: Maybe<Scalars['String']['output']>;
+  opening_price?: Maybe<Scalars['numeric']['output']>;
+  owner_addr?: Maybe<Scalars['String']['output']>;
+  position_id?: Maybe<Scalars['String']['output']>;
+  position_size?: Maybe<Scalars['numeric']['output']>;
+  transaction_timestamp?: Maybe<Scalars['timestamp']['output']>;
+  transaction_version?: Maybe<Scalars['bigint']['output']>;
+  write_set_change_index?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** order by max() on columns of table "position_datas" */
+export type Position_Datas_Max_Order_By = {
+  last_funding_accumulated?: InputMaybe<Order_By>;
+  margin_amount?: InputMaybe<Order_By>;
+  market_id?: InputMaybe<Order_By>;
+  opening_price?: InputMaybe<Order_By>;
+  owner_addr?: InputMaybe<Order_By>;
+  position_id?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  transaction_timestamp?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Position_Datas_Min_Fields = {
+  __typename?: 'position_datas_min_fields';
+  last_funding_accumulated?: Maybe<Scalars['numeric']['output']>;
+  margin_amount?: Maybe<Scalars['numeric']['output']>;
+  market_id?: Maybe<Scalars['String']['output']>;
+  opening_price?: Maybe<Scalars['numeric']['output']>;
+  owner_addr?: Maybe<Scalars['String']['output']>;
+  position_id?: Maybe<Scalars['String']['output']>;
+  position_size?: Maybe<Scalars['numeric']['output']>;
+  transaction_timestamp?: Maybe<Scalars['timestamp']['output']>;
+  transaction_version?: Maybe<Scalars['bigint']['output']>;
+  write_set_change_index?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** order by min() on columns of table "position_datas" */
+export type Position_Datas_Min_Order_By = {
+  last_funding_accumulated?: InputMaybe<Order_By>;
+  margin_amount?: InputMaybe<Order_By>;
+  market_id?: InputMaybe<Order_By>;
+  opening_price?: InputMaybe<Order_By>;
+  owner_addr?: InputMaybe<Order_By>;
+  position_id?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  transaction_timestamp?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
+/** Ordering options when selecting data from "position_datas". */
+export type Position_Datas_Order_By = {
+  is_long?: InputMaybe<Order_By>;
+  last_funding_accumulated?: InputMaybe<Order_By>;
+  margin_amount?: InputMaybe<Order_By>;
+  market_id?: InputMaybe<Order_By>;
+  opening_price?: InputMaybe<Order_By>;
+  owner_addr?: InputMaybe<Order_By>;
+  position_id?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  transaction_timestamp?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "position_datas" */
+export enum Position_Datas_Select_Column {
+  /** column name */
+  IsLong = 'is_long',
+  /** column name */
+  LastFundingAccumulated = 'last_funding_accumulated',
+  /** column name */
+  MarginAmount = 'margin_amount',
+  /** column name */
+  MarketId = 'market_id',
+  /** column name */
+  OpeningPrice = 'opening_price',
+  /** column name */
+  OwnerAddr = 'owner_addr',
+  /** column name */
+  PositionId = 'position_id',
+  /** column name */
+  PositionSize = 'position_size',
+  /** column name */
+  TransactionTimestamp = 'transaction_timestamp',
+  /** column name */
+  TransactionVersion = 'transaction_version',
+  /** column name */
+  WriteSetChangeIndex = 'write_set_change_index'
+}
+
+/** select "position_datas_aggregate_bool_exp_bool_and_arguments_columns" columns of table "position_datas" */
+export enum Position_Datas_Select_Column_Position_Datas_Aggregate_Bool_Exp_Bool_And_Arguments_Columns {
+  /** column name */
+  IsLong = 'is_long'
+}
+
+/** select "position_datas_aggregate_bool_exp_bool_or_arguments_columns" columns of table "position_datas" */
+export enum Position_Datas_Select_Column_Position_Datas_Aggregate_Bool_Exp_Bool_Or_Arguments_Columns {
+  /** column name */
+  IsLong = 'is_long'
+}
+
+/** aggregate stddev on columns */
+export type Position_Datas_Stddev_Fields = {
+  __typename?: 'position_datas_stddev_fields';
+  last_funding_accumulated?: Maybe<Scalars['Float']['output']>;
+  margin_amount?: Maybe<Scalars['Float']['output']>;
+  opening_price?: Maybe<Scalars['Float']['output']>;
+  position_size?: Maybe<Scalars['Float']['output']>;
+  transaction_version?: Maybe<Scalars['Float']['output']>;
+  write_set_change_index?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev() on columns of table "position_datas" */
+export type Position_Datas_Stddev_Order_By = {
+  last_funding_accumulated?: InputMaybe<Order_By>;
+  margin_amount?: InputMaybe<Order_By>;
+  opening_price?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Position_Datas_Stddev_Pop_Fields = {
+  __typename?: 'position_datas_stddev_pop_fields';
+  last_funding_accumulated?: Maybe<Scalars['Float']['output']>;
+  margin_amount?: Maybe<Scalars['Float']['output']>;
+  opening_price?: Maybe<Scalars['Float']['output']>;
+  position_size?: Maybe<Scalars['Float']['output']>;
+  transaction_version?: Maybe<Scalars['Float']['output']>;
+  write_set_change_index?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev_pop() on columns of table "position_datas" */
+export type Position_Datas_Stddev_Pop_Order_By = {
+  last_funding_accumulated?: InputMaybe<Order_By>;
+  margin_amount?: InputMaybe<Order_By>;
+  opening_price?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Position_Datas_Stddev_Samp_Fields = {
+  __typename?: 'position_datas_stddev_samp_fields';
+  last_funding_accumulated?: Maybe<Scalars['Float']['output']>;
+  margin_amount?: Maybe<Scalars['Float']['output']>;
+  opening_price?: Maybe<Scalars['Float']['output']>;
+  position_size?: Maybe<Scalars['Float']['output']>;
+  transaction_version?: Maybe<Scalars['Float']['output']>;
+  write_set_change_index?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev_samp() on columns of table "position_datas" */
+export type Position_Datas_Stddev_Samp_Order_By = {
+  last_funding_accumulated?: InputMaybe<Order_By>;
+  margin_amount?: InputMaybe<Order_By>;
+  opening_price?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
+/** Streaming cursor of the table "position_datas" */
+export type Position_Datas_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Position_Datas_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Position_Datas_Stream_Cursor_Value_Input = {
+  is_long?: InputMaybe<Scalars['Boolean']['input']>;
+  last_funding_accumulated?: InputMaybe<Scalars['numeric']['input']>;
+  margin_amount?: InputMaybe<Scalars['numeric']['input']>;
+  market_id?: InputMaybe<Scalars['String']['input']>;
+  opening_price?: InputMaybe<Scalars['numeric']['input']>;
+  owner_addr?: InputMaybe<Scalars['String']['input']>;
+  position_id?: InputMaybe<Scalars['String']['input']>;
+  position_size?: InputMaybe<Scalars['numeric']['input']>;
+  transaction_timestamp?: InputMaybe<Scalars['timestamp']['input']>;
+  transaction_version?: InputMaybe<Scalars['bigint']['input']>;
+  write_set_change_index?: InputMaybe<Scalars['bigint']['input']>;
+};
+
+/** aggregate sum on columns */
+export type Position_Datas_Sum_Fields = {
+  __typename?: 'position_datas_sum_fields';
+  last_funding_accumulated?: Maybe<Scalars['numeric']['output']>;
+  margin_amount?: Maybe<Scalars['numeric']['output']>;
+  opening_price?: Maybe<Scalars['numeric']['output']>;
+  position_size?: Maybe<Scalars['numeric']['output']>;
+  transaction_version?: Maybe<Scalars['bigint']['output']>;
+  write_set_change_index?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** order by sum() on columns of table "position_datas" */
+export type Position_Datas_Sum_Order_By = {
+  last_funding_accumulated?: InputMaybe<Order_By>;
+  margin_amount?: InputMaybe<Order_By>;
+  opening_price?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
+/** aggregate var_pop on columns */
+export type Position_Datas_Var_Pop_Fields = {
+  __typename?: 'position_datas_var_pop_fields';
+  last_funding_accumulated?: Maybe<Scalars['Float']['output']>;
+  margin_amount?: Maybe<Scalars['Float']['output']>;
+  opening_price?: Maybe<Scalars['Float']['output']>;
+  position_size?: Maybe<Scalars['Float']['output']>;
+  transaction_version?: Maybe<Scalars['Float']['output']>;
+  write_set_change_index?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by var_pop() on columns of table "position_datas" */
+export type Position_Datas_Var_Pop_Order_By = {
+  last_funding_accumulated?: InputMaybe<Order_By>;
+  margin_amount?: InputMaybe<Order_By>;
+  opening_price?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
+/** aggregate var_samp on columns */
+export type Position_Datas_Var_Samp_Fields = {
+  __typename?: 'position_datas_var_samp_fields';
+  last_funding_accumulated?: Maybe<Scalars['Float']['output']>;
+  margin_amount?: Maybe<Scalars['Float']['output']>;
+  opening_price?: Maybe<Scalars['Float']['output']>;
+  position_size?: Maybe<Scalars['Float']['output']>;
+  transaction_version?: Maybe<Scalars['Float']['output']>;
+  write_set_change_index?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by var_samp() on columns of table "position_datas" */
+export type Position_Datas_Var_Samp_Order_By = {
+  last_funding_accumulated?: InputMaybe<Order_By>;
+  margin_amount?: InputMaybe<Order_By>;
+  opening_price?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
+/** aggregate variance on columns */
+export type Position_Datas_Variance_Fields = {
+  __typename?: 'position_datas_variance_fields';
+  last_funding_accumulated?: Maybe<Scalars['Float']['output']>;
+  margin_amount?: Maybe<Scalars['Float']['output']>;
+  opening_price?: Maybe<Scalars['Float']['output']>;
+  position_size?: Maybe<Scalars['Float']['output']>;
+  transaction_version?: Maybe<Scalars['Float']['output']>;
+  write_set_change_index?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by variance() on columns of table "position_datas" */
+export type Position_Datas_Variance_Order_By = {
+  last_funding_accumulated?: InputMaybe<Order_By>;
+  margin_amount?: InputMaybe<Order_By>;
+  opening_price?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
 export type Query_Root = {
   __typename?: 'query_root';
   /** fetch data from the table: "current_collection_datas" */
@@ -1747,18 +2886,36 @@ export type Query_Root = {
   current_token_ownerships_v2_aggregate: Current_Token_Ownerships_V2_Aggregate;
   /** fetch data from the table: "current_token_ownerships_v2" using primary key columns */
   current_token_ownerships_v2_by_pk?: Maybe<Current_Token_Ownerships_V2>;
+  /** fetch data from the table: "limit_order_datas" */
+  limit_order_datas: Array<Limit_Order_Datas>;
+  /** fetch aggregated fields from the table: "limit_order_datas" */
+  limit_order_datas_aggregate: Limit_Order_Datas_Aggregate;
+  /** fetch data from the table: "limit_order_datas" using primary key columns */
+  limit_order_datas_by_pk?: Maybe<Limit_Order_Datas>;
   /** fetch data from the table: "mirage_debt_store_datas" */
   mirage_debt_store_datas: Array<Mirage_Debt_Store_Datas>;
   /** fetch aggregated fields from the table: "mirage_debt_store_datas" */
   mirage_debt_store_datas_aggregate: Mirage_Debt_Store_Datas_Aggregate;
   /** fetch data from the table: "mirage_debt_store_datas" using primary key columns */
   mirage_debt_store_datas_by_pk?: Maybe<Mirage_Debt_Store_Datas>;
+  /** fetch data from the table: "open_limit_orders" */
+  open_limit_orders: Array<Open_Limit_Orders>;
+  /** fetch aggregated fields from the table: "open_limit_orders" */
+  open_limit_orders_aggregate: Open_Limit_Orders_Aggregate;
+  /** fetch data from the table: "open_limit_orders" using primary key columns */
+  open_limit_orders_by_pk?: Maybe<Open_Limit_Orders>;
   /** fetch data from the table: "open_positions" */
   open_positions: Array<Open_Positions>;
   /** fetch aggregated fields from the table: "open_positions" */
   open_positions_aggregate: Open_Positions_Aggregate;
   /** fetch data from the table: "open_positions" using primary key columns */
   open_positions_by_pk?: Maybe<Open_Positions>;
+  /** fetch data from the table: "position_datas" */
+  position_datas: Array<Position_Datas>;
+  /** fetch aggregated fields from the table: "position_datas" */
+  position_datas_aggregate: Position_Datas_Aggregate;
+  /** fetch data from the table: "position_datas" using primary key columns */
+  position_datas_by_pk?: Maybe<Position_Datas>;
   /** fetch data from the table: "vault_datas" */
   vault_datas: Array<Vault_Datas>;
   /** fetch aggregated fields from the table: "vault_datas" */
@@ -1888,6 +3045,30 @@ export type Query_RootCurrent_Token_Ownerships_V2_By_PkArgs = {
 };
 
 
+export type Query_RootLimit_Order_DatasArgs = {
+  distinct_on?: InputMaybe<Array<Limit_Order_Datas_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Limit_Order_Datas_Order_By>>;
+  where?: InputMaybe<Limit_Order_Datas_Bool_Exp>;
+};
+
+
+export type Query_RootLimit_Order_Datas_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Limit_Order_Datas_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Limit_Order_Datas_Order_By>>;
+  where?: InputMaybe<Limit_Order_Datas_Bool_Exp>;
+};
+
+
+export type Query_RootLimit_Order_Datas_By_PkArgs = {
+  transaction_version: Scalars['bigint']['input'];
+  write_set_change_index: Scalars['bigint']['input'];
+};
+
+
 export type Query_RootMirage_Debt_Store_DatasArgs = {
   distinct_on?: InputMaybe<Array<Mirage_Debt_Store_Datas_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -1912,6 +3093,30 @@ export type Query_RootMirage_Debt_Store_Datas_By_PkArgs = {
 };
 
 
+export type Query_RootOpen_Limit_OrdersArgs = {
+  distinct_on?: InputMaybe<Array<Open_Limit_Orders_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Open_Limit_Orders_Order_By>>;
+  where?: InputMaybe<Open_Limit_Orders_Bool_Exp>;
+};
+
+
+export type Query_RootOpen_Limit_Orders_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Open_Limit_Orders_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Open_Limit_Orders_Order_By>>;
+  where?: InputMaybe<Open_Limit_Orders_Bool_Exp>;
+};
+
+
+export type Query_RootOpen_Limit_Orders_By_PkArgs = {
+  limit_order_id: Scalars['numeric']['input'];
+  position_id: Scalars['String']['input'];
+};
+
+
 export type Query_RootOpen_PositionsArgs = {
   distinct_on?: InputMaybe<Array<Open_Positions_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -1932,6 +3137,30 @@ export type Query_RootOpen_Positions_AggregateArgs = {
 
 export type Query_RootOpen_Positions_By_PkArgs = {
   position_id: Scalars['String']['input'];
+};
+
+
+export type Query_RootPosition_DatasArgs = {
+  distinct_on?: InputMaybe<Array<Position_Datas_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Position_Datas_Order_By>>;
+  where?: InputMaybe<Position_Datas_Bool_Exp>;
+};
+
+
+export type Query_RootPosition_Datas_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Position_Datas_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Position_Datas_Order_By>>;
+  where?: InputMaybe<Position_Datas_Bool_Exp>;
+};
+
+
+export type Query_RootPosition_Datas_By_PkArgs = {
+  transaction_version: Scalars['bigint']['input'];
+  write_set_change_index: Scalars['bigint']['input'];
 };
 
 
@@ -2000,6 +3229,14 @@ export type Subscription_Root = {
   current_token_ownerships_v2_by_pk?: Maybe<Current_Token_Ownerships_V2>;
   /** fetch data from the table in a streaming manner: "current_token_ownerships_v2" */
   current_token_ownerships_v2_stream: Array<Current_Token_Ownerships_V2>;
+  /** fetch data from the table: "limit_order_datas" */
+  limit_order_datas: Array<Limit_Order_Datas>;
+  /** fetch aggregated fields from the table: "limit_order_datas" */
+  limit_order_datas_aggregate: Limit_Order_Datas_Aggregate;
+  /** fetch data from the table: "limit_order_datas" using primary key columns */
+  limit_order_datas_by_pk?: Maybe<Limit_Order_Datas>;
+  /** fetch data from the table in a streaming manner: "limit_order_datas" */
+  limit_order_datas_stream: Array<Limit_Order_Datas>;
   /** fetch data from the table: "mirage_debt_store_datas" */
   mirage_debt_store_datas: Array<Mirage_Debt_Store_Datas>;
   /** fetch aggregated fields from the table: "mirage_debt_store_datas" */
@@ -2008,6 +3245,14 @@ export type Subscription_Root = {
   mirage_debt_store_datas_by_pk?: Maybe<Mirage_Debt_Store_Datas>;
   /** fetch data from the table in a streaming manner: "mirage_debt_store_datas" */
   mirage_debt_store_datas_stream: Array<Mirage_Debt_Store_Datas>;
+  /** fetch data from the table: "open_limit_orders" */
+  open_limit_orders: Array<Open_Limit_Orders>;
+  /** fetch aggregated fields from the table: "open_limit_orders" */
+  open_limit_orders_aggregate: Open_Limit_Orders_Aggregate;
+  /** fetch data from the table: "open_limit_orders" using primary key columns */
+  open_limit_orders_by_pk?: Maybe<Open_Limit_Orders>;
+  /** fetch data from the table in a streaming manner: "open_limit_orders" */
+  open_limit_orders_stream: Array<Open_Limit_Orders>;
   /** fetch data from the table: "open_positions" */
   open_positions: Array<Open_Positions>;
   /** fetch aggregated fields from the table: "open_positions" */
@@ -2016,6 +3261,14 @@ export type Subscription_Root = {
   open_positions_by_pk?: Maybe<Open_Positions>;
   /** fetch data from the table in a streaming manner: "open_positions" */
   open_positions_stream: Array<Open_Positions>;
+  /** fetch data from the table: "position_datas" */
+  position_datas: Array<Position_Datas>;
+  /** fetch aggregated fields from the table: "position_datas" */
+  position_datas_aggregate: Position_Datas_Aggregate;
+  /** fetch data from the table: "position_datas" using primary key columns */
+  position_datas_by_pk?: Maybe<Position_Datas>;
+  /** fetch data from the table in a streaming manner: "position_datas" */
+  position_datas_stream: Array<Position_Datas>;
   /** fetch data from the table: "vault_datas" */
   vault_datas: Array<Vault_Datas>;
   /** fetch aggregated fields from the table: "vault_datas" */
@@ -2182,6 +3435,37 @@ export type Subscription_RootCurrent_Token_Ownerships_V2_StreamArgs = {
 };
 
 
+export type Subscription_RootLimit_Order_DatasArgs = {
+  distinct_on?: InputMaybe<Array<Limit_Order_Datas_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Limit_Order_Datas_Order_By>>;
+  where?: InputMaybe<Limit_Order_Datas_Bool_Exp>;
+};
+
+
+export type Subscription_RootLimit_Order_Datas_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Limit_Order_Datas_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Limit_Order_Datas_Order_By>>;
+  where?: InputMaybe<Limit_Order_Datas_Bool_Exp>;
+};
+
+
+export type Subscription_RootLimit_Order_Datas_By_PkArgs = {
+  transaction_version: Scalars['bigint']['input'];
+  write_set_change_index: Scalars['bigint']['input'];
+};
+
+
+export type Subscription_RootLimit_Order_Datas_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Limit_Order_Datas_Stream_Cursor_Input>>;
+  where?: InputMaybe<Limit_Order_Datas_Bool_Exp>;
+};
+
+
 export type Subscription_RootMirage_Debt_Store_DatasArgs = {
   distinct_on?: InputMaybe<Array<Mirage_Debt_Store_Datas_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -2213,6 +3497,37 @@ export type Subscription_RootMirage_Debt_Store_Datas_StreamArgs = {
 };
 
 
+export type Subscription_RootOpen_Limit_OrdersArgs = {
+  distinct_on?: InputMaybe<Array<Open_Limit_Orders_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Open_Limit_Orders_Order_By>>;
+  where?: InputMaybe<Open_Limit_Orders_Bool_Exp>;
+};
+
+
+export type Subscription_RootOpen_Limit_Orders_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Open_Limit_Orders_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Open_Limit_Orders_Order_By>>;
+  where?: InputMaybe<Open_Limit_Orders_Bool_Exp>;
+};
+
+
+export type Subscription_RootOpen_Limit_Orders_By_PkArgs = {
+  limit_order_id: Scalars['numeric']['input'];
+  position_id: Scalars['String']['input'];
+};
+
+
+export type Subscription_RootOpen_Limit_Orders_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Open_Limit_Orders_Stream_Cursor_Input>>;
+  where?: InputMaybe<Open_Limit_Orders_Bool_Exp>;
+};
+
+
 export type Subscription_RootOpen_PositionsArgs = {
   distinct_on?: InputMaybe<Array<Open_Positions_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -2240,6 +3555,37 @@ export type Subscription_RootOpen_Positions_StreamArgs = {
   batch_size: Scalars['Int']['input'];
   cursor: Array<InputMaybe<Open_Positions_Stream_Cursor_Input>>;
   where?: InputMaybe<Open_Positions_Bool_Exp>;
+};
+
+
+export type Subscription_RootPosition_DatasArgs = {
+  distinct_on?: InputMaybe<Array<Position_Datas_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Position_Datas_Order_By>>;
+  where?: InputMaybe<Position_Datas_Bool_Exp>;
+};
+
+
+export type Subscription_RootPosition_Datas_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Position_Datas_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Position_Datas_Order_By>>;
+  where?: InputMaybe<Position_Datas_Bool_Exp>;
+};
+
+
+export type Subscription_RootPosition_Datas_By_PkArgs = {
+  transaction_version: Scalars['bigint']['input'];
+  write_set_change_index: Scalars['bigint']['input'];
+};
+
+
+export type Subscription_RootPosition_Datas_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Position_Datas_Stream_Cursor_Input>>;
+  where?: InputMaybe<Position_Datas_Bool_Exp>;
 };
 
 
@@ -2495,7 +3841,7 @@ export type Vault_Datas_Variance_Fields = {
 };
 
 export type GetVaultCollectionAprQueryVariables = Exact<{
-  prevDebtTimestamp?: InputMaybe<Scalars['timestamp']['input']>;
+  prevDebtTimestamp: Scalars['timestamp']['input'];
 }>;
 
 
@@ -2503,11 +3849,11 @@ export type GetVaultCollectionAprQuery = { __typename?: 'query_root', prevDebt: 
 
 
 export const GetVaultCollectionAprDocument = gql`
-    query GetVaultCollectionAPR($prevDebtTimestamp: timestamp) {
+    query GetVaultCollectionAPR($prevDebtTimestamp: timestamp!) {
   prevDebt: mirage_debt_store_datas(
-    order_by: [{asset_type: asc}, {transaction_version: desc}]
+    order_by: [{asset_type: asc}, {transaction_version: asc}]
     distinct_on: [asset_type]
-    where: {transaction_timestamp: {_lte: $prevDebtTimestamp}}
+    where: {transaction_timestamp: {_gte: $prevDebtTimestamp}}
   ) {
     transactionTimestamp: transaction_timestamp
     transactionVersion: transaction_version
@@ -2528,6 +3874,6 @@ export const GetVaultCollectionAprDocument = gql`
 }
     `;
 
-export function useGetVaultCollectionAprQuery(options?: Omit<Urql.UseQueryArgs<GetVaultCollectionAprQueryVariables>, 'query'>) {
+export function useGetVaultCollectionAprQuery(options: Omit<Urql.UseQueryArgs<GetVaultCollectionAprQueryVariables>, 'query'>) {
   return Urql.useQuery<GetVaultCollectionAprQuery, GetVaultCollectionAprQueryVariables>({ query: GetVaultCollectionAprDocument, ...options });
 };
