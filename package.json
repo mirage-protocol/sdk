@@ -48,7 +48,7 @@
     "@graphql-codegen/typescript-operations": "^4.2.0",
     "@graphql-codegen/typescript-urql": "^4.0.0",
     "@tsconfig/recommended": "^1.0.1",
-    "@types/node": "^18.7.11",
+    "@types/node": "^18.20.2",
     "@types/styled-components": "^5.1.26",
     "@typescript-eslint/eslint-plugin": "^5.34.0",
     "@typescript-eslint/parser": "^5.34.0",
