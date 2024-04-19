@@ -70,30 +70,30 @@ export class Vault {
     this.vaultCollection = vaultCollection
     this.objectAddress = objectAddress
 
-    const vaultUserType = `${mirageAddress()}::vault::Vault`
+    const vaultType = `${mirageAddress()}::vault::Vault`
 
-    const user = vaultObjectResources.find((resource) => resource.type === vaultUserType)
+    const vault = vaultObjectResources.find((resource) => resource.type === vaultType)
 
-    this.collateralAmount = !!user ? new BigNumber((user.data as any).collateral_amount) : ZERO
+    this.collateralAmount = !!vault ? new BigNumber((vault.data as any).collateral_amount) : ZERO
 
     // need to use global debt rebase
     this.borrowAmount =
-      !!user && !!this.vaultCollection
+      !!vault && !!this.vaultCollection
         ? this.vaultCollection.mirage.debtRebase.toElastic(
-            this.vaultCollection.borrowRebase.toElastic(new BigNumber((user.data as any).borrow_part.amount), true),
+            this.vaultCollection.borrowRebase.toElastic(new BigNumber((vault.data as any).borrow_part.amount), true),
             false
           )
         : ZERO
 
     this.liquidationPrice =
-      !!user && !!this.vaultCollection
+      !!vault && !!this.vaultCollection
         ? this.borrowAmount
             .div(this.collateralAmount)
             .times(this.vaultCollection.liquidationCollateralizationPercent / 100)
         : ZERO
 
     const maxBorrow =
-      !!user && !!this.vaultCollection
+      !!vault && !!this.vaultCollection
         ? this.collateralAmount
             .times(this.vaultCollection.exchangeRate)
             .div(EXCHANGE_RATE_PRECISION)
@@ -102,12 +102,12 @@ export class Vault {
         : ZERO
 
     const maxCollateral =
-      !!user && !!this.vaultCollection
+      !!vault && !!this.vaultCollection
         ? this.collateralAmount.times(this.vaultCollection.liquidationCollateralizationPercent).div(100)
         : ZERO
 
     const ratio =
-      !!user && !!this.vaultCollection
+      !!vault && !!this.vaultCollection
         ? this.borrowAmount
             .times(EXCHANGE_RATE_PRECISION)
             .div(this.vaultCollection.exchangeRate)
@@ -117,7 +117,7 @@ export class Vault {
         : 0
 
     const minCollateral =
-      !!user && !!this.vaultCollection
+      !!vault && !!this.vaultCollection
         ? this.borrowAmount
             .times(EXCHANGE_RATE_PRECISION)
             .div(this.vaultCollection.exchangeRate)
@@ -126,8 +126,8 @@ export class Vault {
         : ZERO
 
     this.positionHealth = ratio > 10000 ? 0 : 10000 - ratio
-    this.remainingBorrowable = !!user ? maxBorrow.minus(this.borrowAmount) : ZERO
-    this.withdrawableAmount = !!user ? this.collateralAmount.minus(minCollateral) : ZERO
+    this.remainingBorrowable = !!vault ? maxBorrow.minus(this.borrowAmount) : ZERO
+    this.withdrawableAmount = !!vault ? this.collateralAmount.minus(minCollateral) : ZERO
   }
 
   /**
