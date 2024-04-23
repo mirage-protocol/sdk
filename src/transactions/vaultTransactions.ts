@@ -90,7 +90,7 @@ export const createVaultAndAddCollateralAndBorrow = async (
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
   return {
 
-    function: `${mirageAddress()}::vault::register_and_add${getScriptMiddle(getTypeFromMoveAsset(collateralAsset))}_and_borrow_entry`,
+    function: `${MODULES.mirage_scripts.address}::vault_scripts::register_and_add${getScriptMiddle(getTypeFromMoveAsset(collateralAsset))}_and_borrow_entry`,
     functionArguments: [
       collectionObject,
       getAssetAmountArgument(collateralAsset, collateralAmount),
