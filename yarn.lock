@@ -1750,6 +1750,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:^5.34.0"
     "@typescript-eslint/parser": "npm:^5.34.0"
     aptos: "npm:^1.21.0"
+    axios: "npm:^0.28.0"
     bignumber.js: "npm:9.1.2"
     eslint: "npm:^8.22.0"
     eslint-config-prettier: "npm:^8.5.0"
@@ -2557,6 +2558,17 @@ __metadata:
   dependencies:
     follow-redirects: "npm:^1.14.8"
   checksum: 10c0/77ad7f1e6ca04fcd3fa8af1795b09d8b7c005b71a31f28d99ba40cda0bdcc12a4627801d7fac5efa62b9f667a8402bd54c669039694373bc8d44f6be611f785c
+  languageName: node
+  linkType: hard
+
+"axios@npm:^0.28.0":
+  version: 0.28.1
+  resolution: "axios@npm:0.28.1"
+  dependencies:
+    follow-redirects: "npm:^1.15.0"
+    form-data: "npm:^4.0.0"
+    proxy-from-env: "npm:^1.1.0"
+  checksum: 10c0/0437f851bb3552645cb44151bddeecf6bc85b41ea8f355f954fb5338f922d8ddcd255fc1eeffe83d9dd175dcdc1fb613f546ba607fa96cd33670738b30f7ca60
   languageName: node
   linkType: hard
 
