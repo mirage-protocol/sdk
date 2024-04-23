@@ -1,5 +1,4 @@
 # Mirage Protocol sdk
->>>>>>> 98ce6cc (update)
 
 A typescript sdk for interacting with the mirage protocol contracts.
 
