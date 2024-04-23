@@ -75,6 +75,33 @@ export const createVaultAndAddCollateral = async (
   }
 }
 
+export const createVaultAndAddCollateralAndBorrow = async (
+  collectionObject: MoveObjectType,
+  collateralAsset: MoveAsset,
+  borrowToken: MoveToken,
+  collateralAmount: number,
+  borrowAmount: number,
+  network: Network | string = Network.MAINNET
+): Promise<InputEntryFunctionData> => {
+  const collateralFeed = getPriceFeed(collateralAsset, network)
+  const borrowFeed = getPriceFeed(borrowToken, network)
+
+  const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : []
+  const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
+  return {
+
+    function: `${mirageAddress()}::vault::register_and_add${getScriptMiddle(getTypeFromMoveAsset(collateralAsset))}_and_borrow_entry`,
+    functionArguments: [
+      collectionObject,
+      getAssetAmountArgument(collateralAsset, collateralAmount),
+      getAssetAmountArgument(collateralAsset, borrowAmount),
+      collateralVaas,
+      borrowVaas,
+    ],
+    typeArguments: getCollectionAndCoinTypeArgument(collateralAsset),
+  }
+}
+
 /**
  * Build a payload to add collateral to a vault
  * @param vaultObject the address of the vault to interact with

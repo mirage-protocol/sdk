@@ -1,11 +1,12 @@
 import { HexString, Types } from 'aptos'
+import mirageConfig from '../../mirage_config.json'
 
 /**
  * An Aptos account
  */
 export interface Account {
   readonly name: string
-  readonly address: HexString
+  address: HexString // allow other modules to override module address
 }
 
 /**
@@ -56,23 +57,23 @@ export const mirageAddress = (): HexString => {
 export const MODULES: { readonly [module in MoveModules]: Account } = {
   ['mirage']: {
     name: 'mirage',
-    address: new HexString('0x6f6e1ccbf643631dea2952a3c3a902510fba0ae780ba5c40d7474e27d7c3ea16'),
+    address: new HexString(mirageConfig.modules.mirage),
   },
   ['mirage_scripts']: {
     name: 'mirage_scripts',
-    address: new HexString('0x9f01f48af725dc39ec52805339054d201c53b4e15bc80c1646820b2ed6b365bf'),
+    address: new HexString(mirageConfig.modules.mirage_scripts),
   },
   ['mirage_core']: {
     name: 'mirage_core',
-    address: new HexString('0x7a88c74e830c3df48fde968747e000c3f80384f7d085a8b675a56fda8b887b00'),
+    address: new HexString(mirageConfig.modules.mirage_core),
   },
   ['mirage_oracle']: {
     name: 'mirage_oracle',
-    address: new HexString('0xfacf77e9a1b24c0022dd7a009426ebf3ab469a23f583decdb6f887788edc1fcd'),
+    address: new HexString(mirageConfig.modules.mirage_oracle),
   },
   ['mirage_swap']: {
     name: 'mirage_swap',
-    address: new HexString('0xc11c3f0bc24ed2122765fd0c7719e646e72992726e0acb588091308a4ff43b02'),
+    address: new HexString(mirageConfig.modules.mirage_swap),
   },
   ['layer_zero']: {
     name: 'asset',
