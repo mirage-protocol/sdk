@@ -1,10 +1,9 @@
 import { HexString } from 'aptos'
 import BigNumber from 'bignumber.js'
 
+import mirageConfig from '../../mirage_config.json'
 import { MoveType } from '../transactions'
 import { getModuleAddress, mirageAddress } from './accounts'
-
-import mirageConfig from '../../mirage_config.json'
 
 export const getAllVaultCollectionObjectAddresses = (): string[] => {
   const vaultCollectionAddresses: string[] = []

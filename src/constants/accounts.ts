@@ -1,4 +1,5 @@
 import { HexString, Types } from 'aptos'
+
 import mirageConfig from '../../mirage_config.json'
 
 /**

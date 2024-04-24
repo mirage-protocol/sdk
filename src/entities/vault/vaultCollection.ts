@@ -125,17 +125,19 @@ export class VaultCollection {
 
     this.exchangeRate = !!vaultCollection ? BigNumber((vaultCollection.data as any).cached_exchange_rate) : ZERO
 
-    this.totalBorrow = !!vaultCollection
-      ? this.mirage.debtRebase.toElastic(BigNumber((vaultCollection.data as any).borrow.elastic), false)
-      : ZERO
-    this.totalCollateral = !!vaultCollection ? BigNumber((vaultCollection.data as any).total_collateral) : ZERO
-
     this.borrowRebase = !!vaultCollection
       ? new Rebase(
           BigNumber((vaultCollection.data as any).borrow.elastic),
           BigNumber((vaultCollection.data as any).borrow.base)
         )
       : new Rebase(ZERO, ZERO)
+    this.totalBorrow = !!vaultCollection
+      ? this.borrowRebase.toElastic(
+          this.mirage.debtRebase.toElastic(BigNumber((vaultCollection.data as any).global_debt_part.amount), false),
+          true
+        )
+      : ZERO
+    this.totalCollateral = !!vaultCollection ? BigNumber((vaultCollection.data as any).total_collateral) : ZERO
 
     this.isEmergency = !!vaultCollection ? (vaultCollection.data as any).is_emergency : false
 
