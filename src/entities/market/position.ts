@@ -241,7 +241,7 @@ export class Position {
 export const getLiqPrice = async (positionObjectAddress: string, network: Network): Promise<number> => {
   const payload: InputViewFunctionData = {
     function: `${mirageAddress()}::market::get_liquidation_price`,
-    typeArguments: getPositionTypeArgument() as `${string}::${string}::${string}`[],
+    typeArguments: getPositionTypeArgument(),
     functionArguments: [positionObjectAddress],
   }
   const ret = await aptosClient(network).view({ payload })
