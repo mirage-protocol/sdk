@@ -1,7 +1,7 @@
 {
   "name": "@mirage-protocol/sdk",
   "license": "MIT",
-  "version": "0.2.18",
+  "version": "0.2.19",
   "publishConfig": {
     "access": "public"
   },
@@ -68,5 +68,5 @@
     "semi": false,
     "singleQuote": true
   },
-  "packageManager": "yarn@4.1.1"
+  "packageManager": "yarn@4.2.2"
 }

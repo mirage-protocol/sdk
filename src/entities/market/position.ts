@@ -3,7 +3,7 @@ import { Network } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import { AccountResource, aptosClient, mirageAddress, MoveToken, Perpetual, PRECISION_8, ZERO } from '../../constants'
-import { getPositionTypeArgument } from '../../transactions'
+import { getDecimal8Argument, getPositionTypeArgument } from '../../transactions'
 import { LimitOrder, LimitOrderData } from './limitOrder'
 import { Market } from './market'
 
@@ -233,16 +233,20 @@ export class Position {
     return (Position.estimatePnl(position, perpetualPrice, marginPrice) * 100) / position.margin.toNumber()
   }
 
-  public async getLiqPrice(): Promise<number> {
-    return await getLiqPrice(this.objectAddress, this.network)
+  public async getLiqPrice(perpetualPrice: number): Promise<number> {
+    return await getLiqPrice(this.objectAddress, perpetualPrice, this.network)
   }
 }
 
-export const getLiqPrice = async (positionObjectAddress: string, network: Network): Promise<number> => {
+export const getLiqPrice = async (
+  positionObjectAddress: string,
+  perpetualPrice: number,
+  network: Network
+): Promise<number> => {
   const payload: InputViewFunctionData = {
     function: `${mirageAddress()}::market::get_liquidation_price`,
     typeArguments: getPositionTypeArgument(),
-    functionArguments: [positionObjectAddress],
+    functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice)],
   }
   const ret = await aptosClient(network).view({ payload })
   return ret[0] as number
