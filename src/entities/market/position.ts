@@ -233,20 +233,21 @@ export class Position {
     return (Position.estimatePnl(position, perpetualPrice, marginPrice) * 100) / position.margin.toNumber()
   }
 
-  public async getLiqPrice(perpetualPrice: number): Promise<number> {
-    return await getLiqPrice(this.objectAddress, perpetualPrice, this.network)
+  public async getLiqPrice(perpetualPrice: number, marginPrice: number): Promise<number> {
+    return await getLiqPrice(this.objectAddress, perpetualPrice, marginPrice, this.network)
   }
 }
 
 export const getLiqPrice = async (
   positionObjectAddress: string,
   perpetualPrice: number,
+  marginPrice: number,
   network: Network
 ): Promise<number> => {
   const payload: InputViewFunctionData = {
     function: `${mirageAddress()}::market::get_liquidation_price`,
     typeArguments: getPositionTypeArgument(),
-    functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice)],
+    functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
   }
   const ret = await aptosClient(network).view({ payload })
   return ret[0] as number
