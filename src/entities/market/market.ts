@@ -267,13 +267,21 @@ export class Market {
     marketObjectAddress: string,
     positionSizeAsset: number,
     isLong: boolean,
-    isClose: boolean
+    isClose: boolean,
+    perpPrice: number,
+    marginPrice: number,
   ): Promise<number> {
     const ret = await aptosClient(this.network).view({
       payload: {
         function: `${mirageAddress()}::market::get_open_close_fee`,
         typeArguments: getMarketTypeArgument() as `${string}::${string}::${string}`[],
-        functionArguments: [marketObjectAddress, isLong, isClose, getDecimal8Argument(positionSizeAsset)],
+        functionArguments: [
+          marketObjectAddress,
+          isLong,
+          isClose,
+          getDecimal8Argument(positionSizeAsset),
+          getDecimal8Argument(perpPrice),
+          getDecimal8Argument(marginPrice)],
       },
     })
     return ret[0] as number
