@@ -1,8 +1,7 @@
-import { InputViewFunctionData } from '@aptos-labs/ts-sdk'
-import { Network } from '@aptos-labs/ts-sdk'
+import { InputViewFunctionData, MoveResource, Network } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { AccountResource, aptosClient, mirageAddress, MoveToken, Perpetual, PRECISION_8, ZERO } from '../../constants'
+import { aptosClient, mirageAddress, MoveToken, Perpetual, PRECISION_8, ZERO } from '../../constants'
 import { getDecimal8Argument, getPositionTypeArgument } from '../../transactions'
 import { LimitOrder, LimitOrderData } from './limitOrder'
 import { Market } from './market'
@@ -90,7 +89,7 @@ export class Position {
    */
   constructor(
     // userAddress: string,
-    positionObjectResources: AccountResource[],
+    positionObjectResources: MoveResource[],
     market: Market,
     marginCoin: MoveToken | string,
     perpetualAsset: Perpetual | string,

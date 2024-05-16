@@ -1,8 +1,9 @@
 import { Network } from '@aptos-labs/ts-sdk'
+import { MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import { aptosClient, FUNDING_PRECISION, PERCENT_PRECISION, ZERO } from '../../constants'
-import { AccountResource, mirageAddress } from '../../constants/accounts'
+import { mirageAddress } from '../../constants/accounts'
 import { MoveToken, Perpetual } from '../../constants/assetList'
 import { getDecimal8Argument, getMarketTypeArgument } from '../../transactions'
 
@@ -148,7 +149,7 @@ export class Market {
    * @param perpetualAsset the asset being traded
    */
   constructor(
-    marketObjectResources: AccountResource[],
+    marketObjectResources: MoveResource[],
     marginCoin: MoveToken | string,
     perpetualAsset: Perpetual | string,
     network: Network,
@@ -156,15 +157,12 @@ export class Market {
   ) {
     this.marginToken = marginCoin as MoveToken
     this.perpetualAsset = perpetualAsset as Perpetual
-    // this.network = getNetwork(network)
     this.objectAddress = objectAddress
     this.network = network
 
     const marketType = `${mirageAddress()}::market::Market`
-    // const oracleType = `${mirageAddress()}::mirage_oracle::Oracle`
 
     const market = marketObjectResources.find((resource) => resource.type === marketType)
-    // const oracle = marketObjectResources.find((resource) => resource.type === oracleType)
 
     // fees
     this.maxTakerFee = !!market
@@ -190,9 +188,6 @@ export class Market {
     this.nextFundingPos = !!market ? Boolean((market.data as any).next_funding_pos) : false
     this.lastFundingUpdate = !!market ? new BigNumber((market.data as any).last_funding_round) : ZERO
     this.fundingInterval = !!market ? new BigNumber((market.data as any).config.funding.funding_interval) : ZERO
-    // this.poolFundingDiscount = !!market
-    //   ? new BigNumber((market.data as any).config.funding.pool_funding_discount)
-    //   : ZERO
     this.minFundingRate = !!market
       ? new BigNumber((market.data as any).config.funding.min_funding_rate).div(PERCENT_PRECISION).times(100).toNumber()
       : 0
@@ -269,7 +264,7 @@ export class Market {
     isLong: boolean,
     isClose: boolean,
     perpPrice: number,
-    marginPrice: number,
+    marginPrice: number
   ): Promise<number> {
     const ret = await aptosClient(this.network).view({
       payload: {
@@ -281,7 +276,8 @@ export class Market {
           isClose,
           getDecimal8Argument(positionSizeAsset),
           getDecimal8Argument(perpPrice),
-          getDecimal8Argument(marginPrice)],
+          getDecimal8Argument(marginPrice),
+        ],
       },
     })
     return ret[0] as number

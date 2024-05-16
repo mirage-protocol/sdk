@@ -1,13 +1,14 @@
+import { MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { AccountResource, mirageAddress, MoveToken, ZERO } from '../constants'
+import { mirageAddress, MoveToken, ZERO } from '../constants'
 import { Rebase } from './rebase'
 
 export class MirageAsset {
   public readonly debt: MoveToken
   public readonly debtRebase: Rebase
 
-  constructor(tokenObjectResources: AccountResource[], debt: MoveToken | string) {
+  constructor(tokenObjectResources: MoveResource[], debt: MoveToken | string) {
     this.debt = debt as MoveToken
 
     const debtStoreType = `${mirageAddress()}::mirage::MirageDebtStore`

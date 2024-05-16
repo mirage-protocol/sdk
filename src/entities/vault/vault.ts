@@ -1,7 +1,8 @@
+import { MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import { EXCHANGE_RATE_PRECISION, ZERO } from '../../constants'
-import { AccountResource, mirageAddress } from '../../constants/accounts'
+import { mirageAddress } from '../../constants/accounts'
 import { balanceToUi, MoveAsset, MoveToken } from '../../constants/assetList'
 import { VaultCollection } from './vaultCollection'
 
@@ -59,7 +60,7 @@ export class Vault {
    * @param borrow the borrow asset of the vault
    */
   constructor(
-    vaultObjectResources: AccountResource[],
+    vaultObjectResources: MoveResource[],
     vaultCollection: VaultCollection,
     collateral: MoveToken | string,
     borrow: MoveToken | string,

@@ -1,8 +1,7 @@
-import { HexString } from 'aptos'
+import { AccountAddress } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import mirageConfig from '../../mirage_config.json'
-import { MoveType } from '../transactions'
 import { getModuleAddress, mirageAddress } from './accounts'
 
 export const getAllVaultCollectionObjectAddresses = (): string[] => {
@@ -107,7 +106,7 @@ export const MIRAGE_ASSETS: readonly MoveToken[] = [MoveToken.mAPT, MoveToken.mU
 export type AssetInfo = {
   readonly name: string
   readonly symbol: string
-  readonly type: MoveType
+  readonly type: string
 }
 
 /**
@@ -115,7 +114,7 @@ export type AssetInfo = {
  */
 export type MoveAssetInfo = AssetInfo & {
   readonly decimals: number
-  readonly address: HexString
+  readonly address: AccountAddress
 }
 
 export type MoveAsset = MoveCoin | MoveToken
@@ -266,7 +265,7 @@ const mirageAssetList: { readonly [coin in MoveAsset | Perpetual]: AssetInfo | M
     name: 'Aptos Coin',
     symbol: 'APT',
     decimals: 8,
-    address: new HexString('0x1'),
+    address: AccountAddress.ONE,
     type: '0x1::aptos_coin::AptosCoin',
   },
   [MoveToken.MIRA]: {

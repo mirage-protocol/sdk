@@ -9,7 +9,7 @@ export type CollectionInfo = {
 
 export const getCollectionsFromMirage = async (): Promise<CollectionInfo[]> => {
   const variables: GetCollectionsByOwnerQueryVariables = {
-    OWNER: mirageAddress().toShortString(),
+    OWNER: mirageAddress().toString(),
   }
   try {
     const result = await graphqlClient.query(GetCollectionsByOwnerDocument, variables).toPromise()

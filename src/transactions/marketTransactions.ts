@@ -11,17 +11,16 @@ import {
   Perpetual,
 } from '../constants'
 import { PositionSide } from '../entities'
-import { getDecimal8Argument, MoveType } from './'
-import { getAssetAmountArgument } from './'
+import { getAssetAmountArgument, getDecimal8Argument } from './'
 
 // Get the types for this market
-export const getMarketTypeArgument = (): Array<MoveType> => {
+export const getMarketTypeArgument = (): Array<string> => {
   return [`${mirageAddress()}::market::Market`]
 }
-export const getPositionTypeArgument = (): Array<MoveType> => {
+export const getPositionTypeArgument = (): Array<string> => {
   return [`${mirageAddress()}::market::Position`]
 }
-export const getLimitOrdersTypeArgument = (): Array<MoveType> => {
+export const getLimitOrdersTypeArgument = (): Array<string> => {
   return [`${mirageAddress()}::market::LimitOrders`]
 }
 
