@@ -15,6 +15,7 @@ export const getUserAssetBalance = async (userAddress: string, asset: MoveAsset,
           where: {
             owner_address: { _eq: userAddress },
             asset_type: { _eq: getAssetTokenMetadata(asset) },
+            is_primary: { _eq: true },
           },
         },
       })
