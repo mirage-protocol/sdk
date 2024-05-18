@@ -1,7 +1,7 @@
 import { InputViewFunctionData, MoveResource, Network } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { aptosClient, mirageAddress, MoveToken, Perpetual, PRECISION_8, ZERO } from '../../constants'
+import { aptosClient, mirageAddress, MoveToken, Perpetual, PRECISION_8, RATE_PRECISION, ZERO } from '../../constants'
 import { getDecimal8Argument, getPositionTypeArgument } from '../../transactions'
 import { LimitOrder, LimitOrderData } from './limitOrder'
 import { Market } from './market'
@@ -249,5 +249,5 @@ export const getLiqPrice = async (
     functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
   }
   const ret = await aptosClient(network).view({ payload })
-  return ret[0] as number
+  return (ret[0] as number) / RATE_PRECISION
 }
