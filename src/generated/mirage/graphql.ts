@@ -5371,7 +5371,7 @@ export type GetVaultCollectionAprQueryVariables = Exact<{
 }>;
 
 
-export type GetVaultCollectionAprQuery = { __typename?: 'query_root', prevDebt: Array<{ __typename?: 'vault_collection_datas', transactionTimestamp: any, transactionVersion: any, borrowBase: any, borrowElastic: any, globalDebt?: { __typename?: 'mirage_debt_store_datas', debtBase: any, debtElastic: any, assetType: string } | null }>, currentDebt: Array<{ __typename?: 'vault_collection_datas', transactionTimestamp: any, transactionVersion: any, borrowBase: any, borrowElastic: any, globalDebt?: { __typename?: 'mirage_debt_store_datas', debtBase: any, debtElastic: any, assetType: string } | null }> };
+export type GetVaultCollectionAprQuery = { __typename?: 'query_root', prevDebt: Array<{ __typename?: 'vault_collection_datas', transactionTimestamp: any, transactionVersion: any, borrowBase: any, borrowElastic: any, globalDebt?: { __typename?: 'mirage_debt_store_datas', debtBase: any, sebtElastic: any, assetType: string } | null }>, currentDebt: Array<{ __typename?: 'vault_collection_datas', transactionTimestamp: any, transactionVersion: any, borrowBase: any, borrowElastic: any, globalDebt?: { __typename?: 'mirage_debt_store_datas', debtBase: any, debtElastic: any, assetType: string } | null }> };
 
 
 export const GetVaultCollectionAprDocument = gql`
@@ -5387,7 +5387,7 @@ export const GetVaultCollectionAprDocument = gql`
     borrowElastic: borrow_elastic
     globalDebt: vault_collection_debt_store_datas {
       debtBase: debt_base
-      debtElastic: debt_elastic
+      sebtElastic: debt_elastic
       assetType: asset_type
     }
   }
