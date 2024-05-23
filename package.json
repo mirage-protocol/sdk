@@ -1,7 +1,7 @@
 {
   "name": "@mirage-protocol/sdk",
   "license": "MIT",
-  "version": "0.2.26",
+  "version": "0.2.27",
   "publishConfig": {
     "access": "public"
   },
@@ -24,7 +24,7 @@
     "url": "https://mirage.money"
   },
   "scripts": {
-    "build": "npm run clean && tsup src/index.ts --format esm,cjs --dts",
+    "build": "yarn codegen && npm run clean && tsup src/index.ts --format esm,cjs --dts",
     "clean": "rm -rf dist",
     "format": "prettier --check ./src",
     "lint": "eslint . --ext ts --ext tsx --ext js --quiet",

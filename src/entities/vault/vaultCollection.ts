@@ -1,7 +1,7 @@
 import { MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { getPriceFeed, INTEREST_PRECISION, PERCENT_PRECISION, SECONDS_PER_YEAR, ZERO } from '../../constants'
+import { getPriceFeed, INTEREST_PRECISION, PERCENT_PRECISION, PRECISION_8, SECONDS_PER_YEAR, ZERO } from '../../constants'
 import { mirageAddress } from '../../constants/accounts'
 import { balanceToUi, MoveAsset, MoveToken } from '../../constants/assetList'
 import { MirageAsset } from '../mirage_asset'

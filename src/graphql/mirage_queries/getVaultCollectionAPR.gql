@@ -1,25 +1,32 @@
-query GetVaultCollectionAPR($prevDebtTimestamp: timestamp!) {
-  prevDebt: mirage_debt_store_datas(
-    order_by: [{asset_type: asc},
-    {transaction_version: asc}],
-    distinct_on: [asset_type],
-    where: {transaction_timestamp: {_gte: $prevDebtTimestamp}}
+query GetVaultCollectionAPR($prevDebtTimestamp: timestamp!, $collectionId: String!) {
+  prevDebt: vault_collection_datas(
+    order_by: {transaction_version: asc},
+    where: {_and: {collection_id: {_eq: $collectionId}, transaction_timestamp: {_gte: $prevDebtTimestamp}, global_debt_part: {_gt: 0}}},
+    limit: 1,
   ) {
     transactionTimestamp: transaction_timestamp
     transactionVersion: transaction_version
-    debtBase: debt_base
-    debtElastic: debt_elastic
-    assetType: asset_type
+    borrowBase: borrow_base
+    borrowElastic: borrow_elastic,
+    globalDebt: vault_collection_debt_store_datas {
+      debtBase: debt_base
+      sebtElastic: debt_elastic
+      assetType: asset_type
+    }
   }
-  currentDebt: mirage_debt_store_datas(
-    order_by: [{asset_type: asc},
-    {transaction_version: desc}],
-    distinct_on: [asset_type],
+  currentDebt: vault_collection_datas(
+    order_by: {transaction_version: desc},
+    where: {collection_id: {_eq: $collectionId}},
+    limit: 1,
   ) {
     transactionTimestamp: transaction_timestamp
     transactionVersion: transaction_version
-    debtBase: debt_base
-    debtElastic: debt_elastic
-    assetType: asset_type
+    borrowBase: borrow_base
+    borrowElastic: borrow_elastic,
+    globalDebt: vault_collection_debt_store_datas {
+      debtBase: debt_base
+      debtElastic: debt_elastic
+      assetType: asset_type
+  	}
   }
 }

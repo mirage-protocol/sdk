@@ -52,7 +52,7 @@ export class Vault {
   public readonly objectAddress: string
 
   /**
-   * Construct an instance of VaultUser
+   * Construct an instance of Vault
    * @param vaultObjectResources resources from vault token account
    * @param collectionObjectResources resources from the VaultCollection account
    * @param borrowTokenObjectResources resources from the borrow token and its debt store

@@ -3692,14 +3692,15 @@ export type Current_Token_Datas_V2 = {
   current_token_ownerships: Array<Current_Token_Ownerships_V2>;
   /** An aggregate relationship */
   current_token_ownerships_aggregate: Current_Token_Ownerships_V2_Aggregate;
-  decimals: Scalars['bigint']['output'];
+  decimals?: Maybe<Scalars['bigint']['output']>;
   description: Scalars['String']['output'];
+  is_deleted_v2?: Maybe<Scalars['Boolean']['output']>;
   is_fungible_v2?: Maybe<Scalars['Boolean']['output']>;
   largest_property_version_v1?: Maybe<Scalars['numeric']['output']>;
   last_transaction_timestamp: Scalars['timestamp']['output'];
   last_transaction_version: Scalars['bigint']['output'];
   maximum?: Maybe<Scalars['numeric']['output']>;
-  supply: Scalars['numeric']['output'];
+  supply?: Maybe<Scalars['numeric']['output']>;
   token_data_id: Scalars['String']['output'];
   token_name: Scalars['String']['output'];
   token_properties: Scalars['jsonb']['output'];
@@ -3746,6 +3747,7 @@ export type Current_Token_Datas_V2_Bool_Exp = {
   current_token_ownerships_aggregate?: InputMaybe<Current_Token_Ownerships_V2_Aggregate_Bool_Exp>;
   decimals?: InputMaybe<Bigint_Comparison_Exp>;
   description?: InputMaybe<String_Comparison_Exp>;
+  is_deleted_v2?: InputMaybe<Boolean_Comparison_Exp>;
   is_fungible_v2?: InputMaybe<Boolean_Comparison_Exp>;
   largest_property_version_v1?: InputMaybe<Numeric_Comparison_Exp>;
   last_transaction_timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
@@ -3768,6 +3770,7 @@ export type Current_Token_Datas_V2_Order_By = {
   current_token_ownerships_aggregate?: InputMaybe<Current_Token_Ownerships_V2_Aggregate_Order_By>;
   decimals?: InputMaybe<Order_By>;
   description?: InputMaybe<Order_By>;
+  is_deleted_v2?: InputMaybe<Order_By>;
   is_fungible_v2?: InputMaybe<Order_By>;
   largest_property_version_v1?: InputMaybe<Order_By>;
   last_transaction_timestamp?: InputMaybe<Order_By>;
@@ -3789,6 +3792,8 @@ export enum Current_Token_Datas_V2_Select_Column {
   Decimals = 'decimals',
   /** column name */
   Description = 'description',
+  /** column name */
+  IsDeletedV2 = 'is_deleted_v2',
   /** column name */
   IsFungibleV2 = 'is_fungible_v2',
   /** column name */
@@ -3826,6 +3831,7 @@ export type Current_Token_Datas_V2_Stream_Cursor_Value_Input = {
   collection_id?: InputMaybe<Scalars['String']['input']>;
   decimals?: InputMaybe<Scalars['bigint']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  is_deleted_v2?: InputMaybe<Scalars['Boolean']['input']>;
   is_fungible_v2?: InputMaybe<Scalars['Boolean']['input']>;
   largest_property_version_v1?: InputMaybe<Scalars['numeric']['input']>;
   last_transaction_timestamp?: InputMaybe<Scalars['timestamp']['input']>;

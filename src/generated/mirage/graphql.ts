@@ -93,6 +93,103 @@ export type Bigint_Comparison_Exp = {
   _nin?: InputMaybe<Array<Scalars['bigint']['input']>>;
 };
 
+/** columns and relationships of "closed_positions" */
+export type Closed_Positions = {
+  __typename?: 'closed_positions';
+  /** An array relationship */
+  closed_position_datas: Array<Position_Datas>;
+  /** An aggregate relationship */
+  closed_position_datas_aggregate: Position_Datas_Aggregate;
+  /** An array relationship */
+  closed_trade_datas: Array<Trade_Datas>;
+  market_id: Scalars['String']['output'];
+  position_id: Scalars['String']['output'];
+  transaction_timestamp: Scalars['timestamp']['output'];
+  transaction_version: Scalars['bigint']['output'];
+};
+
+
+/** columns and relationships of "closed_positions" */
+export type Closed_PositionsClosed_Position_DatasArgs = {
+  distinct_on?: InputMaybe<Array<Position_Datas_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Position_Datas_Order_By>>;
+  where?: InputMaybe<Position_Datas_Bool_Exp>;
+};
+
+
+/** columns and relationships of "closed_positions" */
+export type Closed_PositionsClosed_Position_Datas_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Position_Datas_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Position_Datas_Order_By>>;
+  where?: InputMaybe<Position_Datas_Bool_Exp>;
+};
+
+
+/** columns and relationships of "closed_positions" */
+export type Closed_PositionsClosed_Trade_DatasArgs = {
+  distinct_on?: InputMaybe<Array<Trade_Datas_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Trade_Datas_Order_By>>;
+  where?: InputMaybe<Trade_Datas_Bool_Exp>;
+};
+
+/** Boolean expression to filter rows from the table "closed_positions". All fields are combined with a logical 'AND'. */
+export type Closed_Positions_Bool_Exp = {
+  _and?: InputMaybe<Array<Closed_Positions_Bool_Exp>>;
+  _not?: InputMaybe<Closed_Positions_Bool_Exp>;
+  _or?: InputMaybe<Array<Closed_Positions_Bool_Exp>>;
+  closed_position_datas?: InputMaybe<Position_Datas_Bool_Exp>;
+  closed_position_datas_aggregate?: InputMaybe<Position_Datas_Aggregate_Bool_Exp>;
+  closed_trade_datas?: InputMaybe<Trade_Datas_Bool_Exp>;
+  market_id?: InputMaybe<String_Comparison_Exp>;
+  position_id?: InputMaybe<String_Comparison_Exp>;
+  transaction_timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
+  transaction_version?: InputMaybe<Bigint_Comparison_Exp>;
+};
+
+/** Ordering options when selecting data from "closed_positions". */
+export type Closed_Positions_Order_By = {
+  closed_position_datas_aggregate?: InputMaybe<Position_Datas_Aggregate_Order_By>;
+  closed_trade_datas_aggregate?: InputMaybe<Trade_Datas_Aggregate_Order_By>;
+  market_id?: InputMaybe<Order_By>;
+  position_id?: InputMaybe<Order_By>;
+  transaction_timestamp?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "closed_positions" */
+export enum Closed_Positions_Select_Column {
+  /** column name */
+  MarketId = 'market_id',
+  /** column name */
+  PositionId = 'position_id',
+  /** column name */
+  TransactionTimestamp = 'transaction_timestamp',
+  /** column name */
+  TransactionVersion = 'transaction_version'
+}
+
+/** Streaming cursor of the table "closed_positions" */
+export type Closed_Positions_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Closed_Positions_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Closed_Positions_Stream_Cursor_Value_Input = {
+  market_id?: InputMaybe<Scalars['String']['input']>;
+  position_id?: InputMaybe<Scalars['String']['input']>;
+  transaction_timestamp?: InputMaybe<Scalars['timestamp']['input']>;
+  transaction_version?: InputMaybe<Scalars['bigint']['input']>;
+};
+
 /** columns and relationships of "current_collection_datas" */
 export type Current_Collection_Datas = {
   __typename?: 'current_collection_datas';
@@ -583,14 +680,14 @@ export type Current_Collections_V2_Variance_Fields = {
 export type Current_Token_Datas_V2 = {
   __typename?: 'current_token_datas_v2';
   collection_id: Scalars['String']['output'];
-  decimals: Scalars['bigint']['output'];
+  decimals?: Maybe<Scalars['bigint']['output']>;
   description: Scalars['String']['output'];
   is_fungible_v2?: Maybe<Scalars['Boolean']['output']>;
   largest_property_version_v1?: Maybe<Scalars['numeric']['output']>;
   last_transaction_timestamp: Scalars['timestamp']['output'];
   last_transaction_version: Scalars['bigint']['output'];
   maximum?: Maybe<Scalars['numeric']['output']>;
-  supply: Scalars['numeric']['output'];
+  supply?: Maybe<Scalars['numeric']['output']>;
   token_data_id: Scalars['String']['output'];
   token_name: Scalars['String']['output'];
   token_properties: Scalars['jsonb']['output'];
@@ -2430,6 +2527,166 @@ export type Open_Positions_Variance_Fields = {
   last_transaction_version?: Maybe<Scalars['Float']['output']>;
 };
 
+/** columns and relationships of "open_tpsls" */
+export type Open_Tpsls = {
+  __typename?: 'open_tpsls';
+  last_transaction_version: Scalars['bigint']['output'];
+  market_id: Scalars['String']['output'];
+  /** An object relationship */
+  position_data?: Maybe<Position_Datas>;
+  position_id: Scalars['String']['output'];
+  /** An object relationship */
+  tpsl_data?: Maybe<Tpsl_Datas>;
+  transaction_timestamp: Scalars['timestamp']['output'];
+};
+
+/** aggregated selection of "open_tpsls" */
+export type Open_Tpsls_Aggregate = {
+  __typename?: 'open_tpsls_aggregate';
+  aggregate?: Maybe<Open_Tpsls_Aggregate_Fields>;
+  nodes: Array<Open_Tpsls>;
+};
+
+/** aggregate fields of "open_tpsls" */
+export type Open_Tpsls_Aggregate_Fields = {
+  __typename?: 'open_tpsls_aggregate_fields';
+  avg?: Maybe<Open_Tpsls_Avg_Fields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<Open_Tpsls_Max_Fields>;
+  min?: Maybe<Open_Tpsls_Min_Fields>;
+  stddev?: Maybe<Open_Tpsls_Stddev_Fields>;
+  stddev_pop?: Maybe<Open_Tpsls_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Open_Tpsls_Stddev_Samp_Fields>;
+  sum?: Maybe<Open_Tpsls_Sum_Fields>;
+  var_pop?: Maybe<Open_Tpsls_Var_Pop_Fields>;
+  var_samp?: Maybe<Open_Tpsls_Var_Samp_Fields>;
+  variance?: Maybe<Open_Tpsls_Variance_Fields>;
+};
+
+
+/** aggregate fields of "open_tpsls" */
+export type Open_Tpsls_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Open_Tpsls_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type Open_Tpsls_Avg_Fields = {
+  __typename?: 'open_tpsls_avg_fields';
+  last_transaction_version?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "open_tpsls". All fields are combined with a logical 'AND'. */
+export type Open_Tpsls_Bool_Exp = {
+  _and?: InputMaybe<Array<Open_Tpsls_Bool_Exp>>;
+  _not?: InputMaybe<Open_Tpsls_Bool_Exp>;
+  _or?: InputMaybe<Array<Open_Tpsls_Bool_Exp>>;
+  last_transaction_version?: InputMaybe<Bigint_Comparison_Exp>;
+  market_id?: InputMaybe<String_Comparison_Exp>;
+  position_data?: InputMaybe<Position_Datas_Bool_Exp>;
+  position_id?: InputMaybe<String_Comparison_Exp>;
+  tpsl_data?: InputMaybe<Tpsl_Datas_Bool_Exp>;
+  transaction_timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Open_Tpsls_Max_Fields = {
+  __typename?: 'open_tpsls_max_fields';
+  last_transaction_version?: Maybe<Scalars['bigint']['output']>;
+  market_id?: Maybe<Scalars['String']['output']>;
+  position_id?: Maybe<Scalars['String']['output']>;
+  transaction_timestamp?: Maybe<Scalars['timestamp']['output']>;
+};
+
+/** aggregate min on columns */
+export type Open_Tpsls_Min_Fields = {
+  __typename?: 'open_tpsls_min_fields';
+  last_transaction_version?: Maybe<Scalars['bigint']['output']>;
+  market_id?: Maybe<Scalars['String']['output']>;
+  position_id?: Maybe<Scalars['String']['output']>;
+  transaction_timestamp?: Maybe<Scalars['timestamp']['output']>;
+};
+
+/** Ordering options when selecting data from "open_tpsls". */
+export type Open_Tpsls_Order_By = {
+  last_transaction_version?: InputMaybe<Order_By>;
+  market_id?: InputMaybe<Order_By>;
+  position_data?: InputMaybe<Position_Datas_Order_By>;
+  position_id?: InputMaybe<Order_By>;
+  tpsl_data?: InputMaybe<Tpsl_Datas_Order_By>;
+  transaction_timestamp?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "open_tpsls" */
+export enum Open_Tpsls_Select_Column {
+  /** column name */
+  LastTransactionVersion = 'last_transaction_version',
+  /** column name */
+  MarketId = 'market_id',
+  /** column name */
+  PositionId = 'position_id',
+  /** column name */
+  TransactionTimestamp = 'transaction_timestamp'
+}
+
+/** aggregate stddev on columns */
+export type Open_Tpsls_Stddev_Fields = {
+  __typename?: 'open_tpsls_stddev_fields';
+  last_transaction_version?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Open_Tpsls_Stddev_Pop_Fields = {
+  __typename?: 'open_tpsls_stddev_pop_fields';
+  last_transaction_version?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Open_Tpsls_Stddev_Samp_Fields = {
+  __typename?: 'open_tpsls_stddev_samp_fields';
+  last_transaction_version?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "open_tpsls" */
+export type Open_Tpsls_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Open_Tpsls_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Open_Tpsls_Stream_Cursor_Value_Input = {
+  last_transaction_version?: InputMaybe<Scalars['bigint']['input']>;
+  market_id?: InputMaybe<Scalars['String']['input']>;
+  position_id?: InputMaybe<Scalars['String']['input']>;
+  transaction_timestamp?: InputMaybe<Scalars['timestamp']['input']>;
+};
+
+/** aggregate sum on columns */
+export type Open_Tpsls_Sum_Fields = {
+  __typename?: 'open_tpsls_sum_fields';
+  last_transaction_version?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** aggregate var_pop on columns */
+export type Open_Tpsls_Var_Pop_Fields = {
+  __typename?: 'open_tpsls_var_pop_fields';
+  last_transaction_version?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate var_samp on columns */
+export type Open_Tpsls_Var_Samp_Fields = {
+  __typename?: 'open_tpsls_var_samp_fields';
+  last_transaction_version?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type Open_Tpsls_Variance_Fields = {
+  __typename?: 'open_tpsls_variance_fields';
+  last_transaction_version?: Maybe<Scalars['Float']['output']>;
+};
+
 /** column ordering options */
 export enum Order_By {
   /** in ascending order, nulls last */
@@ -2445,6 +2702,222 @@ export enum Order_By {
   /** in descending order, nulls last */
   DescNullsLast = 'desc_nulls_last'
 }
+
+/** columns and relationships of "owner_trades" */
+export type Owner_Trades = {
+  __typename?: 'owner_trades';
+  owner_addr?: Maybe<Scalars['String']['output']>;
+  profit?: Maybe<Scalars['numeric']['output']>;
+  rank?: Maybe<Scalars['bigint']['output']>;
+  total_fee?: Maybe<Scalars['numeric']['output']>;
+  total_pnl?: Maybe<Scalars['numeric']['output']>;
+  trade_count?: Maybe<Scalars['bigint']['output']>;
+  volume?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** aggregated selection of "owner_trades" */
+export type Owner_Trades_Aggregate = {
+  __typename?: 'owner_trades_aggregate';
+  aggregate?: Maybe<Owner_Trades_Aggregate_Fields>;
+  nodes: Array<Owner_Trades>;
+};
+
+/** aggregate fields of "owner_trades" */
+export type Owner_Trades_Aggregate_Fields = {
+  __typename?: 'owner_trades_aggregate_fields';
+  avg?: Maybe<Owner_Trades_Avg_Fields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<Owner_Trades_Max_Fields>;
+  min?: Maybe<Owner_Trades_Min_Fields>;
+  stddev?: Maybe<Owner_Trades_Stddev_Fields>;
+  stddev_pop?: Maybe<Owner_Trades_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Owner_Trades_Stddev_Samp_Fields>;
+  sum?: Maybe<Owner_Trades_Sum_Fields>;
+  var_pop?: Maybe<Owner_Trades_Var_Pop_Fields>;
+  var_samp?: Maybe<Owner_Trades_Var_Samp_Fields>;
+  variance?: Maybe<Owner_Trades_Variance_Fields>;
+};
+
+
+/** aggregate fields of "owner_trades" */
+export type Owner_Trades_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Owner_Trades_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type Owner_Trades_Avg_Fields = {
+  __typename?: 'owner_trades_avg_fields';
+  profit?: Maybe<Scalars['Float']['output']>;
+  rank?: Maybe<Scalars['Float']['output']>;
+  total_fee?: Maybe<Scalars['Float']['output']>;
+  total_pnl?: Maybe<Scalars['Float']['output']>;
+  trade_count?: Maybe<Scalars['Float']['output']>;
+  volume?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "owner_trades". All fields are combined with a logical 'AND'. */
+export type Owner_Trades_Bool_Exp = {
+  _and?: InputMaybe<Array<Owner_Trades_Bool_Exp>>;
+  _not?: InputMaybe<Owner_Trades_Bool_Exp>;
+  _or?: InputMaybe<Array<Owner_Trades_Bool_Exp>>;
+  owner_addr?: InputMaybe<String_Comparison_Exp>;
+  profit?: InputMaybe<Numeric_Comparison_Exp>;
+  rank?: InputMaybe<Bigint_Comparison_Exp>;
+  total_fee?: InputMaybe<Numeric_Comparison_Exp>;
+  total_pnl?: InputMaybe<Numeric_Comparison_Exp>;
+  trade_count?: InputMaybe<Bigint_Comparison_Exp>;
+  volume?: InputMaybe<Numeric_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Owner_Trades_Max_Fields = {
+  __typename?: 'owner_trades_max_fields';
+  owner_addr?: Maybe<Scalars['String']['output']>;
+  profit?: Maybe<Scalars['numeric']['output']>;
+  rank?: Maybe<Scalars['bigint']['output']>;
+  total_fee?: Maybe<Scalars['numeric']['output']>;
+  total_pnl?: Maybe<Scalars['numeric']['output']>;
+  trade_count?: Maybe<Scalars['bigint']['output']>;
+  volume?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** aggregate min on columns */
+export type Owner_Trades_Min_Fields = {
+  __typename?: 'owner_trades_min_fields';
+  owner_addr?: Maybe<Scalars['String']['output']>;
+  profit?: Maybe<Scalars['numeric']['output']>;
+  rank?: Maybe<Scalars['bigint']['output']>;
+  total_fee?: Maybe<Scalars['numeric']['output']>;
+  total_pnl?: Maybe<Scalars['numeric']['output']>;
+  trade_count?: Maybe<Scalars['bigint']['output']>;
+  volume?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** Ordering options when selecting data from "owner_trades". */
+export type Owner_Trades_Order_By = {
+  owner_addr?: InputMaybe<Order_By>;
+  profit?: InputMaybe<Order_By>;
+  rank?: InputMaybe<Order_By>;
+  total_fee?: InputMaybe<Order_By>;
+  total_pnl?: InputMaybe<Order_By>;
+  trade_count?: InputMaybe<Order_By>;
+  volume?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "owner_trades" */
+export enum Owner_Trades_Select_Column {
+  /** column name */
+  OwnerAddr = 'owner_addr',
+  /** column name */
+  Profit = 'profit',
+  /** column name */
+  Rank = 'rank',
+  /** column name */
+  TotalFee = 'total_fee',
+  /** column name */
+  TotalPnl = 'total_pnl',
+  /** column name */
+  TradeCount = 'trade_count',
+  /** column name */
+  Volume = 'volume'
+}
+
+/** aggregate stddev on columns */
+export type Owner_Trades_Stddev_Fields = {
+  __typename?: 'owner_trades_stddev_fields';
+  profit?: Maybe<Scalars['Float']['output']>;
+  rank?: Maybe<Scalars['Float']['output']>;
+  total_fee?: Maybe<Scalars['Float']['output']>;
+  total_pnl?: Maybe<Scalars['Float']['output']>;
+  trade_count?: Maybe<Scalars['Float']['output']>;
+  volume?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Owner_Trades_Stddev_Pop_Fields = {
+  __typename?: 'owner_trades_stddev_pop_fields';
+  profit?: Maybe<Scalars['Float']['output']>;
+  rank?: Maybe<Scalars['Float']['output']>;
+  total_fee?: Maybe<Scalars['Float']['output']>;
+  total_pnl?: Maybe<Scalars['Float']['output']>;
+  trade_count?: Maybe<Scalars['Float']['output']>;
+  volume?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Owner_Trades_Stddev_Samp_Fields = {
+  __typename?: 'owner_trades_stddev_samp_fields';
+  profit?: Maybe<Scalars['Float']['output']>;
+  rank?: Maybe<Scalars['Float']['output']>;
+  total_fee?: Maybe<Scalars['Float']['output']>;
+  total_pnl?: Maybe<Scalars['Float']['output']>;
+  trade_count?: Maybe<Scalars['Float']['output']>;
+  volume?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "owner_trades" */
+export type Owner_Trades_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Owner_Trades_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Owner_Trades_Stream_Cursor_Value_Input = {
+  owner_addr?: InputMaybe<Scalars['String']['input']>;
+  profit?: InputMaybe<Scalars['numeric']['input']>;
+  rank?: InputMaybe<Scalars['bigint']['input']>;
+  total_fee?: InputMaybe<Scalars['numeric']['input']>;
+  total_pnl?: InputMaybe<Scalars['numeric']['input']>;
+  trade_count?: InputMaybe<Scalars['bigint']['input']>;
+  volume?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** aggregate sum on columns */
+export type Owner_Trades_Sum_Fields = {
+  __typename?: 'owner_trades_sum_fields';
+  profit?: Maybe<Scalars['numeric']['output']>;
+  rank?: Maybe<Scalars['bigint']['output']>;
+  total_fee?: Maybe<Scalars['numeric']['output']>;
+  total_pnl?: Maybe<Scalars['numeric']['output']>;
+  trade_count?: Maybe<Scalars['bigint']['output']>;
+  volume?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** aggregate var_pop on columns */
+export type Owner_Trades_Var_Pop_Fields = {
+  __typename?: 'owner_trades_var_pop_fields';
+  profit?: Maybe<Scalars['Float']['output']>;
+  rank?: Maybe<Scalars['Float']['output']>;
+  total_fee?: Maybe<Scalars['Float']['output']>;
+  total_pnl?: Maybe<Scalars['Float']['output']>;
+  trade_count?: Maybe<Scalars['Float']['output']>;
+  volume?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate var_samp on columns */
+export type Owner_Trades_Var_Samp_Fields = {
+  __typename?: 'owner_trades_var_samp_fields';
+  profit?: Maybe<Scalars['Float']['output']>;
+  rank?: Maybe<Scalars['Float']['output']>;
+  total_fee?: Maybe<Scalars['Float']['output']>;
+  total_pnl?: Maybe<Scalars['Float']['output']>;
+  trade_count?: Maybe<Scalars['Float']['output']>;
+  volume?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type Owner_Trades_Variance_Fields = {
+  __typename?: 'owner_trades_variance_fields';
+  profit?: Maybe<Scalars['Float']['output']>;
+  rank?: Maybe<Scalars['Float']['output']>;
+  total_fee?: Maybe<Scalars['Float']['output']>;
+  total_pnl?: Maybe<Scalars['Float']['output']>;
+  trade_count?: Maybe<Scalars['Float']['output']>;
+  volume?: Maybe<Scalars['Float']['output']>;
+};
 
 /** columns and relationships of "position_datas" */
 export type Position_Datas = {
@@ -2856,6 +3329,10 @@ export type Position_Datas_Variance_Order_By = {
 
 export type Query_Root = {
   __typename?: 'query_root';
+  /** fetch data from the table: "closed_positions" */
+  closed_positions: Array<Closed_Positions>;
+  /** fetch data from the table: "closed_positions" using primary key columns */
+  closed_positions_by_pk?: Maybe<Closed_Positions>;
   /** fetch data from the table: "current_collection_datas" */
   current_collection_datas: Array<Current_Collection_Datas>;
   /** fetch aggregated fields from the table: "current_collection_datas" */
@@ -2910,18 +3387,60 @@ export type Query_Root = {
   open_positions_aggregate: Open_Positions_Aggregate;
   /** fetch data from the table: "open_positions" using primary key columns */
   open_positions_by_pk?: Maybe<Open_Positions>;
+  /** fetch data from the table: "open_tpsls" */
+  open_tpsls: Array<Open_Tpsls>;
+  /** fetch aggregated fields from the table: "open_tpsls" */
+  open_tpsls_aggregate: Open_Tpsls_Aggregate;
+  /** fetch data from the table: "open_tpsls" using primary key columns */
+  open_tpsls_by_pk?: Maybe<Open_Tpsls>;
+  /** fetch data from the table: "owner_trades" */
+  owner_trades: Array<Owner_Trades>;
+  /** fetch aggregated fields from the table: "owner_trades" */
+  owner_trades_aggregate: Owner_Trades_Aggregate;
   /** fetch data from the table: "position_datas" */
   position_datas: Array<Position_Datas>;
   /** fetch aggregated fields from the table: "position_datas" */
   position_datas_aggregate: Position_Datas_Aggregate;
   /** fetch data from the table: "position_datas" using primary key columns */
   position_datas_by_pk?: Maybe<Position_Datas>;
+  /** fetch data from the table: "tpsl_datas" */
+  tpsl_datas: Array<Tpsl_Datas>;
+  /** fetch data from the table: "tpsl_datas" using primary key columns */
+  tpsl_datas_by_pk?: Maybe<Tpsl_Datas>;
+  /** fetch data from the table: "trade_datas" */
+  trade_datas: Array<Trade_Datas>;
+  /** fetch data from the table: "trade_datas" using primary key columns */
+  trade_datas_by_pk?: Maybe<Trade_Datas>;
+  /** fetch data from the table: "vault_collection_configs" */
+  vault_collection_configs: Array<Vault_Collection_Configs>;
+  /** fetch data from the table: "vault_collection_configs" using primary key columns */
+  vault_collection_configs_by_pk?: Maybe<Vault_Collection_Configs>;
+  /** fetch data from the table: "vault_collection_datas" */
+  vault_collection_datas: Array<Vault_Collection_Datas>;
+  /** fetch aggregated fields from the table: "vault_collection_datas" */
+  vault_collection_datas_aggregate: Vault_Collection_Datas_Aggregate;
+  /** fetch data from the table: "vault_collection_datas" using primary key columns */
+  vault_collection_datas_by_pk?: Maybe<Vault_Collection_Datas>;
   /** fetch data from the table: "vault_datas" */
   vault_datas: Array<Vault_Datas>;
   /** fetch aggregated fields from the table: "vault_datas" */
   vault_datas_aggregate: Vault_Datas_Aggregate;
   /** fetch data from the table: "vault_datas" using primary key columns */
   vault_datas_by_pk?: Maybe<Vault_Datas>;
+};
+
+
+export type Query_RootClosed_PositionsArgs = {
+  distinct_on?: InputMaybe<Array<Closed_Positions_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Closed_Positions_Order_By>>;
+  where?: InputMaybe<Closed_Positions_Bool_Exp>;
+};
+
+
+export type Query_RootClosed_Positions_By_PkArgs = {
+  position_id: Scalars['String']['input'];
 };
 
 
@@ -3140,6 +3659,47 @@ export type Query_RootOpen_Positions_By_PkArgs = {
 };
 
 
+export type Query_RootOpen_TpslsArgs = {
+  distinct_on?: InputMaybe<Array<Open_Tpsls_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Open_Tpsls_Order_By>>;
+  where?: InputMaybe<Open_Tpsls_Bool_Exp>;
+};
+
+
+export type Query_RootOpen_Tpsls_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Open_Tpsls_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Open_Tpsls_Order_By>>;
+  where?: InputMaybe<Open_Tpsls_Bool_Exp>;
+};
+
+
+export type Query_RootOpen_Tpsls_By_PkArgs = {
+  position_id: Scalars['String']['input'];
+};
+
+
+export type Query_RootOwner_TradesArgs = {
+  distinct_on?: InputMaybe<Array<Owner_Trades_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Owner_Trades_Order_By>>;
+  where?: InputMaybe<Owner_Trades_Bool_Exp>;
+};
+
+
+export type Query_RootOwner_Trades_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Owner_Trades_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Owner_Trades_Order_By>>;
+  where?: InputMaybe<Owner_Trades_Bool_Exp>;
+};
+
+
 export type Query_RootPosition_DatasArgs = {
   distinct_on?: InputMaybe<Array<Position_Datas_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -3159,6 +3719,75 @@ export type Query_RootPosition_Datas_AggregateArgs = {
 
 
 export type Query_RootPosition_Datas_By_PkArgs = {
+  transaction_version: Scalars['bigint']['input'];
+  write_set_change_index: Scalars['bigint']['input'];
+};
+
+
+export type Query_RootTpsl_DatasArgs = {
+  distinct_on?: InputMaybe<Array<Tpsl_Datas_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Tpsl_Datas_Order_By>>;
+  where?: InputMaybe<Tpsl_Datas_Bool_Exp>;
+};
+
+
+export type Query_RootTpsl_Datas_By_PkArgs = {
+  transaction_version: Scalars['bigint']['input'];
+  write_set_change_index: Scalars['bigint']['input'];
+};
+
+
+export type Query_RootTrade_DatasArgs = {
+  distinct_on?: InputMaybe<Array<Trade_Datas_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Trade_Datas_Order_By>>;
+  where?: InputMaybe<Trade_Datas_Bool_Exp>;
+};
+
+
+export type Query_RootTrade_Datas_By_PkArgs = {
+  position_id: Scalars['String']['input'];
+  transaction_version: Scalars['bigint']['input'];
+};
+
+
+export type Query_RootVault_Collection_ConfigsArgs = {
+  distinct_on?: InputMaybe<Array<Vault_Collection_Configs_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Vault_Collection_Configs_Order_By>>;
+  where?: InputMaybe<Vault_Collection_Configs_Bool_Exp>;
+};
+
+
+export type Query_RootVault_Collection_Configs_By_PkArgs = {
+  transaction_version: Scalars['bigint']['input'];
+  write_set_change_index: Scalars['bigint']['input'];
+};
+
+
+export type Query_RootVault_Collection_DatasArgs = {
+  distinct_on?: InputMaybe<Array<Vault_Collection_Datas_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Vault_Collection_Datas_Order_By>>;
+  where?: InputMaybe<Vault_Collection_Datas_Bool_Exp>;
+};
+
+
+export type Query_RootVault_Collection_Datas_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Vault_Collection_Datas_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Vault_Collection_Datas_Order_By>>;
+  where?: InputMaybe<Vault_Collection_Datas_Bool_Exp>;
+};
+
+
+export type Query_RootVault_Collection_Datas_By_PkArgs = {
   transaction_version: Scalars['bigint']['input'];
   write_set_change_index: Scalars['bigint']['input'];
 };
@@ -3189,6 +3818,12 @@ export type Query_RootVault_Datas_By_PkArgs = {
 
 export type Subscription_Root = {
   __typename?: 'subscription_root';
+  /** fetch data from the table: "closed_positions" */
+  closed_positions: Array<Closed_Positions>;
+  /** fetch data from the table: "closed_positions" using primary key columns */
+  closed_positions_by_pk?: Maybe<Closed_Positions>;
+  /** fetch data from the table in a streaming manner: "closed_positions" */
+  closed_positions_stream: Array<Closed_Positions>;
   /** fetch data from the table: "current_collection_datas" */
   current_collection_datas: Array<Current_Collection_Datas>;
   /** fetch aggregated fields from the table: "current_collection_datas" */
@@ -3261,6 +3896,20 @@ export type Subscription_Root = {
   open_positions_by_pk?: Maybe<Open_Positions>;
   /** fetch data from the table in a streaming manner: "open_positions" */
   open_positions_stream: Array<Open_Positions>;
+  /** fetch data from the table: "open_tpsls" */
+  open_tpsls: Array<Open_Tpsls>;
+  /** fetch aggregated fields from the table: "open_tpsls" */
+  open_tpsls_aggregate: Open_Tpsls_Aggregate;
+  /** fetch data from the table: "open_tpsls" using primary key columns */
+  open_tpsls_by_pk?: Maybe<Open_Tpsls>;
+  /** fetch data from the table in a streaming manner: "open_tpsls" */
+  open_tpsls_stream: Array<Open_Tpsls>;
+  /** fetch data from the table: "owner_trades" */
+  owner_trades: Array<Owner_Trades>;
+  /** fetch aggregated fields from the table: "owner_trades" */
+  owner_trades_aggregate: Owner_Trades_Aggregate;
+  /** fetch data from the table in a streaming manner: "owner_trades" */
+  owner_trades_stream: Array<Owner_Trades>;
   /** fetch data from the table: "position_datas" */
   position_datas: Array<Position_Datas>;
   /** fetch aggregated fields from the table: "position_datas" */
@@ -3269,6 +3918,32 @@ export type Subscription_Root = {
   position_datas_by_pk?: Maybe<Position_Datas>;
   /** fetch data from the table in a streaming manner: "position_datas" */
   position_datas_stream: Array<Position_Datas>;
+  /** fetch data from the table: "tpsl_datas" */
+  tpsl_datas: Array<Tpsl_Datas>;
+  /** fetch data from the table: "tpsl_datas" using primary key columns */
+  tpsl_datas_by_pk?: Maybe<Tpsl_Datas>;
+  /** fetch data from the table in a streaming manner: "tpsl_datas" */
+  tpsl_datas_stream: Array<Tpsl_Datas>;
+  /** fetch data from the table: "trade_datas" */
+  trade_datas: Array<Trade_Datas>;
+  /** fetch data from the table: "trade_datas" using primary key columns */
+  trade_datas_by_pk?: Maybe<Trade_Datas>;
+  /** fetch data from the table in a streaming manner: "trade_datas" */
+  trade_datas_stream: Array<Trade_Datas>;
+  /** fetch data from the table: "vault_collection_configs" */
+  vault_collection_configs: Array<Vault_Collection_Configs>;
+  /** fetch data from the table: "vault_collection_configs" using primary key columns */
+  vault_collection_configs_by_pk?: Maybe<Vault_Collection_Configs>;
+  /** fetch data from the table in a streaming manner: "vault_collection_configs" */
+  vault_collection_configs_stream: Array<Vault_Collection_Configs>;
+  /** fetch data from the table: "vault_collection_datas" */
+  vault_collection_datas: Array<Vault_Collection_Datas>;
+  /** fetch aggregated fields from the table: "vault_collection_datas" */
+  vault_collection_datas_aggregate: Vault_Collection_Datas_Aggregate;
+  /** fetch data from the table: "vault_collection_datas" using primary key columns */
+  vault_collection_datas_by_pk?: Maybe<Vault_Collection_Datas>;
+  /** fetch data from the table in a streaming manner: "vault_collection_datas" */
+  vault_collection_datas_stream: Array<Vault_Collection_Datas>;
   /** fetch data from the table: "vault_datas" */
   vault_datas: Array<Vault_Datas>;
   /** fetch aggregated fields from the table: "vault_datas" */
@@ -3277,6 +3952,27 @@ export type Subscription_Root = {
   vault_datas_by_pk?: Maybe<Vault_Datas>;
   /** fetch data from the table in a streaming manner: "vault_datas" */
   vault_datas_stream: Array<Vault_Datas>;
+};
+
+
+export type Subscription_RootClosed_PositionsArgs = {
+  distinct_on?: InputMaybe<Array<Closed_Positions_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Closed_Positions_Order_By>>;
+  where?: InputMaybe<Closed_Positions_Bool_Exp>;
+};
+
+
+export type Subscription_RootClosed_Positions_By_PkArgs = {
+  position_id: Scalars['String']['input'];
+};
+
+
+export type Subscription_RootClosed_Positions_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Closed_Positions_Stream_Cursor_Input>>;
+  where?: InputMaybe<Closed_Positions_Bool_Exp>;
 };
 
 
@@ -3558,6 +4254,61 @@ export type Subscription_RootOpen_Positions_StreamArgs = {
 };
 
 
+export type Subscription_RootOpen_TpslsArgs = {
+  distinct_on?: InputMaybe<Array<Open_Tpsls_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Open_Tpsls_Order_By>>;
+  where?: InputMaybe<Open_Tpsls_Bool_Exp>;
+};
+
+
+export type Subscription_RootOpen_Tpsls_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Open_Tpsls_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Open_Tpsls_Order_By>>;
+  where?: InputMaybe<Open_Tpsls_Bool_Exp>;
+};
+
+
+export type Subscription_RootOpen_Tpsls_By_PkArgs = {
+  position_id: Scalars['String']['input'];
+};
+
+
+export type Subscription_RootOpen_Tpsls_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Open_Tpsls_Stream_Cursor_Input>>;
+  where?: InputMaybe<Open_Tpsls_Bool_Exp>;
+};
+
+
+export type Subscription_RootOwner_TradesArgs = {
+  distinct_on?: InputMaybe<Array<Owner_Trades_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Owner_Trades_Order_By>>;
+  where?: InputMaybe<Owner_Trades_Bool_Exp>;
+};
+
+
+export type Subscription_RootOwner_Trades_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Owner_Trades_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Owner_Trades_Order_By>>;
+  where?: InputMaybe<Owner_Trades_Bool_Exp>;
+};
+
+
+export type Subscription_RootOwner_Trades_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Owner_Trades_Stream_Cursor_Input>>;
+  where?: InputMaybe<Owner_Trades_Bool_Exp>;
+};
+
+
 export type Subscription_RootPosition_DatasArgs = {
   distinct_on?: InputMaybe<Array<Position_Datas_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -3586,6 +4337,103 @@ export type Subscription_RootPosition_Datas_StreamArgs = {
   batch_size: Scalars['Int']['input'];
   cursor: Array<InputMaybe<Position_Datas_Stream_Cursor_Input>>;
   where?: InputMaybe<Position_Datas_Bool_Exp>;
+};
+
+
+export type Subscription_RootTpsl_DatasArgs = {
+  distinct_on?: InputMaybe<Array<Tpsl_Datas_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Tpsl_Datas_Order_By>>;
+  where?: InputMaybe<Tpsl_Datas_Bool_Exp>;
+};
+
+
+export type Subscription_RootTpsl_Datas_By_PkArgs = {
+  transaction_version: Scalars['bigint']['input'];
+  write_set_change_index: Scalars['bigint']['input'];
+};
+
+
+export type Subscription_RootTpsl_Datas_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Tpsl_Datas_Stream_Cursor_Input>>;
+  where?: InputMaybe<Tpsl_Datas_Bool_Exp>;
+};
+
+
+export type Subscription_RootTrade_DatasArgs = {
+  distinct_on?: InputMaybe<Array<Trade_Datas_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Trade_Datas_Order_By>>;
+  where?: InputMaybe<Trade_Datas_Bool_Exp>;
+};
+
+
+export type Subscription_RootTrade_Datas_By_PkArgs = {
+  position_id: Scalars['String']['input'];
+  transaction_version: Scalars['bigint']['input'];
+};
+
+
+export type Subscription_RootTrade_Datas_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Trade_Datas_Stream_Cursor_Input>>;
+  where?: InputMaybe<Trade_Datas_Bool_Exp>;
+};
+
+
+export type Subscription_RootVault_Collection_ConfigsArgs = {
+  distinct_on?: InputMaybe<Array<Vault_Collection_Configs_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Vault_Collection_Configs_Order_By>>;
+  where?: InputMaybe<Vault_Collection_Configs_Bool_Exp>;
+};
+
+
+export type Subscription_RootVault_Collection_Configs_By_PkArgs = {
+  transaction_version: Scalars['bigint']['input'];
+  write_set_change_index: Scalars['bigint']['input'];
+};
+
+
+export type Subscription_RootVault_Collection_Configs_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Vault_Collection_Configs_Stream_Cursor_Input>>;
+  where?: InputMaybe<Vault_Collection_Configs_Bool_Exp>;
+};
+
+
+export type Subscription_RootVault_Collection_DatasArgs = {
+  distinct_on?: InputMaybe<Array<Vault_Collection_Datas_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Vault_Collection_Datas_Order_By>>;
+  where?: InputMaybe<Vault_Collection_Datas_Bool_Exp>;
+};
+
+
+export type Subscription_RootVault_Collection_Datas_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Vault_Collection_Datas_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Vault_Collection_Datas_Order_By>>;
+  where?: InputMaybe<Vault_Collection_Datas_Bool_Exp>;
+};
+
+
+export type Subscription_RootVault_Collection_Datas_By_PkArgs = {
+  transaction_version: Scalars['bigint']['input'];
+  write_set_change_index: Scalars['bigint']['input'];
+};
+
+
+export type Subscription_RootVault_Collection_Datas_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Vault_Collection_Datas_Stream_Cursor_Input>>;
+  where?: InputMaybe<Vault_Collection_Datas_Bool_Exp>;
 };
 
 
@@ -3630,6 +4478,683 @@ export type Timestamp_Comparison_Exp = {
   _lte?: InputMaybe<Scalars['timestamp']['input']>;
   _neq?: InputMaybe<Scalars['timestamp']['input']>;
   _nin?: InputMaybe<Array<Scalars['timestamp']['input']>>;
+};
+
+/** columns and relationships of "tpsl_datas" */
+export type Tpsl_Datas = {
+  __typename?: 'tpsl_datas';
+  market_id: Scalars['String']['output'];
+  owner_addr: Scalars['String']['output'];
+  position_id: Scalars['String']['output'];
+  stop_loss_price: Scalars['numeric']['output'];
+  take_profit_price: Scalars['numeric']['output'];
+  transaction_timestamp: Scalars['timestamp']['output'];
+  transaction_version: Scalars['bigint']['output'];
+  trigger_payment_amount: Scalars['numeric']['output'];
+  write_set_change_index: Scalars['bigint']['output'];
+};
+
+/** Boolean expression to filter rows from the table "tpsl_datas". All fields are combined with a logical 'AND'. */
+export type Tpsl_Datas_Bool_Exp = {
+  _and?: InputMaybe<Array<Tpsl_Datas_Bool_Exp>>;
+  _not?: InputMaybe<Tpsl_Datas_Bool_Exp>;
+  _or?: InputMaybe<Array<Tpsl_Datas_Bool_Exp>>;
+  market_id?: InputMaybe<String_Comparison_Exp>;
+  owner_addr?: InputMaybe<String_Comparison_Exp>;
+  position_id?: InputMaybe<String_Comparison_Exp>;
+  stop_loss_price?: InputMaybe<Numeric_Comparison_Exp>;
+  take_profit_price?: InputMaybe<Numeric_Comparison_Exp>;
+  transaction_timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
+  transaction_version?: InputMaybe<Bigint_Comparison_Exp>;
+  trigger_payment_amount?: InputMaybe<Numeric_Comparison_Exp>;
+  write_set_change_index?: InputMaybe<Bigint_Comparison_Exp>;
+};
+
+/** Ordering options when selecting data from "tpsl_datas". */
+export type Tpsl_Datas_Order_By = {
+  market_id?: InputMaybe<Order_By>;
+  owner_addr?: InputMaybe<Order_By>;
+  position_id?: InputMaybe<Order_By>;
+  stop_loss_price?: InputMaybe<Order_By>;
+  take_profit_price?: InputMaybe<Order_By>;
+  transaction_timestamp?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  trigger_payment_amount?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "tpsl_datas" */
+export enum Tpsl_Datas_Select_Column {
+  /** column name */
+  MarketId = 'market_id',
+  /** column name */
+  OwnerAddr = 'owner_addr',
+  /** column name */
+  PositionId = 'position_id',
+  /** column name */
+  StopLossPrice = 'stop_loss_price',
+  /** column name */
+  TakeProfitPrice = 'take_profit_price',
+  /** column name */
+  TransactionTimestamp = 'transaction_timestamp',
+  /** column name */
+  TransactionVersion = 'transaction_version',
+  /** column name */
+  TriggerPaymentAmount = 'trigger_payment_amount',
+  /** column name */
+  WriteSetChangeIndex = 'write_set_change_index'
+}
+
+/** Streaming cursor of the table "tpsl_datas" */
+export type Tpsl_Datas_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Tpsl_Datas_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Tpsl_Datas_Stream_Cursor_Value_Input = {
+  market_id?: InputMaybe<Scalars['String']['input']>;
+  owner_addr?: InputMaybe<Scalars['String']['input']>;
+  position_id?: InputMaybe<Scalars['String']['input']>;
+  stop_loss_price?: InputMaybe<Scalars['numeric']['input']>;
+  take_profit_price?: InputMaybe<Scalars['numeric']['input']>;
+  transaction_timestamp?: InputMaybe<Scalars['timestamp']['input']>;
+  transaction_version?: InputMaybe<Scalars['bigint']['input']>;
+  trigger_payment_amount?: InputMaybe<Scalars['numeric']['input']>;
+  write_set_change_index?: InputMaybe<Scalars['bigint']['input']>;
+};
+
+/** columns and relationships of "trade_datas" */
+export type Trade_Datas = {
+  __typename?: 'trade_datas';
+  fee: Scalars['numeric']['output'];
+  is_long: Scalars['Boolean']['output'];
+  market_id: Scalars['String']['output'];
+  owner_addr: Scalars['String']['output'];
+  pnl: Scalars['numeric']['output'];
+  position_id: Scalars['String']['output'];
+  position_size: Scalars['numeric']['output'];
+  price: Scalars['numeric']['output'];
+  transaction_timestamp: Scalars['timestamp']['output'];
+  transaction_version: Scalars['bigint']['output'];
+};
+
+/** order by aggregate values of table "trade_datas" */
+export type Trade_Datas_Aggregate_Order_By = {
+  avg?: InputMaybe<Trade_Datas_Avg_Order_By>;
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<Trade_Datas_Max_Order_By>;
+  min?: InputMaybe<Trade_Datas_Min_Order_By>;
+  stddev?: InputMaybe<Trade_Datas_Stddev_Order_By>;
+  stddev_pop?: InputMaybe<Trade_Datas_Stddev_Pop_Order_By>;
+  stddev_samp?: InputMaybe<Trade_Datas_Stddev_Samp_Order_By>;
+  sum?: InputMaybe<Trade_Datas_Sum_Order_By>;
+  var_pop?: InputMaybe<Trade_Datas_Var_Pop_Order_By>;
+  var_samp?: InputMaybe<Trade_Datas_Var_Samp_Order_By>;
+  variance?: InputMaybe<Trade_Datas_Variance_Order_By>;
+};
+
+/** order by avg() on columns of table "trade_datas" */
+export type Trade_Datas_Avg_Order_By = {
+  fee?: InputMaybe<Order_By>;
+  pnl?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  price?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+};
+
+/** Boolean expression to filter rows from the table "trade_datas". All fields are combined with a logical 'AND'. */
+export type Trade_Datas_Bool_Exp = {
+  _and?: InputMaybe<Array<Trade_Datas_Bool_Exp>>;
+  _not?: InputMaybe<Trade_Datas_Bool_Exp>;
+  _or?: InputMaybe<Array<Trade_Datas_Bool_Exp>>;
+  fee?: InputMaybe<Numeric_Comparison_Exp>;
+  is_long?: InputMaybe<Boolean_Comparison_Exp>;
+  market_id?: InputMaybe<String_Comparison_Exp>;
+  owner_addr?: InputMaybe<String_Comparison_Exp>;
+  pnl?: InputMaybe<Numeric_Comparison_Exp>;
+  position_id?: InputMaybe<String_Comparison_Exp>;
+  position_size?: InputMaybe<Numeric_Comparison_Exp>;
+  price?: InputMaybe<Numeric_Comparison_Exp>;
+  transaction_timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
+  transaction_version?: InputMaybe<Bigint_Comparison_Exp>;
+};
+
+/** order by max() on columns of table "trade_datas" */
+export type Trade_Datas_Max_Order_By = {
+  fee?: InputMaybe<Order_By>;
+  market_id?: InputMaybe<Order_By>;
+  owner_addr?: InputMaybe<Order_By>;
+  pnl?: InputMaybe<Order_By>;
+  position_id?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  price?: InputMaybe<Order_By>;
+  transaction_timestamp?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+};
+
+/** order by min() on columns of table "trade_datas" */
+export type Trade_Datas_Min_Order_By = {
+  fee?: InputMaybe<Order_By>;
+  market_id?: InputMaybe<Order_By>;
+  owner_addr?: InputMaybe<Order_By>;
+  pnl?: InputMaybe<Order_By>;
+  position_id?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  price?: InputMaybe<Order_By>;
+  transaction_timestamp?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+};
+
+/** Ordering options when selecting data from "trade_datas". */
+export type Trade_Datas_Order_By = {
+  fee?: InputMaybe<Order_By>;
+  is_long?: InputMaybe<Order_By>;
+  market_id?: InputMaybe<Order_By>;
+  owner_addr?: InputMaybe<Order_By>;
+  pnl?: InputMaybe<Order_By>;
+  position_id?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  price?: InputMaybe<Order_By>;
+  transaction_timestamp?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "trade_datas" */
+export enum Trade_Datas_Select_Column {
+  /** column name */
+  Fee = 'fee',
+  /** column name */
+  IsLong = 'is_long',
+  /** column name */
+  MarketId = 'market_id',
+  /** column name */
+  OwnerAddr = 'owner_addr',
+  /** column name */
+  Pnl = 'pnl',
+  /** column name */
+  PositionId = 'position_id',
+  /** column name */
+  PositionSize = 'position_size',
+  /** column name */
+  Price = 'price',
+  /** column name */
+  TransactionTimestamp = 'transaction_timestamp',
+  /** column name */
+  TransactionVersion = 'transaction_version'
+}
+
+/** order by stddev() on columns of table "trade_datas" */
+export type Trade_Datas_Stddev_Order_By = {
+  fee?: InputMaybe<Order_By>;
+  pnl?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  price?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+};
+
+/** order by stddev_pop() on columns of table "trade_datas" */
+export type Trade_Datas_Stddev_Pop_Order_By = {
+  fee?: InputMaybe<Order_By>;
+  pnl?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  price?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+};
+
+/** order by stddev_samp() on columns of table "trade_datas" */
+export type Trade_Datas_Stddev_Samp_Order_By = {
+  fee?: InputMaybe<Order_By>;
+  pnl?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  price?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+};
+
+/** Streaming cursor of the table "trade_datas" */
+export type Trade_Datas_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Trade_Datas_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Trade_Datas_Stream_Cursor_Value_Input = {
+  fee?: InputMaybe<Scalars['numeric']['input']>;
+  is_long?: InputMaybe<Scalars['Boolean']['input']>;
+  market_id?: InputMaybe<Scalars['String']['input']>;
+  owner_addr?: InputMaybe<Scalars['String']['input']>;
+  pnl?: InputMaybe<Scalars['numeric']['input']>;
+  position_id?: InputMaybe<Scalars['String']['input']>;
+  position_size?: InputMaybe<Scalars['numeric']['input']>;
+  price?: InputMaybe<Scalars['numeric']['input']>;
+  transaction_timestamp?: InputMaybe<Scalars['timestamp']['input']>;
+  transaction_version?: InputMaybe<Scalars['bigint']['input']>;
+};
+
+/** order by sum() on columns of table "trade_datas" */
+export type Trade_Datas_Sum_Order_By = {
+  fee?: InputMaybe<Order_By>;
+  pnl?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  price?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+};
+
+/** order by var_pop() on columns of table "trade_datas" */
+export type Trade_Datas_Var_Pop_Order_By = {
+  fee?: InputMaybe<Order_By>;
+  pnl?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  price?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+};
+
+/** order by var_samp() on columns of table "trade_datas" */
+export type Trade_Datas_Var_Samp_Order_By = {
+  fee?: InputMaybe<Order_By>;
+  pnl?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  price?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+};
+
+/** order by variance() on columns of table "trade_datas" */
+export type Trade_Datas_Variance_Order_By = {
+  fee?: InputMaybe<Order_By>;
+  pnl?: InputMaybe<Order_By>;
+  position_size?: InputMaybe<Order_By>;
+  price?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+};
+
+/** columns and relationships of "vault_collection_configs" */
+export type Vault_Collection_Configs = {
+  __typename?: 'vault_collection_configs';
+  borrow_fee: Scalars['numeric']['output'];
+  borrow_token_id: Scalars['String']['output'];
+  collateral_token_id: Scalars['String']['output'];
+  collection_id: Scalars['String']['output'];
+  interest_per_second: Scalars['numeric']['output'];
+  liquidation_collateralization_rate: Scalars['numeric']['output'];
+  liquidation_multiplier: Scalars['numeric']['output'];
+  maintenance_collateralization_rate: Scalars['numeric']['output'];
+  protocol_liquidation_fee: Scalars['numeric']['output'];
+  transaction_timestamp: Scalars['timestamp']['output'];
+  transaction_version: Scalars['bigint']['output'];
+  write_set_change_index: Scalars['bigint']['output'];
+};
+
+/** Boolean expression to filter rows from the table "vault_collection_configs". All fields are combined with a logical 'AND'. */
+export type Vault_Collection_Configs_Bool_Exp = {
+  _and?: InputMaybe<Array<Vault_Collection_Configs_Bool_Exp>>;
+  _not?: InputMaybe<Vault_Collection_Configs_Bool_Exp>;
+  _or?: InputMaybe<Array<Vault_Collection_Configs_Bool_Exp>>;
+  borrow_fee?: InputMaybe<Numeric_Comparison_Exp>;
+  borrow_token_id?: InputMaybe<String_Comparison_Exp>;
+  collateral_token_id?: InputMaybe<String_Comparison_Exp>;
+  collection_id?: InputMaybe<String_Comparison_Exp>;
+  interest_per_second?: InputMaybe<Numeric_Comparison_Exp>;
+  liquidation_collateralization_rate?: InputMaybe<Numeric_Comparison_Exp>;
+  liquidation_multiplier?: InputMaybe<Numeric_Comparison_Exp>;
+  maintenance_collateralization_rate?: InputMaybe<Numeric_Comparison_Exp>;
+  protocol_liquidation_fee?: InputMaybe<Numeric_Comparison_Exp>;
+  transaction_timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
+  transaction_version?: InputMaybe<Bigint_Comparison_Exp>;
+  write_set_change_index?: InputMaybe<Bigint_Comparison_Exp>;
+};
+
+/** Ordering options when selecting data from "vault_collection_configs". */
+export type Vault_Collection_Configs_Order_By = {
+  borrow_fee?: InputMaybe<Order_By>;
+  borrow_token_id?: InputMaybe<Order_By>;
+  collateral_token_id?: InputMaybe<Order_By>;
+  collection_id?: InputMaybe<Order_By>;
+  interest_per_second?: InputMaybe<Order_By>;
+  liquidation_collateralization_rate?: InputMaybe<Order_By>;
+  liquidation_multiplier?: InputMaybe<Order_By>;
+  maintenance_collateralization_rate?: InputMaybe<Order_By>;
+  protocol_liquidation_fee?: InputMaybe<Order_By>;
+  transaction_timestamp?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "vault_collection_configs" */
+export enum Vault_Collection_Configs_Select_Column {
+  /** column name */
+  BorrowFee = 'borrow_fee',
+  /** column name */
+  BorrowTokenId = 'borrow_token_id',
+  /** column name */
+  CollateralTokenId = 'collateral_token_id',
+  /** column name */
+  CollectionId = 'collection_id',
+  /** column name */
+  InterestPerSecond = 'interest_per_second',
+  /** column name */
+  LiquidationCollateralizationRate = 'liquidation_collateralization_rate',
+  /** column name */
+  LiquidationMultiplier = 'liquidation_multiplier',
+  /** column name */
+  MaintenanceCollateralizationRate = 'maintenance_collateralization_rate',
+  /** column name */
+  ProtocolLiquidationFee = 'protocol_liquidation_fee',
+  /** column name */
+  TransactionTimestamp = 'transaction_timestamp',
+  /** column name */
+  TransactionVersion = 'transaction_version',
+  /** column name */
+  WriteSetChangeIndex = 'write_set_change_index'
+}
+
+/** Streaming cursor of the table "vault_collection_configs" */
+export type Vault_Collection_Configs_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Vault_Collection_Configs_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Vault_Collection_Configs_Stream_Cursor_Value_Input = {
+  borrow_fee?: InputMaybe<Scalars['numeric']['input']>;
+  borrow_token_id?: InputMaybe<Scalars['String']['input']>;
+  collateral_token_id?: InputMaybe<Scalars['String']['input']>;
+  collection_id?: InputMaybe<Scalars['String']['input']>;
+  interest_per_second?: InputMaybe<Scalars['numeric']['input']>;
+  liquidation_collateralization_rate?: InputMaybe<Scalars['numeric']['input']>;
+  liquidation_multiplier?: InputMaybe<Scalars['numeric']['input']>;
+  maintenance_collateralization_rate?: InputMaybe<Scalars['numeric']['input']>;
+  protocol_liquidation_fee?: InputMaybe<Scalars['numeric']['input']>;
+  transaction_timestamp?: InputMaybe<Scalars['timestamp']['input']>;
+  transaction_version?: InputMaybe<Scalars['bigint']['input']>;
+  write_set_change_index?: InputMaybe<Scalars['bigint']['input']>;
+};
+
+/** columns and relationships of "vault_collection_datas" */
+export type Vault_Collection_Datas = {
+  __typename?: 'vault_collection_datas';
+  borrow_base: Scalars['numeric']['output'];
+  borrow_elastic: Scalars['numeric']['output'];
+  borrow_token_id: Scalars['String']['output'];
+  cached_exchange_rate: Scalars['numeric']['output'];
+  collateral_token_id: Scalars['String']['output'];
+  collection_id: Scalars['String']['output'];
+  global_debt_part: Scalars['numeric']['output'];
+  is_emergency: Scalars['Boolean']['output'];
+  last_interest_payment: Scalars['timestamp']['output'];
+  last_interest_update: Scalars['timestamp']['output'];
+  total_collateral: Scalars['numeric']['output'];
+  transaction_timestamp: Scalars['timestamp']['output'];
+  transaction_version: Scalars['bigint']['output'];
+  /** An object relationship */
+  vault_collection_debt_store_datas?: Maybe<Mirage_Debt_Store_Datas>;
+  write_set_change_index: Scalars['bigint']['output'];
+};
+
+/** aggregated selection of "vault_collection_datas" */
+export type Vault_Collection_Datas_Aggregate = {
+  __typename?: 'vault_collection_datas_aggregate';
+  aggregate?: Maybe<Vault_Collection_Datas_Aggregate_Fields>;
+  nodes: Array<Vault_Collection_Datas>;
+};
+
+/** aggregate fields of "vault_collection_datas" */
+export type Vault_Collection_Datas_Aggregate_Fields = {
+  __typename?: 'vault_collection_datas_aggregate_fields';
+  avg?: Maybe<Vault_Collection_Datas_Avg_Fields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<Vault_Collection_Datas_Max_Fields>;
+  min?: Maybe<Vault_Collection_Datas_Min_Fields>;
+  stddev?: Maybe<Vault_Collection_Datas_Stddev_Fields>;
+  stddev_pop?: Maybe<Vault_Collection_Datas_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Vault_Collection_Datas_Stddev_Samp_Fields>;
+  sum?: Maybe<Vault_Collection_Datas_Sum_Fields>;
+  var_pop?: Maybe<Vault_Collection_Datas_Var_Pop_Fields>;
+  var_samp?: Maybe<Vault_Collection_Datas_Var_Samp_Fields>;
+  variance?: Maybe<Vault_Collection_Datas_Variance_Fields>;
+};
+
+
+/** aggregate fields of "vault_collection_datas" */
+export type Vault_Collection_Datas_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Vault_Collection_Datas_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type Vault_Collection_Datas_Avg_Fields = {
+  __typename?: 'vault_collection_datas_avg_fields';
+  borrow_base?: Maybe<Scalars['Float']['output']>;
+  borrow_elastic?: Maybe<Scalars['Float']['output']>;
+  cached_exchange_rate?: Maybe<Scalars['Float']['output']>;
+  global_debt_part?: Maybe<Scalars['Float']['output']>;
+  total_collateral?: Maybe<Scalars['Float']['output']>;
+  transaction_version?: Maybe<Scalars['Float']['output']>;
+  write_set_change_index?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "vault_collection_datas". All fields are combined with a logical 'AND'. */
+export type Vault_Collection_Datas_Bool_Exp = {
+  _and?: InputMaybe<Array<Vault_Collection_Datas_Bool_Exp>>;
+  _not?: InputMaybe<Vault_Collection_Datas_Bool_Exp>;
+  _or?: InputMaybe<Array<Vault_Collection_Datas_Bool_Exp>>;
+  borrow_base?: InputMaybe<Numeric_Comparison_Exp>;
+  borrow_elastic?: InputMaybe<Numeric_Comparison_Exp>;
+  borrow_token_id?: InputMaybe<String_Comparison_Exp>;
+  cached_exchange_rate?: InputMaybe<Numeric_Comparison_Exp>;
+  collateral_token_id?: InputMaybe<String_Comparison_Exp>;
+  collection_id?: InputMaybe<String_Comparison_Exp>;
+  global_debt_part?: InputMaybe<Numeric_Comparison_Exp>;
+  is_emergency?: InputMaybe<Boolean_Comparison_Exp>;
+  last_interest_payment?: InputMaybe<Timestamp_Comparison_Exp>;
+  last_interest_update?: InputMaybe<Timestamp_Comparison_Exp>;
+  total_collateral?: InputMaybe<Numeric_Comparison_Exp>;
+  transaction_timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
+  transaction_version?: InputMaybe<Bigint_Comparison_Exp>;
+  vault_collection_debt_store_datas?: InputMaybe<Mirage_Debt_Store_Datas_Bool_Exp>;
+  write_set_change_index?: InputMaybe<Bigint_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Vault_Collection_Datas_Max_Fields = {
+  __typename?: 'vault_collection_datas_max_fields';
+  borrow_base?: Maybe<Scalars['numeric']['output']>;
+  borrow_elastic?: Maybe<Scalars['numeric']['output']>;
+  borrow_token_id?: Maybe<Scalars['String']['output']>;
+  cached_exchange_rate?: Maybe<Scalars['numeric']['output']>;
+  collateral_token_id?: Maybe<Scalars['String']['output']>;
+  collection_id?: Maybe<Scalars['String']['output']>;
+  global_debt_part?: Maybe<Scalars['numeric']['output']>;
+  last_interest_payment?: Maybe<Scalars['timestamp']['output']>;
+  last_interest_update?: Maybe<Scalars['timestamp']['output']>;
+  total_collateral?: Maybe<Scalars['numeric']['output']>;
+  transaction_timestamp?: Maybe<Scalars['timestamp']['output']>;
+  transaction_version?: Maybe<Scalars['bigint']['output']>;
+  write_set_change_index?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** aggregate min on columns */
+export type Vault_Collection_Datas_Min_Fields = {
+  __typename?: 'vault_collection_datas_min_fields';
+  borrow_base?: Maybe<Scalars['numeric']['output']>;
+  borrow_elastic?: Maybe<Scalars['numeric']['output']>;
+  borrow_token_id?: Maybe<Scalars['String']['output']>;
+  cached_exchange_rate?: Maybe<Scalars['numeric']['output']>;
+  collateral_token_id?: Maybe<Scalars['String']['output']>;
+  collection_id?: Maybe<Scalars['String']['output']>;
+  global_debt_part?: Maybe<Scalars['numeric']['output']>;
+  last_interest_payment?: Maybe<Scalars['timestamp']['output']>;
+  last_interest_update?: Maybe<Scalars['timestamp']['output']>;
+  total_collateral?: Maybe<Scalars['numeric']['output']>;
+  transaction_timestamp?: Maybe<Scalars['timestamp']['output']>;
+  transaction_version?: Maybe<Scalars['bigint']['output']>;
+  write_set_change_index?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** Ordering options when selecting data from "vault_collection_datas". */
+export type Vault_Collection_Datas_Order_By = {
+  borrow_base?: InputMaybe<Order_By>;
+  borrow_elastic?: InputMaybe<Order_By>;
+  borrow_token_id?: InputMaybe<Order_By>;
+  cached_exchange_rate?: InputMaybe<Order_By>;
+  collateral_token_id?: InputMaybe<Order_By>;
+  collection_id?: InputMaybe<Order_By>;
+  global_debt_part?: InputMaybe<Order_By>;
+  is_emergency?: InputMaybe<Order_By>;
+  last_interest_payment?: InputMaybe<Order_By>;
+  last_interest_update?: InputMaybe<Order_By>;
+  total_collateral?: InputMaybe<Order_By>;
+  transaction_timestamp?: InputMaybe<Order_By>;
+  transaction_version?: InputMaybe<Order_By>;
+  vault_collection_debt_store_datas?: InputMaybe<Mirage_Debt_Store_Datas_Order_By>;
+  write_set_change_index?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "vault_collection_datas" */
+export enum Vault_Collection_Datas_Select_Column {
+  /** column name */
+  BorrowBase = 'borrow_base',
+  /** column name */
+  BorrowElastic = 'borrow_elastic',
+  /** column name */
+  BorrowTokenId = 'borrow_token_id',
+  /** column name */
+  CachedExchangeRate = 'cached_exchange_rate',
+  /** column name */
+  CollateralTokenId = 'collateral_token_id',
+  /** column name */
+  CollectionId = 'collection_id',
+  /** column name */
+  GlobalDebtPart = 'global_debt_part',
+  /** column name */
+  IsEmergency = 'is_emergency',
+  /** column name */
+  LastInterestPayment = 'last_interest_payment',
+  /** column name */
+  LastInterestUpdate = 'last_interest_update',
+  /** column name */
+  TotalCollateral = 'total_collateral',
+  /** column name */
+  TransactionTimestamp = 'transaction_timestamp',
+  /** column name */
+  TransactionVersion = 'transaction_version',
+  /** column name */
+  WriteSetChangeIndex = 'write_set_change_index'
+}
+
+/** aggregate stddev on columns */
+export type Vault_Collection_Datas_Stddev_Fields = {
+  __typename?: 'vault_collection_datas_stddev_fields';
+  borrow_base?: Maybe<Scalars['Float']['output']>;
+  borrow_elastic?: Maybe<Scalars['Float']['output']>;
+  cached_exchange_rate?: Maybe<Scalars['Float']['output']>;
+  global_debt_part?: Maybe<Scalars['Float']['output']>;
+  total_collateral?: Maybe<Scalars['Float']['output']>;
+  transaction_version?: Maybe<Scalars['Float']['output']>;
+  write_set_change_index?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Vault_Collection_Datas_Stddev_Pop_Fields = {
+  __typename?: 'vault_collection_datas_stddev_pop_fields';
+  borrow_base?: Maybe<Scalars['Float']['output']>;
+  borrow_elastic?: Maybe<Scalars['Float']['output']>;
+  cached_exchange_rate?: Maybe<Scalars['Float']['output']>;
+  global_debt_part?: Maybe<Scalars['Float']['output']>;
+  total_collateral?: Maybe<Scalars['Float']['output']>;
+  transaction_version?: Maybe<Scalars['Float']['output']>;
+  write_set_change_index?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Vault_Collection_Datas_Stddev_Samp_Fields = {
+  __typename?: 'vault_collection_datas_stddev_samp_fields';
+  borrow_base?: Maybe<Scalars['Float']['output']>;
+  borrow_elastic?: Maybe<Scalars['Float']['output']>;
+  cached_exchange_rate?: Maybe<Scalars['Float']['output']>;
+  global_debt_part?: Maybe<Scalars['Float']['output']>;
+  total_collateral?: Maybe<Scalars['Float']['output']>;
+  transaction_version?: Maybe<Scalars['Float']['output']>;
+  write_set_change_index?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "vault_collection_datas" */
+export type Vault_Collection_Datas_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Vault_Collection_Datas_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Vault_Collection_Datas_Stream_Cursor_Value_Input = {
+  borrow_base?: InputMaybe<Scalars['numeric']['input']>;
+  borrow_elastic?: InputMaybe<Scalars['numeric']['input']>;
+  borrow_token_id?: InputMaybe<Scalars['String']['input']>;
+  cached_exchange_rate?: InputMaybe<Scalars['numeric']['input']>;
+  collateral_token_id?: InputMaybe<Scalars['String']['input']>;
+  collection_id?: InputMaybe<Scalars['String']['input']>;
+  global_debt_part?: InputMaybe<Scalars['numeric']['input']>;
+  is_emergency?: InputMaybe<Scalars['Boolean']['input']>;
+  last_interest_payment?: InputMaybe<Scalars['timestamp']['input']>;
+  last_interest_update?: InputMaybe<Scalars['timestamp']['input']>;
+  total_collateral?: InputMaybe<Scalars['numeric']['input']>;
+  transaction_timestamp?: InputMaybe<Scalars['timestamp']['input']>;
+  transaction_version?: InputMaybe<Scalars['bigint']['input']>;
+  write_set_change_index?: InputMaybe<Scalars['bigint']['input']>;
+};
+
+/** aggregate sum on columns */
+export type Vault_Collection_Datas_Sum_Fields = {
+  __typename?: 'vault_collection_datas_sum_fields';
+  borrow_base?: Maybe<Scalars['numeric']['output']>;
+  borrow_elastic?: Maybe<Scalars['numeric']['output']>;
+  cached_exchange_rate?: Maybe<Scalars['numeric']['output']>;
+  global_debt_part?: Maybe<Scalars['numeric']['output']>;
+  total_collateral?: Maybe<Scalars['numeric']['output']>;
+  transaction_version?: Maybe<Scalars['bigint']['output']>;
+  write_set_change_index?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** aggregate var_pop on columns */
+export type Vault_Collection_Datas_Var_Pop_Fields = {
+  __typename?: 'vault_collection_datas_var_pop_fields';
+  borrow_base?: Maybe<Scalars['Float']['output']>;
+  borrow_elastic?: Maybe<Scalars['Float']['output']>;
+  cached_exchange_rate?: Maybe<Scalars['Float']['output']>;
+  global_debt_part?: Maybe<Scalars['Float']['output']>;
+  total_collateral?: Maybe<Scalars['Float']['output']>;
+  transaction_version?: Maybe<Scalars['Float']['output']>;
+  write_set_change_index?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate var_samp on columns */
+export type Vault_Collection_Datas_Var_Samp_Fields = {
+  __typename?: 'vault_collection_datas_var_samp_fields';
+  borrow_base?: Maybe<Scalars['Float']['output']>;
+  borrow_elastic?: Maybe<Scalars['Float']['output']>;
+  cached_exchange_rate?: Maybe<Scalars['Float']['output']>;
+  global_debt_part?: Maybe<Scalars['Float']['output']>;
+  total_collateral?: Maybe<Scalars['Float']['output']>;
+  transaction_version?: Maybe<Scalars['Float']['output']>;
+  write_set_change_index?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type Vault_Collection_Datas_Variance_Fields = {
+  __typename?: 'vault_collection_datas_variance_fields';
+  borrow_base?: Maybe<Scalars['Float']['output']>;
+  borrow_elastic?: Maybe<Scalars['Float']['output']>;
+  cached_exchange_rate?: Maybe<Scalars['Float']['output']>;
+  global_debt_part?: Maybe<Scalars['Float']['output']>;
+  total_collateral?: Maybe<Scalars['Float']['output']>;
+  transaction_version?: Maybe<Scalars['Float']['output']>;
+  write_set_change_index?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "vault_datas" */
@@ -3842,34 +5367,44 @@ export type Vault_Datas_Variance_Fields = {
 
 export type GetVaultCollectionAprQueryVariables = Exact<{
   prevDebtTimestamp: Scalars['timestamp']['input'];
+  collectionId: Scalars['String']['input'];
 }>;
 
 
-export type GetVaultCollectionAprQuery = { __typename?: 'query_root', prevDebt: Array<{ __typename?: 'mirage_debt_store_datas', transactionTimestamp: any, transactionVersion: any, debtBase: any, debtElastic: any, assetType: string }>, currentDebt: Array<{ __typename?: 'mirage_debt_store_datas', transactionTimestamp: any, transactionVersion: any, debtBase: any, debtElastic: any, assetType: string }> };
+export type GetVaultCollectionAprQuery = { __typename?: 'query_root', prevDebt: Array<{ __typename?: 'vault_collection_datas', transactionTimestamp: any, transactionVersion: any, borrowBase: any, borrowElastic: any, globalDebt?: { __typename?: 'mirage_debt_store_datas', debtBase: any, debtElastic: any, assetType: string } | null }>, currentDebt: Array<{ __typename?: 'vault_collection_datas', transactionTimestamp: any, transactionVersion: any, borrowBase: any, borrowElastic: any, globalDebt?: { __typename?: 'mirage_debt_store_datas', debtBase: any, debtElastic: any, assetType: string } | null }> };
 
 
 export const GetVaultCollectionAprDocument = gql`
-    query GetVaultCollectionAPR($prevDebtTimestamp: timestamp!) {
-  prevDebt: mirage_debt_store_datas(
-    order_by: [{asset_type: asc}, {transaction_version: asc}]
-    distinct_on: [asset_type]
-    where: {transaction_timestamp: {_gte: $prevDebtTimestamp}}
+    query GetVaultCollectionAPR($prevDebtTimestamp: timestamp!, $collectionId: String!) {
+  prevDebt: vault_collection_datas(
+    order_by: {transaction_version: asc}
+    where: {_and: {collection_id: {_eq: $collectionId}, transaction_timestamp: {_gte: $prevDebtTimestamp}, global_debt_part: {_gt: 0}}}
+    limit: 1
   ) {
     transactionTimestamp: transaction_timestamp
     transactionVersion: transaction_version
-    debtBase: debt_base
-    debtElastic: debt_elastic
-    assetType: asset_type
+    borrowBase: borrow_base
+    borrowElastic: borrow_elastic
+    globalDebt: vault_collection_debt_store_datas {
+      debtBase: debt_base
+      debtElastic: debt_elastic
+      assetType: asset_type
+    }
   }
-  currentDebt: mirage_debt_store_datas(
-    order_by: [{asset_type: asc}, {transaction_version: desc}]
-    distinct_on: [asset_type]
+  currentDebt: vault_collection_datas(
+    order_by: {transaction_version: desc}
+    where: {collection_id: {_eq: $collectionId}}
+    limit: 1
   ) {
     transactionTimestamp: transaction_timestamp
     transactionVersion: transaction_version
-    debtBase: debt_base
-    debtElastic: debt_elastic
-    assetType: asset_type
+    borrowBase: borrow_base
+    borrowElastic: borrow_elastic
+    globalDebt: vault_collection_debt_store_datas {
+      debtBase: debt_base
+      debtElastic: debt_elastic
+      assetType: asset_type
+    }
   }
 }
     `;

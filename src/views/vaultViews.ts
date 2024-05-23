@@ -1,4 +1,4 @@
-import { InputViewFunctionData, MoveObjectType } from '@aptos-labs/ts-sdk'
+import { AccountAddress, InputViewFunctionData, MoveObjectType } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 import { cacheExchange, createClient, errorExchange, fetchExchange } from 'urql'
 
@@ -16,6 +16,7 @@ import {
   GetTokenIdsFromCollectionsByOwnerQueryVariables,
 } from '../generated/graphql'
 import { GetVaultCollectionAprDocument, GetVaultCollectionAprQueryVariables } from '../generated/mirage/graphql'
+import { Rebase } from '../entities'
 
 export const graphqlClient = createClient({
   url: 'https://api.testnet.aptoslabs.com/v1/graphql',
@@ -121,9 +122,10 @@ export const getCollateralTokenFromCollection = async (
   }
 }
 
-export const getVaultCollectionAnnualizedReturn = async (beginDate: Date): Promise<{ apr: number; apy: number }> => {
+export const getVaultCollectionAPR = async (beginDate: Date, collectionId: AccountAddress): Promise<number> => {
   const variables: GetVaultCollectionAprQueryVariables = {
     prevDebtTimestamp: beginDate.toISOString(),
+    collectionId: collectionId.toStringLong(),
   }
 
   const result = await mirageGraphQlClient.query(GetVaultCollectionAprDocument, variables).toPromise()
@@ -137,35 +139,33 @@ export const getVaultCollectionAnnualizedReturn = async (beginDate: Date): Promi
     throw new Error('No data returned from GraphQL query')
   }
 
+  console.log(result)
   if (result.data.prevDebt.length == 0 && result.data.currentDebt.length == 0) {
-    return { apr: 0, apy: 0 }
+    return 0
   }
 
   /// Ownership value can be calculated as:
   /// base_part * total_elastic / total_base
 
-  let lastBaseValue = BigNumber(1)
-  if (result.data.prevDebt[0].debtBase > 0) {
-    lastBaseValue = BigNumber(result.data.prevDebt[0].debtElastic).div(result.data.prevDebt[0].debtBase)
-  }
-  let currentBaseValue = BigNumber(1)
-  if (result.data.currentDebt[0].debtBase > 0) {
-    currentBaseValue = BigNumber(result.data.currentDebt[0].debtElastic).div(result.data.currentDebt[0].debtBase)
-  }
+  let prevDebt = result.data.prevDebt[0]
+  let currentDebt = result.data.currentDebt[0]
 
-  const interestEarned = currentBaseValue.minus(lastBaseValue).toNumber()
+  let prevGlobalRebase = new Rebase(BigNumber(prevDebt.globalDebt.debtElastic), BigNumber(prevDebt.globalDebt.debtBase))
+  let currentGlobalRebase = new Rebase(BigNumber(currentDebt.globalDebt.debtElastic), BigNumber(currentDebt.globalDebt.debtBase))
+
+  let collectionPrevDebt = prevGlobalRebase.toElastic(BigNumber(prevDebt.borrowElastic), true).div(prevDebt.borrowBase)
+  let collectionCurrentDebt = currentGlobalRebase.toElastic(BigNumber(currentDebt.borrowElastic), true).div(currentDebt.borrowBase)
+
+  let interestEarned = collectionPrevDebt.minus(collectionCurrentDebt).div(collectionCurrentDebt)
+
   const duration =
     new Date(result.data.currentDebt[0].transactionTimestamp).getTime() -
     new Date(result.data.prevDebt[0].transactionTimestamp).getTime()
 
   const year = 60 * 60 * 24 * 365 * 1000
 
-  const apr = interestEarned / (duration / year)
-  const apy = Math.exp(apr) - 1
-  return {
-    apr: apr * 100,
-    apy: apy * 100,
-  }
+  const apr = interestEarned.div(duration / year)
+  return apr.toNumber()
 }
 
 // export const getVaultCollection = async (
