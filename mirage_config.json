@@ -1,39 +1,39 @@
 {
   "modules": {
-    "mirage": "0xb69b14765ca9732faa47cebc4bdfa5906630b4fda45b191e74c5b1a75b9625b6",
-    "mirage_core": "0xf04c424f18d7017ef47c66e76feaf7132c6c3cc25b6c74391a9dd2ef7d5f81b7",
-    "mirage_oracle": "0xfa48874cfb06ae96cfc0a13a47da65e654b3ba79b3ea5f53f3fd20f4fa9456dd",
-    "mirage_scripts": "0xd26b159ecdbcca7d70e2f6e9b2e92df2724ee3f9a6e8103042087f528da72fe0",
-    "mirage_swap": "0xe53102f7e24cd9e9e911d455b2acf7b95cfe2996efad67378448457b2b5332cc"
+    "mirage": "0x366c7732a9d7128adad6c5f7233eb98f87380b367dddcdde2551444bacd84c1c",
+    "mirage_core": "0xa49cc42de16c2fbde2fe8c9ccaab95e8f38ac53ba23353a745c9514f2c086b25",
+    "mirage_oracle": "0xd420e28be330278929bf8221af5fda4dcb797c0f61f7a02f5243cbab31fd3c02",
+    "mirage_scripts": "0x0e6a1bd5e1801527067594a2d0320d32c4d46464b9ebe7bf4d146918346d9059",
+    "mirage_swap": "0x847a5e00321415800af8f4581ce5b27794eef3d6637ae8d04b9fe30d7a7a752f"
   },
   "markets": {
     "mUSD": {
-      "PEPE1000PERP": "0x7bdde6d969127cd273da067e0468fe23e71d81870236dba375384a94572ce3b1",
-      "APTPERP": "0x2c5bb9f7c134546b84981950a1f8829e8c0483021118bb2caaf856845d3c695e",
-      "ARBPERP": "0x8b2665a842820b5d188e73de9baa3dc6cb088eea169281883a9727e0595e0c90",
-      "BTCPERP": "0x8a2df15f1762027933c09cb1c553f3dba0dd8ef71bcdb500b3b9c9dcd02f3a6b",
-      "ETHPERP": "0x11298d1250884b7ce65f4d2d04f2ebe7b4278f9e58fc2bdd35b2122a2e9708a7",
-      "EURPERP": "0x36207e06ce7fb0f1ee26c90bc19cc02d6568731f948a5fab26ad83d8fa7d3e0a",
-      "GBPPERP": "0x4853af4bef3bced14395fb44f2e59100ccff3c6d84a40b358b4715498feabed5",
-      "JPYPERP": "0xdefaec8444802cd7d684badf5e97ff7cc7fed4cd62e2866129c71cbe98f62ec4",
-      "OPPERP": "0x065ae76f49b17c5a5dfb6e9d5d1a33ebfaee4d9a3126600fbc9dad0a18a8f816",
-      "SOLPERP": "0x651ee998467cd2bd9b9acb99747019093306afadc6d65357ca27246aa895bc72",
-      "SUIPERP": "0xfaf4c1fd63c7a402d1843abe29209885dd84bfeaddbe7a18e21f02e4b5ca0cd8",
-      "XAGPERP": "0xa0a58e22554b8f1e582cc59339b903881093ca475a80c9498daae372053ca9fa",
-      "XAUPERP": "0x080366b1db4fa9b98ddb2c47a114677cc32a610bab096a5849db62430cff1874"
+      "PEPE1000PERP": "0xa3567d3cc37f5647488a570bf2eb52cb625fdfffdc87dbcce8ecfc71414ef9f4",
+      "APTPERP": "0xde469027d9f521cd67f1eed4d8af8d1184cf9b48b484e74ea23c9d6439a559b0",
+      "ARBPERP": "0x35701f64ded9eb3292fc596201469bea02a1915e86aff9f884cbcd1072c2e1d4",
+      "BTCPERP": "0x5df219cdef45328d5752eaf0915749f5e0aeef3c7e0528374b7cfe6437d8a901",
+      "ETHPERP": "0x8597ff44224e3c9d1bf035ae91bec2b649ec9e2a67ab19c6f47c468e2e6cafb6",
+      "EURPERP": "0x4a6d4705826ddc2bd466c96bf22b04509e79ed36c69667195c20ea8c2c1f2bbc",
+      "GBPPERP": "0xc57a5aa2ead03e0e2d7cd8de726b8f2b38b0c43d3c1837a6bdc992bd248cc35f",
+      "JPYPERP": "0xa797283ac18327ce9bbe5834346ab6001ab718855a4861eea9622653a728ed25",
+      "OPPERP": "0x1232b3c3247a79a5de9d283aaac65953a878f383c66ed5065bfd0c0e74fc6974",
+      "SOLPERP": "0x0b79c4065b6d6e73f6ee949ab5b7a248e5a4260c6e7ac672e4cab454641fb789",
+      "SUIPERP": "0x0301140bd49dd4ff8b14be0dbbdb6326a75141ef136e34223fcf2dd8c66cd8e3",
+      "XAGPERP": "0x5596078a3f5b183a234e039d74d5802b9d27c370cef8f7d9adfcc46034b050d8",
+      "XAUPERP": "0xfd2606eb5be2fb1f5d8299f3967635dff3538d4de0776e66e721e422449b57fa"
     }
   },
   "vaults": {
     "APT": {
-      "mUSD": "0x17d76d6469ca89b179082719f8bbfa576f65478d339f506e00062cb5bcf4dbb5"
+      "mUSD": "0x58b744c52db8e4c180b207453d647a792a53a2e8b0613700e8f0f404c8caff08"
     },
     "tUSDC": {
-      "mUSD": "0x56e34769b766d22937e88b146df4cfcc19a96bb7b8175bff5265215cf926b150"
+      "mUSD": "0x70a476a0776f438ed8eae274b350cd533ba2e0fe45dec4ed2ae480f2a9c1f80c"
     }
   },
   "tokens": {
-    "mUSD": "0x86ebc5abbada0e996cebe3663842664db39e3129c7e2adfe9c31c0785c2d54fe",
-    "APT": "0x0264d15b991b9905b7a7e0668e589d7a02701d7222c1266f0483fce688feaf99",
-    "tUSDC": "0x08bc6e785aeb8decbf91f5c17e5425af3ecdc2c16e5d52d7b020c239e6b00c1d"
+    "mUSD": "0x7928ee33b2e3ee8561f0869ee3f3b93645f3e17ee946718fcd85e852f3f991a7",
+    "APT": "0xc87156f6cc089e9635ed5fb5a794bbf437c1bf4a5111402af45f098c9103ae5e",
+    "tUSDC": "0xb87a58d382cf13ad3a744aded0966e39335fd3595004c05fdef58e55a6ee9a09"
   }
 }
