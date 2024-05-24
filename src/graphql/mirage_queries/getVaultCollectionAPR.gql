@@ -10,7 +10,7 @@ query GetVaultCollectionAPR($prevDebtTimestamp: timestamp!, $collectionId: Strin
     borrowElastic: borrow_elastic,
     globalDebt: vault_collection_debt_store_datas {
       debtBase: debt_base
-      sebtElastic: debt_elastic
+      debtElastic: debt_elastic
       assetType: asset_type
     }
   }

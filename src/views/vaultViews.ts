@@ -9,6 +9,7 @@ import {
   MoveAsset,
   MoveToken,
 } from '../constants'
+import { Rebase } from '../entities'
 import {
   GetTokenIdsFromCollectionByOwnerDocument,
   GetTokenIdsFromCollectionByOwnerQueryVariables,
@@ -16,7 +17,6 @@ import {
   GetTokenIdsFromCollectionsByOwnerQueryVariables,
 } from '../generated/graphql'
 import { GetVaultCollectionAprDocument, GetVaultCollectionAprQueryVariables } from '../generated/mirage/graphql'
-import { Rebase } from '../entities'
 
 export const graphqlClient = createClient({
   url: 'https://api.testnet.aptoslabs.com/v1/graphql',
@@ -139,7 +139,6 @@ export const getVaultCollectionAPR = async (beginDate: Date, collectionId: Accou
     throw new Error('No data returned from GraphQL query')
   }
 
-  console.log(result)
   if (result.data.prevDebt.length == 0 && result.data.currentDebt.length == 0) {
     return 0
   }
@@ -147,16 +146,26 @@ export const getVaultCollectionAPR = async (beginDate: Date, collectionId: Accou
   /// Ownership value can be calculated as:
   /// base_part * total_elastic / total_base
 
-  let prevDebt = result.data.prevDebt[0]
-  let currentDebt = result.data.currentDebt[0]
+  const prevDebt = result.data.prevDebt[0]
+  const currentDebt = result.data.currentDebt[0]
 
-  let prevGlobalRebase = new Rebase(BigNumber(prevDebt.globalDebt.debtElastic), BigNumber(prevDebt.globalDebt.debtBase))
-  let currentGlobalRebase = new Rebase(BigNumber(currentDebt.globalDebt.debtElastic), BigNumber(currentDebt.globalDebt.debtBase))
+  const prevGlobalRebase = new Rebase(
+    BigNumber(prevDebt.globalDebt.debtElastic),
+    BigNumber(prevDebt.globalDebt.debtBase)
+  )
+  const currentGlobalRebase = new Rebase(
+    BigNumber(currentDebt.globalDebt.debtElastic),
+    BigNumber(currentDebt.globalDebt.debtBase)
+  )
 
-  let collectionPrevDebt = prevGlobalRebase.toElastic(BigNumber(prevDebt.borrowElastic), true).div(prevDebt.borrowBase)
-  let collectionCurrentDebt = currentGlobalRebase.toElastic(BigNumber(currentDebt.borrowElastic), true).div(currentDebt.borrowBase)
+  const collectionPrevDebt = prevGlobalRebase
+    .toElastic(BigNumber(prevDebt.borrowElastic), true)
+    .div(prevDebt.borrowBase)
+  const collectionCurrentDebt = currentGlobalRebase
+    .toElastic(BigNumber(currentDebt.borrowElastic), true)
+    .div(currentDebt.borrowBase)
 
-  let interestEarned = collectionPrevDebt.minus(collectionCurrentDebt).div(collectionCurrentDebt)
+  const interestEarned = collectionPrevDebt.minus(collectionCurrentDebt).div(collectionCurrentDebt)
 
   const duration =
     new Date(result.data.currentDebt[0].transactionTimestamp).getTime() -
