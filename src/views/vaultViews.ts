@@ -139,7 +139,7 @@ export const getVaultCollectionAPR = async (beginDate: Date, collectionId: Accou
     throw new Error('No data returned from GraphQL query')
   }
 
-  if (result.data.prevDebt.length == 0 && result.data.currentDebt.length == 0) {
+  if (result.data.prevDebt.length == 0 || result.data.currentDebt.length == 0) {
     return 0
   }
 
@@ -170,6 +170,11 @@ export const getVaultCollectionAPR = async (beginDate: Date, collectionId: Accou
   const duration =
     new Date(result.data.currentDebt[0].transactionTimestamp).getTime() -
     new Date(result.data.prevDebt[0].transactionTimestamp).getTime()
+
+  // only one data point
+  if (duration == 0) {
+    return 0
+  }
 
   const year = 60 * 60 * 24 * 365 * 1000
 

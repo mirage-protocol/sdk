@@ -96,46 +96,10 @@ export type Bigint_Comparison_Exp = {
 /** columns and relationships of "closed_positions" */
 export type Closed_Positions = {
   __typename?: 'closed_positions';
-  /** An array relationship */
-  closed_position_datas: Array<Position_Datas>;
-  /** An aggregate relationship */
-  closed_position_datas_aggregate: Position_Datas_Aggregate;
-  /** An array relationship */
-  closed_trade_datas: Array<Trade_Datas>;
   market_id: Scalars['String']['output'];
   position_id: Scalars['String']['output'];
   transaction_timestamp: Scalars['timestamp']['output'];
   transaction_version: Scalars['bigint']['output'];
-};
-
-
-/** columns and relationships of "closed_positions" */
-export type Closed_PositionsClosed_Position_DatasArgs = {
-  distinct_on?: InputMaybe<Array<Position_Datas_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Position_Datas_Order_By>>;
-  where?: InputMaybe<Position_Datas_Bool_Exp>;
-};
-
-
-/** columns and relationships of "closed_positions" */
-export type Closed_PositionsClosed_Position_Datas_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Position_Datas_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Position_Datas_Order_By>>;
-  where?: InputMaybe<Position_Datas_Bool_Exp>;
-};
-
-
-/** columns and relationships of "closed_positions" */
-export type Closed_PositionsClosed_Trade_DatasArgs = {
-  distinct_on?: InputMaybe<Array<Trade_Datas_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Trade_Datas_Order_By>>;
-  where?: InputMaybe<Trade_Datas_Bool_Exp>;
 };
 
 /** Boolean expression to filter rows from the table "closed_positions". All fields are combined with a logical 'AND'. */
@@ -143,9 +107,6 @@ export type Closed_Positions_Bool_Exp = {
   _and?: InputMaybe<Array<Closed_Positions_Bool_Exp>>;
   _not?: InputMaybe<Closed_Positions_Bool_Exp>;
   _or?: InputMaybe<Array<Closed_Positions_Bool_Exp>>;
-  closed_position_datas?: InputMaybe<Position_Datas_Bool_Exp>;
-  closed_position_datas_aggregate?: InputMaybe<Position_Datas_Aggregate_Bool_Exp>;
-  closed_trade_datas?: InputMaybe<Trade_Datas_Bool_Exp>;
   market_id?: InputMaybe<String_Comparison_Exp>;
   position_id?: InputMaybe<String_Comparison_Exp>;
   transaction_timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
@@ -154,8 +115,6 @@ export type Closed_Positions_Bool_Exp = {
 
 /** Ordering options when selecting data from "closed_positions". */
 export type Closed_Positions_Order_By = {
-  closed_position_datas_aggregate?: InputMaybe<Position_Datas_Aggregate_Order_By>;
-  closed_trade_datas_aggregate?: InputMaybe<Trade_Datas_Aggregate_Order_By>;
   market_id?: InputMaybe<Order_By>;
   position_id?: InputMaybe<Order_By>;
   transaction_timestamp?: InputMaybe<Order_By>;
@@ -4581,30 +4540,6 @@ export type Trade_Datas = {
   transaction_version: Scalars['bigint']['output'];
 };
 
-/** order by aggregate values of table "trade_datas" */
-export type Trade_Datas_Aggregate_Order_By = {
-  avg?: InputMaybe<Trade_Datas_Avg_Order_By>;
-  count?: InputMaybe<Order_By>;
-  max?: InputMaybe<Trade_Datas_Max_Order_By>;
-  min?: InputMaybe<Trade_Datas_Min_Order_By>;
-  stddev?: InputMaybe<Trade_Datas_Stddev_Order_By>;
-  stddev_pop?: InputMaybe<Trade_Datas_Stddev_Pop_Order_By>;
-  stddev_samp?: InputMaybe<Trade_Datas_Stddev_Samp_Order_By>;
-  sum?: InputMaybe<Trade_Datas_Sum_Order_By>;
-  var_pop?: InputMaybe<Trade_Datas_Var_Pop_Order_By>;
-  var_samp?: InputMaybe<Trade_Datas_Var_Samp_Order_By>;
-  variance?: InputMaybe<Trade_Datas_Variance_Order_By>;
-};
-
-/** order by avg() on columns of table "trade_datas" */
-export type Trade_Datas_Avg_Order_By = {
-  fee?: InputMaybe<Order_By>;
-  pnl?: InputMaybe<Order_By>;
-  position_size?: InputMaybe<Order_By>;
-  price?: InputMaybe<Order_By>;
-  transaction_version?: InputMaybe<Order_By>;
-};
-
 /** Boolean expression to filter rows from the table "trade_datas". All fields are combined with a logical 'AND'. */
 export type Trade_Datas_Bool_Exp = {
   _and?: InputMaybe<Array<Trade_Datas_Bool_Exp>>;
@@ -4620,32 +4555,6 @@ export type Trade_Datas_Bool_Exp = {
   price?: InputMaybe<Numeric_Comparison_Exp>;
   transaction_timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
   transaction_version?: InputMaybe<Bigint_Comparison_Exp>;
-};
-
-/** order by max() on columns of table "trade_datas" */
-export type Trade_Datas_Max_Order_By = {
-  fee?: InputMaybe<Order_By>;
-  market_id?: InputMaybe<Order_By>;
-  owner_addr?: InputMaybe<Order_By>;
-  pnl?: InputMaybe<Order_By>;
-  position_id?: InputMaybe<Order_By>;
-  position_size?: InputMaybe<Order_By>;
-  price?: InputMaybe<Order_By>;
-  transaction_timestamp?: InputMaybe<Order_By>;
-  transaction_version?: InputMaybe<Order_By>;
-};
-
-/** order by min() on columns of table "trade_datas" */
-export type Trade_Datas_Min_Order_By = {
-  fee?: InputMaybe<Order_By>;
-  market_id?: InputMaybe<Order_By>;
-  owner_addr?: InputMaybe<Order_By>;
-  pnl?: InputMaybe<Order_By>;
-  position_id?: InputMaybe<Order_By>;
-  position_size?: InputMaybe<Order_By>;
-  price?: InputMaybe<Order_By>;
-  transaction_timestamp?: InputMaybe<Order_By>;
-  transaction_version?: InputMaybe<Order_By>;
 };
 
 /** Ordering options when selecting data from "trade_datas". */
@@ -4686,33 +4595,6 @@ export enum Trade_Datas_Select_Column {
   TransactionVersion = 'transaction_version'
 }
 
-/** order by stddev() on columns of table "trade_datas" */
-export type Trade_Datas_Stddev_Order_By = {
-  fee?: InputMaybe<Order_By>;
-  pnl?: InputMaybe<Order_By>;
-  position_size?: InputMaybe<Order_By>;
-  price?: InputMaybe<Order_By>;
-  transaction_version?: InputMaybe<Order_By>;
-};
-
-/** order by stddev_pop() on columns of table "trade_datas" */
-export type Trade_Datas_Stddev_Pop_Order_By = {
-  fee?: InputMaybe<Order_By>;
-  pnl?: InputMaybe<Order_By>;
-  position_size?: InputMaybe<Order_By>;
-  price?: InputMaybe<Order_By>;
-  transaction_version?: InputMaybe<Order_By>;
-};
-
-/** order by stddev_samp() on columns of table "trade_datas" */
-export type Trade_Datas_Stddev_Samp_Order_By = {
-  fee?: InputMaybe<Order_By>;
-  pnl?: InputMaybe<Order_By>;
-  position_size?: InputMaybe<Order_By>;
-  price?: InputMaybe<Order_By>;
-  transaction_version?: InputMaybe<Order_By>;
-};
-
 /** Streaming cursor of the table "trade_datas" */
 export type Trade_Datas_Stream_Cursor_Input = {
   /** Stream column input with initial value */
@@ -4733,42 +4615,6 @@ export type Trade_Datas_Stream_Cursor_Value_Input = {
   price?: InputMaybe<Scalars['numeric']['input']>;
   transaction_timestamp?: InputMaybe<Scalars['timestamp']['input']>;
   transaction_version?: InputMaybe<Scalars['bigint']['input']>;
-};
-
-/** order by sum() on columns of table "trade_datas" */
-export type Trade_Datas_Sum_Order_By = {
-  fee?: InputMaybe<Order_By>;
-  pnl?: InputMaybe<Order_By>;
-  position_size?: InputMaybe<Order_By>;
-  price?: InputMaybe<Order_By>;
-  transaction_version?: InputMaybe<Order_By>;
-};
-
-/** order by var_pop() on columns of table "trade_datas" */
-export type Trade_Datas_Var_Pop_Order_By = {
-  fee?: InputMaybe<Order_By>;
-  pnl?: InputMaybe<Order_By>;
-  position_size?: InputMaybe<Order_By>;
-  price?: InputMaybe<Order_By>;
-  transaction_version?: InputMaybe<Order_By>;
-};
-
-/** order by var_samp() on columns of table "trade_datas" */
-export type Trade_Datas_Var_Samp_Order_By = {
-  fee?: InputMaybe<Order_By>;
-  pnl?: InputMaybe<Order_By>;
-  position_size?: InputMaybe<Order_By>;
-  price?: InputMaybe<Order_By>;
-  transaction_version?: InputMaybe<Order_By>;
-};
-
-/** order by variance() on columns of table "trade_datas" */
-export type Trade_Datas_Variance_Order_By = {
-  fee?: InputMaybe<Order_By>;
-  pnl?: InputMaybe<Order_By>;
-  position_size?: InputMaybe<Order_By>;
-  price?: InputMaybe<Order_By>;
-  transaction_version?: InputMaybe<Order_By>;
 };
 
 /** columns and relationships of "vault_collection_configs" */
