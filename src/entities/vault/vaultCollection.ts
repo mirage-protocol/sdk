@@ -39,11 +39,11 @@ export class VaultCollection {
   /**
    * The minimum a position must be collateralized in the vault to update vault position (remove collateral, borrow more) (percent)
    */
-  public readonly maintenanceCollateralizationPercent: number
+  public readonly initialCollateralizationPercent: number
   /**
    * The minimum a position must be collateralized in the vault to avoid liquidation (percent)
    */
-  public readonly liquidationCollateralizationPercent: number
+  public readonly maintenanceCollateralizationPercent: number
   /**
    * The flat borrow fee for the vault (percent)
    */
@@ -105,8 +105,8 @@ export class VaultCollection {
     this.interestPerSecond = !!vaultCollection
       ? BigNumber((vaultCollection.data as any).config.interest_per_second)
       : ZERO
-    this.liquidationCollateralizationPercent = !!vaultCollection
-      ? BigNumber((vaultCollection.data as any).config.liquidation_collateralization_rate)
+    this.initialCollateralizationPercent = !!vaultCollection
+      ? BigNumber((vaultCollection.data as any).config.initial_collateralization_rate)
           .div(PERCENT_PRECISION)
           .times(100)
           .toNumber()

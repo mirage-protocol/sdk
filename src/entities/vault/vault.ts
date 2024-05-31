@@ -90,7 +90,7 @@ export class Vault {
       !!vault && !!this.vaultCollection
         ? this.borrowAmount
             .div(this.collateralAmount)
-            .times(this.vaultCollection.liquidationCollateralizationPercent / 100)
+            .times(this.vaultCollection.maintenanceCollateralizationPercent / 100)
         : ZERO
 
     const maxBorrow =
@@ -98,13 +98,13 @@ export class Vault {
         ? this.collateralAmount
             .times(this.vaultCollection.exchangeRate)
             .div(EXCHANGE_RATE_PRECISION)
-            .times(this.vaultCollection.liquidationCollateralizationPercent)
+            .times(this.vaultCollection.maintenanceCollateralizationPercent)
             .div(100)
         : ZERO
 
     const maxCollateral =
       !!vault && !!this.vaultCollection
-        ? this.collateralAmount.times(this.vaultCollection.liquidationCollateralizationPercent).div(100)
+        ? this.collateralAmount.times(this.vaultCollection.maintenanceCollateralizationPercent).div(100)
         : ZERO
 
     const ratio =
@@ -122,7 +122,7 @@ export class Vault {
         ? this.borrowAmount
             .times(EXCHANGE_RATE_PRECISION)
             .div(this.vaultCollection.exchangeRate)
-            .div(this.vaultCollection.liquidationCollateralizationPercent)
+            .div(this.vaultCollection.maintenanceCollateralizationPercent)
             .div(100)
         : ZERO
 
@@ -154,13 +154,13 @@ export class Vault {
    */
   public simulateIsSolvent(exchangeRate: BigNumber): boolean {
     return this.collateralAmount
-      .div(this.vaultCollection.liquidationCollateralizationPercent)
+      .div(this.vaultCollection.maintenanceCollateralizationPercent)
       .times(exchangeRate)
       .times(100)
       .isGreaterThan(this.borrowAmount)
   }
 
   public calculateHypotheticalLiquidationPrice(borrow: BigNumber, collateral: BigNumber): BigNumber {
-    return borrow.div(collateral).times(this.vaultCollection.liquidationCollateralizationPercent / 100)
+    return borrow.div(collateral).times(this.vaultCollection.maintenanceCollateralizationPercent / 100)
   }
 }
