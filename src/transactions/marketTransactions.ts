@@ -511,3 +511,29 @@ export const triggerLimitOrder = async (
   }
   return payload
 }
+
+/**
+ * Trigger a limit order by id
+ * @returns payload promise for the transaction
+ */
+export const triggerLimitOrderById = async (
+  triggererAddress: string,
+  positionObject: MoveObjectType,
+  marginCoin: MoveToken,
+  perpetualAsset: Perpetual,
+  orderId: bigint,
+  network: Network
+): Promise<InputEntryFunctionData> => {
+  const marginFeed = getPriceFeed(marginCoin, network)
+  const perpetualFeed = getPriceFeed(perpetualAsset, network)
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+
+  const payload = {
+    function:
+      `${MODULES.mirage_scripts.address}::market_scripts::trigger_limit_order_by_id_entry` as `${string}::${string}::${string}`,
+    functionArguments: [triggererAddress, positionObject, orderId, perpetualVaas, marginVaas],
+    typeArguments: getPositionTypeArgument(),
+  }
+  return payload
+}
