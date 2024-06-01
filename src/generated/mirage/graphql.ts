@@ -4778,8 +4778,8 @@ export type Vault_Collection_Configs = {
   borrow_token_id: Scalars['String']['output'];
   collateral_token_id: Scalars['String']['output'];
   collection_id: Scalars['String']['output'];
+  initial_collateralization_rate: Scalars['numeric']['output'];
   interest_per_second: Scalars['numeric']['output'];
-  liquidation_collateralization_rate: Scalars['numeric']['output'];
   liquidation_multiplier: Scalars['numeric']['output'];
   maintenance_collateralization_rate: Scalars['numeric']['output'];
   protocol_liquidation_fee: Scalars['numeric']['output'];
@@ -4797,8 +4797,8 @@ export type Vault_Collection_Configs_Bool_Exp = {
   borrow_token_id?: InputMaybe<String_Comparison_Exp>;
   collateral_token_id?: InputMaybe<String_Comparison_Exp>;
   collection_id?: InputMaybe<String_Comparison_Exp>;
+  initial_collateralization_rate?: InputMaybe<Numeric_Comparison_Exp>;
   interest_per_second?: InputMaybe<Numeric_Comparison_Exp>;
-  liquidation_collateralization_rate?: InputMaybe<Numeric_Comparison_Exp>;
   liquidation_multiplier?: InputMaybe<Numeric_Comparison_Exp>;
   maintenance_collateralization_rate?: InputMaybe<Numeric_Comparison_Exp>;
   protocol_liquidation_fee?: InputMaybe<Numeric_Comparison_Exp>;
@@ -4813,8 +4813,8 @@ export type Vault_Collection_Configs_Order_By = {
   borrow_token_id?: InputMaybe<Order_By>;
   collateral_token_id?: InputMaybe<Order_By>;
   collection_id?: InputMaybe<Order_By>;
+  initial_collateralization_rate?: InputMaybe<Order_By>;
   interest_per_second?: InputMaybe<Order_By>;
-  liquidation_collateralization_rate?: InputMaybe<Order_By>;
   liquidation_multiplier?: InputMaybe<Order_By>;
   maintenance_collateralization_rate?: InputMaybe<Order_By>;
   protocol_liquidation_fee?: InputMaybe<Order_By>;
@@ -4834,9 +4834,9 @@ export enum Vault_Collection_Configs_Select_Column {
   /** column name */
   CollectionId = 'collection_id',
   /** column name */
-  InterestPerSecond = 'interest_per_second',
+  InitialCollateralizationRate = 'initial_collateralization_rate',
   /** column name */
-  LiquidationCollateralizationRate = 'liquidation_collateralization_rate',
+  InterestPerSecond = 'interest_per_second',
   /** column name */
   LiquidationMultiplier = 'liquidation_multiplier',
   /** column name */
@@ -4865,8 +4865,8 @@ export type Vault_Collection_Configs_Stream_Cursor_Value_Input = {
   borrow_token_id?: InputMaybe<Scalars['String']['input']>;
   collateral_token_id?: InputMaybe<Scalars['String']['input']>;
   collection_id?: InputMaybe<Scalars['String']['input']>;
+  initial_collateralization_rate?: InputMaybe<Scalars['numeric']['input']>;
   interest_per_second?: InputMaybe<Scalars['numeric']['input']>;
-  liquidation_collateralization_rate?: InputMaybe<Scalars['numeric']['input']>;
   liquidation_multiplier?: InputMaybe<Scalars['numeric']['input']>;
   maintenance_collateralization_rate?: InputMaybe<Scalars['numeric']['input']>;
   protocol_liquidation_fee?: InputMaybe<Scalars['numeric']['input']>;
