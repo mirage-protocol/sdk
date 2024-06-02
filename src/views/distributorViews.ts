@@ -1,6 +1,7 @@
-import { Network } from '@aptos-labs/ts-sdk'
+import { MoveUint64Type, Network } from '@aptos-labs/ts-sdk'
 
 import { aptosClient, MODULES } from '../constants'
+import BigNumber from 'bignumber.js'
 
 export const numberOfClaimsAvailable = async (userAddress: string): Promise<number> => {
   const payload = {
@@ -11,7 +12,7 @@ export const numberOfClaimsAvailable = async (userAddress: string): Promise<numb
   }
   const result = await aptosClient(Network.TESTNET).view({ payload })
 
-  return result[0] as unknown as number
+  return BigNumber(result[0] as MoveUint64Type).toNumber()
 }
 
 export const timeUntilNextClaim = async (userAddress: string): Promise<number> => {
@@ -22,5 +23,5 @@ export const timeUntilNextClaim = async (userAddress: string): Promise<number> =
     typeArguments: [],
   }
   const result = await aptosClient(Network.TESTNET).view({ payload })
-  return result[0] as unknown as number
+  return BigNumber(result[0] as MoveUint64Type).toNumber()
 }

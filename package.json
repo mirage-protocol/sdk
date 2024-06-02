@@ -31,9 +31,10 @@
     "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
-    "@aptos-labs/ts-sdk": "^1.14.0",
+    "@aptos-labs/ts-sdk": "1.14.0",
     "@pythnetwork/pyth-aptos-js": "^1.4.2",
     "@pythnetwork/pyth-common-js": "^1.4.0",
+    "aptos": "1.21.0",
     "axios": "^1.6.8",
     "bignumber.js": "9.1.2",
     "graphql": "^16.8.1",

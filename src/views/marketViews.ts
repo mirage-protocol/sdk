@@ -1,4 +1,5 @@
-import { Network } from '@aptos-labs/ts-sdk'
+import { MoveObjectType, MoveUint64Type, Network } from '@aptos-labs/ts-sdk'
+import BigNumber from 'bignumber.js'
 
 import {
   aptosClient,
@@ -7,6 +8,7 @@ import {
   mirageAddress,
   MoveToken,
   Perpetual,
+  PRECISION_8,
 } from '../constants'
 import {
   GetTokenIdsFromCollectionByOwnerDocument,
@@ -14,6 +16,7 @@ import {
   GetTokenIdsFromCollectionsByOwnerDocument,
   GetTokenIdsFromCollectionsByOwnerQueryVariables,
 } from '../generated/graphql'
+import { getDecimal8Argument, getPositionTypeArgument } from '../transactions'
 import { graphqlClient } from './vaultViews'
 
 export const getMarginTokenFromPosition = async (positionObjectAddress: string, network: Network): Promise<string> => {
@@ -25,7 +28,7 @@ export const getMarginTokenFromPosition = async (positionObjectAddress: string, 
         typeArguments: [`${mirageAddress()}::market::Position`],
       },
     })
-  )[0] as string
+  )[0] as MoveObjectType
 }
 
 export const getAllPositionIdsByOwner = async (owner: string): Promise<string[]> => {
@@ -79,4 +82,21 @@ export const getPositionIdsByMarketAndOwner = async (
   } catch (error) {
     return []
   }
+}
+
+export const getLiquidationPrice = async (
+  positionObjectAddress: MoveObjectType,
+  perpetualPrice: number,
+  marginPrice: number,
+  network: Network
+): Promise<number> => {
+  const payload = {
+    function: `${mirageAddress()}::market::get_liquidation_price` as `${string}::${string}::${string}`,
+    typeArguments: getPositionTypeArgument(),
+    functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
+  }
+  const ret = await aptosClient(network).view({ payload })
+  return BigNumber(ret[0] as MoveUint64Type)
+    .div(PRECISION_8)
+    .toNumber()
 }

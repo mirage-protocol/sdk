@@ -31,7 +31,6 @@ export type PositionData = {
   side: PositionSide
   margin: BigNumber
   positionSize: BigNumber
-  maintenanceMargin: BigNumber
   liquidationPrice: BigNumber
   tpslExists: boolean
   takeProfitPrice: BigNumber
@@ -116,7 +115,6 @@ export class Position {
       side: PositionSide.UNKNOWN,
       margin: ZERO,
       positionSize: ZERO,
-      maintenanceMargin: ZERO,
       liquidationPrice: ZERO,
       tpslExists: false,
       takeProfitPrice: ZERO,
@@ -134,12 +132,6 @@ export class Position {
     tempTrade.margin = !!position ? BigNumber((position.data as any).margin_amount).div(PRECISION_8) : ZERO
     tempTrade.positionSize = !!position ? BigNumber((position.data as any).position_size).div(PRECISION_8) : ZERO
 
-    // TODO
-    // tempTrade.maintenanceMargin = !!position
-    //   ? BigNumber((position.data as any).position.maintenance_margin).div(PRECISION_8)
-    //   : ZERO
-    tempTrade.maintenanceMargin = tempTrade.margin.times(3)
-
     const tpslType = `${mirageAddress()}::market::TpSl`
     const tpsl = positionObjectResources.find((resource) => resource.type === tpslType)
     tempTrade.tpslExists = tpsl != undefined
@@ -154,9 +146,6 @@ export class Position {
       : ZERO
 
     this.position = !tempTrade.positionSize.eq(0) ? tempTrade : undefined
-
-    // TODO unused in frontend - needed?
-    // this.positionLimit = !!position ? BigNumber((position.data as any).position_limit) : ZERO
 
     const limitOrderType = `${mirageAddress()}::market::LimitOrders`
 
