@@ -1,9 +1,16 @@
 import { MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { getPriceFeed, INTEREST_PRECISION, PERCENT_PRECISION, SECONDS_PER_YEAR, ZERO } from '../../constants'
+import {
+  getPriceFeed,
+  INTEREST_PRECISION,
+  PERCENT_PRECISION,
+  PRECISION_8,
+  SECONDS_PER_YEAR,
+  ZERO,
+} from '../../constants'
 import { mirageAddress } from '../../constants/accounts'
-import { balanceToUi, MoveAsset, MoveToken } from '../../constants/assetList'
+import { assetBalanceToDecimal, MoveAsset, MoveToken } from '../../constants/assetList'
 import { MirageAsset } from '../mirage_asset'
 import { Rebase } from '../rebase'
 
@@ -80,6 +87,7 @@ export class VaultCollection {
    * @param borrowTokenObjectResources resources from the borrow token and its debt store
    * @param collateral the collateral asset of the VaultCollection
    * @param borrow the borrow asset of the VaultCollection
+   * @param objectAddress the address of the vault collection object
    */
   constructor(
     collectionObjectResources: MoveResource[],
@@ -103,7 +111,7 @@ export class VaultCollection {
           .toNumber()
       : 0
     this.interestPerSecond = !!vaultCollection
-      ? BigNumber((vaultCollection.data as any).config.interest_per_second)
+      ? BigNumber((vaultCollection.data as any).config.interest_per_second).div(INTEREST_PRECISION)
       : ZERO
     this.initialCollateralizationPercent = !!vaultCollection
       ? BigNumber((vaultCollection.data as any).config.initial_collateralization_rate)
@@ -133,12 +141,16 @@ export class VaultCollection {
         )
       : new Rebase(ZERO, ZERO)
     this.totalBorrow = !!vaultCollection
-      ? this.borrowRebase.toElastic(
-          this.mirage.debtRebase.toElastic(BigNumber((vaultCollection.data as any).global_debt_part.amount), false),
-          true
-        )
+      ? this.borrowRebase
+          .toElastic(
+            this.mirage.debtRebase.toElastic(BigNumber((vaultCollection.data as any).global_debt_part.amount), false),
+            true
+          )
+          .div(PRECISION_8)
       : ZERO
-    this.totalCollateral = !!vaultCollection ? BigNumber((vaultCollection.data as any).total_collateral) : ZERO
+    this.totalCollateral = !!vaultCollection
+      ? assetBalanceToDecimal(BigNumber((vaultCollection.data as any).total_collateral), this.collateral)
+      : ZERO
 
     this.isEmergency = !!vaultCollection ? (vaultCollection.data as any).is_emergency : false
 
@@ -149,41 +161,10 @@ export class VaultCollection {
   }
 
   /**
-   * Get a Ui friendly total collateral of the vault
-   * @returns the vault's total collateral
-   */
-  public getUiTotalCollateral(): number {
-    return balanceToUi(this.totalCollateral, this.collateral)
-  }
-
-  /**
-   * Get a Ui friendly total borrow of the vault
-   * @returns the vault's total borrow
-   */
-  public getUiTotalBorrow(): number {
-    return balanceToUi(this.totalBorrow, this.borrow)
-  }
-
-  /**
-   * Get a Ui friendly vault interest rate
+   * Get the vault collection annual interest rate
    * @returns the interest rate in a percent
    */
-  public getUiInterestRate(): number {
-    return (Number(this.interestPerSecond) / Number(INTEREST_PRECISION)) * SECONDS_PER_YEAR * 100
-  }
-
-  /**
-   * Get the rebase representing this vaults borrows
-   * @returns the vault borrow elastic numbers
-   */
-  public getBorrowRebase(): Rebase {
-    return this.borrowRebase
-  }
-
-  /**
-   * Get some amount of vault base in total coin by checking global debt state
-   */
-  public baseToCoin(baseAmount: BigNumber): BigNumber {
-    return this.mirage.debtRebase.toElastic(this.borrowRebase.toElastic(baseAmount, true), false)
+  public getInterestRatePercent(): number {
+    return this.interestPerSecond.times(SECONDS_PER_YEAR).times(100).toNumber()
   }
 }

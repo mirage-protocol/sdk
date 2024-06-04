@@ -1,9 +1,9 @@
 import { MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { EXCHANGE_RATE_PRECISION, ZERO } from '../../constants'
+import { EXCHANGE_RATE_PRECISION, PRECISION_8, ZERO } from '../../constants'
 import { mirageAddress } from '../../constants/accounts'
-import { balanceToUi, MoveAsset, MoveToken } from '../../constants/assetList'
+import { assetBalanceToDecimal, MoveAsset, MoveToken } from '../../constants/assetList'
 import { VaultCollection } from './vaultCollection'
 
 /**
@@ -75,22 +75,24 @@ export class Vault {
 
     const vault = vaultObjectResources.find((resource) => resource.type === vaultType)
 
-    this.collateralAmount = !!vault ? new BigNumber((vault.data as any).collateral_amount) : ZERO
+    this.collateralAmount = !!vault
+      ? assetBalanceToDecimal(BigNumber((vault.data as any).collateral_amount), this.collateralAsset)
+      : ZERO
 
     // need to use global debt rebase
     this.borrowAmount =
       !!vault && !!this.vaultCollection
-        ? this.vaultCollection.mirage.debtRebase.toElastic(
-            this.vaultCollection.borrowRebase.toElastic(new BigNumber((vault.data as any).borrow_part.amount), true),
-            false
-          )
+        ? this.vaultCollection.mirage.debtRebase
+            .toElastic(
+              this.vaultCollection.borrowRebase.toElastic(new BigNumber((vault.data as any).borrow_part.amount), true),
+              false
+            )
+            .div(PRECISION_8)
         : ZERO
 
     this.liquidationPrice =
       !!vault && !!this.vaultCollection
-        ? this.borrowAmount
-            .div(this.collateralAmount)
-            .times(this.vaultCollection.maintenanceCollateralizationPercent / 100)
+        ? this.calculateHypotheticalLiquidationPrice(this.collateralAmount, this.borrowAmount)
         : ZERO
 
     const maxBorrow =
@@ -129,22 +131,6 @@ export class Vault {
     this.positionHealth = ratio > 10000 ? 0 : 10000 - ratio
     this.remainingBorrowable = !!vault ? maxBorrow.minus(this.borrowAmount) : ZERO
     this.withdrawableAmount = !!vault ? this.collateralAmount.minus(minCollateral) : ZERO
-  }
-
-  /**
-   * Get a Ui friendly total collateral of the user
-   * @returns the users total collateral
-   */
-  public getUiUserCollateral(): number {
-    return balanceToUi(this.collateralAmount, this.collateralAsset)
-  }
-
-  /**
-   * Get a Ui friendly total borrow of the user
-   * @returns the users total borrow
-   */
-  public getUiUserBorrow(): number {
-    return balanceToUi(this.borrowAmount, this.borrowToken)
   }
 
   /**

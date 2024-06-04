@@ -1,11 +1,10 @@
-import { InputViewFunctionData, MoveResource, Network } from '@aptos-labs/ts-sdk'
+import { MoveResource, Network } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { aptosClient, mirageAddress, MoveToken, Perpetual, PRECISION_8, RATE_PRECISION, ZERO } from '../../constants'
-import { getDecimal8Argument, getPositionTypeArgument } from '../../transactions'
+import { mirageAddress, MoveToken, Perpetual, PRECISION_8, ZERO } from '../../constants'
+import { getLiquidationPrice, getPositionMaintenanceMarginMusd } from '../../views'
 import { LimitOrder, LimitOrderData } from './limitOrder'
 import { Market } from './market'
-import { getLiquidationPrice } from '../../views'
 
 /**
  * Direction of a position
@@ -32,6 +31,8 @@ export type PositionData = {
   side: PositionSide
   margin: BigNumber
   positionSize: BigNumber
+  fundingAccrued: BigNumber
+  maintenanceMargin: BigNumber
   liquidationPrice: BigNumber
   tpslExists: boolean
   takeProfitPrice: BigNumber
@@ -43,14 +44,6 @@ export type PositionData = {
  * Represents a position on a specific Mirage Market
  */
 export class Position {
-  /**
-   * The user address of the owner of this position
-   */
-  // private readonly userAddress: string
-  /**
-   * The current network being used
-   */
-  // private readonly network: Network
   /**
    * The margin asset of the position
    */
@@ -64,16 +57,19 @@ export class Position {
    */
   public readonly position: PositionData | undefined
   /**
-   * An instance of the Market this Trader is using
+   * The market for this position
    */
   public readonly market: Market
   /**
-   * A users limit orders
+   * The positions limit orders
    */
   public readonly limitOrders: LimitOrder[]
 
   public readonly objectAddress: string
 
+  /**
+   * The current network being used
+   */
   public readonly network: Network
   // /**
   //  * The max position size for this Market and account
@@ -86,6 +82,7 @@ export class Position {
    * @param marketObjectResources Resources from market object account
    * @param marginCoin The margin of the market
    * @param perpetualAsset The perpetual being traded
+   * @param objectAddress the address of the vault collection object
    */
   constructor(
     // userAddress: string,
@@ -115,6 +112,8 @@ export class Position {
       openingPrice: ZERO,
       side: PositionSide.UNKNOWN,
       margin: ZERO,
+      fundingAccrued: ZERO,
+      maintenanceMargin: ZERO,
       positionSize: ZERO,
       liquidationPrice: ZERO,
       tpslExists: false,
@@ -131,7 +130,21 @@ export class Position {
         : PositionSide.SHORT
       : PositionSide.UNKNOWN
     tempTrade.margin = !!position ? BigNumber((position.data as any).margin_amount).div(PRECISION_8) : ZERO
-    tempTrade.positionSize = !!position ? BigNumber((position.data as any).position_size).div(PRECISION_8) : ZERO
+
+    // funding accrued is (market_funding_accumulated - last_funding_accumulated) * position_size
+    const market_funding_accumulated = !!position
+      ? tempTrade.side == PositionSide.LONG
+        ? market.longFundingAccumulated
+        : market.shortFundingAccumulated
+      : ZERO
+    const last_position_funding = !!position
+      ? BigNumber((position.data as any).last_funding_accumulated).div(PRECISION_8)
+      : ZERO
+    tempTrade.fundingAccrued = !!position
+      ? market_funding_accumulated.minus(last_position_funding).times(tempTrade.positionSize)
+      : ZERO
+
+    tempTrade.margin = !!position ? BigNumber((position.data as any).margin_amount).div(PRECISION_8) : ZERO
 
     const tpslType = `${mirageAddress()}::market::TpSl`
     const tpsl = positionObjectResources.find((resource) => resource.type === tpslType)
@@ -224,5 +237,9 @@ export class Position {
 
   public async getLiqPrice(perpetualPrice: number, marginPrice: number): Promise<number> {
     return await getLiquidationPrice(this.objectAddress, perpetualPrice, marginPrice, this.network)
+  }
+
+  public async getMaintenanceMargin(perpetualPrice: number, marginPrice: number): Promise<number> {
+    return await getPositionMaintenanceMarginMusd(this.objectAddress, perpetualPrice, marginPrice, this.network)
   }
 }

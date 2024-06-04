@@ -16,7 +16,7 @@ import {
   GetTokenIdsFromCollectionsByOwnerDocument,
   GetTokenIdsFromCollectionsByOwnerQueryVariables,
 } from '../generated/graphql'
-import { getDecimal8Argument, getPositionTypeArgument } from '../transactions'
+import { getDecimal8Argument, getMarketTypeArgument, getPositionTypeArgument } from '../transactions'
 import { graphqlClient } from './vaultViews'
 
 export const getMarginTokenFromPosition = async (positionObjectAddress: string, network: Network): Promise<string> => {
@@ -107,6 +107,57 @@ export const getLiquidationPrice = async (
 ): Promise<number> => {
   const payload = {
     function: `${mirageAddress()}::market::get_liquidation_price` as `${string}::${string}::${string}`,
+    typeArguments: getPositionTypeArgument(),
+    functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
+  }
+  const ret = await aptosClient(network).view({ payload })
+  return BigNumber(ret[0] as MoveUint64Type)
+    .div(PRECISION_8)
+    .toNumber()
+}
+
+/**
+ * Get an estimate of the current fee in terms of USD
+ * @param positionSizeAsset the position size
+ * @param isLong if the trade is long
+ * @param isClose if the trade is an open or close
+ * @returns the fee in USD
+ */
+export const estimateFee = async (
+  marketObjectAddress: string,
+  positionSizeAsset: number,
+  isLong: boolean,
+  isClose: boolean,
+  perpPrice: number,
+  marginPrice: number,
+  network: Network
+): Promise<number> => {
+  const payload = {
+    function: `${mirageAddress()}::market::get_open_close_fee` as `${string}::${string}::${string}`,
+    typeArguments: getMarketTypeArgument(),
+    functionArguments: [
+      marketObjectAddress,
+      isLong,
+      isClose,
+      getDecimal8Argument(positionSizeAsset),
+      getDecimal8Argument(perpPrice),
+      getDecimal8Argument(marginPrice),
+    ],
+  }
+  const ret = await aptosClient(network).view({ payload })
+  return BigNumber(ret[0] as MoveUint64Type)
+    .div(PRECISION_8)
+    .toNumber()
+}
+
+export const getPositionMaintenanceMarginMusd = async (
+  positionObjectAddress: MoveObjectType,
+  perpetualPrice: number,
+  marginPrice: number,
+  network: Network
+): Promise<number> => {
+  const payload = {
+    function: `${mirageAddress()}::market::get_position_maintenance_margin_musd` as `${string}::${string}::${string}`,
     typeArguments: getPositionTypeArgument(),
     functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
   }

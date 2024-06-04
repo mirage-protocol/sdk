@@ -1,18 +1,21 @@
 import { AccountAddress, Network } from '@aptos-labs/ts-sdk'
 
-import { aptosClient, assetInfo, getAssetTokenMetadata, getTypeFromMoveAsset, MoveAsset } from '../constants'
+import { aptosClient, assetBalanceToDecimal, assetInfo, getAssetTokenMetadata, getTypeFromMoveAsset, MoveAsset, ZERO } from '../constants'
+import BigNumber from 'bignumber.js'
 
 export const getUserAssetBalance = async (
   userAddress: AccountAddress,
   asset: MoveAsset,
   network: Network
 ): Promise<number> => {
+  let balance = ZERO
   switch (getTypeFromMoveAsset(asset)) {
     case 'MoveCoin':
-      return await aptosClient(network).getAccountCoinAmount({
-        accountAddress: userAddress,
+      balance = BigNumber(await aptosClient(network).getAccountCoinAmount({
+        accountAddress: userAddress.toStringLong(),
         coinType: assetInfo(asset).type as `${string}::${string}::${string}`,
-      })
+      }))
+      break;
     case 'MoveToken':
       const data = await aptosClient(network).getCurrentFungibleAssetBalances({
         options: {
@@ -23,9 +26,8 @@ export const getUserAssetBalance = async (
           },
         },
       })
-
-      return data[0]?.amount ?? 0
-    default:
-      return 0
+      balance = BigNumber(data[0]?.amount ?? 0)
+      break;
   }
+  return assetBalanceToDecimal(balance, asset).toNumber()
 }

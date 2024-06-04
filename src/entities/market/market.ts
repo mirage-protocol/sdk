@@ -2,10 +2,10 @@ import { Network } from '@aptos-labs/ts-sdk'
 import { MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { aptosClient, FUNDING_PRECISION, PERCENT_PRECISION, ZERO } from '../../constants'
+import { FEE_PRECISION, PRECISION_8 } from '../../constants'
+import { PERCENT_PRECISION, ZERO } from '../../constants'
 import { mirageAddress } from '../../constants/accounts'
 import { MoveToken, Perpetual } from '../../constants/assetList'
-import { getDecimal8Argument, getMarketTypeArgument } from '../../transactions'
 
 /**
  * Represents a mirage-protocol perpetuals market.
@@ -20,72 +20,13 @@ export class Market {
    */
   public readonly perpetualAsset: Perpetual
   /**
-   * The current network being used
+   * The total long margin of a market
    */
-  // private readonly network: Network
+  public readonly totalLongMargin: BigNumber
   /**
-   * Maximum taker fee at the max_oi_imbalance
+   * The total short margin of a market
    */
-  public readonly maxTakerFee: number
-  /**
-   * Minimum taker fee at equal oi
-   */
-  public readonly minTakerFee: number
-  /**
-   * Max maker fee at equal oi
-   */
-  public readonly maxMakerFee: number
-  /**
-   * Min maker fee at large oi imbalance
-   */
-  public readonly minMakerFee: number
-  /**
-   * The minimum funding rate
-   */
-  public readonly minFundingRate: number
-
-  /**
-   * The maximum funding rate
-   */
-  public readonly maxFundingRate: number
-  /**
-   * The funding that will be taken next payment
-   */
-  public readonly nextFundingRate: BigNumber
-  /**
-   * The funding that will be taken next payment
-   */
-  public readonly nextFundingPos: boolean
-  /**
-   * The time of the last funding payment
-   */
-  public readonly lastFundingUpdate: BigNumber
-  /**
-   * The discount percent of the protocol on funding payments
-   */
-  // public readonly poolFundingDiscount: BigNumber
-  /**
-   * The interval between funding payments
-   */
-  public readonly fundingInterval: BigNumber
-  // /**
-  //  * The total long margin of this market
-  //  */
-  // public readonly longMargin: BigNumber
-  // /**
-  //  * A rebase representing all long margin (in M)
-  //  * elastic = long margin, base = shares of long margin
-  //  */
-  // public readonly longMarginRebase: Rebase
-  // /**
-  //  * The total short margin of this market
-  //  */
-  // public readonly shortMargin: BigNumber
-  // /**
-  //  * A rebase representing all short margin (in M)
-  //  * elastic = short margin, base = shares of short margin
-  //  */
-  // public readonly shortMarginRebase: Rebase
+  public readonly totalShortMargin: BigNumber
   /**
    * Long open interest in musd
    */
@@ -95,6 +36,75 @@ export class Market {
    */
   public readonly shortOpenInterest: BigNumber
   /**
+   * Long open interest in musd
+   */
+  public readonly longFundingAccumulated: BigNumber
+  /**
+   * Short open interest in musd
+   */
+  public readonly shortFundingAccumulated: BigNumber
+  /**
+   * The funding that will be taken next funding round
+   */
+  public readonly nextFundingRate: BigNumber
+  /**
+   * The time of the last funding round
+   */
+  public readonly lastFundingRound: Date
+  /**
+   * Whether long positions are close only
+   */
+  public readonly longCloseOnly: boolean
+  /**
+   * Whether short positions are close only
+   */
+  public readonly shortCloseOnly: boolean
+
+  // FeeInfo
+
+  /**
+   * Minimum taker fee at equal oi
+   */
+  public readonly minTakerFee: number
+  /**
+   * Maximum taker fee at the max_oi_imbalance
+   */
+  public readonly maxTakerFee: number
+  /**
+   * Min maker fee at large oi imbalance
+   */
+  public readonly minMakerFee: number
+  /**
+   * Max maker fee at equal oi
+   */
+  public readonly maxMakerFee: number
+  /**
+   * The percent fee given to liquidators
+   */
+  public readonly liquidationFee: number
+
+  // FundingInfo
+
+  /**
+   * The minimum funding rate
+   */
+  public readonly minFundingRate: number
+  /**
+   * The maximum funding rate
+   */
+  public readonly maxFundingRate: number
+  /**
+   * The maximum funding rate
+   */
+  public readonly baseFundingRate: number
+  /**
+   * The interval between funding payments
+   */
+  public readonly fundingInterval: BigNumber
+
+  // MarketConfig
+
+  /**
    * The max total oi allowed for the long & short sides
    */
   public readonly maxOpenInterest: BigNumber
@@ -103,45 +113,31 @@ export class Market {
    */
   public readonly maxOpenInterestImbalance: BigNumber
   /**
+   * The base percent maintenance margin
+   */
+  public readonly maintenanceMargin: number
+  /**
    * The max leverage for this market
    */
   public readonly maxLeverage: number
   /**
-   * The percent fee given to liquidators
-   */
-  public readonly liquidationFee: number
-  /**
-   * The base percent maintenance margin
-   */
-  public readonly baseMaintenanceMargin: number
-  /**
-   * The base mUSD position limit for a new trade
-   */
-  public readonly basePositionLimit: BigNumber
-  /**
-   * The max mUSD position limit for a new trade
-   */
-  public readonly maxPositionLimit: BigNumber
-  // /**
-  //  * The exchange rate of the asset A
-  //  */
-  // public readonly exchangeRate: BigNumber
-  /**
-   * The min mUSD order size for this market
+   * The min order size in mUSD for a trade
    */
   public readonly minOrderSize: BigNumber
   /**
-   * If the market is frozen
+   * The max order size in mUSD for a trade
    */
-  public readonly longCloseOnly: boolean
+  public readonly maxOrderSize: BigNumber
+
   /**
-   * If the market is in an emergency
+   * The market collection address
    */
-  public readonly shortCloseOnly: boolean
-
   public readonly objectAddress: string
-
+  /**
+   * The current network being used
+   */
   public readonly network: Network
+
   /**
    * Construct an instance of Market
    * @param marketObjectResources resources from  the market token collection account
@@ -164,122 +160,103 @@ export class Market {
 
     const market = marketObjectResources.find((resource) => resource.type === marketType)
 
+    this.totalLongMargin = !!market ? new BigNumber((market.data as any).totalLongMargin).div(PRECISION_8) : ZERO
+    this.totalShortMargin = !!market ? new BigNumber((market.data as any).totalShortMargin).div(PRECISION_8) : ZERO
+    this.longOpenInterest = !!market ? new BigNumber((market.data as any).long_oi).div(PRECISION_8) : ZERO
+    this.shortOpenInterest = !!market ? new BigNumber((market.data as any).short_oi).div(PRECISION_8) : ZERO
+    this.longFundingAccumulated = !!market
+      ? new BigNumber((market.data as any).long_funding_accumulated_per_unit.magnitude)
+          .times((market.data as any).long_funding_accumulated_per_unit.negative ? -1 : 1)
+          .div(FEE_PRECISION)
+          .times(PRECISION_8)
+      : ZERO
+    this.shortFundingAccumulated = !!market
+      ? new BigNumber((market.data as any).short_funding_accumulated_per_unit.magnitude)
+          .times((market.data as any).short_funding_accumulated_per_unit.negative ? -1 : 1)
+          .div(FEE_PRECISION)
+          .times(PRECISION_8)
+      : ZERO
+    this.nextFundingRate = !!market
+      ? new BigNumber((market.data as any).next_funding_rate.magnitude)
+          .times((market.data as any).next_funding_rate.negative ? -1 : 1)
+          .div(FEE_PRECISION)
+      : ZERO
+    this.lastFundingRound = !!market
+      ? new Date(new BigNumber((market.data as any).last_funding_round).times(1000).toNumber())
+      : new Date(0)
+    this.longCloseOnly = !!market ? Boolean((market.data as any).is_long_close_only) : false
+    this.shortCloseOnly = !!market ? Boolean((market.data as any).is_short_close_only) : false
+
     // fees
-    this.maxTakerFee = !!market
-      ? new BigNumber((market.data as any).config.fees.max_taker_fee).div(PERCENT_PRECISION).times(100).toNumber()
-      : 0
     this.minTakerFee = !!market
       ? new BigNumber((market.data as any).config.fees.min_taker_fee).div(PERCENT_PRECISION).times(100).toNumber()
       : 0
-    this.maxMakerFee = !!market
-      ? new BigNumber((market.data as any).config.fees.max_maker_fee).div(PERCENT_PRECISION).times(100).toNumber()
+    this.maxTakerFee = !!market
+      ? new BigNumber((market.data as any).config.fees.max_taker_fee).div(PERCENT_PRECISION).times(100).toNumber()
       : 0
     this.minMakerFee = !!market
       ? new BigNumber((market.data as any).config.fees.min_maker_fee).div(PERCENT_PRECISION).times(100).toNumber()
+      : 0
+    this.maxMakerFee = !!market
+      ? new BigNumber((market.data as any).config.fees.max_maker_fee).div(PERCENT_PRECISION).times(100).toNumber()
       : 0
     this.liquidationFee = !!market
       ? new BigNumber((market.data as any).config.fees.liquidation_fee).div(PERCENT_PRECISION).times(100).toNumber()
       : 0
 
     // funding
-    this.nextFundingRate = !!market
-      ? new BigNumber((market.data as any).next_funding_rate).div(FUNDING_PRECISION)
-      : ZERO
-    this.nextFundingPos = !!market ? Boolean((market.data as any).next_funding_pos) : false
-    this.lastFundingUpdate = !!market ? new BigNumber((market.data as any).last_funding_round) : ZERO
-    this.fundingInterval = !!market ? new BigNumber((market.data as any).config.funding.funding_interval) : ZERO
     this.minFundingRate = !!market
-      ? new BigNumber((market.data as any).config.funding.min_funding_rate).div(PERCENT_PRECISION).times(100).toNumber()
+      ? new BigNumber((market.data as any).config.funding.min_funding_rate).div(FEE_PRECISION).times(100).toNumber()
       : 0
     this.maxFundingRate = !!market
-      ? new BigNumber((market.data as any).config.funding.max_funding_rate).div(PERCENT_PRECISION).times(100).toNumber()
+      ? new BigNumber((market.data as any).config.funding.max_funding_rate).div(FEE_PRECISION).times(100).toNumber()
       : 0
+    this.baseFundingRate = !!market
+      ? new BigNumber((market.data as any).config.funding.base_funding_rate).div(FEE_PRECISION).times(100).toNumber()
+      : 0
+    this.fundingInterval = !!market ? new BigNumber((market.data as any).config.funding.funding_interval) : ZERO
 
-    // margin
-    // this.longMarginRebase = !!market
-    //   ? new Rebase(
-    //       BigNumber((market.data as any).long_margin.elastic.value),
-    //       BigNumber((market.data as any).long_margin.base)
-    //     )
-    //   : new Rebase(ZERO, ZERO)
-    // this.longMargin = this.longMarginRebase.elastic
-    // this.shortMarginRebase = !!market
-    //   ? new Rebase(
-    //       BigNumber((market.data as any).short_margin.elastic.value),
-    //       BigNumber((market.data as any).short_margin.base)
-    //     )
-    //   : new Rebase(ZERO, ZERO)
-    // this.shortMargin = this.shortMarginRebase.elastic
-
-    // open interest
-    this.longOpenInterest = !!market ? new BigNumber((market.data as any).long_oi) : ZERO
-    this.shortOpenInterest = !!market ? new BigNumber((market.data as any).short_oi) : ZERO
-    this.maxOpenInterest = !!market ? new BigNumber((market.data as any).config.max_oi) : ZERO
-    this.maxOpenInterestImbalance = !!market ? new BigNumber((market.data as any).config.max_oi_imbalance) : ZERO
-
-    // other params
+    // config
+    this.maxOpenInterest = !!market ? new BigNumber((market.data as any).config.max_oi).div(PRECISION_8) : ZERO
+    this.maxOpenInterestImbalance = !!market
+      ? new BigNumber((market.data as any).config.max_oi_imbalance).div(PRECISION_8)
+      : ZERO
+    this.maintenanceMargin = !!market
+      ? new BigNumber((market.data as any).config.maintenance_margin).div(PERCENT_PRECISION).toNumber()
+      : 0
     this.maxLeverage = !!market
       ? new BigNumber((market.data as any).config.max_leverage).div(PERCENT_PRECISION).times(100).toNumber()
       : 0
-    this.baseMaintenanceMargin = !!market
-      ? new BigNumber((market.data as any).config.maintenance_margin).div(PERCENT_PRECISION).times(100).toNumber()
-      : 0
-    this.basePositionLimit = !!market ? new BigNumber((market.data as any).config.min_order_size) : ZERO
-    this.maxPositionLimit = !!market ? new BigNumber((market.data as any).config.max_order_size) : ZERO
-
-    // this.exchangeRate = !!oracle ? new BigNumber((oracle.data as any).last_parsed_rate) : ZERO
-
-    this.minOrderSize = !!market ? new BigNumber((market.data as any).config.min_order_size) : ZERO
-
-    this.longCloseOnly = !!market ? Boolean((market.data as any).is_long_close_only) : false
-    this.shortCloseOnly = !!market ? Boolean((market.data as any).is_short_close_only) : false
+    this.minOrderSize = !!market ? new BigNumber((market.data as any).config.min_order_size).div(PRECISION_8) : ZERO
+    this.maxOrderSize = !!market ? new BigNumber((market.data as any).config.max_order_size).div(PRECISION_8) : ZERO
   }
 
-  // /**
-  //  * Get a Ui friendly long margin of the market
-  //  * @returns the markets long margin
-  //  */
-  // public getUiLongMargin(): number {
-  //   return this.longMargin.div(PRECISION_8).toNumber()
-  // }
-
-  // /**
-  //  * Get a Ui friendly short margin of the market
-  //  * @returns the markets short margin
-  //  */
-  // public getUiShortMargin(): number {
-  //   return this.shortMargin.div(PRECISION_8).toNumber()
-  // }
-
-  /**
-   * Get an estimate of the current fee in terms of USD
-   * @param positionSizeAsset the position size
-   * @param isLong if the trade is long
-   * @param isClose if the trade is an open or close
-   * @returns the fee in USD
-   */
-  public async estimateFee(
-    marketObjectAddress: string,
-    positionSizeAsset: number,
-    isLong: boolean,
-    isClose: boolean,
-    perpPrice: number,
-    marginPrice: number
-  ): Promise<number> {
-    const ret = await aptosClient(this.network).view({
-      payload: {
-        function: `${mirageAddress()}::market::get_open_close_fee`,
-        typeArguments: getMarketTypeArgument() as `${string}::${string}::${string}`[],
-        functionArguments: [
-          marketObjectAddress,
-          isLong,
-          isClose,
-          getDecimal8Argument(positionSizeAsset),
-          getDecimal8Argument(perpPrice),
-          getDecimal8Argument(marginPrice),
-        ],
-      },
-    })
-    return ret[0] as number
+  public calculate_fee(skew: BigNumber, is_taker: boolean): BigNumber {
+    const max_skew = this.maxOpenInterestImbalance
+    const new_skew_abs = skew.abs()
+    if (is_taker) {
+      const min = BigNumber(this.minTakerFee)
+      const max = BigNumber(this.maxTakerFee)
+      if (new_skew_abs.gte(BigNumber(max.minus(min)).times(max_skew).div(max))) {
+        return max
+      } else {
+        const scaled = min.times(max_skew).div(max_skew.minus(new_skew_abs))
+        if (scaled.lte(min)) {
+          return min
+        } else {
+          return scaled
+        }
+      }
+    } else {
+      const min = BigNumber(this.minMakerFee)
+      const max = BigNumber(this.maxMakerFee)
+      if (max.times(new_skew_abs).div(max_skew).lte(min)) {
+        // in the range closest to even skew, always pay max maker
+        return max
+      } else {
+        // pay less fees in more skewed market, negative logarithm
+        return min.times(max_skew).div(new_skew_abs)
+      }
+    }
   }
 }

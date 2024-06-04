@@ -184,8 +184,8 @@ export const moveAssetInfo = (coin: MoveAsset | string): MoveAssetInfo => {
  * @param coin the coin
  * @returns a human-readable balance value
  */
-export const balanceToUi = (balance: BigNumber, coin: MoveToken | string): number => {
-  return balance.div(BigNumber(10).pow(moveAssetInfo(coin).decimals)).toNumber()
+export const assetBalanceToDecimal = (balance: BigNumber, coin: MoveToken | string): BigNumber => {
+  return balance.div(BigNumber(10).pow(moveAssetInfo(coin).decimals))
 }
 
 /**
