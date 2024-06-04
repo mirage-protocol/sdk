@@ -41,7 +41,7 @@ export const getPairFromMarketAddress = (marketObjectAddress: string): { marginT
 }
 
 export const getPairFromVaultCollectionAddress = (
-  vaultObjectAddress: string
+  vaultObjectAddress: string,
 ): { collateralAsset: MoveAsset; borrow: MoveToken } => {
   for (const collateralAsset in mirageConfig.vaults) {
     for (const borrow in mirageConfig.vaults[collateralAsset]) {

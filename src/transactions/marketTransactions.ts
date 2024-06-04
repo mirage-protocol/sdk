@@ -37,7 +37,7 @@ export const openPosition = async (
   side: PositionSide,
   desired_price: number,
   maxPriceSlippage: number,
-  network: Network
+  network: Network,
 ): Promise<InputEntryFunctionData> => {
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetual, network)
@@ -78,7 +78,7 @@ export const openPositionWithTpsl = async (
   takeProfitPrice: number,
   stopLossPrice: number,
   triggerPaymentAmount: number,
-  network: Network
+  network: Network,
 ): Promise<InputEntryFunctionData> => {
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetual, network)
@@ -114,7 +114,7 @@ export const closePosition = async (
   positionObject: MoveObjectType,
   marginCoin: MoveToken,
   perpetual: Perpetual,
-  network: Network
+  network: Network,
 ): Promise<InputEntryFunctionData> => {
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetual, network)
@@ -147,7 +147,7 @@ export const openPositionAndPlaceLimitOrder = async (
   triggerPaymentAmount: number,
   expiration: bigint, // in seconds,
   isLong: boolean,
-  network: Network
+  network: Network,
 ): Promise<InputEntryFunctionData> => {
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
@@ -187,7 +187,7 @@ export const placeLimitOrder = async (
   triggersAbove: boolean,
   triggerPaymentAmount: number,
   expiration: bigint, // in seconds
-  network: Network
+  network: Network,
 ): Promise<InputEntryFunctionData> => {
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
@@ -216,7 +216,7 @@ export const placeLimitOrder = async (
  */
 export const cancelLimitOrder = async (
   limitOrdersObject: MoveObjectType,
-  index: number
+  index: number,
 ): Promise<InputEntryFunctionData> => {
   const payload = {
     function:
@@ -232,7 +232,7 @@ export const updateTpsl = async (
   perpetualAsset: Perpetual,
   take_profit_price: number,
   stop_loss_price: number,
-  network: Network
+  network: Network,
 ): Promise<InputEntryFunctionData> => {
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
@@ -256,7 +256,7 @@ export const placeTpsl = async (
   take_profit_price: number,
   stop_loss_price: number,
   trigger_amount: number,
-  network: Network
+  network: Network,
 ): Promise<InputEntryFunctionData> => {
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
@@ -286,7 +286,7 @@ export const updateMargin = async (
   perpetualAsset: Perpetual,
   oldMarginAmount: number,
   newMarginAmount: number,
-  network: Network
+  network: Network,
 ): Promise<InputEntryFunctionData> => {
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
@@ -313,7 +313,7 @@ export const increaseMargin = async (
   marginCoin: MoveToken,
   perpetualAsset: Perpetual,
   increaseMarginAmount: number,
-  network: Network
+  network: Network,
 ): Promise<InputEntryFunctionData> => {
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
@@ -338,7 +338,7 @@ export const decreaseMargin = async (
   marginCoin: MoveToken,
   perpetualAsset: Perpetual,
   decreaseMarginAmount: number,
-  network: Network
+  network: Network,
 ): Promise<InputEntryFunctionData> => {
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
@@ -364,7 +364,7 @@ export const updatePositionSize = async (
   perpetualAsset: Perpetual,
   oldPositionSize: number,
   newPositionSize: number,
-  network: Network
+  network: Network,
 ): Promise<InputEntryFunctionData> => {
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
@@ -396,7 +396,7 @@ export const increasePositionSize = async (
   marginCoin: MoveToken,
   perpetualAsset: Perpetual,
   increasePositionSize: number,
-  network: Network
+  network: Network,
 ): Promise<InputEntryFunctionData> => {
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
@@ -421,7 +421,7 @@ export const decreasePositionSize = async (
   marginCoin: MoveToken,
   perpetualAsset: Perpetual,
   decreasePositionSize: number,
-  network: Network
+  network: Network,
 ): Promise<InputEntryFunctionData> => {
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
@@ -447,7 +447,7 @@ export const triggerTpsl = async (
   positionObject: MoveObjectType,
   marginCoin: MoveToken,
   perpetualAsset: Perpetual,
-  network: Network
+  network: Network,
 ): Promise<InputEntryFunctionData> => {
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
@@ -470,7 +470,7 @@ export const liquidatePosition = async (
   positionObject: MoveObjectType,
   marginCoin: MoveToken,
   perpetualAsset: Perpetual,
-  network: Network
+  network: Network,
 ): Promise<InputEntryFunctionData> => {
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
@@ -496,7 +496,7 @@ export const triggerLimitOrder = async (
   marginCoin: MoveToken,
   perpetualAsset: Perpetual,
   index: number,
-  network: Network
+  network: Network,
 ): Promise<InputEntryFunctionData> => {
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
@@ -522,7 +522,7 @@ export const triggerLimitOrderById = async (
   marginCoin: MoveToken,
   perpetualAsset: Perpetual,
   orderId: bigint,
-  network: Network
+  network: Network,
 ): Promise<InputEntryFunctionData> => {
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)

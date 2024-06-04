@@ -149,7 +149,7 @@ export class Market {
     marginCoin: MoveToken | string,
     perpetualAsset: Perpetual | string,
     network: Network,
-    objectAddress: string
+    objectAddress: string,
   ) {
     this.marginToken = marginCoin as MoveToken
     this.perpetualAsset = perpetualAsset as Perpetual

@@ -90,7 +90,7 @@ export class Position {
     market: Market,
     marginCoin: MoveToken | string,
     perpetualAsset: Perpetual | string,
-    objectAddress: string
+    objectAddress: string,
   ) {
     // this.userAddress = userAddress
     this.marginToken = marginCoin as MoveToken
@@ -177,8 +177,8 @@ export class Position {
             this.marginToken,
             this.perpetualAsset,
             tempTrade.side,
-            this.objectAddress
-          )
+            this.objectAddress,
+          ),
         )
       }
     } catch (error) {

@@ -76,7 +76,7 @@ export const getAllVaultIdsByOwner = async (owner: string): Promise<string[]> =>
 export const getVaultTokenIdsByCollectionAndOwner = async (
   collateralAsset: MoveAsset,
   borrowToken: MoveToken,
-  owner: string
+  owner: string,
 ): Promise<string[]> => {
   const variables: GetTokenIdsFromCollectionByOwnerQueryVariables = {
     COLLECTION: getCollectionIdForVaultPair(collateralAsset, borrowToken),
@@ -103,7 +103,7 @@ export const getVaultTokenIdsByCollectionAndOwner = async (
 }
 
 export const getBorrowTokenFromCollection = async (
-  collectionObject: MoveObjectType
+  collectionObject: MoveObjectType,
 ): Promise<InputViewFunctionData> => {
   return {
     function: `${mirageAddress()}::vault::borrow_token`,
@@ -113,7 +113,7 @@ export const getBorrowTokenFromCollection = async (
 }
 
 export const getCollateralTokenFromCollection = async (
-  collectionObject: MoveObjectType
+  collectionObject: MoveObjectType,
 ): Promise<InputViewFunctionData> => {
   return {
     function: `${mirageAddress()}::vault::collateral_token`,
@@ -151,11 +151,11 @@ export const getVaultCollectionAPR = async (beginDate: Date, collectionId: Accou
 
   const prevGlobalRebase = new Rebase(
     BigNumber(prevDebt.globalDebt.debtElastic),
-    BigNumber(prevDebt.globalDebt.debtBase)
+    BigNumber(prevDebt.globalDebt.debtBase),
   )
   const currentGlobalRebase = new Rebase(
     BigNumber(currentDebt.globalDebt.debtElastic),
-    BigNumber(currentDebt.globalDebt.debtBase)
+    BigNumber(currentDebt.globalDebt.debtBase),
   )
 
   const collectionPrevDebt = prevGlobalRebase

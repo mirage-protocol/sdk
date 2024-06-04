@@ -64,7 +64,7 @@ export class Vault {
     vaultCollection: VaultCollection,
     collateral: MoveToken | string,
     borrow: MoveToken | string,
-    objectAddress: string
+    objectAddress: string,
   ) {
     this.collateralAsset = collateral as MoveToken
     this.borrowToken = borrow as MoveToken
@@ -85,7 +85,7 @@ export class Vault {
         ? this.vaultCollection.mirage.debtRebase
             .toElastic(
               this.vaultCollection.borrowRebase.toElastic(new BigNumber((vault.data as any).borrow_part.amount), true),
-              false
+              false,
             )
             .div(PRECISION_8)
         : ZERO

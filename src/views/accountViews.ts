@@ -14,7 +14,7 @@ import {
 export const getUserAssetBalance = async (
   userAddress: AccountAddress,
   asset: MoveAsset,
-  network: Network
+  network: Network,
 ): Promise<BigNumber> => {
   let balance = ZERO
   switch (getTypeFromMoveAsset(asset)) {
@@ -23,7 +23,7 @@ export const getUserAssetBalance = async (
         await aptosClient(network).getAccountCoinAmount({
           accountAddress: userAddress.toStringLong(),
           coinType: assetInfo(asset).type as `${string}::${string}::${string}`,
-        })
+        }),
       )
       break
     case 'MoveToken':

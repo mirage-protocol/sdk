@@ -58,7 +58,7 @@ export const getAllPositionIdsByOwner = async (owner: string): Promise<string[]>
 export const getPositionIdsByMarketAndOwner = async (
   marginToken: MoveToken,
   perp: Perpetual,
-  owner: string
+  owner: string,
 ): Promise<string[]> => {
   const variables: GetTokenIdsFromCollectionByOwnerQueryVariables = {
     COLLECTION: getCollectionIdForPerpPair(marginToken, perp),
@@ -88,7 +88,7 @@ export const isLimitOrderTriggerable = async (
   positionObjectAddress: MoveObjectType,
   index: number,
   perpPrice: number,
-  network: Network
+  network: Network,
 ): Promise<boolean> => {
   const payload = {
     function: `${mirageAddress()}::market::is_limit_order_triggerable` as `${string}::${string}::${string}`,
@@ -103,7 +103,7 @@ export const getLiquidationPrice = async (
   positionObjectAddress: MoveObjectType,
   perpetualPrice: number,
   marginPrice: number,
-  network: Network
+  network: Network,
 ): Promise<number> => {
   const payload = {
     function: `${mirageAddress()}::market::get_liquidation_price` as `${string}::${string}::${string}`,
@@ -130,7 +130,7 @@ export const estimateFee = async (
   isClose: boolean,
   perpPrice: number,
   marginPrice: number,
-  network: Network
+  network: Network,
 ): Promise<number> => {
   const payload = {
     function: `${mirageAddress()}::market::get_open_close_fee` as `${string}::${string}::${string}`,
@@ -154,7 +154,7 @@ export const getPositionMaintenanceMarginMusd = async (
   positionObjectAddress: MoveObjectType,
   perpetualPrice: number,
   marginPrice: number,
-  network: Network
+  network: Network,
 ): Promise<number> => {
   const payload = {
     function: `${mirageAddress()}::market::get_position_maintenance_margin_musd` as `${string}::${string}::${string}`,

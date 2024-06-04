@@ -50,7 +50,7 @@ export const hasPriceFeed = (asset: MoveAsset): boolean => {
  */
 export const getPriceFeed = (
   coin: MoveAsset | Perpetual,
-  network: Network | string = Network.MAINNET
+  network: Network | string = Network.MAINNET,
 ): string | undefined => {
   return !!PRICE_FEEDS[coin.valueOf()] ? PRICE_FEEDS[coin.valueOf()][getNetwork(network)] : undefined
 }
@@ -63,7 +63,7 @@ export const getPriceFeed = (
  */
 export const getPriceFeedUpdateData = async (
   priceFeedId: string,
-  network: Network | string = Network.MAINNET
+  network: Network | string = Network.MAINNET,
 ): Promise<number[]> => {
   if (!priceFeedId) return []
   try {
@@ -87,7 +87,7 @@ const getContractPrice = ({ price, expo }: Price): number => {
     BigNumber(
       expo >= 0
         ? BigNumber(price).div(BigNumber(10).pow(expo)).toNumber()
-        : BigNumber(price).times(BigNumber(10).pow(expo)).toNumber()
+        : BigNumber(price).times(BigNumber(10).pow(expo)).toNumber(),
     )
       // .times(BigNumber(PRECISION_8))
       .toNumber()

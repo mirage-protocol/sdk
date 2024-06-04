@@ -91,7 +91,7 @@ export class LimitOrder {
     marginToken: MoveToken,
     perpetualAsset: Perpetual,
     positionSide: PositionSide,
-    objectAddress: string
+    objectAddress: string,
   ) {
     this.marginToken = marginToken
     this.perpetualAsset = perpetualAsset
