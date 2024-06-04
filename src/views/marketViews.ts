@@ -93,7 +93,7 @@ export const isLimitOrderTriggerable = async (
   const payload = {
     function: `${mirageAddress()}::market::is_limit_order_triggerable` as `${string}::${string}::${string}`,
     typeArguments: getPositionTypeArgument(),
-    functionArguments: [positionObjectAddress, index, perpPrice],
+    functionArguments: [positionObjectAddress, index, getDecimal8Argument(perpPrice)],
   }
   const ret = await aptosClient(network).view({ payload })
   return ret[0] as boolean
