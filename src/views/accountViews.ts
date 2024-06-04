@@ -2,7 +2,11 @@ import { AccountAddress, Network } from '@aptos-labs/ts-sdk'
 
 import { aptosClient, assetInfo, getAssetTokenMetadata, getTypeFromMoveAsset, MoveAsset } from '../constants'
 
-export const getUserAssetBalance = async (userAddress: AccountAddress, asset: MoveAsset, network: Network): Promise<number> => {
+export const getUserAssetBalance = async (
+  userAddress: AccountAddress,
+  asset: MoveAsset,
+  network: Network
+): Promise<number> => {
   switch (getTypeFromMoveAsset(asset)) {
     case 'MoveCoin':
       return await aptosClient(network).getAccountCoinAmount({

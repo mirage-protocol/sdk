@@ -1,7 +1,7 @@
 import { MoveUint64Type, Network } from '@aptos-labs/ts-sdk'
+import BigNumber from 'bignumber.js'
 
 import { aptosClient, MODULES } from '../constants'
-import BigNumber from 'bignumber.js'
 
 export const numberOfClaimsAvailable = async (userAddress: string): Promise<number> => {
   const payload = {

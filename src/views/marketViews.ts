@@ -84,6 +84,20 @@ export const getPositionIdsByMarketAndOwner = async (
   }
 }
 
+export const isLimitOrderTriggerable = async (
+  positionObjectAddress: MoveObjectType,
+  index: number,
+  network: Network
+): Promise<boolean> => {
+  const payload = {
+    function: `${mirageAddress()}::market::is_limit_order_triggerable` as `${string}::${string}::${string}`,
+    typeArguments: getPositionTypeArgument(),
+    functionArguments: [positionObjectAddress, index],
+  }
+  const ret = await aptosClient(network).view({ payload })
+  return ret[0]
+}
+
 export const getLiquidationPrice = async (
   positionObjectAddress: MoveObjectType,
   perpetualPrice: number,
