@@ -26,7 +26,6 @@ export const stringToPositionSide = (str: string): PositionSide => {
  * Data for a user's position
  */
 export type PositionData = {
-  id: BigNumber
   openingPrice: BigNumber
   side: PositionSide
   margin: BigNumber
@@ -44,6 +43,10 @@ export type PositionData = {
  * Represents a position on a specific Mirage Market
  */
 export class Position {
+  /**
+   * The token id of the position
+   */
+  id: BigNumber
   /**
    * The margin asset of the position
    */
@@ -106,66 +109,60 @@ export class Position {
     if (position == undefined) throw new Error('position object not found')
     const tokenIdentifiers = positionObjectResources.find((resource) => resource.type === tokenIdsType)
     if (tokenIdentifiers == undefined) throw new Error('tokenIdentifiers object not found')
+    this.id = !!tokenIdentifiers ? BigNumber((tokenIdentifiers.data as any).index.value) : ZERO
 
-    const tempTrade: PositionData = {
-      id: ZERO,
-      openingPrice: ZERO,
-      side: PositionSide.UNKNOWN,
-      margin: ZERO,
-      fundingAccrued: ZERO,
-      maintenanceMargin: ZERO,
-      positionSize: ZERO,
-      liquidationPrice: ZERO,
-      tpslExists: false,
-      takeProfitPrice: ZERO,
-      stopLossPrice: ZERO,
-      triggerPayment: ZERO,
-    }
-
-    tempTrade.id = !!tokenIdentifiers ? BigNumber((tokenIdentifiers.data as any).index.value) : ZERO
-    tempTrade.openingPrice = !!position ? BigNumber((position.data as any).opening_price).div(PRECISION_8) : ZERO
-    tempTrade.side = !!position
+    const openingPrice = !!position ? BigNumber((position.data as any).opening_price).div(PRECISION_8) : ZERO
+    const side = !!position
       ? Boolean((position.data as any).is_long)
         ? PositionSide.LONG
         : PositionSide.SHORT
       : PositionSide.UNKNOWN
-    tempTrade.margin = !!position ? BigNumber((position.data as any).margin_amount).div(PRECISION_8) : ZERO
+
+    const margin = !!position ? BigNumber((position.data as any).margin_amount).div(PRECISION_8) : ZERO
+    const positionSize = !!position ? BigNumber((position.data as any).position_size).div(PRECISION_8) : ZERO
 
     // funding accrued is (market_funding_accumulated - last_funding_accumulated) * position_size
     const market_funding_accumulated = !!position
-      ? tempTrade.side == PositionSide.LONG
+      ? side == PositionSide.LONG
         ? market.longFundingAccumulated
         : market.shortFundingAccumulated
       : ZERO
     const last_position_funding = !!position
       ? BigNumber((position.data as any).last_funding_accumulated).div(PRECISION_8)
       : ZERO
-    tempTrade.fundingAccrued = !!position
-      ? market_funding_accumulated.minus(last_position_funding).times(tempTrade.positionSize)
+    const fundingAccrued = !!position
+      ? market_funding_accumulated.minus(last_position_funding).times(positionSize)
       : ZERO
 
-    tempTrade.margin = !!position ? BigNumber((position.data as any).margin_amount).div(PRECISION_8) : ZERO
 
     const tpslType = `${mirageAddress()}::market::TpSl`
     const tpsl = positionObjectResources.find((resource) => resource.type === tpslType)
-    tempTrade.tpslExists = tpsl != undefined
-    tempTrade.takeProfitPrice = tempTrade.tpslExists
-      ? BigNumber((tpsl as any).data.take_profit_price).div(PRECISION_8)
-      : ZERO
-    tempTrade.stopLossPrice = tempTrade.tpslExists
-      ? BigNumber((tpsl as any).data.stop_loss_price).div(PRECISION_8)
-      : ZERO
-    tempTrade.triggerPayment = tempTrade.tpslExists
-      ? BigNumber((tpsl as any).data.trigger_payment_amount).div(PRECISION_8)
-      : ZERO
+    const tpslExists = !!tpsl
+    const takeProfitPrice = tpslExists ? BigNumber((tpsl as any).data.take_profit_price).div(PRECISION_8) : ZERO
+    const stopLossPrice = tpslExists ? BigNumber((tpsl as any).data.stop_loss_price).div(PRECISION_8) : ZERO
+    const triggerPayment = tpslExists ? BigNumber((tpsl as any).data.trigger_payment_amount).div(PRECISION_8) : ZERO
 
-    this.position = !tempTrade.positionSize.eq(0) ? tempTrade : undefined
+    this.position = !!position
+      ? {
+          openingPrice,
+          side,
+          margin,
+          fundingAccrued,
+          maintenanceMargin: margin.div(2), // TODO: compute
+          positionSize,
+          liquidationPrice: BigNumber(69420),
+          tpslExists,
+          takeProfitPrice,
+          stopLossPrice,
+          triggerPayment,
+        }
+      : undefined
 
     const limitOrderType = `${mirageAddress()}::market::LimitOrders`
 
     const limitOrders = positionObjectResources.find((resource) => resource.type === limitOrderType)
 
-    const ordersArr = limitOrders != undefined ? (limitOrders.data as any).orders : []
+    const ordersArr = !!limitOrders ? (limitOrders.data as any).orders : []
     const tempOrders: LimitOrder[] = []
 
     try {
@@ -176,7 +173,7 @@ export class Position {
             index,
             this.marginToken,
             this.perpetualAsset,
-            tempTrade.side,
+            side,
             this.objectAddress,
           ),
         )
