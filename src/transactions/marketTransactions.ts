@@ -495,7 +495,7 @@ export const triggerLimitOrder = async (
   positionObject: MoveObjectType,
   marginCoin: MoveToken,
   perpetualAsset: Perpetual,
-  index: bigint,
+  index: number,
   network: Network
 ): Promise<InputEntryFunctionData> => {
   const marginFeed = getPriceFeed(marginCoin, network)
