@@ -95,7 +95,7 @@ export const isLimitOrderTriggerable = async (
     functionArguments: [positionObjectAddress, index],
   }
   const ret = await aptosClient(network).view({ payload })
-  return ret[0]
+  return (ret[0] as boolean)
 }
 
 export const getLiquidationPrice = async (
