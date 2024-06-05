@@ -122,17 +122,17 @@ export class Position {
     const positionSize = !!position ? BigNumber((position.data as any).position_size).div(PRECISION_8) : ZERO
 
     // funding accrued is (market_funding_accumulated - last_funding_accumulated) * position_size
-    const market_funding_accumulated = !!position
+    const marketFundingAccumulated = !!position
       ? side == PositionSide.LONG
         ? market.longFundingAccumulated
         : market.shortFundingAccumulated
       : ZERO
-    const last_position_funding = !!position
-      ? BigNumber((position.data as any).last_funding_accumulated).div(PRECISION_8)
+    const lastPositionFunding = !!position
+      ? BigNumber((position.data as any).last_funding_accumulated.magnitude)
+          .times((position.data as any).last_funding_accumulated.negative ? -1 : 1)
+          .div(PRECISION_8)
       : ZERO
-    const fundingAccrued = !!position
-      ? market_funding_accumulated.minus(last_position_funding).times(positionSize)
-      : ZERO
+    const fundingAccrued = !!position ? marketFundingAccumulated.minus(lastPositionFunding).times(positionSize) : ZERO
 
     const tpslType = `${mirageAddress()}::market::TpSl`
     const tpsl = positionObjectResources.find((resource) => resource.type === tpslType)
