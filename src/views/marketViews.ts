@@ -166,3 +166,62 @@ export const getPositionMaintenanceMarginMusd = async (
     .div(PRECISION_8)
     .toNumber()
 }
+
+export type AllPositionInfo = {
+  marketObjectAddress: string
+  openingPrice: number
+  isLong: boolean
+  marginAmount: number
+  positionSize: number
+  outstandingFunding: number
+  takeProfitPrice: number
+  stopLossPrice: number
+  liquidationPrice: number
+  maintenanceMarginUsd: number
+  limitOrderCount: number
+}
+
+export const getAllPositionInfo = async (
+  positionObjectAddress: MoveObjectType,
+  perpetualPrice: number,
+  marginPrice: number,
+  network: Network,
+): Promise<AllPositionInfo> => {
+  const payload = {
+    function: `${mirageAddress()}::market::all_position_info` as `${string}::${string}::${string}`,
+    typeArguments: getPositionTypeArgument(),
+    functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
+  }
+  const ret = await aptosClient(network).view({ payload })
+  const data = ret[0] as any
+  const result = {} as any
+  result.openingPrice = BigNumber(data.openingPrice as MoveUint64Type)
+    .div(PRECISION_8)
+    .toNumber()
+  result.marginAmount = BigNumber(data.marginAmount as MoveUint64Type)
+    .div(PRECISION_8)
+    .toNumber()
+  result.positionSize = BigNumber(data.positionSize as MoveUint64Type)
+    .div(PRECISION_8)
+    .toNumber()
+
+  result.outstandingFunding = BigNumber(data.outstandingFunding.magnitude as MoveUint64Type).times(
+    result.outstandingFunding.negative ? -1 : 1,
+  )
+  result.takeProfitPrice = BigNumber(data.takeProfitPrice as MoveUint64Type)
+    .div(PRECISION_8)
+    .toNumber()
+  result.stopLossPrice = BigNumber(data.stopLossPrice as MoveUint64Type)
+    .div(PRECISION_8)
+    .toNumber()
+  result.liquidationPrice = BigNumber(data.liquidationPrice as MoveUint64Type)
+    .div(PRECISION_8)
+    .toNumber()
+  result.maintenanceMarginUsd = BigNumber(data.maintenanceMarginUsd as MoveUint64Type)
+    .div(PRECISION_8)
+    .toNumber()
+  result.limitOrderCount = BigNumber(data.limitOrderCount as MoveUint64Type)
+    .div(PRECISION_8)
+    .toNumber()
+  return result
+}

@@ -134,7 +134,6 @@ export class Position {
       ? market_funding_accumulated.minus(last_position_funding).times(positionSize)
       : ZERO
 
-
     const tpslType = `${mirageAddress()}::market::TpSl`
     const tpsl = positionObjectResources.find((resource) => resource.type === tpslType)
     const tpslExists = !!tpsl
