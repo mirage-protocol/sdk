@@ -1,7 +1,7 @@
 import { MoveResource, Network } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { mirageAddress, MoveToken, Perpetual, PRECISION_8, ZERO } from '../../constants'
+import { FEE_PRECISION, mirageAddress, MoveToken, Perpetual, PRECISION_8, ZERO } from '../../constants'
 import { getLiquidationPrice, getPositionMaintenanceMarginMusd } from '../../views'
 import { LimitOrder, LimitOrderData } from './limitOrder'
 import { Market } from './market'
@@ -130,6 +130,7 @@ export class Position {
     const lastPositionFunding = !!position
       ? BigNumber((position.data as any).last_funding_accumulated.magnitude)
           .times((position.data as any).last_funding_accumulated.negative ? -1 : 1)
+          .div(FEE_PRECISION)
           .div(PRECISION_8)
       : ZERO
     const fundingAccrued = !!position ? marketFundingAccumulated.minus(lastPositionFunding).times(positionSize) : ZERO

@@ -6,7 +6,6 @@ import { FEE_PRECISION, PRECISION_8 } from '../../constants'
 import { PERCENT_PRECISION, ZERO } from '../../constants'
 import { mirageAddress } from '../../constants/accounts'
 import { MoveToken, Perpetual } from '../../constants/assetList'
-
 /**
  * Represents a mirage-protocol perpetuals market.
  */
@@ -168,13 +167,13 @@ export class Market {
       ? new BigNumber((market.data as any).long_funding_accumulated_per_unit.magnitude)
           .times((market.data as any).long_funding_accumulated_per_unit.negative ? -1 : 1)
           .div(FEE_PRECISION)
-          .times(PRECISION_8)
+          .div(PRECISION_8)
       : ZERO
     this.shortFundingAccumulated = !!market
       ? new BigNumber((market.data as any).short_funding_accumulated_per_unit.magnitude)
           .times((market.data as any).short_funding_accumulated_per_unit.negative ? -1 : 1)
           .div(FEE_PRECISION)
-          .times(PRECISION_8)
+          .div(PRECISION_8)
       : ZERO
     this.nextFundingRate = !!market
       ? new BigNumber((market.data as any).next_funding_rate.magnitude)
@@ -186,7 +185,6 @@ export class Market {
       : new Date(0)
     this.longCloseOnly = !!market ? Boolean((market.data as any).is_long_close_only) : false
     this.shortCloseOnly = !!market ? Boolean((market.data as any).is_short_close_only) : false
-
     // fees
     this.minTakerFee = !!market
       ? new BigNumber((market.data as any).config.fees.min_taker_fee).div(PERCENT_PRECISION).times(100).toNumber()
