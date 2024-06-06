@@ -72,11 +72,10 @@ export class Vault {
     this.objectAddress = objectAddress
 
     const vaultType = `${mirageAddress()}::vault::Vault`
-    const propertyMapType = `0x4::property_map::PropertyMap`
+    // const propertyMapType = `0x4::property_map::PropertyMap`
 
     const vault = vaultObjectResources.find((resource) => resource.type === vaultType)
-    const propertyMap = vaultObjectResources.find((resource) => resource.type === propertyMapType)
-    console.log(JSON.stringify(propertyMap?.data))
+    // const propertyMap = vaultObjectResources.find((resource) => resource.type === propertyMapType)
 
     this.collateralAmount = !!vault
       ? assetBalanceToDecimal(BigNumber((vault.data as any).collateral_amount), this.collateralAsset)

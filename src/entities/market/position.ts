@@ -104,15 +104,19 @@ export class Position {
   /**
    * The fees paid by this position in margin token
    */
-  public readonly fees_paid: BigNumber
+  public readonly feesPaid: BigNumber
   /**
    * The funding paid by this position in margin token
    */
-  public readonly funding_paid: BigNumber
+  public readonly fundingPaid: BigNumber
+  /**
+   * The trade pnl (realized_pnl - feesPaid - funding) in margin token
+   */
+  public readonly tradePnl: BigNumber
   /**
    * The realized pnl of this position in margin token
    */
-  public readonly realized_pnl: BigNumber
+  public readonly realizedPnl: BigNumber
   /**
    * The positions initial leverage
    */
@@ -164,13 +168,14 @@ export class Position {
     const propertyMap = positionObjectResources.find((resource) => resource.type === propertyMapType)
     if (propertyMap == undefined) throw new Error('PropertyMap object not found')
 
-    this.fees_paid = !!propertyMap ? getPropertyMapU64('fees_paid', propertyMap.data as any).div(PRECISION_8) : ZERO
-    this.funding_paid = !!propertyMap
+    this.feesPaid = !!propertyMap ? getPropertyMapU64('fees_paid', propertyMap.data as any).div(PRECISION_8) : ZERO
+    this.fundingPaid = !!propertyMap
       ? getPropertyMapSigned64('funding_paid', propertyMap.data as any).div(PRECISION_8)
       : ZERO
-    this.realized_pnl = !!propertyMap
+    this.tradePnl = !!propertyMap
       ? getPropertyMapSigned64('realized_pnl', propertyMap.data as any).div(PRECISION_8)
       : ZERO
+    this.realizedPnl = this.tradePnl.minus(this.feesPaid).minus(this.fundingPaid)
     this.leverage = !!propertyMap ? getPropertyMapU64('leverage', propertyMap.data as any).div(PERCENT_PRECISION) : ZERO
 
     const openingPrice = !!position ? BigNumber((position.data as any).opening_price).div(PRECISION_8) : ZERO
@@ -245,7 +250,6 @@ export class Position {
     }
 
     this.limitOrders = tempOrders
-    console.log('done', this)
   }
 
   /**
