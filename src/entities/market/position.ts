@@ -1,7 +1,16 @@
-import { MoveResource, Network } from '@aptos-labs/ts-sdk'
+import { Deserializer, MoveResource, Network } from '@aptos-labs/ts-sdk'
+import { HexString } from 'aptos'
 import BigNumber from 'bignumber.js'
 
-import { FEE_PRECISION, mirageAddress, MoveToken, Perpetual, PRECISION_8, ZERO } from '../../constants'
+import {
+  FEE_PRECISION,
+  mirageAddress,
+  MoveToken,
+  PERCENT_PRECISION,
+  Perpetual,
+  PRECISION_8,
+  ZERO,
+} from '../../constants'
 import { getLiquidationPrice, getPositionMaintenanceMarginMusd } from '../../views'
 import { LimitOrder, LimitOrderData } from './limitOrder'
 import { Market } from './market'
@@ -20,6 +29,30 @@ export const stringToPositionSide = (str: string): PositionSide => {
   if (str == 'l' || str == 'long') return PositionSide.LONG
   else if (str == 's' || str == 'short') return PositionSide.SHORT
   return PositionSide.UNKNOWN
+}
+
+const getPropertyMapU64 = (key: string, data): BigNumber => {
+  const property = data.inner.data.find((property: { key: string; value: any }) => {
+    return property.key == key
+  })
+  const de = new Deserializer(new HexString(property.value.value).toUint8Array())
+  return BigNumber(de.deserializeU64().toString())
+}
+
+const getPropertyMapSigned64 = (key: string, data): BigNumber => {
+  const magnitude_property = data.inner.data.find((property: { key: string; value: any }) => {
+    return property.key == `${key}_magnitude`
+  })
+  const negative_property = data.inner.data.find((property: { key: string; value: any }) => {
+    return property.key == `${key}_negative`
+  })
+  let de = new Deserializer(new HexString(magnitude_property.value.value).toUint8Array())
+  const magnitude = BigNumber(de.deserializeU64().toString())
+
+  de = new Deserializer(new HexString(negative_property.value.value).toUint8Array())
+  const negative = de.deserializeBool()
+
+  return magnitude.times(negative ? -1 : 1)
 }
 
 /**
@@ -68,6 +101,23 @@ export class Position {
    */
   public readonly limitOrders: LimitOrder[]
 
+  /**
+   * The fees paid by this position in margin token
+   */
+  public readonly fees_paid: BigNumber
+  /**
+   * The funding paid by this position in margin token
+   */
+  public readonly funding_paid: BigNumber
+  /**
+   * The realized pnl of this position in margin token
+   */
+  public readonly realized_pnl: BigNumber
+  /**
+   * The positions initial leverage
+   */
+  public readonly leverage: BigNumber
+
   public readonly objectAddress: string
 
   /**
@@ -104,12 +154,24 @@ export class Position {
 
     const positionType = `${mirageAddress()}::market::Position`
     const tokenIdsType = '0x4::token::TokenIdentifiers'
+    const propertyMapType = `0x4::property_map::PropertyMap`
 
     const position = positionObjectResources.find((resource) => resource.type === positionType)
-    if (position == undefined) throw new Error('position object not found')
+    if (position == undefined) throw new Error('Position object not found')
     const tokenIdentifiers = positionObjectResources.find((resource) => resource.type === tokenIdsType)
-    if (tokenIdentifiers == undefined) throw new Error('tokenIdentifiers object not found')
+    if (tokenIdentifiers == undefined) throw new Error('TokenIdentifiers object not found')
     this.id = !!tokenIdentifiers ? BigNumber((tokenIdentifiers.data as any).index.value) : ZERO
+    const propertyMap = positionObjectResources.find((resource) => resource.type === propertyMapType)
+    if (propertyMap == undefined) throw new Error('PropertyMap object not found')
+
+    this.fees_paid = !!propertyMap ? getPropertyMapU64('fees_paid', propertyMap.data as any).div(PRECISION_8) : ZERO
+    this.funding_paid = !!propertyMap
+      ? getPropertyMapSigned64('funding_paid', propertyMap.data as any).div(PRECISION_8)
+      : ZERO
+    this.realized_pnl = !!propertyMap
+      ? getPropertyMapSigned64('realized_pnl', propertyMap.data as any).div(PRECISION_8)
+      : ZERO
+    this.leverage = !!propertyMap ? getPropertyMapU64('leverage', propertyMap.data as any).div(PERCENT_PRECISION) : ZERO
 
     const openingPrice = !!position ? BigNumber((position.data as any).opening_price).div(PRECISION_8) : ZERO
     const side = !!position
@@ -183,6 +245,7 @@ export class Position {
     }
 
     this.limitOrders = tempOrders
+    console.log('done', this)
   }
 
   /**
@@ -213,12 +276,13 @@ export class Position {
    * @returns The amount of pnl in terms of the margin of the market
    */
   static estimatePnl(position: PositionData, perpetualPrice: number, marginPrice: number): number {
-    return (
-      ((position.positionSize.toNumber() * perpetualPrice -
-        position.positionSize.toNumber() * position.openingPrice.toNumber()) /
-        marginPrice) *
-      (position.side == PositionSide.LONG ? 1 : -1)
-    )
+    return BigNumber(perpetualPrice)
+      .minus(position.openingPrice)
+      .times(position.positionSize)
+      .div(marginPrice)
+      .minus(position.fundingAccrued)
+      .times(position.side == PositionSide.LONG ? 1 : -1)
+      .toNumber()
   }
 
   /**
