@@ -187,30 +187,30 @@ export class Market {
     this.shortCloseOnly = !!market ? Boolean((market.data as any).is_short_close_only) : false
     // fees
     this.minTakerFee = !!market
-      ? new BigNumber((market.data as any).config.fees.min_taker_fee).div(PERCENT_PRECISION).times(100).toNumber()
+      ? new BigNumber((market.data as any).config.fees.min_taker_fee).div(PERCENT_PRECISION).toNumber()
       : 0
     this.maxTakerFee = !!market
-      ? new BigNumber((market.data as any).config.fees.max_taker_fee).div(PERCENT_PRECISION).times(100).toNumber()
+      ? new BigNumber((market.data as any).config.fees.max_taker_fee).div(PERCENT_PRECISION).toNumber()
       : 0
     this.minMakerFee = !!market
-      ? new BigNumber((market.data as any).config.fees.min_maker_fee).div(PERCENT_PRECISION).times(100).toNumber()
+      ? new BigNumber((market.data as any).config.fees.min_maker_fee).div(PERCENT_PRECISION).toNumber()
       : 0
     this.maxMakerFee = !!market
-      ? new BigNumber((market.data as any).config.fees.max_maker_fee).div(PERCENT_PRECISION).times(100).toNumber()
+      ? new BigNumber((market.data as any).config.fees.max_maker_fee).div(PERCENT_PRECISION).toNumber()
       : 0
     this.liquidationFee = !!market
-      ? new BigNumber((market.data as any).config.fees.liquidation_fee).div(PERCENT_PRECISION).times(100).toNumber()
+      ? new BigNumber((market.data as any).config.fees.liquidation_fee).div(PERCENT_PRECISION).toNumber()
       : 0
 
     // funding
     this.minFundingRate = !!market
-      ? new BigNumber((market.data as any).config.funding.min_funding_rate).div(FEE_PRECISION).times(100).toNumber()
+      ? new BigNumber((market.data as any).config.funding.min_funding_rate).div(FEE_PRECISION).toNumber()
       : 0
     this.maxFundingRate = !!market
-      ? new BigNumber((market.data as any).config.funding.max_funding_rate).div(FEE_PRECISION).times(100).toNumber()
+      ? new BigNumber((market.data as any).config.funding.max_funding_rate).div(FEE_PRECISION).toNumber()
       : 0
     this.baseFundingRate = !!market
-      ? new BigNumber((market.data as any).config.funding.base_funding_rate).div(FEE_PRECISION).times(100).toNumber()
+      ? new BigNumber((market.data as any).config.funding.base_funding_rate).div(FEE_PRECISION).toNumber()
       : 0
     this.fundingInterval = !!market ? new BigNumber((market.data as any).config.funding.funding_interval) : ZERO
 
@@ -229,16 +229,73 @@ export class Market {
     this.maxOrderSize = !!market ? new BigNumber((market.data as any).config.max_order_size).div(PRECISION_8) : ZERO
   }
 
-  public calculate_fee(skew: BigNumber, is_taker: boolean): BigNumber {
-    const max_skew = this.maxOpenInterestImbalance
-    const new_skew_abs = skew.abs()
+  public getOpenCloseFee(isLong: boolean, positionSize: BigNumber, perpPrice: BigNumber): BigNumber {
+    // get current skew
+    const currSkew = this.getSkew(perpPrice)
+    const skewedLong = currSkew.isPositive()
+    // define different states
+    const longAndLongSkew = isLong && skewedLong
+    const shortAndShortSkew = !isLong && !skewedLong
+
+    const mUSDAmount = positionSize.times(perpPrice)
+    const additionalSkew = mUSDAmount.times(isLong ? 1 : -1)
+    // calculate the new skew from this action
+    const newSkew = currSkew.plus(additionalSkew)
+
+    // determine if this is a taker or maker position
+    // 1) opening a trade in direction of prominent skew
+    // 2) a trade resulting in a skew prominence reversal
+    const taker = longAndLongSkew || shortAndShortSkew || skewedLong == newSkew.isNegative()
+
+    const newSkewAbs = newSkew.abs()
+    // enforce new_skew limit if it's a taker and an open, otherwise we let the skew change
+    // 2 reasons:
+    //
+    // 1. We want users to always be able to close positions
+    // 2. To avoid the situation where skew can go past max over time -> preventing even
+    //    actions that reduce skew
+    if (taker) {
+      if (newSkewAbs.gte(this.maxOpenInterestImbalance)) {
+        return BigNumber(NaN)
+      }
+    }
+
+    // scale off the max fee based on the skew for makers and takers
+    const fee = this.calculateFee(newSkew, taker)
+    return fee
+  }
+
+  /// Get the the oi skew and if it skews long given a market price
+  public getSkew(perpPrice: BigNumber): BigNumber {
+    const maxOi = this.maxOpenInterestImbalance
+    const longOi = this.longOpenInterest
+    const shortOi = this.shortOpenInterest
+
+    const longOiMUSD = longOi.times(perpPrice)
+    const shortOiMUSD = shortOi.times(perpPrice)
+    if (longOiMUSD.gte(maxOi) || shortOiMUSD.gte(maxOi)) {
+      return BigNumber(NaN)
+    }
+
+    if (longOiMUSD.eq(shortOiMUSD)) {
+      return ZERO
+    } else if (longOiMUSD.gt(shortOiMUSD)) {
+      return longOiMUSD.minus(shortOiMUSD)
+    } else {
+      return shortOiMUSD.minus(longOiMUSD)
+    }
+  }
+
+  public calculateFee(skew: BigNumber, is_taker: boolean): BigNumber {
+    const maxSkew = this.maxOpenInterestImbalance
+    const newSkewAbs = skew.abs()
     if (is_taker) {
       const min = BigNumber(this.minTakerFee)
       const max = BigNumber(this.maxTakerFee)
-      if (new_skew_abs.gte(BigNumber(max.minus(min)).times(max_skew).div(max))) {
+      if (newSkewAbs.gte(BigNumber(max.minus(min)).times(maxSkew).div(max))) {
         return max
       } else {
-        const scaled = min.times(max_skew).div(max_skew.minus(new_skew_abs))
+        const scaled = min.times(maxSkew).div(maxSkew.minus(newSkewAbs))
         if (scaled.lte(min)) {
           return min
         } else {
@@ -248,12 +305,12 @@ export class Market {
     } else {
       const min = BigNumber(this.minMakerFee)
       const max = BigNumber(this.maxMakerFee)
-      if (max.times(new_skew_abs).div(max_skew).lte(min)) {
+      if (max.times(newSkewAbs).div(maxSkew).lte(min)) {
         // in the range closest to even skew, always pay max maker
         return max
       } else {
         // pay less fees in more skewed market, negative logarithm
-        return min.times(max_skew).div(new_skew_abs)
+        return min.times(maxSkew).div(newSkewAbs)
       }
     }
   }
