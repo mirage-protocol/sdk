@@ -1,5 +1,4 @@
-import { Deserializer, MoveResource, Network } from '@aptos-labs/ts-sdk'
-import { HexString } from 'aptos'
+import { MoveResource, Network } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import {
@@ -11,6 +10,7 @@ import {
   PRECISION_8,
   ZERO,
 } from '../../constants'
+import { getPropertyMapSigned64, getPropertyMapU64 } from '../../utils'
 import { getLiquidationPrice, getPositionMaintenanceMarginMusd } from '../../views'
 import { LimitOrder, LimitOrderData } from './limitOrder'
 import { Market } from './market'
@@ -29,30 +29,6 @@ export const stringToPositionSide = (str: string): PositionSide => {
   if (str == 'l' || str == 'long') return PositionSide.LONG
   else if (str == 's' || str == 'short') return PositionSide.SHORT
   return PositionSide.UNKNOWN
-}
-
-const getPropertyMapU64 = (key: string, data): BigNumber => {
-  const property = data.inner.data.find((property: { key: string; value: any }) => {
-    return property.key == key
-  })
-  const de = new Deserializer(new HexString(property.value.value).toUint8Array())
-  return BigNumber(de.deserializeU64().toString())
-}
-
-const getPropertyMapSigned64 = (key: string, data): BigNumber => {
-  const magnitude_property = data.inner.data.find((property: { key: string; value: any }) => {
-    return property.key == `${key}_magnitude`
-  })
-  const negative_property = data.inner.data.find((property: { key: string; value: any }) => {
-    return property.key == `${key}_negative`
-  })
-  let de = new Deserializer(new HexString(magnitude_property.value.value).toUint8Array())
-  const magnitude = BigNumber(de.deserializeU64().toString())
-
-  de = new Deserializer(new HexString(negative_property.value.value).toUint8Array())
-  const negative = de.deserializeBool()
-
-  return magnitude.times(negative ? -1 : 1)
 }
 
 /**

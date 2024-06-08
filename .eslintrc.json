@@ -27,6 +27,9 @@
     "unused-imports/no-unused-imports": "error",
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
-    "object-shorthand": ["error", "always"]
+    "object-shorthand": ["error", "always"],
+    "@typescript-eslint/explicit-module-boundary-types": ["error", {
+      "allowArgumentsExplicitlyTypedAsAny": true
+    }]
   }
 }

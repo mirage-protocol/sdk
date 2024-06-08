@@ -1,9 +1,10 @@
 import { MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { EXCHANGE_RATE_PRECISION, PRECISION_8, ZERO } from '../../constants'
+import { PRECISION_8, ZERO } from '../../constants'
 import { mirageAddress } from '../../constants/accounts'
 import { assetBalanceToDecimal, MoveAsset, MoveToken } from '../../constants/assetList'
+import { getPropertyMapSigned64, getPropertyMapU64 } from '../../utils'
 import { VaultCollection } from './vaultCollection'
 
 /**
@@ -32,13 +33,22 @@ export class Vault {
    */
   public readonly liquidationPrice: BigNumber
   /**
-   * The user's max borrowable amount to still be solvent
+   * The vaults max borrowable amount to still be solvent
    */
   public readonly remainingBorrowable: BigNumber
   /**
-   * The user's max withdrawable amount to still be solvent
+   * The vaults max withdrawable amount to still be solvent
    */
   public readonly withdrawableAmount: BigNumber
+  /**
+   * The vaults pnl in the borrow token
+   */
+  public readonly pnl: BigNumber
+  /**
+   * The vaults fees in the borrow token
+   */
+  public readonly feesPaid: BigNumber
+
   /**
    * A scale of how healthy the users position is (precision: 1e5)
    * Position health of 0 => the position can be liquidation
@@ -72,10 +82,10 @@ export class Vault {
     this.objectAddress = objectAddress
 
     const vaultType = `${mirageAddress()}::vault::Vault`
-    // const propertyMapType = `0x4::property_map::PropertyMap`
+    const propertyMapType = `0x4::property_map::PropertyMap`
 
     const vault = vaultObjectResources.find((resource) => resource.type === vaultType)
-    // const propertyMap = vaultObjectResources.find((resource) => resource.type === propertyMapType)
+    const propertyMap = vaultObjectResources.find((resource) => resource.type === propertyMapType)
 
     this.collateralAmount = !!vault
       ? assetBalanceToDecimal(BigNumber((vault.data as any).collateral_amount), this.collateralAsset)
@@ -84,13 +94,23 @@ export class Vault {
     // need to use global debt rebase
     this.borrowAmount =
       !!vault && !!this.vaultCollection
-        ? this.vaultCollection.mirage.debtRebase
-            .toElastic(
-              this.vaultCollection.borrowRebase.toElastic(new BigNumber((vault.data as any).borrow_part.amount), true),
-              false,
-            )
-            .div(PRECISION_8)
+        ? this.vaultCollection.mirage.debtRebase.toElastic(
+            this.vaultCollection.borrowRebase.toElastic(
+              new BigNumber((vault.data as any).borrow_part.amount).div(PRECISION_8),
+              true,
+            ),
+            false,
+          )
         : ZERO
+
+    const realizedPnl = !!propertyMap
+      ? getPropertyMapSigned64('realized_pnl', propertyMap.data as any).div(PRECISION_8)
+      : ZERO
+    const lastBorrowAmount = !!propertyMap
+      ? getPropertyMapU64('last_borrow_amount', propertyMap.data as any).div(PRECISION_8)
+      : ZERO
+    this.feesPaid = !!propertyMap ? getPropertyMapU64('fees_paid', propertyMap.data as any).div(PRECISION_8) : ZERO
+    this.pnl = realizedPnl.plus(lastBorrowAmount).minus(this.borrowAmount).minus(this.feesPaid)
 
     this.liquidationPrice =
       !!vault && !!this.vaultCollection
@@ -101,36 +121,28 @@ export class Vault {
       !!vault && !!this.vaultCollection
         ? this.collateralAmount
             .times(this.vaultCollection.exchangeRate)
-            .div(EXCHANGE_RATE_PRECISION)
-            .times(this.vaultCollection.maintenanceCollateralizationPercent)
+            .times(this.vaultCollection.initialCollateralizationPercent)
             .div(100)
-        : ZERO
-
-    const maxCollateral =
-      !!vault && !!this.vaultCollection
-        ? this.collateralAmount.times(this.vaultCollection.maintenanceCollateralizationPercent).div(100)
         : ZERO
 
     const ratio =
       !!vault && !!this.vaultCollection
-        ? this.borrowAmount
-            .times(EXCHANGE_RATE_PRECISION)
-            .div(this.vaultCollection.exchangeRate)
-            .times(10000)
-            .div(maxCollateral)
+        ? this.collateralAmount
+            .times(this.vaultCollection.exchangeRate)
+            .div(this.vaultCollection.maintenanceCollateralizationPercent / 100)
+            .div(this.borrowAmount)
             .toNumber()
         : 0
 
     const minCollateral =
       !!vault && !!this.vaultCollection
         ? this.borrowAmount
-            .times(EXCHANGE_RATE_PRECISION)
             .div(this.vaultCollection.exchangeRate)
-            .div(this.vaultCollection.maintenanceCollateralizationPercent)
+            .div(this.vaultCollection.initialCollateralizationPercent)
             .div(100)
         : ZERO
 
-    this.positionHealth = ratio > 10000 ? 0 : 10000 - ratio
+    this.positionHealth = (ratio - 1) * 100
     this.remainingBorrowable = !!vault ? maxBorrow.minus(this.borrowAmount) : ZERO
     this.withdrawableAmount = !!vault ? this.collateralAmount.minus(minCollateral) : ZERO
   }

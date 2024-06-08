@@ -2,6 +2,7 @@ import { MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import {
+  EXCHANGE_RATE_PRECISION,
   getPriceFeed,
   INTEREST_PRECISION,
   PERCENT_PRECISION,
@@ -132,12 +133,14 @@ export class VaultCollection {
           .toNumber()
       : 0
 
-    this.exchangeRate = !!vaultCollection ? BigNumber((vaultCollection.data as any).cached_exchange_rate) : ZERO
+    this.exchangeRate = !!vaultCollection
+      ? BigNumber((vaultCollection.data as any).cached_exchange_rate).div(EXCHANGE_RATE_PRECISION)
+      : ZERO
 
     this.borrowRebase = !!vaultCollection
       ? new Rebase(
-          BigNumber((vaultCollection.data as any).borrow.elastic),
-          BigNumber((vaultCollection.data as any).borrow.base),
+          BigNumber((vaultCollection.data as any).borrow.elastic).div(PRECISION_8),
+          BigNumber((vaultCollection.data as any).borrow.base).div(PRECISION_8),
         )
       : new Rebase(ZERO, ZERO)
     this.totalBorrow = !!vaultCollection
