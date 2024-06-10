@@ -8,10 +8,10 @@ import {
   PERCENT_PRECISION,
   Perpetual,
   PRECISION_8,
+  U64_MAX,
   ZERO,
 } from '../../constants'
 import { getPropertyMapSigned64, getPropertyMapU64 } from '../../utils'
-import { getLiquidationPrice, getPositionMaintenanceMarginMusd } from '../../views'
 import { LimitOrder, LimitOrderData } from './limitOrder'
 import { Market } from './market'
 
@@ -41,7 +41,6 @@ export type PositionData = {
   positionSize: BigNumber
   fundingAccrued: BigNumber
   maintenanceMargin: BigNumber
-  liquidationPrice: BigNumber
   tpslExists: boolean
   takeProfitPrice: BigNumber
   stopLossPrice: BigNumber
@@ -193,7 +192,6 @@ export class Position {
           fundingAccrued,
           maintenanceMargin: margin.div(2), // TODO: compute
           positionSize,
-          liquidationPrice: BigNumber(69420),
           tpslExists,
           takeProfitPrice,
           stopLossPrice,
@@ -245,7 +243,12 @@ export class Position {
    * @returns The leverage, where 1 == 1x leverage
    */
   static getLeverage(position: PositionData, perpetualPrice: number, marginPrice: number): number {
-    return (position.positionSize.div(position.margin).toNumber() * perpetualPrice) / marginPrice
+    return position.positionSize
+      .div(position.margin)
+      .minus(position.fundingAccrued)
+      .times(perpetualPrice)
+      .div(marginPrice)
+      .toNumber()
   }
 
   /**
@@ -276,11 +279,47 @@ export class Position {
     return (Position.estimatePnl(position, perpetualPrice, marginPrice) * 100) / position.margin.toNumber()
   }
 
-  public async getLiqPrice(perpetualPrice: number, marginPrice: number): Promise<number> {
-    return await getLiquidationPrice(this.objectAddress, perpetualPrice, marginPrice, this.network)
+  public getPositionMaintenanceMarginMUSD(perpPrice: BigNumber, marginPrice: BigNumber): BigNumber {
+    if (!this.position) {
+      return ZERO
+    }
+
+    const closeFee = this.market.getOpenCloseFee(
+      this.position.side,
+      true, // close
+      this.position.positionSize,
+      perpPrice,
+      marginPrice,
+    )
+    const positionSizeMUSD = this.position.positionSize.times(perpPrice)
+    return BigNumber(this.market.maintenanceMargin).times(positionSizeMUSD).plus(closeFee)
   }
 
-  public async getMaintenanceMargin(perpetualPrice: number, marginPrice: number): Promise<number> {
-    return await getPositionMaintenanceMarginMusd(this.objectAddress, perpetualPrice, marginPrice, this.network)
+  public getLiquidationPrice(perpPrice: BigNumber, marginPrice: BigNumber): BigNumber {
+    if (!this.position) {
+      return ZERO
+    }
+
+    const outstandingFunding = this.position.fundingAccrued
+    const maintenanceMargin = this.getPositionMaintenanceMarginMUSD(perpPrice, marginPrice)
+    const openingPrice = this.position.openingPrice
+    let rawMargin = this.position.margin
+    rawMargin = rawMargin.plus(outstandingFunding)
+    const marginMUSD = rawMargin.times(marginPrice)
+    if (marginMUSD.lte(maintenanceMargin)) {
+      return this.position.side == PositionSide.LONG ? ZERO : BigNumber(U64_MAX)
+    }
+
+    const marginScalar = marginMUSD.minus(maintenanceMargin).div(this.position.positionSize)
+
+    if (this.position.side == PositionSide.LONG && openingPrice.gt(marginScalar)) {
+      return openingPrice.minus(marginScalar)
+    } else if (this.position.side == PositionSide.SHORT && marginScalar.plus(openingPrice).lt(BigNumber(U64_MAX))) {
+      return marginScalar.plus(openingPrice)
+    } else if (this.position.side == PositionSide.LONG) {
+      return ZERO
+    } else {
+      return BigNumber(U64_MAX)
+    }
   }
 }

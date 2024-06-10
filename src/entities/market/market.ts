@@ -6,6 +6,7 @@ import { FEE_PRECISION, PRECISION_8 } from '../../constants'
 import { PERCENT_PRECISION, ZERO } from '../../constants'
 import { mirageAddress } from '../../constants/accounts'
 import { MoveToken, Perpetual } from '../../constants/assetList'
+import { PositionSide } from './position'
 /**
  * Represents a mirage-protocol perpetuals market.
  */
@@ -229,16 +230,39 @@ export class Market {
     this.maxOrderSize = !!market ? new BigNumber((market.data as any).config.max_order_size).div(PRECISION_8) : ZERO
   }
 
-  public getOpenCloseFee(isLong: boolean, positionSize: BigNumber, perpPrice: BigNumber): BigNumber {
+  public getOpenCloseFee(
+    side: PositionSide,
+    isClose: boolean,
+    positionSize: BigNumber,
+    perpPrice: BigNumber,
+    marginPrice: BigNumber,
+  ): BigNumber {
+    const skew = this.getSkew(perpPrice)
+    const positionSizeMUSD = positionSize.times(perpPrice)
+    const fee = isClose ? this.getCloseFee(skew, side, positionSizeMUSD) : this.getOpenFee(skew, side, positionSizeMUSD)
+    return fee.times(positionSizeMUSD).div(marginPrice)
+  }
+
+  public getCloseFee(currSkew: BigNumber, side: PositionSide, positionSizeMUSD: BigNumber): BigNumber {
+    const skewedLong = currSkew.isPositive()
+    const longAndLongSkew = side == PositionSide.LONG && skewedLong
+    const shortAndShortSkew = side == PositionSide.SHORT && !skewedLong
+    const additionalSkew = positionSizeMUSD.times(side ? 1 : -1)
+    // calculate the new skew from this action
+    const newSkew = currSkew.plus(additionalSkew)
+
+    const taker = longAndLongSkew || shortAndShortSkew || skewedLong == newSkew.isNegative()
+    return this.calculateFee(newSkew, taker)
+  }
+
+  public getOpenFee(currSkew: BigNumber, side: PositionSide, positionSizeMUSD: BigNumber): BigNumber {
     // get current skew
-    const currSkew = this.getSkew(perpPrice)
     const skewedLong = currSkew.isPositive()
     // define different states
-    const longAndLongSkew = isLong && skewedLong
-    const shortAndShortSkew = !isLong && !skewedLong
+    const longAndLongSkew = side == PositionSide.LONG && skewedLong
+    const shortAndShortSkew = side == PositionSide.SHORT && !skewedLong
 
-    const mUSDAmount = positionSize.times(perpPrice)
-    const additionalSkew = mUSDAmount.times(isLong ? 1 : -1)
+    const additionalSkew = positionSizeMUSD.times(side == PositionSide.LONG ? 1 : -1)
     // calculate the new skew from this action
     const newSkew = currSkew.plus(additionalSkew)
 
@@ -256,13 +280,12 @@ export class Market {
     //    actions that reduce skew
     if (taker) {
       if (newSkewAbs.gte(this.maxOpenInterestImbalance)) {
-        return BigNumber(NaN)
+        return BigNumber(NaN) // EOI_TOO_SKEWED
       }
     }
 
     // scale off the max fee based on the skew for makers and takers
-    const fee = this.calculateFee(newSkew, taker)
-    return fee
+    return this.calculateFee(newSkew, taker)
   }
 
   /// Get the the oi skew and if it skews long given a market price
