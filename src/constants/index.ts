@@ -10,7 +10,7 @@ export const SECONDS_PER_YEAR = 31622400
 export const FEE_PRECISION = 1000000
 export const RATE_PRECISION = 100000000
 export const U64_MAX = '18446744073709551615'
-export const MIN_TRIGGER_PAYMENT = 1000000
+export const MIN_TRIGGER_PAYMENT = 0.01
 
 export * from './accounts'
 export * from './assetList'
