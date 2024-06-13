@@ -110,7 +110,7 @@ export class Vault {
       ? getPropertyMapU64('last_borrow_amount', propertyMap.data as any).div(PRECISION_8)
       : ZERO
     this.feesPaid = !!propertyMap ? getPropertyMapU64('fees_paid', propertyMap.data as any).div(PRECISION_8) : ZERO
-    this.pnl = realizedPnl.plus(lastBorrowAmount).minus(this.borrowAmount).minus(this.feesPaid)
+    this.pnl = realizedPnl.plus(lastBorrowAmount).minus(this.borrowAmount)
 
     this.liquidationPrice =
       !!vault && !!this.vaultCollection
