@@ -178,8 +178,10 @@ export const getVaultCollectionAPR = async (beginDate: Date, collectionId: Accou
 
   const year = 60 * 60 * 24 * 365 * 1000
 
-  const apr = interestEarned.div(duration / year)
-  return apr.toNumber()
+  return interestEarned
+    .div(duration / year)
+    .times(100)
+    .toNumber()
 }
 
 // export const getVaultCollection = async (

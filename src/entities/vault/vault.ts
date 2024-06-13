@@ -147,6 +147,16 @@ export class Vault {
     this.withdrawableAmount = !!vault ? this.collateralAmount.minus(minCollateral) : ZERO
   }
 
+  public getHealth(collateralPrice: BigNumber, borrowPrice: BigNumber): number {
+    return calculateVaultHealth(
+      this.collateralAmount,
+      this.borrowAmount,
+      this.vaultCollection.maintenanceCollateralizationPercent,
+      collateralPrice,
+      borrowPrice,
+    )
+  }
+
   /**
    * Checks if a user is solvent with a hypothetical exchange rate.
    * @param exchangeRate the rate to test the solvency of the user position against
@@ -163,4 +173,19 @@ export class Vault {
   public calculateHypotheticalLiquidationPrice(borrow: BigNumber, collateral: BigNumber): BigNumber {
     return borrow.div(collateral).times(this.vaultCollection.maintenanceCollateralizationPercent / 100)
   }
+}
+
+export function calculateVaultHealth(
+  collateralAmount: BigNumber,
+  borrowAmount: BigNumber,
+  maintenanceCollateralizationPercent: number,
+  collateralPrice: BigNumber,
+  borrowPrice: BigNumber,
+): number {
+  const exchangeRate = collateralPrice.div(borrowPrice)
+  const ratio = collateralAmount
+    .times(exchangeRate)
+    .div(maintenanceCollateralizationPercent / 100)
+    .div(borrowAmount)
+  return ratio.minus(1).times(100).toNumber()
 }
