@@ -21,7 +21,7 @@ export const getUserAssetBalance = async (
     case 'MoveCoin':
       balance = BigNumber(
         await aptosClient(network).getAccountCoinAmount({
-          accountAddress: userAddress.toStringLong(),
+          accountAddress: userAddress,
           coinType: assetInfo(asset).type as `${string}::${string}::${string}`,
         }),
       )

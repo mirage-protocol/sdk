@@ -29,18 +29,6 @@ export class Vault {
    */
   public readonly borrowAmount: BigNumber
   /**
-   * The liquidation price of this user's position (precision: 1e8)
-   */
-  public readonly liquidationPrice: BigNumber
-  /**
-   * The vaults max borrowable amount to still be solvent
-   */
-  public readonly remainingBorrowable: BigNumber
-  /**
-   * The vaults max withdrawable amount to still be solvent
-   */
-  public readonly withdrawableAmount: BigNumber
-  /**
    * The vaults pnl in the borrow token
    */
   public readonly pnl: BigNumber
@@ -49,11 +37,6 @@ export class Vault {
    */
   public readonly feesPaid: BigNumber
 
-  /**
-   * A scale of how healthy the users position is (precision: 1e5)
-   * Position health of 0 => the position can be liquidation
-   */
-  public readonly positionHealth: number // basis points
   /**
    * An instance of the VaultCollection for this Vault
    */
@@ -112,39 +95,24 @@ export class Vault {
     this.feesPaid = !!propertyMap ? getPropertyMapU64('fees_paid', propertyMap.data as any).div(PRECISION_8) : ZERO
     this.pnl = realizedPnl.plus(lastBorrowAmount).minus(this.borrowAmount)
 
-    this.liquidationPrice =
-      !!vault && !!this.vaultCollection
-        ? this.calculateHypotheticalLiquidationPrice(this.collateralAmount, this.borrowAmount)
-        : ZERO
+    // const maxBorrow =
+    //   !!vault && !!this.vaultCollection
+    //     ? this.collateralAmount
+    //         .times(this.vaultCollection.exchangeRate)
+    //         .times(this.vaultCollection.initialCollateralizationPercent)
+    //         .div(100)
+    //     : ZERO
 
-    const maxBorrow =
-      !!vault && !!this.vaultCollection
-        ? this.collateralAmount
-            .times(this.vaultCollection.exchangeRate)
-            .times(this.vaultCollection.initialCollateralizationPercent)
-            .div(100)
-        : ZERO
+    // const minCollateral =
+    //   !!vault && !!this.vaultCollection
+    //     ? this.borrowAmount
+    //         .div(this.vaultCollection.exchangeRate)
+    //         .div(this.vaultCollection.initialCollateralizationPercent)
+    //         .div(100)
+    //     : ZERO
 
-    const ratio =
-      !!vault && !!this.vaultCollection
-        ? this.collateralAmount
-            .times(this.vaultCollection.exchangeRate)
-            .div(this.vaultCollection.maintenanceCollateralizationPercent / 100)
-            .div(this.borrowAmount)
-            .toNumber()
-        : 0
-
-    const minCollateral =
-      !!vault && !!this.vaultCollection
-        ? this.borrowAmount
-            .div(this.vaultCollection.exchangeRate)
-            .div(this.vaultCollection.initialCollateralizationPercent)
-            .div(100)
-        : ZERO
-
-    this.positionHealth = (ratio - 1) * 100
-    this.remainingBorrowable = !!vault ? maxBorrow.minus(this.borrowAmount) : ZERO
-    this.withdrawableAmount = !!vault ? this.collateralAmount.minus(minCollateral) : ZERO
+    // this.remainingBorrowable = !!vault ? maxBorrow.minus(this.borrowAmount) : ZERO
+    // this.withdrawableAmount = !!vault ? this.collateralAmount.minus(minCollateral) : ZERO
   }
 
   public getHealth(collateralPrice: BigNumber, borrowPrice: BigNumber): number {
@@ -155,23 +123,6 @@ export class Vault {
       collateralPrice,
       borrowPrice,
     )
-  }
-
-  /**
-   * Checks if a user is solvent with a hypothetical exchange rate.
-   * @param exchangeRate the rate to test the solvency of the user position against
-   * @returns is the user solvent at this rate
-   */
-  public simulateIsSolvent(exchangeRate: BigNumber): boolean {
-    return this.collateralAmount
-      .div(this.vaultCollection.maintenanceCollateralizationPercent)
-      .times(exchangeRate)
-      .times(100)
-      .isGreaterThan(this.borrowAmount)
-  }
-
-  public calculateHypotheticalLiquidationPrice(borrow: BigNumber, collateral: BigNumber): BigNumber {
-    return borrow.div(collateral).times(this.vaultCollection.maintenanceCollateralizationPercent / 100)
   }
 }
 
