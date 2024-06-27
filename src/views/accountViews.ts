@@ -12,7 +12,7 @@ import {
 } from '../constants'
 
 export const getUserAssetBalance = async (
-  userAddress: AccountAddress,
+  userAddress: string,
   asset: MoveAsset,
   network: Network,
 ): Promise<BigNumber> => {
@@ -30,7 +30,7 @@ export const getUserAssetBalance = async (
       const data = await aptosClient(network).getCurrentFungibleAssetBalances({
         options: {
           where: {
-            owner_address: { _eq: userAddress.toStringLong() },
+            owner_address: { _eq: AccountAddress.from(userAddress).toStringLong() },
             asset_type: { _eq: getAssetTokenMetadata(asset) },
             is_primary: { _eq: true },
           },
