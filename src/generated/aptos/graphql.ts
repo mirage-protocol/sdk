@@ -2411,25 +2411,25 @@ export type Current_Coin_Balances_Stream_Cursor_Value_Input = {
   owner_address?: InputMaybe<Scalars['String']['input']>;
 };
 
-/** columns and relationships of "current_collection_datas" */
+/** columns and relationships of "legacy_migration_v1.current_collection_datas" */
 export type Current_Collection_Datas = {
   __typename?: 'current_collection_datas';
-  collection_data_id_hash: Scalars['String']['output'];
-  collection_name: Scalars['String']['output'];
-  creator_address: Scalars['String']['output'];
-  description: Scalars['String']['output'];
-  description_mutable: Scalars['Boolean']['output'];
-  last_transaction_timestamp: Scalars['timestamp']['output'];
-  last_transaction_version: Scalars['bigint']['output'];
-  maximum: Scalars['numeric']['output'];
-  maximum_mutable: Scalars['Boolean']['output'];
-  metadata_uri: Scalars['String']['output'];
-  supply: Scalars['numeric']['output'];
-  table_handle: Scalars['String']['output'];
-  uri_mutable: Scalars['Boolean']['output'];
+  collection_data_id_hash?: Maybe<Scalars['String']['output']>;
+  collection_name?: Maybe<Scalars['String']['output']>;
+  creator_address?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  description_mutable?: Maybe<Scalars['Boolean']['output']>;
+  last_transaction_timestamp?: Maybe<Scalars['timestamp']['output']>;
+  last_transaction_version?: Maybe<Scalars['bigint']['output']>;
+  maximum?: Maybe<Scalars['numeric']['output']>;
+  maximum_mutable?: Maybe<Scalars['Boolean']['output']>;
+  metadata_uri?: Maybe<Scalars['String']['output']>;
+  supply?: Maybe<Scalars['numeric']['output']>;
+  table_handle?: Maybe<Scalars['String']['output']>;
+  uri_mutable?: Maybe<Scalars['Boolean']['output']>;
 };
 
-/** Boolean expression to filter rows from the table "current_collection_datas". All fields are combined with a logical 'AND'. */
+/** Boolean expression to filter rows from the table "legacy_migration_v1.current_collection_datas". All fields are combined with a logical 'AND'. */
 export type Current_Collection_Datas_Bool_Exp = {
   _and?: InputMaybe<Array<Current_Collection_Datas_Bool_Exp>>;
   _not?: InputMaybe<Current_Collection_Datas_Bool_Exp>;
@@ -2449,7 +2449,7 @@ export type Current_Collection_Datas_Bool_Exp = {
   uri_mutable?: InputMaybe<Boolean_Comparison_Exp>;
 };
 
-/** Ordering options when selecting data from "current_collection_datas". */
+/** Ordering options when selecting data from "legacy_migration_v1.current_collection_datas". */
 export type Current_Collection_Datas_Order_By = {
   collection_data_id_hash?: InputMaybe<Order_By>;
   collection_name?: InputMaybe<Order_By>;
@@ -2466,7 +2466,7 @@ export type Current_Collection_Datas_Order_By = {
   uri_mutable?: InputMaybe<Order_By>;
 };
 
-/** select columns of table "current_collection_datas" */
+/** select columns of table "legacy_migration_v1.current_collection_datas" */
 export enum Current_Collection_Datas_Select_Column {
   /** column name */
   CollectionDataIdHash = 'collection_data_id_hash',
@@ -7272,10 +7272,8 @@ export type Query_Root = {
   current_aptos_names_aggregate: Current_Aptos_Names_Aggregate;
   /** fetch data from the table: "legacy_migration_v1.current_coin_balances" */
   current_coin_balances: Array<Current_Coin_Balances>;
-  /** fetch data from the table: "current_collection_datas" */
+  /** fetch data from the table: "legacy_migration_v1.current_collection_datas" */
   current_collection_datas: Array<Current_Collection_Datas>;
-  /** fetch data from the table: "current_collection_datas" using primary key columns */
-  current_collection_datas_by_pk?: Maybe<Current_Collection_Datas>;
   /** fetch data from the table: "current_collection_ownership_v2_view" */
   current_collection_ownership_v2_view: Array<Current_Collection_Ownership_V2_View>;
   /** fetch aggregated fields from the table: "current_collection_ownership_v2_view" */
@@ -7650,11 +7648,6 @@ export type Query_RootCurrent_Collection_DatasArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   order_by?: InputMaybe<Array<Current_Collection_Datas_Order_By>>;
   where?: InputMaybe<Current_Collection_Datas_Bool_Exp>;
-};
-
-
-export type Query_RootCurrent_Collection_Datas_By_PkArgs = {
-  collection_data_id_hash: Scalars['String']['input'];
 };
 
 
@@ -8501,11 +8494,9 @@ export type Subscription_Root = {
   current_coin_balances: Array<Current_Coin_Balances>;
   /** fetch data from the table in a streaming manner: "legacy_migration_v1.current_coin_balances" */
   current_coin_balances_stream: Array<Current_Coin_Balances>;
-  /** fetch data from the table: "current_collection_datas" */
+  /** fetch data from the table: "legacy_migration_v1.current_collection_datas" */
   current_collection_datas: Array<Current_Collection_Datas>;
-  /** fetch data from the table: "current_collection_datas" using primary key columns */
-  current_collection_datas_by_pk?: Maybe<Current_Collection_Datas>;
-  /** fetch data from the table in a streaming manner: "current_collection_datas" */
+  /** fetch data from the table in a streaming manner: "legacy_migration_v1.current_collection_datas" */
   current_collection_datas_stream: Array<Current_Collection_Datas>;
   /** fetch data from the table: "current_collection_ownership_v2_view" */
   current_collection_ownership_v2_view: Array<Current_Collection_Ownership_V2_View>;
@@ -9063,11 +9054,6 @@ export type Subscription_RootCurrent_Collection_DatasArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   order_by?: InputMaybe<Array<Current_Collection_Datas_Order_By>>;
   where?: InputMaybe<Current_Collection_Datas_Bool_Exp>;
-};
-
-
-export type Subscription_RootCurrent_Collection_Datas_By_PkArgs = {
-  collection_data_id_hash: Scalars['String']['input'];
 };
 
 
