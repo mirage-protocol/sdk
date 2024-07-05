@@ -188,16 +188,16 @@ export class Market {
     this.shortCloseOnly = !!market ? Boolean((market.data as any).is_short_close_only) : false
     // fees
     this.minTakerFee = !!market
-      ? new BigNumber((market.data as any).config.fees.min_taker_fee).div(PERCENT_PRECISION).toNumber()
+      ? new BigNumber((market.data as any).config.fees.min_taker_fee).div(FEE_PRECISION).toNumber()
       : 0
     this.maxTakerFee = !!market
-      ? new BigNumber((market.data as any).config.fees.max_taker_fee).div(PERCENT_PRECISION).toNumber()
+      ? new BigNumber((market.data as any).config.fees.max_taker_fee).div(FEE_PRECISION).toNumber()
       : 0
     this.minMakerFee = !!market
-      ? new BigNumber((market.data as any).config.fees.min_maker_fee).div(PERCENT_PRECISION).toNumber()
+      ? new BigNumber((market.data as any).config.fees.min_maker_fee).div(FEE_PRECISION).toNumber()
       : 0
     this.maxMakerFee = !!market
-      ? new BigNumber((market.data as any).config.fees.max_maker_fee).div(PERCENT_PRECISION).toNumber()
+      ? new BigNumber((market.data as any).config.fees.max_maker_fee).div(FEE_PRECISION).toNumber()
       : 0
     this.liquidationFee = !!market
       ? new BigNumber((market.data as any).config.fees.liquidation_fee).div(PERCENT_PRECISION).toNumber()
