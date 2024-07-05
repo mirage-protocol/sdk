@@ -89,6 +89,13 @@ export enum Perpetual {
   PEPE1000PERP = 'PEPE1000PERP',
   SOLPERP = 'SOLPERP',
   SUIPERP = 'SUIPERP',
+  DOGEPERP = 'DOGEPERP',
+  AVAXPERP = 'AVAXPERP',
+  PYTHPERP = 'PYTHPERP',
+  STXPERP = 'STXPERP',
+  WIFPERP = 'WIFPERP',
+  MKRPERP = 'MKRPERP',
+  MNTPERP = 'MNTPERP',
   // Metals
   XAGPERP = 'XAGPERP',
   XAUPERP = 'XAUPERP',
@@ -231,6 +238,8 @@ export const typeToPerpetual = (type: string): Perpetual | undefined => {
 }
 
 export const getCollectionIdForPerpPair = (marginToken: MoveToken, perp: Perpetual): string => {
+  console.log(marginToken, perp)
+  console.log(Perpetual, mirageConfig.markets)
   if (!(Perpetual[perp] in mirageConfig.markets[MoveToken[marginToken]])) throw new Error('Not a valid perp pair')
   return mirageConfig.markets[MoveToken[marginToken]][Perpetual[perp]]
 }
@@ -357,6 +366,41 @@ const mirageAssetList: { readonly [coin in MoveAsset | Perpetual]: AssetInfo | M
     name: 'Sui Perpetuals Market',
     symbol: 'SUI',
     type: `${mirageAddress()}::market_types::SUIPERP`,
+  },
+  [Perpetual.DOGEPERP]: {
+    name: 'Doge Perpetuals Market',
+    symbol: 'DOGE',
+    type: `${mirageAddress()}::market_types::DOGEPERP`,
+  },
+  [Perpetual.AVAXPERP]: {
+    name: 'Avax Perpetuals Market',
+    symbol: 'AVAX',
+    type: `${mirageAddress()}::market_types::AVAXPERP`,
+  },
+  [Perpetual.PYTHPERP]: {
+    name: 'Pyth Perpetuals Market',
+    symbol: 'PYTH',
+    type: `${mirageAddress()}::market_types::PYTHPERP`,
+  },
+  [Perpetual.STXPERP]: {
+    name: 'Stacks Perpetuals Market',
+    symbol: 'STX',
+    type: `${mirageAddress()}::market_types::STXPERP`,
+  },
+  [Perpetual.WIFPERP]: {
+    name: 'Stacks Perpetuals Market',
+    symbol: 'WIF',
+    type: `${mirageAddress()}::market_types::WIFPERP`,
+  },
+  [Perpetual.MKRPERP]: {
+    name: 'Maker Perpetuals Market',
+    symbol: 'MKR',
+    type: `${mirageAddress()}::market_types::MKRPERP`,
+  },
+  [Perpetual.MNTPERP]: {
+    name: 'Mantle Perpetuals Market',
+    symbol: 'MNT',
+    type: `${mirageAddress()}::market_types::MNTPERP`,
   },
   [Perpetual.XAGPERP]: {
     name: 'Silver Perpetuals Market',

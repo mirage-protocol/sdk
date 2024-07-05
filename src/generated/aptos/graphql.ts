@@ -2724,6 +2724,7 @@ export type Current_Collections_V2 = {
   cdn_asset_uris?: Maybe<Nft_Metadata_Crawler_Parsed_Asset_Uris>;
   collection_id: Scalars['String']['output'];
   collection_name: Scalars['String']['output'];
+  collection_properties?: Maybe<Scalars['jsonb']['output']>;
   creator_address: Scalars['String']['output'];
   current_supply: Scalars['numeric']['output'];
   description: Scalars['String']['output'];
@@ -2738,6 +2739,12 @@ export type Current_Collections_V2 = {
   uri: Scalars['String']['output'];
 };
 
+
+/** columns and relationships of "current_collections_v2" */
+export type Current_Collections_V2Collection_PropertiesArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
 /** Boolean expression to filter rows from the table "current_collections_v2". All fields are combined with a logical 'AND'. */
 export type Current_Collections_V2_Bool_Exp = {
   _and?: InputMaybe<Array<Current_Collections_V2_Bool_Exp>>;
@@ -2746,6 +2753,7 @@ export type Current_Collections_V2_Bool_Exp = {
   cdn_asset_uris?: InputMaybe<Nft_Metadata_Crawler_Parsed_Asset_Uris_Bool_Exp>;
   collection_id?: InputMaybe<String_Comparison_Exp>;
   collection_name?: InputMaybe<String_Comparison_Exp>;
+  collection_properties?: InputMaybe<Jsonb_Comparison_Exp>;
   creator_address?: InputMaybe<String_Comparison_Exp>;
   current_supply?: InputMaybe<Numeric_Comparison_Exp>;
   description?: InputMaybe<String_Comparison_Exp>;
@@ -2765,6 +2773,7 @@ export type Current_Collections_V2_Order_By = {
   cdn_asset_uris?: InputMaybe<Nft_Metadata_Crawler_Parsed_Asset_Uris_Order_By>;
   collection_id?: InputMaybe<Order_By>;
   collection_name?: InputMaybe<Order_By>;
+  collection_properties?: InputMaybe<Order_By>;
   creator_address?: InputMaybe<Order_By>;
   current_supply?: InputMaybe<Order_By>;
   description?: InputMaybe<Order_By>;
@@ -2785,6 +2794,8 @@ export enum Current_Collections_V2_Select_Column {
   CollectionId = 'collection_id',
   /** column name */
   CollectionName = 'collection_name',
+  /** column name */
+  CollectionProperties = 'collection_properties',
   /** column name */
   CreatorAddress = 'creator_address',
   /** column name */
@@ -2823,6 +2834,7 @@ export type Current_Collections_V2_Stream_Cursor_Input = {
 export type Current_Collections_V2_Stream_Cursor_Value_Input = {
   collection_id?: InputMaybe<Scalars['String']['input']>;
   collection_name?: InputMaybe<Scalars['String']['input']>;
+  collection_properties?: InputMaybe<Scalars['jsonb']['input']>;
   creator_address?: InputMaybe<Scalars['String']['input']>;
   current_supply?: InputMaybe<Scalars['numeric']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
