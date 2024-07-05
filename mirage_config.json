@@ -1,45 +1,12 @@
 {
   "modules": {
-    "mirage": "0x00518140b1e97710895f12169a448ea94b80d330efd87c4a4e7af27f62074763",
-    "mirage_core": "0x2e9148329e3998574ed1aed2cb2d27784ff8618b4414158dcb751c3ee3b69172",
-    "mirage_oracle": "0xe5326dbe2b7e75858524de9bebb908a886a3c037a5de046ff877e962fb881a4c",
-    "mirage_scripts": "0x34efe01ad38329a86c924ae62af4e566e77d70d8cc0e894eb24196defd20d833",
-    "mirage_swap": "0x24d941205174b93526aeb6da38259968999b16e694879d7f04cf83df38294b30"
+    "mirage": "0xa3f0b469bec1584dbf811a7eafed18b5f210c04eccac3daab6e7113938586204",
+    "mirage_core": "0x5e6b1b094defa7599cdbdce72fffb29949f821054466e7cebd3b23aa2ff4e99e",
+    "mirage_oracle": "0x58889f2b72b50207f3a1b6e8acfcafcb6bf973fdd9fb80219d2a36394e4c731c",
+    "mirage_scripts": "0xa138ee15eb87eff1d5e9ae2a41f7e66cdb26072edd19e3cff22eac2f0f5f16e3",
+    "mirage_swap": "0xe0fd389b3550300879182fa5b25d28988d0a406e942de0dd822997faca707d00"
   },
-  "markets": {
-    "mUSD": {
-      "PEPE1000PERP": "0xca96a98a2db18df3a3bc3b9edb30811d14015445ecfbae0e480ac0cb8bdd1ee4",
-      "APTPERP": "0xc4ae85de23c53eb935c7357236436a4b4962f9492d77e9d2fa7f59d8aa123c12",
-      "ARBPERP": "0xea94679914386724474ec61c87d06f7c5fa89253d8cbfefcbef3272de11de39d",
-      "AVAXPERP": "0x7520ded8f04918703f5771ccae8ba9bae7fa49d0dca059c2b59e3846a02a5640",
-      "BTCPERP": "0x7590494ad3533f51570374b61b4ef19ec72d76d695d15901a14c309b398cedf1",
-      "DOGEPERP": "0xfa542eb79cb9f7851caaa9a135d2ebd5d222702e2fffc216f15d6d72559587bf",
-      "ETHPERP": "0x13f543be0c4c8905a4f57d42614ae5e30c7fdd5f9dd48fef12a2b776094d17b1",
-      "EURPERP": "0x4d74f37b20f25124a822e857bed49a4f42b2349f6a5f3cf06c1f3c7aef1ef5af",
-      "GBPERP": "0x759777ea375542ffc0b43971bb9a1c9b411abf2938c63eae6a829919f2f45b27",
-      "MKRPERP": "0xf84dcc2950725a4ea46de292f24ed5f9b295cd4e36a2e4f39f827c31b368cc8d",
-      "MNTPERP": "0xa72f11d5a9afa703ad3197fb5419f713e46c841b3788898bd022aa33ab4e8a07",
-      "OPPERP": "0xbf1d0f8f5611e9a481d66a5da8f63f95649089fa6fe952f016ebd72f370200fd",
-      "PYTHPERP": "0x563bb37563daea43fd763a6dae469819b10fb789d39b1188ea14b2a416e4b933",
-      "SOLPERP": "0xb78bd0451df563c13472612c35108d97cae13da5e7458821eb1d590c61354c54",
-      "STXPERP": "0x26688bc359e0a4e06d827de147240fc9b0ef9e302929472f73604ccfa76bb9dd",
-      "SUIPERP": "0x71812c6bcfd1b471cf6dbe0e3e58ed440340e4c274cc7bd2ac39bb6561712376",
-      "WIFPERP": "0xacc02127acbb2dc7ac906acea6119f7dc5b6aa1e3e6a4753c6c975b74afe2ae1",
-      "XAGPERP": "0xb3020021045815018932bcc14f2d440f289f4a64558b40435fad7e93ac48f783",
-      "XAUPERP": "0x532483d1c39fa38e3084217928ae14d65478f6ddc658c4f8fd6b846946c5684d"
-    }
-  },
-  "vaults": {
-    "APT": {
-      "mUSD": "0x49607f5a3cb73cf246380033eec4649aa59b62b8412517f2595b7b84f29f23a3"
-    },
-    "tUSDC": {
-      "mUSD": "0xdfe2488ce397e7c28cd2a7244c4d1093389836321b2d39638d3aa6f3dace94bf"
-    }
-  },
-  "tokens": {
-    "mUSD": "0x11394e26e6ad161726f3bac36ed45230cb792a151e8c0823caeeafe89ba4b6d7",
-    "APT": "0x551281d0c02f2d277e18eb81a1b58494093d9c641370f163d95c34cd8abac219",
-    "tUSDC": "0xba0047636d59039abacec3f1a6a2e9469faa7ccda1130c5efee149d778e3719a"
-  }
+  "markets": {},
+  "vaults": {},
+  "tokens": {}
 }
