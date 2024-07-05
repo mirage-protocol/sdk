@@ -238,8 +238,6 @@ export const typeToPerpetual = (type: string): Perpetual | undefined => {
 }
 
 export const getCollectionIdForPerpPair = (marginToken: MoveToken, perp: Perpetual): string => {
-  console.log(marginToken, perp)
-  console.log(Perpetual, mirageConfig.markets)
   if (!(Perpetual[perp] in mirageConfig.markets[MoveToken[marginToken]])) throw new Error('Not a valid perp pair')
   return mirageConfig.markets[MoveToken[marginToken]][Perpetual[perp]]
 }
@@ -422,7 +420,7 @@ const mirageAssetList: { readonly [coin in MoveAsset | Perpetual]: AssetInfo | M
     symbol: 'GBP',
     type: `${mirageAddress()}::market_types::GBPPERP`,
   },
-  [Perpetual.JPYPERP]: {
+[Perpetual.JPYPERP]: {
     name: 'Japanese Yen Perpetuals Market',
     symbol: 'JPY',
     type: `${mirageAddress()}::market_types::JPYPERP`,
