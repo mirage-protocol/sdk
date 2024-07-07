@@ -420,7 +420,7 @@ const mirageAssetList: { readonly [coin in MoveAsset | Perpetual]: AssetInfo | M
     symbol: 'GBP',
     type: `${mirageAddress()}::market_types::GBPPERP`,
   },
-[Perpetual.JPYPERP]: {
+  [Perpetual.JPYPERP]: {
     name: 'Japanese Yen Perpetuals Market',
     symbol: 'JPY',
     type: `${mirageAddress()}::market_types::JPYPERP`,

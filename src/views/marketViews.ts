@@ -1,4 +1,4 @@
-import { MoveObjectType, MoveUint64Type, Network } from '@aptos-labs/ts-sdk'
+import { Aptos, MoveObjectType, MoveUint64Type, Network } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import {
@@ -88,14 +88,14 @@ export const isLimitOrderTriggerable = async (
   positionObjectAddress: MoveObjectType,
   index: number,
   perpPrice: number,
-  network: Network,
+  client: Aptos,
 ): Promise<boolean> => {
   const payload = {
     function: `${mirageAddress()}::market::is_limit_order_triggerable` as `${string}::${string}::${string}`,
     typeArguments: getPositionTypeArgument(),
     functionArguments: [positionObjectAddress, index, getDecimal8Argument(perpPrice)],
   }
-  const ret = await aptosClient(network).view({ payload })
+  const ret = await client.view({ payload })
   return ret[0] as boolean
 }
 
@@ -103,14 +103,14 @@ export const getLiquidationPrice = async (
   positionObjectAddress: MoveObjectType,
   perpetualPrice: number,
   marginPrice: number,
-  network: Network,
+  client: Aptos,
 ): Promise<number> => {
   const payload = {
     function: `${mirageAddress()}::market::get_liquidation_price` as `${string}::${string}::${string}`,
     typeArguments: getPositionTypeArgument(),
     functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
   }
-  const ret = await aptosClient(network).view({ payload })
+  const ret = await client.view({ payload })
   return BigNumber(ret[0] as MoveUint64Type)
     .div(PRECISION_8)
     .toNumber()
