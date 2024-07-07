@@ -109,11 +109,10 @@ export const isLimitOrderTriggerableBulk = async (
   const payload = {
     function:
       `${MODULES.keeper_scripts.address}::market_scripts::get_is_limit_order_triggerable_states_same_perp` as `${string}::${string}::${string}`,
-    typeArguments: getPositionTypeArgument(),
     functionArguments: [positionObjectAddresses, indexes, getDecimal8Argument(perpPrice)],
   }
   const ret = await client.view({ payload })
-  return ret as boolean[]
+  return (ret as any)[0] as boolean[]
 }
 
 export const getLiquidationPrice = async (
@@ -142,11 +141,10 @@ export const getLiquidationPriceBulk = async (
   const payload = {
     function:
       `${MODULES.keeper_scripts.address}::market_scripts::get_liquidation_prices_same_perp` as `${string}::${string}::${string}`,
-    typeArguments: getPositionTypeArgument(),
     functionArguments: [positionObjectAddresses, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
   }
   const ret = await client.view({ payload })
-  return ret.map((r) =>
+  return (ret as any)[0].map((r) =>
     BigNumber(r as MoveUint64Type)
       .div(PRECISION_8)
       .toNumber(),
