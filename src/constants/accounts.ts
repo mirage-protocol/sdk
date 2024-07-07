@@ -16,6 +16,7 @@ export interface Account {
 export enum MoveModules {
   MIRAGE = 'mirage',
   MIRAGE_SCRIPTS = 'mirage_scripts',
+  KEEPER_SCRIPTS = 'keeper_scripts',
   MIRAGE_CORE = 'mirage_core',
   MIRAGE_ORACLE = 'mirage_oracle',
   MIRAGE_SWAP = 'mirage_swap',
@@ -70,6 +71,10 @@ export const MODULES: { readonly [module in MoveModules]: Account } = {
   ['mirage_swap']: {
     name: 'mirage_swap',
     address: AccountAddress.from(mirageConfig.modules.mirage_swap),
+  },
+  ['keeper_scripts']: {
+    name: 'keeper_scripts',
+    address: AccountAddress.from(mirageConfig.modules.keeper_scripts),
   },
   ['layer_zero']: {
     name: 'asset',
