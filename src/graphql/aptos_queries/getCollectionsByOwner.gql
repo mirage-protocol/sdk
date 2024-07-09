@@ -1,5 +1,5 @@
 query GetCollectionsByOwner($OWNER: String!) {
-  current_collections_v2(where: { creator_address: { _eq: $OWNER } }) {
+  current_collection_ownership_v2_view(where: {creator_address: {_eq: $OWNER}}) {
     collection_name
     collection_id
   }

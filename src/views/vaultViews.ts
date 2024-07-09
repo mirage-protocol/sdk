@@ -1,11 +1,12 @@
 import { AccountAddress, InputViewFunctionData, MoveObjectType } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
-import { cacheExchange, createClient, errorExchange, fetchExchange } from 'urql'
+import { Client } from 'urql'
 
 import {
   getAllVaultCollectionObjectAddresses,
   getCollectionIdForVaultPair,
   mirageAddress,
+  mirageGraphQlClient,
   MoveAsset,
   MoveToken,
 } from '../constants'
@@ -18,37 +19,11 @@ import {
 } from '../generated/graphql'
 import { GetVaultCollectionAprDocument, GetVaultCollectionAprQueryVariables } from '../generated/mirage/graphql'
 
-export const graphqlClient = createClient({
-  url: 'https://api.testnet.aptoslabs.com/v1/graphql',
-  exchanges: [
-    fetchExchange,
-    cacheExchange,
-    errorExchange({
-      onError: (error) => {
-        console.error('GraphQL Error:', error)
-      },
-    }),
-  ],
-})
-
-export const mirageGraphQlClient = createClient({
-  url: 'https://api.mirage.money/v1/graphql',
-  exchanges: [
-    fetchExchange,
-    cacheExchange,
-    errorExchange({
-      onError: (error) => {
-        console.error('GraphQL Error:', error)
-      },
-    }),
-  ],
-})
-
 const getVaultCollectionTypeArgument = (): `${string}::${string}::${string}`[] => {
   return [`${mirageAddress()}::vault::VaultCollection`]
 }
 
-export const getAllVaultIdsByOwner = async (owner: string): Promise<string[]> => {
+export const getAllVaultIdsByOwner = async (owner: string, graphqlClient: Client): Promise<string[]> => {
   const variables: GetTokenIdsFromCollectionsByOwnerQueryVariables = {
     COLLECTIONS: getAllVaultCollectionObjectAddresses(),
     OWNER: owner,
@@ -77,6 +52,7 @@ export const getVaultTokenIdsByCollectionAndOwner = async (
   collateralAsset: MoveAsset,
   borrowToken: MoveToken,
   owner: string,
+  graphqlClient: Client,
 ): Promise<string[]> => {
   const variables: GetTokenIdsFromCollectionByOwnerQueryVariables = {
     COLLECTION: getCollectionIdForVaultPair(collateralAsset, borrowToken),
@@ -183,13 +159,3 @@ export const getVaultCollectionAPR = async (beginDate: Date, collectionId: Accou
     .times(100)
     .toNumber()
 }
-
-// export const getVaultCollection = async (
-//   collateralAsset: MoveAsset,
-//   borrowToken: MoveToken
-// ): Promise<InputViewFunctionData> => {
-//   return {
-//     function: `${mirageAddress()}::vault::get_vault_collection`,
-//     functionArguments: [moveAssetInfo(collateralAsset).metadataAddress, moveAssetInfo(borrowToken).metadataAddress],
-//   }
-// }

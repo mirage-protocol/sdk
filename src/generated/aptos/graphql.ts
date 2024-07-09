@@ -11626,7 +11626,7 @@ export type GetCollectionsByOwnerQueryVariables = Exact<{
 }>;
 
 
-export type GetCollectionsByOwnerQuery = { __typename?: 'query_root', current_collections_v2: Array<{ __typename?: 'current_collections_v2', collection_name: string, collection_id: string }> };
+export type GetCollectionsByOwnerQuery = { __typename?: 'query_root', current_collection_ownership_v2_view: Array<{ __typename?: 'current_collection_ownership_v2_view', collection_name?: string | null, collection_id?: string | null }> };
 
 export type GetTokenIdsFromCollectionByOwnerQueryVariables = Exact<{
   COLLECTION: Scalars['String']['input'];
@@ -11647,7 +11647,7 @@ export type GetTokenIdsFromCollectionsByOwnerQuery = { __typename?: 'query_root'
 
 export const GetCollectionsByOwnerDocument = gql`
     query GetCollectionsByOwner($OWNER: String!) {
-  current_collections_v2(where: {creator_address: {_eq: $OWNER}}) {
+  current_collection_ownership_v2_view(where: {creator_address: {_eq: $OWNER}}) {
     collection_name
     collection_id
   }

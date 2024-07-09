@@ -1,5 +1,6 @@
 import { Aptos, MoveObjectType, MoveUint64Type, Network } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
+import { Client } from 'urql'
 
 import {
   aptosClient,
@@ -18,7 +19,6 @@ import {
   GetTokenIdsFromCollectionsByOwnerQueryVariables,
 } from '../generated/graphql'
 import { getDecimal8Argument, getMarketTypeArgument, getPositionTypeArgument } from '../transactions'
-import { graphqlClient } from './vaultViews'
 
 export const getMarginTokenFromPosition = async (positionObjectAddress: string, network: Network): Promise<string> => {
   return (
@@ -32,7 +32,7 @@ export const getMarginTokenFromPosition = async (positionObjectAddress: string, 
   )[0] as MoveObjectType
 }
 
-export const getAllPositionIdsByOwner = async (owner: string): Promise<string[]> => {
+export const getAllPositionIdsByOwner = async (owner: string, graphqlClient: Client): Promise<string[]> => {
   const variables: GetTokenIdsFromCollectionsByOwnerQueryVariables = {
     COLLECTIONS: getAllMarketObjectAddresses(),
     OWNER: owner,
@@ -60,6 +60,7 @@ export const getPositionIdsByMarketAndOwner = async (
   marginToken: MoveToken,
   perp: Perpetual,
   owner: string,
+  graphqlClient: Client,
 ): Promise<string[]> => {
   const variables: GetTokenIdsFromCollectionByOwnerQueryVariables = {
     COLLECTION: getCollectionIdForPerpPair(marginToken, perp),

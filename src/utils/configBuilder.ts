@@ -1,13 +1,14 @@
+import { Client } from 'urql'
+
 import { mirageAddress } from '../constants'
 import { GetCollectionsByOwnerDocument, GetCollectionsByOwnerQueryVariables } from '../generated/graphql'
-import { graphqlClient } from '../views'
 
 export type CollectionInfo = {
   collection_name: string
   collection_id: string
 }
 
-export const getCollectionsFromMirage = async (): Promise<CollectionInfo[]> => {
+export const getCollectionsFromMirage = async (graphqlClient: Client): Promise<CollectionInfo[]> => {
   const variables: GetCollectionsByOwnerQueryVariables = {
     OWNER: mirageAddress().toString(),
   }

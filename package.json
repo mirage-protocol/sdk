@@ -34,6 +34,7 @@
     "@aptos-labs/ts-sdk": "1.22.2",
     "@pythnetwork/pyth-aptos-js": "^1.4.2",
     "@pythnetwork/pyth-common-js": "^1.4.0",
+    "@urql/exchange-auth": "^2.2.0",
     "aptos": "^1.21.0",
     "axios": "^1.6.8",
     "bignumber.js": "9.1.2",
