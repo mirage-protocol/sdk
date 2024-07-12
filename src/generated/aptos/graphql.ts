@@ -5365,7 +5365,7 @@ export type Events_Stream_Cursor_Value_Input = {
 export type Fungible_Asset_Activities = {
   __typename?: 'fungible_asset_activities';
   amount?: Maybe<Scalars['numeric']['output']>;
-  asset_type: Scalars['String']['output'];
+  asset_type?: Maybe<Scalars['String']['output']>;
   block_height: Scalars['bigint']['output'];
   entry_function_id_str?: Maybe<Scalars['String']['output']>;
   event_index: Scalars['bigint']['output'];
@@ -5375,7 +5375,7 @@ export type Fungible_Asset_Activities = {
   is_transaction_success: Scalars['Boolean']['output'];
   /** An object relationship */
   metadata?: Maybe<Fungible_Asset_Metadata>;
-  owner_address: Scalars['String']['output'];
+  owner_address?: Maybe<Scalars['String']['output']>;
   /** An array relationship */
   owner_aptos_names: Array<Current_Aptos_Names>;
   /** An aggregate relationship */
