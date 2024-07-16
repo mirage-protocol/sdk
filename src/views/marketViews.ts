@@ -17,7 +17,7 @@ import {
   GetTokenIdsFromCollectionByOwnerQueryVariables,
   GetTokenIdsFromCollectionsByOwnerDocument,
   GetTokenIdsFromCollectionsByOwnerQueryVariables,
-} from '../generated/graphql'
+} from '../generated/aptos/graphql'
 import { getDecimal8Argument, getMarketTypeArgument, getPositionTypeArgument } from '../transactions'
 
 export const getMarginTokenFromPosition = async (positionObjectAddress: string, network: Network): Promise<string> => {
@@ -48,7 +48,6 @@ export const getAllPositionIdsByOwner = async (owner: string, graphqlClient: Cli
       throw new Error('No data returned from GraphQL query')
     }
 
-    // Assuming 'current_token_datas_v2' is the correct field name based on your GraphQL query
     const tokenIds = result.data.current_token_datas_v2.map((tokenData) => tokenData.token_data_id)
     return tokenIds
   } catch (error) {

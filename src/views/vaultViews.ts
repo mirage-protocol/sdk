@@ -16,7 +16,7 @@ import {
   GetTokenIdsFromCollectionByOwnerQueryVariables,
   GetTokenIdsFromCollectionsByOwnerDocument,
   GetTokenIdsFromCollectionsByOwnerQueryVariables,
-} from '../generated/graphql'
+} from '../generated/aptos/graphql'
 import { GetVaultCollectionAprDocument, GetVaultCollectionAprQueryVariables } from '../generated/mirage/graphql'
 
 const getVaultCollectionTypeArgument = (): `${string}::${string}::${string}`[] => {
