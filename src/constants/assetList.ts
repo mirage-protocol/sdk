@@ -29,9 +29,13 @@ export const getAllMarketObjectAddresses = (): string[] => {
 }
 
 export const getPairFromMarketAddress = (marketObjectAddress: string): { marginToken: MoveToken; perp: Perpetual } => {
+  let usedAddr = marketObjectAddress
+  while(usedAddr.length < 66) {
+    usedAddr = usedAddr.replace("0x", "0x0")
+  }
   for (const marginToken in mirageConfig.markets) {
     for (const perp in mirageConfig.markets[marginToken]) {
-      if (mirageConfig.markets[marginToken][perp] === marketObjectAddress) {
+      if (mirageConfig.markets[marginToken][perp] === usedAddr) {
         // Assuming Perpetual is a more complex type, you might need to instantiate it or fetch it from somewhere
         return { marginToken: getMoveAssetFromSymbol(marginToken) as MoveToken, perp: checkPerpSymbolUnSafe(perp) }
       }
@@ -42,10 +46,14 @@ export const getPairFromMarketAddress = (marketObjectAddress: string): { marginT
 
 export const getPairFromVaultCollectionAddress = (
   vaultObjectAddress: string,
-): { collateralAsset: MoveAsset; borrow: MoveToken } => {
+): { collateralAsset: MoveAsset; borrow: MoveToken } => {  
+  let usedAddr = vaultObjectAddress
+  while(usedAddr.length < 66) {
+    usedAddr = usedAddr.replace("0x", "0x0")
+  }
   for (const collateralAsset in mirageConfig.vaults) {
     for (const borrow in mirageConfig.vaults[collateralAsset]) {
-      if (mirageConfig.vaults[collateralAsset][borrow] === vaultObjectAddress) {
+      if (mirageConfig.vaults[collateralAsset][borrow] === usedAddr) {
         return {
           collateralAsset: getMoveAssetFromSymbol(collateralAsset) as MoveAsset,
           borrow: getMoveAssetFromSymbol(borrow) as MoveToken,
