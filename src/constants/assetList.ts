@@ -37,7 +37,7 @@ export const getPairFromMarketAddress = (marketObjectAddress: string): { marginT
       }
     }
   }
-  throw new Error('no pair found for address')
+  throw new Error(`no market pair found for object address ${marketObjectAddress}`)
 }
 
 export const getPairFromVaultCollectionAddress = (
@@ -53,7 +53,7 @@ export const getPairFromVaultCollectionAddress = (
       }
     }
   }
-  throw new Error('no pair found for address')
+  throw new Error(`no vault pair found for object address ${vaultObjectAddress}`)
 }
 
 /**
