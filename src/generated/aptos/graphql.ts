@@ -11672,7 +11672,7 @@ export function useGetCollectionsByOwnerQuery(options: Omit<Urql.UseQueryArgs<Ge
 export const GetTokenIdsFromCollectionByOwnerDocument = gql`
     query GetTokenIdsFromCollectionByOwner($COLLECTION: String!, $OWNER: String!) {
   current_token_datas_v2(
-    where: {collection_id: {_eq: $COLLECTION}, current_token_ownerships: {owner_address: {_eq: $OWNER}}}
+    where: {collection_id: {_eq: $COLLECTION}, current_token_ownerships: {owner_address: {_eq: $OWNER}}, is_deleted_v2: {_eq: false}}
   ) {
     token_data_id
   }
@@ -11685,7 +11685,7 @@ export function useGetTokenIdsFromCollectionByOwnerQuery(options: Omit<Urql.UseQ
 export const GetTokenIdsFromCollectionsByOwnerDocument = gql`
     query GetTokenIdsFromCollectionsByOwner($COLLECTIONS: [String!]!, $OWNER: String!) {
   current_token_datas_v2(
-    where: {collection_id: {_in: $COLLECTIONS}, current_token_ownerships: {owner_address: {_eq: $OWNER}}}
+    where: {collection_id: {_in: $COLLECTIONS}, current_token_ownerships: {owner_address: {_eq: $OWNER}}, is_deleted_v2: {_eq: false}}
   ) {
     token_data_id
   }

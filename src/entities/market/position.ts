@@ -297,6 +297,7 @@ export class Position {
 
   public getLiquidationPrice(perpPrice: BigNumber, marginPrice: BigNumber): BigNumber {
     if (!this.position) {
+      console.log('early exit')
       return ZERO
     }
 
