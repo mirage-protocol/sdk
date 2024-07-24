@@ -5,7 +5,7 @@
     "mirage_oracle": "0x9af172d2c0a1cae6401a70fbaae1bd33dc2ebcb1a533ee24e5db561a348c3cb5",
     "mirage_scripts": "0x89495b66933cc2826d3feb1b7d5dc330b67b031acd160d39206d0e89d35fcb77",
     "mirage_swap": "0x9f1b5d154b20a93ea79872a31c46952f7091091b9490b8abe4079f960083012a",
-    "keeper_scripts": "0x1a36ff85640de46ac9edd8dff242773ccb162491397f80ddfc326f34e89ede5d"
+    "keeper_scripts": "0x004e4eb04a651bc7f6b5200e0b4d0409e5f10fcb8c6c6a4a112202a58fed6458"
   },
   "markets": {
     "mUSD": {

@@ -1,4 +1,4 @@
-import { AccountAddress, InputViewFunctionData, MoveObjectType } from '@aptos-labs/ts-sdk'
+import { AccountAddress, Aptos, InputViewFunctionData, MoveObjectType, MoveUint64Type } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 import { Client } from 'urql'
 
@@ -7,8 +7,10 @@ import {
   getCollectionIdForVaultPair,
   mirageAddress,
   mirageGraphQlClient,
+  MODULES,
   MoveAsset,
   MoveToken,
+  PRECISION_8,
 } from '../constants'
 import { Rebase } from '../entities'
 import {
@@ -158,4 +160,21 @@ export const getVaultCollectionAPR = async (beginDate: Date, collectionId: Accou
     .div(duration / year)
     .times(100)
     .toNumber()
+}
+
+export const getLiquidatableAmountsBulk = async (
+  vaultObjectAddresses: MoveObjectType[],
+  client: Aptos,
+): Promise<number[]> => {
+  const payload = {
+    function:
+      `${MODULES.keeper_scripts.address}::vault_scripts::get_liquidatable_amounts_bulk` as `${string}::${string}::${string}`,
+    functionArguments: [vaultObjectAddresses],
+  }
+  const ret = await client.view({ payload })
+  return (ret as any)[0].map((r) =>
+    BigNumber(r as MoveUint64Type)
+      .div(PRECISION_8)
+      .toNumber(),
+  )
 }

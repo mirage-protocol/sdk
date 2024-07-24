@@ -346,7 +346,7 @@ export const removeCollateralAndBorrow = async (
   }
 }
 
-export const liquidateVault = async (
+export const liquidateVaultWithPart = async (
   vaultObject: MoveObjectType,
   collateralAsset: MoveAsset,
   borrowToken: MoveToken,
@@ -362,5 +362,24 @@ export const liquidateVault = async (
   return {
     function: `${mirageAddress()}::vault::liquidate_entry`,
     functionArguments: [vaultObject, partToLiquidate, collateralVaas, borrowVaas],
+  }
+}
+
+export const liquidateVaultWithTokens = async (
+  vaultObject: MoveObjectType,
+  collateralAsset: MoveAsset,
+  borrowToken: MoveToken,
+  debtAmountToLiquidate: number,
+  network: Network | string = Network.MAINNET,
+): Promise<InputEntryFunctionData> => {
+  const collateralFeed = getPriceFeed(collateralAsset, network)
+  const borrowFeed = getPriceFeed(borrowToken, network)
+
+  const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : []
+  const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
+
+  return {
+    function: `${MODULES.keeper_scripts.address}::vault_scripts::liquidate_vault_with_tokens`,
+    functionArguments: [vaultObject, debtAmountToLiquidate, collateralVaas, borrowVaas],
   }
 }
