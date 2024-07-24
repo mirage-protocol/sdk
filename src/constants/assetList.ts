@@ -30,8 +30,8 @@ export const getAllMarketObjectAddresses = (): string[] => {
 
 export const getPairFromMarketAddress = (marketObjectAddress: string): { marginToken: MoveToken; perp: Perpetual } => {
   let usedAddr = marketObjectAddress
-  while(usedAddr.length < 66) {
-    usedAddr = usedAddr.replace("0x", "0x0")
+  while (usedAddr.length < 66) {
+    usedAddr = usedAddr.replace('0x', '0x0')
   }
   for (const marginToken in mirageConfig.markets) {
     for (const perp in mirageConfig.markets[marginToken]) {
@@ -46,10 +46,10 @@ export const getPairFromMarketAddress = (marketObjectAddress: string): { marginT
 
 export const getPairFromVaultCollectionAddress = (
   vaultObjectAddress: string,
-): { collateralAsset: MoveAsset; borrow: MoveToken } => {  
+): { collateralAsset: MoveAsset; borrow: MoveToken } => {
   let usedAddr = vaultObjectAddress
-  while(usedAddr.length < 66) {
-    usedAddr = usedAddr.replace("0x", "0x0")
+  while (usedAddr.length < 66) {
+    usedAddr = usedAddr.replace('0x', '0x0')
   }
   for (const collateralAsset in mirageConfig.vaults) {
     for (const borrow in mirageConfig.vaults[collateralAsset]) {

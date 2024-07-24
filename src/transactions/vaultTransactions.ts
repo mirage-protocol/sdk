@@ -345,3 +345,22 @@ export const removeCollateralAndBorrow = async (
     typeArguments: getVaultAndCoinTypeArgument(collateralAsset),
   }
 }
+
+export const liquidateVault = async (
+  vaultObject: MoveObjectType,
+  collateralAsset: MoveAsset,
+  borrowToken: MoveToken,
+  partToLiquidate: number,
+  network: Network | string = Network.MAINNET,
+): Promise<InputEntryFunctionData> => {
+  const collateralFeed = getPriceFeed(collateralAsset, network)
+  const borrowFeed = getPriceFeed(borrowToken, network)
+
+  const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : []
+  const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
+
+  return {
+    function: `${mirageAddress()}::vault::liquidate_entry`,
+    functionArguments: [vaultObject, partToLiquidate, collateralVaas, borrowVaas],
+  }
+}
