@@ -380,6 +380,6 @@ export const liquidateVaultWithTokens = async (
 
   return {
     function: `${MODULES.keeper_scripts.address}::vault_scripts::liquidate_vault_with_tokens`,
-    functionArguments: [vaultObject, debtAmountToLiquidate, collateralVaas, borrowVaas],
+    functionArguments: [vaultObject, getAssetAmountArgument(borrowToken, debtAmountToLiquidate), collateralVaas, borrowVaas],
   }
 }
