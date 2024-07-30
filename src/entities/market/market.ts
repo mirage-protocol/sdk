@@ -237,7 +237,7 @@ export class Market {
     perpPrice: BigNumber,
     marginPrice: BigNumber,
   ): BigNumber {
-    const skew = this.getSkew(perpPrice)
+    const skew = this.getSkew(perpPrice, isClose)
     const positionSizeMUSD = positionSize.times(perpPrice)
     const fee = isClose ? this.getCloseFee(skew, side, positionSizeMUSD) : this.getOpenFee(skew, side, positionSizeMUSD)
     return fee.times(positionSizeMUSD).div(marginPrice)
@@ -289,14 +289,14 @@ export class Market {
   }
 
   /// Get the the oi skew and if it skews long given a market price
-  public getSkew(perpPrice: BigNumber): BigNumber {
+  public getSkew(perpPrice: BigNumber, isClose: boolean): BigNumber {
     const maxOi = this.maxOpenInterestImbalance
     const longOi = this.longOpenInterest
     const shortOi = this.shortOpenInterest
 
     const longOiMUSD = longOi.times(perpPrice)
     const shortOiMUSD = shortOi.times(perpPrice)
-    if (longOiMUSD.gte(maxOi) || shortOiMUSD.gte(maxOi)) {
+    if (!isClose && (longOiMUSD.gte(maxOi) || shortOiMUSD.gte(maxOi))) {
       return BigNumber(NaN)
     }
 
