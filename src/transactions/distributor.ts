@@ -6,13 +6,13 @@ import { getPriceFeed, getPriceFeedUpdateData, MODULES, MoveToken } from '../con
  * Claims testnet airdrop (creates vault if first claim, always deposits tusdc and borrows musd)
  * @returns payload for the transaction
  */
-export const claimAirdrop = async (): Promise<InputEntryFunctionData> => {
-  const collateralFeed = getPriceFeed(MoveToken.tUSDC, Network.TESTNET)
-  const borrowFeed = getPriceFeed(MoveToken.mUSD, Network.TESTNET)
-  const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, Network.TESTNET) : []
-  const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, Network.TESTNET) : []
+export const claimAirdrop = async (network: Network | string): Promise<InputEntryFunctionData> => {
+  const collateralFeed = getPriceFeed(MoveToken.tUSDC, network)
+  const borrowFeed = getPriceFeed(MoveToken.mUSD, network)
+  const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, network) : []
+  const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, network) : []
   return {
-    function: `${MODULES.mirage_scripts.address}::testnet_airdropper::claim_airdrop`,
+    function: `${MODULES(network).mirage_scripts.address}::testnet_airdropper::claim_airdrop`,
     functionArguments: [collateralVaas, borrowVaas],
     typeArguments: [],
   }

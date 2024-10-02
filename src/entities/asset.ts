@@ -70,7 +70,7 @@ export class Asset {
     const isToken = getTypeFromMoveAsset(this.asset) == 'MoveToken'
     const payload: InputViewFunctionData = {
       function: (isToken ? '0x1::fungible_asset::supply' : '0x1::coin::supply') as `${string}::${string}::${string}`,
-      functionArguments: isToken ? [getAssetTokenMetadata(this.asset)] : [],
+      functionArguments: isToken ? [getAssetTokenMetadata(this.asset, this.network)] : [],
     }
     const [val] = await aptosClient(this.network).view({ payload })
     const val_option = val as MoveOption<U128>

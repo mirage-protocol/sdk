@@ -14,29 +14,29 @@ import { getAssetAmountArgument } from './'
 
 // const type = 'entry_function_payload'
 
-const getCollectionAndCoinTypeArgument = (collateralAsset: MoveAsset): string[] => {
+const getCollectionAndCoinTypeArgument = (collateralAsset: MoveAsset, network: Network | string): string[] => {
   switch (getTypeFromMoveAsset(collateralAsset)) {
     case 'MoveToken':
-      return [`${mirageAddress()}::vault::VaultCollection`]
+      return [`${mirageAddress(network)}::vault::VaultCollection`]
     case 'MoveCoin':
-      return ['0x1::aptos_coin::AptosCoin', `${mirageAddress()}::vault::VaultCollection`]
+      return ['0x1::aptos_coin::AptosCoin', `${mirageAddress(network)}::vault::VaultCollection`]
     default:
-      return [`${mirageAddress()}::vault::VaultCollection`]
+      return [`${mirageAddress(network)}::vault::VaultCollection`]
   }
 }
-const getVaultAndCoinTypeArgument = (collateralAsset: MoveAsset): string[] => {
+const getVaultAndCoinTypeArgument = (collateralAsset: MoveAsset, network: Network | string): string[] => {
   switch (getTypeFromMoveAsset(collateralAsset)) {
     case 'MoveToken':
-      return [`${mirageAddress()}::vault::Vault`]
+      return [`${mirageAddress(network)}::vault::Vault`]
     case 'MoveCoin':
-      return ['0x1::aptos_coin::AptosCoin', `${mirageAddress()}::vault::Vault`]
+      return ['0x1::aptos_coin::AptosCoin', `${mirageAddress(network)}::vault::Vault`]
     default:
-      return [`${mirageAddress()}::vault::Vault`]
+      return [`${mirageAddress(network)}::vault::Vault`]
   }
 }
 
-const getVaultTypeArgument = (): string[] => {
-  return [`${mirageAddress()}::vault::Vault`]
+const getVaultTypeArgument = (network: Network | string): string[] => {
+  return [`${mirageAddress(network)}::vault::Vault`]
 }
 
 const getScriptMiddle = (type: string): string => {
@@ -65,13 +65,14 @@ export const createVaultAndAddCollateral = async (
   collectionObject: MoveObjectType,
   collateralAsset: MoveAsset,
   amount: number,
+  network: Network | string,
 ): Promise<InputEntryFunctionData> => {
   return {
-    function: `${mirageAddress()}::vault::register_and_add_collateral_${getFunctionSuffix(
+    function: `${mirageAddress(network)}::vault::register_and_add_collateral_${getFunctionSuffix(
       getTypeFromMoveAsset(collateralAsset),
     )}`,
     functionArguments: [collectionObject, getAssetAmountArgument(collateralAsset, amount)],
-    typeArguments: getCollectionAndCoinTypeArgument(collateralAsset),
+    typeArguments: getCollectionAndCoinTypeArgument(collateralAsset, network),
   }
 }
 
@@ -89,7 +90,7 @@ export const createVaultAndAddCollateralAndBorrow = async (
   const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : []
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
   return {
-    function: `${MODULES.mirage_scripts.address}::vault_scripts::register_and_add${getScriptMiddle(
+    function: `${MODULES(network).mirage_scripts.address}::vault_scripts::register_and_add${getScriptMiddle(
       getTypeFromMoveAsset(collateralAsset),
     )}_and_borrow_entry`,
     functionArguments: [
@@ -99,7 +100,7 @@ export const createVaultAndAddCollateralAndBorrow = async (
       collateralVaas,
       borrowVaas,
     ],
-    typeArguments: getCollectionAndCoinTypeArgument(collateralAsset),
+    typeArguments: getCollectionAndCoinTypeArgument(collateralAsset, network),
   }
 }
 
@@ -114,11 +115,12 @@ export const addCollateral = async (
   vaultObject: MoveObjectType,
   collateralAsset: MoveAsset,
   amount: number,
+  network: Network | string,
 ): Promise<InputEntryFunctionData> => {
   return {
-    function: `${mirageAddress()}::vault::add_collateral_${getFunctionSuffix(getTypeFromMoveAsset(collateralAsset))}`,
+    function: `${mirageAddress(network)}::vault::add_collateral_${getFunctionSuffix(getTypeFromMoveAsset(collateralAsset))}`,
     functionArguments: [vaultObject, getAssetAmountArgument(collateralAsset, amount)],
-    typeArguments: getVaultAndCoinTypeArgument(collateralAsset),
+    typeArguments: getVaultAndCoinTypeArgument(collateralAsset, network),
   }
 }
 
@@ -145,9 +147,9 @@ export const borrow = async (
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
 
   return {
-    function: `${mirageAddress()}::vault::borrow_entry`,
+    function: `${mirageAddress(network)}::vault::borrow_entry`,
     functionArguments: [vaultObject, getAssetAmountArgument(borrowToken, borrowAmount), collateralVaas, borrowVaas],
-    typeArguments: getVaultTypeArgument(),
+    typeArguments: getVaultTypeArgument(network),
   }
 }
 
@@ -173,11 +175,11 @@ export const removeCollateral = async (
   const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(network)) : []
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
   return {
-    function: `${mirageAddress()}::vault::remove_collateral_${getFunctionSuffix(
+    function: `${mirageAddress(network)}::vault::remove_collateral_${getFunctionSuffix(
       getTypeFromMoveAsset(collateralAsset),
     )}`,
     functionArguments: [vaultObject, getAssetAmountArgument(collateralAsset, removeAmount), collateralVaas, borrowVaas],
-    typeArguments: getVaultAndCoinTypeArgument(collateralAsset),
+    typeArguments: getVaultAndCoinTypeArgument(collateralAsset, network),
   }
 }
 
@@ -192,11 +194,12 @@ export const repayDebt = async (
   vaultObject: MoveObjectType,
   borrowToken: MoveToken,
   repayAmount: number,
+  network: Network | string,
 ): Promise<InputEntryFunctionData> => {
   return {
-    function: `${mirageAddress()}::vault::repay_entry`,
+    function: `${mirageAddress(network)}::vault::repay_entry`,
     functionArguments: [vaultObject, getAssetAmountArgument(borrowToken, repayAmount)],
-    typeArguments: getVaultTypeArgument(),
+    typeArguments: getVaultTypeArgument(network),
   }
 }
 
@@ -225,7 +228,7 @@ export const addCollateralAndBorrow = async (
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
 
   return {
-    function: `${MODULES.mirage_scripts.address}::vault_scripts::add${getScriptMiddle(
+    function: `${MODULES(network).mirage_scripts.address}::vault_scripts::add${getScriptMiddle(
       getTypeFromMoveAsset(collateralAsset),
     )}_and_borrow`,
     functionArguments: [
@@ -235,7 +238,7 @@ export const addCollateralAndBorrow = async (
       collateralVaas,
       borrowVaas,
     ],
-    typeArguments: getVaultAndCoinTypeArgument(collateralAsset),
+    typeArguments: getVaultAndCoinTypeArgument(collateralAsset, network),
   }
 }
 
@@ -264,7 +267,7 @@ export const repayDebtAndRemoveCollateral = async (
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
 
   return {
-    function: `${MODULES.mirage_scripts.address}::vault_scripts::remove${getScriptMiddle(
+    function: `${MODULES(network).mirage_scripts.address}::vault_scripts::remove${getScriptMiddle(
       getTypeFromMoveAsset(collateralAsset),
     )}_and_repay`,
     functionArguments: [
@@ -274,7 +277,7 @@ export const repayDebtAndRemoveCollateral = async (
       collateralVaas,
       borrowVaas,
     ],
-    typeArguments: getVaultAndCoinTypeArgument(collateralAsset),
+    typeArguments: getVaultAndCoinTypeArgument(collateralAsset, network),
   }
 }
 
@@ -293,9 +296,10 @@ export const addCollateralAndRepayDebt = async (
   borrowToken: MoveToken,
   addAmount: number,
   repayAmount: number,
+  network: Network | string,
 ): Promise<InputEntryFunctionData> => {
   return {
-    function: `${MODULES.mirage_scripts.address}::vault_scripts::add${getScriptMiddle(
+    function: `${MODULES(network).mirage_scripts.address}::vault_scripts::add${getScriptMiddle(
       getTypeFromMoveAsset(collateralAsset),
     )}_and_repay`,
     functionArguments: [
@@ -303,7 +307,7 @@ export const addCollateralAndRepayDebt = async (
       getAssetAmountArgument(collateralAsset, addAmount),
       getAssetAmountArgument(borrowToken, repayAmount),
     ],
-    typeArguments: getVaultAndCoinTypeArgument(collateralAsset),
+    typeArguments: getVaultAndCoinTypeArgument(collateralAsset, network),
   }
 }
 
@@ -332,7 +336,7 @@ export const removeCollateralAndBorrow = async (
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
 
   return {
-    function: `${MODULES.mirage_scripts.address}::vault_scripts::remove${getScriptMiddle(
+    function: `${MODULES(network).mirage_scripts.address}::vault_scripts::remove${getScriptMiddle(
       getTypeFromMoveAsset(collateralAsset),
     )}_and_borrow`,
     functionArguments: [
@@ -342,7 +346,7 @@ export const removeCollateralAndBorrow = async (
       collateralVaas,
       borrowVaas,
     ],
-    typeArguments: getVaultAndCoinTypeArgument(collateralAsset),
+    typeArguments: getVaultAndCoinTypeArgument(collateralAsset, network),
   }
 }
 
@@ -360,7 +364,7 @@ export const liquidateVaultWithPart = async (
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
 
   return {
-    function: `${mirageAddress()}::vault::liquidate_entry`,
+    function: `${mirageAddress(network)}::vault::liquidate_entry`,
     functionArguments: [vaultObject, partToLiquidate, collateralVaas, borrowVaas],
   }
 }
@@ -379,7 +383,12 @@ export const liquidateVaultWithTokens = async (
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(network)) : []
 
   return {
-    function: `${MODULES.keeper_scripts.address}::vault_scripts::liquidate_vault_with_tokens`,
-    functionArguments: [vaultObject, getAssetAmountArgument(borrowToken, debtAmountToLiquidate), collateralVaas, borrowVaas],
+    function: `${MODULES(network).keeper_scripts.address}::vault_scripts::liquidate_vault_with_tokens`,
+    functionArguments: [
+      vaultObject,
+      getAssetAmountArgument(borrowToken, debtAmountToLiquidate),
+      collateralVaas,
+      borrowVaas,
+    ],
   }
 }

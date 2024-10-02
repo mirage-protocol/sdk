@@ -6,6 +6,14 @@ import { cacheExchange, Client, CombinedError, createClient, errorExchange, fetc
 // store copies of the client so they don't need to be rebuilt when fetched
 const defaultMainnetClient = new Aptos(new AptosConfig({ network: Network.MAINNET }))
 const defaultTestnetClient = new Aptos(new AptosConfig({ network: Network.TESTNET }))
+// https://aptos.testnet.suzuka.movementlabs.xyz/v1
+const defaultMovementTestnetClient = new Aptos(
+  new AptosConfig({
+    network: Network.CUSTOM,
+    fullnode: 'https://aptos.testnet.suzuka.movementlabs.xyz/v1',
+    indexer: 'https://indexer.testnet.suzuka.movementlabs.xyz/v1/graphql',
+  }),
+)
 
 const mainnetPythClient = new AptosPriceServiceConnection(`https://hermes.pyth.network`, {
   priceFeedRequestConfig: {
@@ -14,6 +22,8 @@ const mainnetPythClient = new AptosPriceServiceConnection(`https://hermes.pyth.n
     binary: true,
   },
 })
+
+// TODO: check if this works for movement testnet
 const testnetPythClient = new AptosPriceServiceConnection(`https://hermes-beta.pyth.network`, {
   priceFeedRequestConfig: {
     // Provide this option to retrieve signed price updates for on-chain contracts.
@@ -27,11 +37,18 @@ const testnetPythClient = new AptosPriceServiceConnection(`https://hermes-beta.p
  * @param network the network to use, if not specific = "mainnet"
  * @returns a useable aptos client
  */
-export const aptosClient = (network: Network | string = Network.MAINNET, nodeURI?: string): Aptos => {
+export const aptosClient = (network: Network | string | string = Network.MAINNET, nodeURI?: string): Aptos => {
   if (nodeURI !== undefined) {
     return new Aptos(new AptosConfig({ network: getNetwork(network), fullnode: nodeURI }))
   }
-  return getNetwork(network) === Network.MAINNET ? defaultMainnetClient : defaultTestnetClient
+  switch (network) {
+    case Network.MAINNET:
+      return defaultMainnetClient
+    case 'movement-testnet':
+      return defaultMovementTestnetClient
+    default:
+      return defaultTestnetClient
+  }
 }
 
 /**
@@ -45,16 +62,21 @@ export const pythClient = (network: Network | string = Network.MAINNET): AptosPr
 
 export const getNetwork = (network: Network | string): Network => {
   if (typeof network === 'string') {
-    if (network === 'testnet') {
-      return Network.TESTNET
-    } else {
-      return Network.MAINNET
+    switch (network) {
+      case 'mainnet':
+        return Network.MAINNET
+      case 'movement-testnet':
+        return Network.CUSTOM
+      case 'custom':
+        return Network.CUSTOM
+      default:
+        return Network.TESTNET
     }
   }
   return network
 }
 
-export const graphqlClient = (API_KEY?: string): Client => {
+export const graphqlClientWithUri = (gqlURI: string, API_KEY?: string): Client => {
   const exchanges = [
     fetchExchange,
     cacheExchange,
@@ -84,9 +106,14 @@ export const graphqlClient = (API_KEY?: string): Client => {
   }
 
   return createClient({
-    url: 'https://api.testnet.aptoslabs.com/v1/graphql',
+    url: gqlURI,
     exchanges,
   })
+}
+
+// TODO: make this not fixed to aptos testnet
+export const graphqlClient = (API_KEY?: string): Client => {
+  return graphqlClientWithUri('https://api.testnet.aptoslabs.com/v1/graphql', API_KEY)
 }
 
 export const mirageGraphQlClient = createClient({

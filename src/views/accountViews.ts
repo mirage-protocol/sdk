@@ -31,7 +31,7 @@ export const getUserAssetBalance = async (
         options: {
           where: {
             owner_address: { _eq: AccountAddress.from(userAddress).toStringLong() },
-            asset_type: { _eq: getAssetTokenMetadata(asset) },
+            asset_type: { _eq: getAssetTokenMetadata(asset, network) },
             is_primary: { _eq: true },
           },
         },

@@ -123,6 +123,7 @@ export class Position {
     marginCoin: MoveToken | string,
     perpetualAsset: Perpetual | string,
     objectAddress: string,
+    network: Network | string,
   ) {
     // this.userAddress = userAddress
     this.marginToken = marginCoin as MoveToken
@@ -131,7 +132,7 @@ export class Position {
     this.objectAddress = objectAddress
     this.network = market.network
 
-    const positionType = `${mirageAddress()}::market::Position`
+    const positionType = `${mirageAddress(network)}::market::Position`
     const tokenIdsType = '0x4::token::TokenIdentifiers'
     const propertyMapType = `0x4::property_map::PropertyMap`
 
@@ -177,7 +178,7 @@ export class Position {
       : ZERO
     const fundingAccrued = !!position ? marketFundingAccumulated.minus(lastPositionFunding).times(positionSize) : ZERO
 
-    const tpslType = `${mirageAddress()}::market::TpSl`
+    const tpslType = `${mirageAddress(network)}::market::TpSl`
     const tpsl = positionObjectResources.find((resource) => resource.type === tpslType)
     const tpslExists = !!tpsl
     const takeProfitPrice = tpslExists ? BigNumber((tpsl as any).data.take_profit_price).div(PRECISION_8) : ZERO
@@ -199,7 +200,7 @@ export class Position {
         }
       : undefined
 
-    const limitOrderType = `${mirageAddress()}::market::LimitOrders`
+    const limitOrderType = `${mirageAddress(network)}::market::LimitOrders`
 
     const limitOrders = positionObjectResources.find((resource) => resource.type === limitOrderType)
 

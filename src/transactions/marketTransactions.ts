@@ -14,14 +14,14 @@ import { PositionSide } from '../entities'
 import { getAssetAmountArgument, getDecimal8Argument } from './'
 
 // Get the types for this market
-export const getMarketTypeArgument = (): Array<string> => {
-  return [`${mirageAddress()}::market::Market`]
+export const getMarketTypeArgument = (network: Network | string): Array<string> => {
+  return [`${mirageAddress(network)}::market::Market`]
 }
-export const getPositionTypeArgument = (): Array<string> => {
-  return [`${mirageAddress()}::market::Position`]
+export const getPositionTypeArgument = (network: Network | string): Array<string> => {
+  return [`${mirageAddress(network)}::market::Position`]
 }
-export const getLimitOrdersTypeArgument = (): Array<string> => {
-  return [`${mirageAddress()}::market::LimitOrders`]
+export const getLimitOrdersTypeArgument = (network: Network | string): Array<string> => {
+  return [`${mirageAddress(network)}::market::LimitOrders`]
 }
 
 /**
@@ -46,7 +46,7 @@ export const openPosition = async (
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
 
   return {
-    function: `${MODULES.mirage_scripts.address}::market_scripts::open_position_entry`,
+    function: `${MODULES(network).mirage_scripts.address}::market_scripts::open_position_entry`,
 
     functionArguments: [
       marketObject,
@@ -58,7 +58,7 @@ export const openPosition = async (
       getDecimal8Argument(desired_price),
       getDecimal8Argument(maxPriceSlippage),
     ],
-    typeArguments: getMarketTypeArgument(),
+    typeArguments: getMarketTypeArgument(network),
   }
 }
 
@@ -87,7 +87,7 @@ export const openPositionWithTpsl = async (
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
 
   return {
-    function: `${MODULES.mirage_scripts.address}::market_scripts::open_position_entry_with_tpsl`,
+    function: `${MODULES(network).mirage_scripts.address}::market_scripts::open_position_entry_with_tpsl`,
 
     functionArguments: [
       marketObject,
@@ -102,7 +102,7 @@ export const openPositionWithTpsl = async (
       getDecimal8Argument(stopLossPrice),
       getAssetAmountArgument(MoveCoin.APT, triggerPaymentAmount),
     ],
-    typeArguments: getMarketTypeArgument(),
+    typeArguments: getMarketTypeArgument(network),
   }
 }
 
@@ -124,9 +124,9 @@ export const closePosition = async (
 
   const payload = {
     function:
-      `${MODULES.mirage_scripts.address}::market_scripts::close_position_entry` as `${string}::${string}::${string}`,
+      `${MODULES(network).mirage_scripts.address}::market_scripts::close_position_entry` as `${string}::${string}::${string}`,
     functionArguments: [positionObject, perpetualVaas, marginVaas],
-    typeArguments: getPositionTypeArgument(),
+    typeArguments: getPositionTypeArgument(network),
   }
   return payload
 }
@@ -153,7 +153,7 @@ export const openPositionAndPlaceLimitOrder = async (
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
 
   return {
-    function: `${MODULES.mirage_scripts.address}::market_scripts::create_position_and_place_limit_order`,
+    function: `${MODULES(network).mirage_scripts.address}::market_scripts::create_position_and_place_limit_order`,
     functionArguments: [
       marketObject,
       perpetualVaas,
@@ -167,7 +167,7 @@ export const openPositionAndPlaceLimitOrder = async (
       expiration.toString(), // sdk breaks for large non-string integers
       isLong,
     ],
-    typeArguments: getMarketTypeArgument(),
+    typeArguments: getMarketTypeArgument(network),
   }
 }
 
@@ -193,7 +193,7 @@ export const placeLimitOrder = async (
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
 
   return {
-    function: `${MODULES.mirage_scripts.address}::market_scripts::place_limit_order_entry`,
+    function: `${MODULES(network).mirage_scripts.address}::market_scripts::place_limit_order_entry`,
     functionArguments: [
       positionObject,
       perpetualVaas,
@@ -206,7 +206,7 @@ export const placeLimitOrder = async (
       getDecimal8Argument(triggerPaymentAmount),
       expiration.toString(), // sdk breaks for large non-string integers
     ],
-    typeArguments: getPositionTypeArgument(),
+    typeArguments: getPositionTypeArgument(network),
   }
 }
 
@@ -217,12 +217,13 @@ export const placeLimitOrder = async (
 export const cancelLimitOrder = async (
   limitOrdersObject: MoveObjectType,
   index: number,
+  network: Network | string,
 ): Promise<InputEntryFunctionData> => {
   const payload = {
     function:
-      `${MODULES.mirage_scripts.address}::market_scripts::cancel_limit_order_entry` as `${string}::${string}::${string}`,
+      `${MODULES(network).mirage_scripts.address}::market_scripts::cancel_limit_order_entry` as `${string}::${string}::${string}`,
     functionArguments: [limitOrdersObject, index],
-    typeArguments: getLimitOrdersTypeArgument(),
+    typeArguments: getLimitOrdersTypeArgument(network),
   }
   return payload
 }
@@ -238,14 +239,14 @@ export const updateTpsl = async (
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
 
   const payload = {
-    function: `${mirageAddress()}::market::update_tpsl` as `${string}::${string}::${string}`,
+    function: `${mirageAddress(network)}::market::update_tpsl` as `${string}::${string}::${string}`,
     functionArguments: [
       positionObject,
       perpetualVaas,
       getDecimal8Argument(take_profit_price),
       getDecimal8Argument(stop_loss_price),
     ],
-    typeArguments: getPositionTypeArgument(),
+    typeArguments: getPositionTypeArgument(network),
   }
   return payload
 }
@@ -263,7 +264,7 @@ export const placeTpsl = async (
 
   const payload = {
     function:
-      `${MODULES.mirage_scripts.address}::market_scripts::place_tpsl_entry` as `${string}::${string}::${string}`,
+      `${MODULES(network).mirage_scripts.address}::market_scripts::place_tpsl_entry` as `${string}::${string}::${string}`,
     functionArguments: [
       positionObject,
       perpetualVaas,
@@ -271,7 +272,7 @@ export const placeTpsl = async (
       getDecimal8Argument(stop_loss_price),
       getDecimal8Argument(trigger_amount),
     ],
-    typeArguments: getPositionTypeArgument(),
+    typeArguments: getPositionTypeArgument(network),
   }
   return payload
 }
@@ -297,9 +298,9 @@ export const updateMargin = async (
   const functionName = newMarginAmount > oldMarginAmount ? 'increase' : 'decrease'
   const payload = {
     function:
-      `${MODULES.mirage_scripts.address}::market_scripts::${functionName}_margin_entry` as `${string}::${string}::${string}`,
+      `${MODULES(network).mirage_scripts.address}::market_scripts::${functionName}_margin_entry` as `${string}::${string}::${string}`,
     functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(diff)],
-    typeArguments: getPositionTypeArgument(),
+    typeArguments: getPositionTypeArgument(network),
   }
   return payload
 }
@@ -322,9 +323,9 @@ export const increaseMargin = async (
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
   const payload = {
     function:
-      `${MODULES.mirage_scripts.address}::market_scripts::increase_margin_entry` as `${string}::${string}::${string}`,
+      `${MODULES(network).mirage_scripts.address}::market_scripts::increase_margin_entry` as `${string}::${string}::${string}`,
     functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(increaseMarginAmount)],
-    typeArguments: getPositionTypeArgument(),
+    typeArguments: getPositionTypeArgument(network),
   }
   return payload
 }
@@ -348,7 +349,7 @@ export const increaseSizeAndIncreaseMargin = async (
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
   const payload = {
     function:
-      `${MODULES.mirage_scripts.address}::market_scripts::increase_position_size_and_increase_margin_entry` as `${string}::${string}::${string}`,
+      `${MODULES(network).mirage_scripts.address}::market_scripts::increase_position_size_and_increase_margin_entry` as `${string}::${string}::${string}`,
     functionArguments: [
       positionObject,
       perpetualVaas,
@@ -356,7 +357,7 @@ export const increaseSizeAndIncreaseMargin = async (
       getDecimal8Argument(increasePositionSize),
       getDecimal8Argument(increaseMarginAmount),
     ],
-    typeArguments: getPositionTypeArgument(),
+    typeArguments: getPositionTypeArgument(network),
   }
   return payload
 }
@@ -380,7 +381,7 @@ export const increaseSizeAndDecreaseMargin = async (
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
   const payload = {
     function:
-      `${MODULES.mirage_scripts.address}::market_scripts::increase_position_size_and_decrease_margin_entry` as `${string}::${string}::${string}`,
+      `${MODULES(network).mirage_scripts.address}::market_scripts::increase_position_size_and_decrease_margin_entry` as `${string}::${string}::${string}`,
     functionArguments: [
       positionObject,
       perpetualVaas,
@@ -388,7 +389,7 @@ export const increaseSizeAndDecreaseMargin = async (
       getDecimal8Argument(increasePositionSize),
       getDecimal8Argument(decreaseMarginAmount),
     ],
-    typeArguments: getPositionTypeArgument(),
+    typeArguments: getPositionTypeArgument(network),
   }
   return payload
 }
@@ -412,7 +413,7 @@ export const decreaseSizeAndDecreaseMargin = async (
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
   const payload = {
     function:
-      `${MODULES.mirage_scripts.address}::market_scripts::decrease_position_size_and_decrease_margin_entry` as `${string}::${string}::${string}`,
+      `${MODULES(network).mirage_scripts.address}::market_scripts::decrease_position_size_and_decrease_margin_entry` as `${string}::${string}::${string}`,
     functionArguments: [
       positionObject,
       perpetualVaas,
@@ -420,7 +421,7 @@ export const decreaseSizeAndDecreaseMargin = async (
       getDecimal8Argument(decreasePositionSize),
       getDecimal8Argument(decreaseMarginAmount),
     ],
-    typeArguments: getPositionTypeArgument(),
+    typeArguments: getPositionTypeArgument(network),
   }
   return payload
 }
@@ -444,7 +445,7 @@ export const decreaseSizeAndIncreaseMargin = async (
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
   const payload = {
     function:
-      `${MODULES.mirage_scripts.address}::market_scripts::decrease_position_size_and_increase_margin_entry` as `${string}::${string}::${string}`,
+      `${MODULES(network).mirage_scripts.address}::market_scripts::decrease_position_size_and_increase_margin_entry` as `${string}::${string}::${string}`,
     functionArguments: [
       positionObject,
       perpetualVaas,
@@ -452,7 +453,7 @@ export const decreaseSizeAndIncreaseMargin = async (
       getDecimal8Argument(decreasePositionSize),
       getDecimal8Argument(increaseMarginAmount),
     ],
-    typeArguments: getPositionTypeArgument(),
+    typeArguments: getPositionTypeArgument(network),
   }
   return payload
 }
@@ -475,9 +476,9 @@ export const decreaseMargin = async (
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
   const payload = {
     function:
-      `${MODULES.mirage_scripts.address}::market_scripts::decrease_margin_entry` as `${string}::${string}::${string}`,
+      `${MODULES(network).mirage_scripts.address}::market_scripts::decrease_margin_entry` as `${string}::${string}::${string}`,
     functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(decreaseMarginAmount)],
-    typeArguments: getPositionTypeArgument(),
+    typeArguments: getPositionTypeArgument(network),
   }
   return payload
 }
@@ -507,10 +508,10 @@ export const updatePositionSize = async (
 
   const payload = {
     function: `${
-      newPositionSize > oldPositionSize ? mirageAddress() : MODULES.mirage_scripts.address
+      newPositionSize > oldPositionSize ? mirageAddress(network) : MODULES(network).mirage_scripts.address
     }::${functionName}` as `${string}::${string}::${string}`,
     functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(diff)],
-    typeArguments: getPositionTypeArgument(),
+    typeArguments: getPositionTypeArgument(network),
   }
   return payload
 }
@@ -533,9 +534,9 @@ export const increasePositionSize = async (
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
 
   const payload = {
-    function: `${mirageAddress()}::market::increase_position_size` as `${string}::${string}::${string}`,
+    function: `${mirageAddress(network)}::market::increase_position_size` as `${string}::${string}::${string}`,
     functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(increasePositionSize)],
-    typeArguments: getPositionTypeArgument(),
+    typeArguments: getPositionTypeArgument(network),
   }
   return payload
 }
@@ -559,9 +560,9 @@ export const decreasePositionSize = async (
 
   const payload = {
     function:
-      `${MODULES.mirage_scripts.address}::market_scripts::decrease_position_size_entry` as `${string}::${string}::${string}`,
+      `${MODULES(network).mirage_scripts.address}::market_scripts::decrease_position_size_entry` as `${string}::${string}::${string}`,
     functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(decreasePositionSize)],
-    typeArguments: getPositionTypeArgument(),
+    typeArguments: getPositionTypeArgument(network),
   }
   return payload
 }
@@ -583,9 +584,9 @@ export const triggerTpsl = async (
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
   const payload = {
     function:
-      `${MODULES.mirage_scripts.address}::market_scripts::trigger_tpsl_entry` as `${string}::${string}::${string}`,
+      `${MODULES(network).mirage_scripts.address}::market_scripts::trigger_tpsl_entry` as `${string}::${string}::${string}`,
     functionArguments: [triggererAddress, positionObject, perpetualVaas, marginVaas],
-    typeArguments: getPositionTypeArgument(),
+    typeArguments: getPositionTypeArgument(network),
   }
   return payload
 }
@@ -607,9 +608,9 @@ export const liquidatePosition = async (
 
   const payload = {
     function:
-      `${MODULES.mirage_scripts.address}::market_scripts::liquidate_position_entry` as `${string}::${string}::${string}`,
+      `${MODULES(network).mirage_scripts.address}::market_scripts::liquidate_position_entry` as `${string}::${string}::${string}`,
     functionArguments: [positionObject, perpetualVaas, marginVaas],
-    typeArguments: getPositionTypeArgument(),
+    typeArguments: getPositionTypeArgument(network),
   }
   return payload
 }
@@ -633,9 +634,9 @@ export const triggerLimitOrder = async (
 
   const payload = {
     function:
-      `${MODULES.mirage_scripts.address}::market_scripts::trigger_limit_order_entry` as `${string}::${string}::${string}`,
+      `${MODULES(network).mirage_scripts.address}::market_scripts::trigger_limit_order_entry` as `${string}::${string}::${string}`,
     functionArguments: [triggererAddress, positionObject, index, perpetualVaas, marginVaas],
-    typeArguments: getPositionTypeArgument(),
+    typeArguments: getPositionTypeArgument(network),
   }
   return payload
 }
@@ -659,9 +660,9 @@ export const triggerLimitOrderById = async (
 
   const payload = {
     function:
-      `${MODULES.mirage_scripts.address}::market_scripts::trigger_limit_order_by_id_entry` as `${string}::${string}::${string}`,
+      `${MODULES(network).mirage_scripts.address}::market_scripts::trigger_limit_order_by_id_entry` as `${string}::${string}::${string}`,
     functionArguments: [triggererAddress, positionObject, orderId, perpetualVaas, marginVaas],
-    typeArguments: getPositionTypeArgument(),
+    typeArguments: getPositionTypeArgument(network),
   }
   return payload
 }

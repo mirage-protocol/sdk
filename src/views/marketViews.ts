@@ -24,17 +24,21 @@ export const getMarginTokenFromPosition = async (positionObjectAddress: string, 
   return (
     await aptosClient(network).view({
       payload: {
-        function: `${mirageAddress()}::market::position_margin_token`,
+        function: `${mirageAddress(network)}::market::position_margin_token`,
         functionArguments: [positionObjectAddress],
-        typeArguments: [`${mirageAddress()}::market::Position`],
+        typeArguments: [`${mirageAddress(network)}::market::Position`],
       },
     })
   )[0] as MoveObjectType
 }
 
-export const getAllPositionIdsByOwner = async (owner: string, graphqlClient: Client): Promise<string[]> => {
+export const getAllPositionIdsByOwner = async (
+  owner: string,
+  graphqlClient: Client,
+  network: Network | string,
+): Promise<string[]> => {
   const variables: GetTokenIdsFromCollectionsByOwnerQueryVariables = {
-    COLLECTIONS: getAllMarketObjectAddresses(),
+    COLLECTIONS: getAllMarketObjectAddresses(network),
     OWNER: owner,
   }
   try {
@@ -60,9 +64,10 @@ export const getPositionIdsByMarketAndOwner = async (
   perp: Perpetual,
   owner: string,
   graphqlClient: Client,
+  network: Network | string,
 ): Promise<string[]> => {
   const variables: GetTokenIdsFromCollectionByOwnerQueryVariables = {
-    COLLECTION: getCollectionIdForPerpPair(marginToken, perp),
+    COLLECTION: getCollectionIdForPerpPair(marginToken, perp, network),
     OWNER: owner,
   }
   try {
@@ -90,10 +95,11 @@ export const isLimitOrderTriggerable = async (
   index: number,
   perpPrice: number,
   client: Aptos,
+  network: Network | string,
 ): Promise<boolean> => {
   const payload = {
-    function: `${mirageAddress()}::market::is_limit_order_triggerable` as `${string}::${string}::${string}`,
-    typeArguments: getPositionTypeArgument(),
+    function: `${mirageAddress(network)}::market::is_limit_order_triggerable` as `${string}::${string}::${string}`,
+    typeArguments: getPositionTypeArgument(network),
     functionArguments: [positionObjectAddress, index, getDecimal8Argument(perpPrice)],
   }
   const ret = await client.view({ payload })
@@ -105,10 +111,11 @@ export const isLimitOrderTriggerableBulk = async (
   indexes: number[],
   perpPrice: number,
   client: Aptos,
+  network: Network | string,
 ): Promise<boolean[]> => {
   const payload = {
     function:
-      `${MODULES.keeper_scripts.address}::market_scripts::get_is_limit_order_triggerable_states_same_perp` as `${string}::${string}::${string}`,
+      `${MODULES(network).keeper_scripts.address}::market_scripts::get_is_limit_order_triggerable_states_same_perp` as `${string}::${string}::${string}`,
     functionArguments: [positionObjectAddresses, indexes, getDecimal8Argument(perpPrice)],
   }
   const ret = await client.view({ payload })
@@ -120,10 +127,11 @@ export const getLiquidationPrice = async (
   perpetualPrice: number,
   marginPrice: number,
   client: Aptos,
+  network: Network | string,
 ): Promise<number> => {
   const payload = {
-    function: `${mirageAddress()}::market::get_liquidation_price` as `${string}::${string}::${string}`,
-    typeArguments: getPositionTypeArgument(),
+    function: `${mirageAddress(network)}::market::get_liquidation_price` as `${string}::${string}::${string}`,
+    typeArguments: getPositionTypeArgument(network),
     functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
   }
   const ret = await client.view({ payload })
@@ -137,10 +145,11 @@ export const getLiquidationPriceBulk = async (
   perpetualPrice: number,
   marginPrice: number,
   client: Aptos,
+  network: Network | string,
 ): Promise<number[]> => {
   const payload = {
     function:
-      `${MODULES.keeper_scripts.address}::market_scripts::get_liquidation_prices_same_perp` as `${string}::${string}::${string}`,
+      `${MODULES(network).keeper_scripts.address}::market_scripts::get_liquidation_prices_same_perp` as `${string}::${string}::${string}`,
     functionArguments: [positionObjectAddresses, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
   }
   const ret = await client.view({ payload })
@@ -168,8 +177,8 @@ export const estimateFee = async (
   network: Network,
 ): Promise<number> => {
   const payload = {
-    function: `${mirageAddress()}::market::get_open_close_fee` as `${string}::${string}::${string}`,
-    typeArguments: getMarketTypeArgument(),
+    function: `${mirageAddress(network)}::market::get_open_close_fee` as `${string}::${string}::${string}`,
+    typeArguments: getMarketTypeArgument(network),
     functionArguments: [
       marketObjectAddress,
       isLong,
@@ -192,8 +201,9 @@ export const getPositionMaintenanceMarginMusd = async (
   network: Network,
 ): Promise<number> => {
   const payload = {
-    function: `${mirageAddress()}::market::get_position_maintenance_margin_musd` as `${string}::${string}::${string}`,
-    typeArguments: getPositionTypeArgument(),
+    function:
+      `${mirageAddress(network)}::market::get_position_maintenance_margin_musd` as `${string}::${string}::${string}`,
+    typeArguments: getPositionTypeArgument(network),
     functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
   }
   const ret = await aptosClient(network).view({ payload })
@@ -223,8 +233,8 @@ export const getAllPositionInfo = async (
   network: Network,
 ): Promise<AllPositionInfo> => {
   const payload = {
-    function: `${mirageAddress()}::market::all_position_info` as `${string}::${string}::${string}`,
-    typeArguments: getPositionTypeArgument(),
+    function: `${mirageAddress(network)}::market::all_position_info` as `${string}::${string}::${string}`,
+    typeArguments: getPositionTypeArgument(network),
     functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
   }
   const ret = await aptosClient(network).view({ payload })

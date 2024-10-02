@@ -1,4 +1,4 @@
-import { MoveResource } from '@aptos-labs/ts-sdk'
+import { MoveResource, Network } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import { PRECISION_8, ZERO } from '../../constants'
@@ -58,13 +58,14 @@ export class Vault {
     collateral: MoveToken | string,
     borrow: MoveToken | string,
     objectAddress: string,
+    network: Network | string,
   ) {
     this.collateralAsset = collateral as MoveToken
     this.borrowToken = borrow as MoveToken
     this.vaultCollection = vaultCollection
     this.objectAddress = objectAddress
 
-    const vaultType = `${mirageAddress()}::vault::Vault`
+    const vaultType = `${mirageAddress(network)}::vault::Vault`
     const propertyMapType = `0x4::property_map::PropertyMap`
 
     const vault = vaultObjectResources.find((resource) => resource.type === vaultType)

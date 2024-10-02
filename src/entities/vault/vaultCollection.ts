@@ -1,4 +1,4 @@
-import { MoveResource } from '@aptos-labs/ts-sdk'
+import { MoveResource, Network } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import {
@@ -96,13 +96,14 @@ export class VaultCollection {
     collateral: MoveToken | string,
     borrow: MoveToken | string,
     objectAddress: string,
+    network: Network | string,
   ) {
     this.collateral = collateral as MoveToken
     this.borrow = borrow as MoveToken
-    this.mirage = new MirageAsset(borrowTokenObjectResources, this.borrow)
+    this.mirage = new MirageAsset(borrowTokenObjectResources, this.borrow, network)
     this.objectAddress = objectAddress
 
-    const vaultCollectionType = `${mirageAddress()}::vault::VaultCollection`
+    const vaultCollectionType = `${mirageAddress(network)}::vault::VaultCollection`
     const vaultCollection = collectionObjectResources.find((resource) => resource.type === vaultCollectionType)
 
     this.borrowFeePercent = !!vaultCollection

@@ -19,7 +19,6 @@ export type Scalars = {
   jsonb: { input: any; output: any; }
   numeric: { input: any; output: any; }
   timestamp: { input: any; output: any; }
-  timestamptz: { input: any; output: any; }
 };
 
 /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
@@ -3079,30 +3078,38 @@ export type Current_Delegator_Balances_Stream_Cursor_Value_Input = {
   table_handle?: InputMaybe<Scalars['String']['input']>;
 };
 
-/** columns and relationships of "current_unified_fungible_asset_balances_to_be_renamed" */
+/** columns and relationships of "current_fungible_asset_balances" */
 export type Current_Fungible_Asset_Balances = {
   __typename?: 'current_fungible_asset_balances';
-  amount?: Maybe<Scalars['numeric']['output']>;
-  asset_type?: Maybe<Scalars['String']['output']>;
+  amount: Scalars['numeric']['output'];
+  amount_v1?: Maybe<Scalars['numeric']['output']>;
+  amount_v2?: Maybe<Scalars['numeric']['output']>;
+  asset_type: Scalars['String']['output'];
+  asset_type_v1?: Maybe<Scalars['String']['output']>;
+  asset_type_v2?: Maybe<Scalars['String']['output']>;
   is_frozen: Scalars['Boolean']['output'];
-  is_primary?: Maybe<Scalars['Boolean']['output']>;
+  is_primary: Scalars['Boolean']['output'];
   last_transaction_timestamp?: Maybe<Scalars['timestamp']['output']>;
+  last_transaction_timestamp_v1?: Maybe<Scalars['timestamp']['output']>;
+  last_transaction_timestamp_v2?: Maybe<Scalars['timestamp']['output']>;
   last_transaction_version?: Maybe<Scalars['bigint']['output']>;
+  last_transaction_version_v1?: Maybe<Scalars['bigint']['output']>;
+  last_transaction_version_v2?: Maybe<Scalars['bigint']['output']>;
   /** An object relationship */
   metadata?: Maybe<Fungible_Asset_Metadata>;
   owner_address: Scalars['String']['output'];
   storage_id: Scalars['String']['output'];
-  token_standard?: Maybe<Scalars['String']['output']>;
+  token_standard: Scalars['String']['output'];
 };
 
-/** aggregated selection of "current_unified_fungible_asset_balances_to_be_renamed" */
+/** aggregated selection of "current_fungible_asset_balances" */
 export type Current_Fungible_Asset_Balances_Aggregate = {
   __typename?: 'current_fungible_asset_balances_aggregate';
   aggregate?: Maybe<Current_Fungible_Asset_Balances_Aggregate_Fields>;
   nodes: Array<Current_Fungible_Asset_Balances>;
 };
 
-/** aggregate fields of "current_unified_fungible_asset_balances_to_be_renamed" */
+/** aggregate fields of "current_fungible_asset_balances" */
 export type Current_Fungible_Asset_Balances_Aggregate_Fields = {
   __typename?: 'current_fungible_asset_balances_aggregate_fields';
   avg?: Maybe<Current_Fungible_Asset_Balances_Avg_Fields>;
@@ -3119,7 +3126,7 @@ export type Current_Fungible_Asset_Balances_Aggregate_Fields = {
 };
 
 
-/** aggregate fields of "current_unified_fungible_asset_balances_to_be_renamed" */
+/** aggregate fields of "current_fungible_asset_balances" */
 export type Current_Fungible_Asset_Balances_Aggregate_FieldsCountArgs = {
   columns?: InputMaybe<Array<Current_Fungible_Asset_Balances_Select_Column>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
@@ -3129,20 +3136,32 @@ export type Current_Fungible_Asset_Balances_Aggregate_FieldsCountArgs = {
 export type Current_Fungible_Asset_Balances_Avg_Fields = {
   __typename?: 'current_fungible_asset_balances_avg_fields';
   amount?: Maybe<Scalars['Float']['output']>;
+  amount_v1?: Maybe<Scalars['Float']['output']>;
+  amount_v2?: Maybe<Scalars['Float']['output']>;
   last_transaction_version?: Maybe<Scalars['Float']['output']>;
+  last_transaction_version_v1?: Maybe<Scalars['Float']['output']>;
+  last_transaction_version_v2?: Maybe<Scalars['Float']['output']>;
 };
 
-/** Boolean expression to filter rows from the table "current_unified_fungible_asset_balances_to_be_renamed". All fields are combined with a logical 'AND'. */
+/** Boolean expression to filter rows from the table "current_fungible_asset_balances". All fields are combined with a logical 'AND'. */
 export type Current_Fungible_Asset_Balances_Bool_Exp = {
   _and?: InputMaybe<Array<Current_Fungible_Asset_Balances_Bool_Exp>>;
   _not?: InputMaybe<Current_Fungible_Asset_Balances_Bool_Exp>;
   _or?: InputMaybe<Array<Current_Fungible_Asset_Balances_Bool_Exp>>;
   amount?: InputMaybe<Numeric_Comparison_Exp>;
+  amount_v1?: InputMaybe<Numeric_Comparison_Exp>;
+  amount_v2?: InputMaybe<Numeric_Comparison_Exp>;
   asset_type?: InputMaybe<String_Comparison_Exp>;
+  asset_type_v1?: InputMaybe<String_Comparison_Exp>;
+  asset_type_v2?: InputMaybe<String_Comparison_Exp>;
   is_frozen?: InputMaybe<Boolean_Comparison_Exp>;
   is_primary?: InputMaybe<Boolean_Comparison_Exp>;
   last_transaction_timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
+  last_transaction_timestamp_v1?: InputMaybe<Timestamp_Comparison_Exp>;
+  last_transaction_timestamp_v2?: InputMaybe<Timestamp_Comparison_Exp>;
   last_transaction_version?: InputMaybe<Bigint_Comparison_Exp>;
+  last_transaction_version_v1?: InputMaybe<Bigint_Comparison_Exp>;
+  last_transaction_version_v2?: InputMaybe<Bigint_Comparison_Exp>;
   metadata?: InputMaybe<Fungible_Asset_Metadata_Bool_Exp>;
   owner_address?: InputMaybe<String_Comparison_Exp>;
   storage_id?: InputMaybe<String_Comparison_Exp>;
@@ -3153,9 +3172,17 @@ export type Current_Fungible_Asset_Balances_Bool_Exp = {
 export type Current_Fungible_Asset_Balances_Max_Fields = {
   __typename?: 'current_fungible_asset_balances_max_fields';
   amount?: Maybe<Scalars['numeric']['output']>;
+  amount_v1?: Maybe<Scalars['numeric']['output']>;
+  amount_v2?: Maybe<Scalars['numeric']['output']>;
   asset_type?: Maybe<Scalars['String']['output']>;
+  asset_type_v1?: Maybe<Scalars['String']['output']>;
+  asset_type_v2?: Maybe<Scalars['String']['output']>;
   last_transaction_timestamp?: Maybe<Scalars['timestamp']['output']>;
+  last_transaction_timestamp_v1?: Maybe<Scalars['timestamp']['output']>;
+  last_transaction_timestamp_v2?: Maybe<Scalars['timestamp']['output']>;
   last_transaction_version?: Maybe<Scalars['bigint']['output']>;
+  last_transaction_version_v1?: Maybe<Scalars['bigint']['output']>;
+  last_transaction_version_v2?: Maybe<Scalars['bigint']['output']>;
   owner_address?: Maybe<Scalars['String']['output']>;
   storage_id?: Maybe<Scalars['String']['output']>;
   token_standard?: Maybe<Scalars['String']['output']>;
@@ -3165,34 +3192,58 @@ export type Current_Fungible_Asset_Balances_Max_Fields = {
 export type Current_Fungible_Asset_Balances_Min_Fields = {
   __typename?: 'current_fungible_asset_balances_min_fields';
   amount?: Maybe<Scalars['numeric']['output']>;
+  amount_v1?: Maybe<Scalars['numeric']['output']>;
+  amount_v2?: Maybe<Scalars['numeric']['output']>;
   asset_type?: Maybe<Scalars['String']['output']>;
+  asset_type_v1?: Maybe<Scalars['String']['output']>;
+  asset_type_v2?: Maybe<Scalars['String']['output']>;
   last_transaction_timestamp?: Maybe<Scalars['timestamp']['output']>;
+  last_transaction_timestamp_v1?: Maybe<Scalars['timestamp']['output']>;
+  last_transaction_timestamp_v2?: Maybe<Scalars['timestamp']['output']>;
   last_transaction_version?: Maybe<Scalars['bigint']['output']>;
+  last_transaction_version_v1?: Maybe<Scalars['bigint']['output']>;
+  last_transaction_version_v2?: Maybe<Scalars['bigint']['output']>;
   owner_address?: Maybe<Scalars['String']['output']>;
   storage_id?: Maybe<Scalars['String']['output']>;
   token_standard?: Maybe<Scalars['String']['output']>;
 };
 
-/** Ordering options when selecting data from "current_unified_fungible_asset_balances_to_be_renamed". */
+/** Ordering options when selecting data from "current_fungible_asset_balances". */
 export type Current_Fungible_Asset_Balances_Order_By = {
   amount?: InputMaybe<Order_By>;
+  amount_v1?: InputMaybe<Order_By>;
+  amount_v2?: InputMaybe<Order_By>;
   asset_type?: InputMaybe<Order_By>;
+  asset_type_v1?: InputMaybe<Order_By>;
+  asset_type_v2?: InputMaybe<Order_By>;
   is_frozen?: InputMaybe<Order_By>;
   is_primary?: InputMaybe<Order_By>;
   last_transaction_timestamp?: InputMaybe<Order_By>;
+  last_transaction_timestamp_v1?: InputMaybe<Order_By>;
+  last_transaction_timestamp_v2?: InputMaybe<Order_By>;
   last_transaction_version?: InputMaybe<Order_By>;
+  last_transaction_version_v1?: InputMaybe<Order_By>;
+  last_transaction_version_v2?: InputMaybe<Order_By>;
   metadata?: InputMaybe<Fungible_Asset_Metadata_Order_By>;
   owner_address?: InputMaybe<Order_By>;
   storage_id?: InputMaybe<Order_By>;
   token_standard?: InputMaybe<Order_By>;
 };
 
-/** select columns of table "current_unified_fungible_asset_balances_to_be_renamed" */
+/** select columns of table "current_fungible_asset_balances" */
 export enum Current_Fungible_Asset_Balances_Select_Column {
   /** column name */
   Amount = 'amount',
   /** column name */
+  AmountV1 = 'amount_v1',
+  /** column name */
+  AmountV2 = 'amount_v2',
+  /** column name */
   AssetType = 'asset_type',
+  /** column name */
+  AssetTypeV1 = 'asset_type_v1',
+  /** column name */
+  AssetTypeV2 = 'asset_type_v2',
   /** column name */
   IsFrozen = 'is_frozen',
   /** column name */
@@ -3200,7 +3251,15 @@ export enum Current_Fungible_Asset_Balances_Select_Column {
   /** column name */
   LastTransactionTimestamp = 'last_transaction_timestamp',
   /** column name */
+  LastTransactionTimestampV1 = 'last_transaction_timestamp_v1',
+  /** column name */
+  LastTransactionTimestampV2 = 'last_transaction_timestamp_v2',
+  /** column name */
   LastTransactionVersion = 'last_transaction_version',
+  /** column name */
+  LastTransactionVersionV1 = 'last_transaction_version_v1',
+  /** column name */
+  LastTransactionVersionV2 = 'last_transaction_version_v2',
   /** column name */
   OwnerAddress = 'owner_address',
   /** column name */
@@ -3213,21 +3272,33 @@ export enum Current_Fungible_Asset_Balances_Select_Column {
 export type Current_Fungible_Asset_Balances_Stddev_Fields = {
   __typename?: 'current_fungible_asset_balances_stddev_fields';
   amount?: Maybe<Scalars['Float']['output']>;
+  amount_v1?: Maybe<Scalars['Float']['output']>;
+  amount_v2?: Maybe<Scalars['Float']['output']>;
   last_transaction_version?: Maybe<Scalars['Float']['output']>;
+  last_transaction_version_v1?: Maybe<Scalars['Float']['output']>;
+  last_transaction_version_v2?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Current_Fungible_Asset_Balances_Stddev_Pop_Fields = {
   __typename?: 'current_fungible_asset_balances_stddev_pop_fields';
   amount?: Maybe<Scalars['Float']['output']>;
+  amount_v1?: Maybe<Scalars['Float']['output']>;
+  amount_v2?: Maybe<Scalars['Float']['output']>;
   last_transaction_version?: Maybe<Scalars['Float']['output']>;
+  last_transaction_version_v1?: Maybe<Scalars['Float']['output']>;
+  last_transaction_version_v2?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Current_Fungible_Asset_Balances_Stddev_Samp_Fields = {
   __typename?: 'current_fungible_asset_balances_stddev_samp_fields';
   amount?: Maybe<Scalars['Float']['output']>;
+  amount_v1?: Maybe<Scalars['Float']['output']>;
+  amount_v2?: Maybe<Scalars['Float']['output']>;
   last_transaction_version?: Maybe<Scalars['Float']['output']>;
+  last_transaction_version_v1?: Maybe<Scalars['Float']['output']>;
+  last_transaction_version_v2?: Maybe<Scalars['Float']['output']>;
 };
 
 /** Streaming cursor of the table "current_fungible_asset_balances" */
@@ -3241,11 +3312,19 @@ export type Current_Fungible_Asset_Balances_Stream_Cursor_Input = {
 /** Initial value of the column from where the streaming should start */
 export type Current_Fungible_Asset_Balances_Stream_Cursor_Value_Input = {
   amount?: InputMaybe<Scalars['numeric']['input']>;
+  amount_v1?: InputMaybe<Scalars['numeric']['input']>;
+  amount_v2?: InputMaybe<Scalars['numeric']['input']>;
   asset_type?: InputMaybe<Scalars['String']['input']>;
+  asset_type_v1?: InputMaybe<Scalars['String']['input']>;
+  asset_type_v2?: InputMaybe<Scalars['String']['input']>;
   is_frozen?: InputMaybe<Scalars['Boolean']['input']>;
   is_primary?: InputMaybe<Scalars['Boolean']['input']>;
   last_transaction_timestamp?: InputMaybe<Scalars['timestamp']['input']>;
+  last_transaction_timestamp_v1?: InputMaybe<Scalars['timestamp']['input']>;
+  last_transaction_timestamp_v2?: InputMaybe<Scalars['timestamp']['input']>;
   last_transaction_version?: InputMaybe<Scalars['bigint']['input']>;
+  last_transaction_version_v1?: InputMaybe<Scalars['bigint']['input']>;
+  last_transaction_version_v2?: InputMaybe<Scalars['bigint']['input']>;
   owner_address?: InputMaybe<Scalars['String']['input']>;
   storage_id?: InputMaybe<Scalars['String']['input']>;
   token_standard?: InputMaybe<Scalars['String']['input']>;
@@ -3255,28 +3334,44 @@ export type Current_Fungible_Asset_Balances_Stream_Cursor_Value_Input = {
 export type Current_Fungible_Asset_Balances_Sum_Fields = {
   __typename?: 'current_fungible_asset_balances_sum_fields';
   amount?: Maybe<Scalars['numeric']['output']>;
+  amount_v1?: Maybe<Scalars['numeric']['output']>;
+  amount_v2?: Maybe<Scalars['numeric']['output']>;
   last_transaction_version?: Maybe<Scalars['bigint']['output']>;
+  last_transaction_version_v1?: Maybe<Scalars['bigint']['output']>;
+  last_transaction_version_v2?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Current_Fungible_Asset_Balances_Var_Pop_Fields = {
   __typename?: 'current_fungible_asset_balances_var_pop_fields';
   amount?: Maybe<Scalars['Float']['output']>;
+  amount_v1?: Maybe<Scalars['Float']['output']>;
+  amount_v2?: Maybe<Scalars['Float']['output']>;
   last_transaction_version?: Maybe<Scalars['Float']['output']>;
+  last_transaction_version_v1?: Maybe<Scalars['Float']['output']>;
+  last_transaction_version_v2?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
 export type Current_Fungible_Asset_Balances_Var_Samp_Fields = {
   __typename?: 'current_fungible_asset_balances_var_samp_fields';
   amount?: Maybe<Scalars['Float']['output']>;
+  amount_v1?: Maybe<Scalars['Float']['output']>;
+  amount_v2?: Maybe<Scalars['Float']['output']>;
   last_transaction_version?: Maybe<Scalars['Float']['output']>;
+  last_transaction_version_v1?: Maybe<Scalars['Float']['output']>;
+  last_transaction_version_v2?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
 export type Current_Fungible_Asset_Balances_Variance_Fields = {
   __typename?: 'current_fungible_asset_balances_variance_fields';
   amount?: Maybe<Scalars['Float']['output']>;
+  amount_v1?: Maybe<Scalars['Float']['output']>;
+  amount_v2?: Maybe<Scalars['Float']['output']>;
   last_transaction_version?: Maybe<Scalars['Float']['output']>;
+  last_transaction_version_v1?: Maybe<Scalars['Float']['output']>;
+  last_transaction_version_v2?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "current_objects" */
@@ -3700,6 +3795,8 @@ export type Current_Token_Datas_V2 = {
   collection_id: Scalars['String']['output'];
   /** An object relationship */
   current_collection?: Maybe<Current_Collections_V2>;
+  /** An object relationship */
+  current_royalty_v1?: Maybe<Current_Token_Royalty_V1>;
   /** An array relationship */
   current_token_ownerships: Array<Current_Token_Ownerships_V2>;
   /** An aggregate relationship */
@@ -3755,6 +3852,7 @@ export type Current_Token_Datas_V2_Bool_Exp = {
   cdn_asset_uris?: InputMaybe<Nft_Metadata_Crawler_Parsed_Asset_Uris_Bool_Exp>;
   collection_id?: InputMaybe<String_Comparison_Exp>;
   current_collection?: InputMaybe<Current_Collections_V2_Bool_Exp>;
+  current_royalty_v1?: InputMaybe<Current_Token_Royalty_V1_Bool_Exp>;
   current_token_ownerships?: InputMaybe<Current_Token_Ownerships_V2_Bool_Exp>;
   current_token_ownerships_aggregate?: InputMaybe<Current_Token_Ownerships_V2_Aggregate_Bool_Exp>;
   decimals?: InputMaybe<Bigint_Comparison_Exp>;
@@ -3779,6 +3877,7 @@ export type Current_Token_Datas_V2_Order_By = {
   cdn_asset_uris?: InputMaybe<Nft_Metadata_Crawler_Parsed_Asset_Uris_Order_By>;
   collection_id?: InputMaybe<Order_By>;
   current_collection?: InputMaybe<Current_Collections_V2_Order_By>;
+  current_royalty_v1?: InputMaybe<Current_Token_Royalty_V1_Order_By>;
   current_token_ownerships_aggregate?: InputMaybe<Current_Token_Ownerships_V2_Aggregate_Order_By>;
   decimals?: InputMaybe<Order_By>;
   description?: InputMaybe<Order_By>;
@@ -4764,6 +4863,74 @@ export type Current_Token_Pending_Claims_Stream_Cursor_Value_Input = {
   to_address?: InputMaybe<Scalars['String']['input']>;
   token_data_id?: InputMaybe<Scalars['String']['input']>;
   token_data_id_hash?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** columns and relationships of "current_token_royalty_v1" */
+export type Current_Token_Royalty_V1 = {
+  __typename?: 'current_token_royalty_v1';
+  last_transaction_timestamp: Scalars['timestamp']['output'];
+  last_transaction_version: Scalars['bigint']['output'];
+  payee_address: Scalars['String']['output'];
+  royalty_points_denominator: Scalars['numeric']['output'];
+  royalty_points_numerator: Scalars['numeric']['output'];
+  token_data_id: Scalars['String']['output'];
+};
+
+/** Boolean expression to filter rows from the table "current_token_royalty_v1". All fields are combined with a logical 'AND'. */
+export type Current_Token_Royalty_V1_Bool_Exp = {
+  _and?: InputMaybe<Array<Current_Token_Royalty_V1_Bool_Exp>>;
+  _not?: InputMaybe<Current_Token_Royalty_V1_Bool_Exp>;
+  _or?: InputMaybe<Array<Current_Token_Royalty_V1_Bool_Exp>>;
+  last_transaction_timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
+  last_transaction_version?: InputMaybe<Bigint_Comparison_Exp>;
+  payee_address?: InputMaybe<String_Comparison_Exp>;
+  royalty_points_denominator?: InputMaybe<Numeric_Comparison_Exp>;
+  royalty_points_numerator?: InputMaybe<Numeric_Comparison_Exp>;
+  token_data_id?: InputMaybe<String_Comparison_Exp>;
+};
+
+/** Ordering options when selecting data from "current_token_royalty_v1". */
+export type Current_Token_Royalty_V1_Order_By = {
+  last_transaction_timestamp?: InputMaybe<Order_By>;
+  last_transaction_version?: InputMaybe<Order_By>;
+  payee_address?: InputMaybe<Order_By>;
+  royalty_points_denominator?: InputMaybe<Order_By>;
+  royalty_points_numerator?: InputMaybe<Order_By>;
+  token_data_id?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "current_token_royalty_v1" */
+export enum Current_Token_Royalty_V1_Select_Column {
+  /** column name */
+  LastTransactionTimestamp = 'last_transaction_timestamp',
+  /** column name */
+  LastTransactionVersion = 'last_transaction_version',
+  /** column name */
+  PayeeAddress = 'payee_address',
+  /** column name */
+  RoyaltyPointsDenominator = 'royalty_points_denominator',
+  /** column name */
+  RoyaltyPointsNumerator = 'royalty_points_numerator',
+  /** column name */
+  TokenDataId = 'token_data_id'
+}
+
+/** Streaming cursor of the table "current_token_royalty_v1" */
+export type Current_Token_Royalty_V1_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Current_Token_Royalty_V1_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Current_Token_Royalty_V1_Stream_Cursor_Value_Input = {
+  last_transaction_timestamp?: InputMaybe<Scalars['timestamp']['input']>;
+  last_transaction_version?: InputMaybe<Scalars['bigint']['input']>;
+  payee_address?: InputMaybe<Scalars['String']['input']>;
+  royalty_points_denominator?: InputMaybe<Scalars['numeric']['input']>;
+  royalty_points_numerator?: InputMaybe<Scalars['numeric']['input']>;
+  token_data_id?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** ordering argument of a cursor */
@@ -6003,834 +6170,6 @@ export type Move_Resources_Variance_Fields = {
   transaction_version?: Maybe<Scalars['Float']['output']>;
 };
 
-/** columns and relationships of "nft_marketplace_v2.current_nft_marketplace_auctions" */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Auctions = {
-  __typename?: 'nft_marketplace_v2_current_nft_marketplace_auctions';
-  buy_it_now_price?: Maybe<Scalars['numeric']['output']>;
-  coin_type?: Maybe<Scalars['String']['output']>;
-  collection_id: Scalars['String']['output'];
-  contract_address: Scalars['String']['output'];
-  current_bid_price?: Maybe<Scalars['numeric']['output']>;
-  current_bidder?: Maybe<Scalars['String']['output']>;
-  /** An object relationship */
-  current_token_data?: Maybe<Current_Token_Datas_V2>;
-  entry_function_id_str: Scalars['String']['output'];
-  expiration_time: Scalars['numeric']['output'];
-  fee_schedule_id: Scalars['String']['output'];
-  is_deleted: Scalars['Boolean']['output'];
-  last_transaction_timestamp: Scalars['timestamptz']['output'];
-  last_transaction_version: Scalars['bigint']['output'];
-  listing_id: Scalars['String']['output'];
-  marketplace: Scalars['String']['output'];
-  seller: Scalars['String']['output'];
-  starting_bid_price: Scalars['numeric']['output'];
-  token_amount: Scalars['numeric']['output'];
-  token_data_id: Scalars['String']['output'];
-  token_standard: Scalars['String']['output'];
-};
-
-/** Boolean expression to filter rows from the table "nft_marketplace_v2.current_nft_marketplace_auctions". All fields are combined with a logical 'AND'. */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Auctions_Bool_Exp = {
-  _and?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Auctions_Bool_Exp>>;
-  _not?: InputMaybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Auctions_Bool_Exp>;
-  _or?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Auctions_Bool_Exp>>;
-  buy_it_now_price?: InputMaybe<Numeric_Comparison_Exp>;
-  coin_type?: InputMaybe<String_Comparison_Exp>;
-  collection_id?: InputMaybe<String_Comparison_Exp>;
-  contract_address?: InputMaybe<String_Comparison_Exp>;
-  current_bid_price?: InputMaybe<Numeric_Comparison_Exp>;
-  current_bidder?: InputMaybe<String_Comparison_Exp>;
-  current_token_data?: InputMaybe<Current_Token_Datas_V2_Bool_Exp>;
-  entry_function_id_str?: InputMaybe<String_Comparison_Exp>;
-  expiration_time?: InputMaybe<Numeric_Comparison_Exp>;
-  fee_schedule_id?: InputMaybe<String_Comparison_Exp>;
-  is_deleted?: InputMaybe<Boolean_Comparison_Exp>;
-  last_transaction_timestamp?: InputMaybe<Timestamptz_Comparison_Exp>;
-  last_transaction_version?: InputMaybe<Bigint_Comparison_Exp>;
-  listing_id?: InputMaybe<String_Comparison_Exp>;
-  marketplace?: InputMaybe<String_Comparison_Exp>;
-  seller?: InputMaybe<String_Comparison_Exp>;
-  starting_bid_price?: InputMaybe<Numeric_Comparison_Exp>;
-  token_amount?: InputMaybe<Numeric_Comparison_Exp>;
-  token_data_id?: InputMaybe<String_Comparison_Exp>;
-  token_standard?: InputMaybe<String_Comparison_Exp>;
-};
-
-/** Ordering options when selecting data from "nft_marketplace_v2.current_nft_marketplace_auctions". */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Auctions_Order_By = {
-  buy_it_now_price?: InputMaybe<Order_By>;
-  coin_type?: InputMaybe<Order_By>;
-  collection_id?: InputMaybe<Order_By>;
-  contract_address?: InputMaybe<Order_By>;
-  current_bid_price?: InputMaybe<Order_By>;
-  current_bidder?: InputMaybe<Order_By>;
-  current_token_data?: InputMaybe<Current_Token_Datas_V2_Order_By>;
-  entry_function_id_str?: InputMaybe<Order_By>;
-  expiration_time?: InputMaybe<Order_By>;
-  fee_schedule_id?: InputMaybe<Order_By>;
-  is_deleted?: InputMaybe<Order_By>;
-  last_transaction_timestamp?: InputMaybe<Order_By>;
-  last_transaction_version?: InputMaybe<Order_By>;
-  listing_id?: InputMaybe<Order_By>;
-  marketplace?: InputMaybe<Order_By>;
-  seller?: InputMaybe<Order_By>;
-  starting_bid_price?: InputMaybe<Order_By>;
-  token_amount?: InputMaybe<Order_By>;
-  token_data_id?: InputMaybe<Order_By>;
-  token_standard?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "nft_marketplace_v2.current_nft_marketplace_auctions" */
-export enum Nft_Marketplace_V2_Current_Nft_Marketplace_Auctions_Select_Column {
-  /** column name */
-  BuyItNowPrice = 'buy_it_now_price',
-  /** column name */
-  CoinType = 'coin_type',
-  /** column name */
-  CollectionId = 'collection_id',
-  /** column name */
-  ContractAddress = 'contract_address',
-  /** column name */
-  CurrentBidPrice = 'current_bid_price',
-  /** column name */
-  CurrentBidder = 'current_bidder',
-  /** column name */
-  EntryFunctionIdStr = 'entry_function_id_str',
-  /** column name */
-  ExpirationTime = 'expiration_time',
-  /** column name */
-  FeeScheduleId = 'fee_schedule_id',
-  /** column name */
-  IsDeleted = 'is_deleted',
-  /** column name */
-  LastTransactionTimestamp = 'last_transaction_timestamp',
-  /** column name */
-  LastTransactionVersion = 'last_transaction_version',
-  /** column name */
-  ListingId = 'listing_id',
-  /** column name */
-  Marketplace = 'marketplace',
-  /** column name */
-  Seller = 'seller',
-  /** column name */
-  StartingBidPrice = 'starting_bid_price',
-  /** column name */
-  TokenAmount = 'token_amount',
-  /** column name */
-  TokenDataId = 'token_data_id',
-  /** column name */
-  TokenStandard = 'token_standard'
-}
-
-/** Streaming cursor of the table "nft_marketplace_v2_current_nft_marketplace_auctions" */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Auctions_Stream_Cursor_Input = {
-  /** Stream column input with initial value */
-  initial_value: Nft_Marketplace_V2_Current_Nft_Marketplace_Auctions_Stream_Cursor_Value_Input;
-  /** cursor ordering */
-  ordering?: InputMaybe<Cursor_Ordering>;
-};
-
-/** Initial value of the column from where the streaming should start */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Auctions_Stream_Cursor_Value_Input = {
-  buy_it_now_price?: InputMaybe<Scalars['numeric']['input']>;
-  coin_type?: InputMaybe<Scalars['String']['input']>;
-  collection_id?: InputMaybe<Scalars['String']['input']>;
-  contract_address?: InputMaybe<Scalars['String']['input']>;
-  current_bid_price?: InputMaybe<Scalars['numeric']['input']>;
-  current_bidder?: InputMaybe<Scalars['String']['input']>;
-  entry_function_id_str?: InputMaybe<Scalars['String']['input']>;
-  expiration_time?: InputMaybe<Scalars['numeric']['input']>;
-  fee_schedule_id?: InputMaybe<Scalars['String']['input']>;
-  is_deleted?: InputMaybe<Scalars['Boolean']['input']>;
-  last_transaction_timestamp?: InputMaybe<Scalars['timestamptz']['input']>;
-  last_transaction_version?: InputMaybe<Scalars['bigint']['input']>;
-  listing_id?: InputMaybe<Scalars['String']['input']>;
-  marketplace?: InputMaybe<Scalars['String']['input']>;
-  seller?: InputMaybe<Scalars['String']['input']>;
-  starting_bid_price?: InputMaybe<Scalars['numeric']['input']>;
-  token_amount?: InputMaybe<Scalars['numeric']['input']>;
-  token_data_id?: InputMaybe<Scalars['String']['input']>;
-  token_standard?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** columns and relationships of "nft_marketplace_v2.current_nft_marketplace_collection_offers" */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers = {
-  __typename?: 'nft_marketplace_v2_current_nft_marketplace_collection_offers';
-  buyer: Scalars['String']['output'];
-  coin_type?: Maybe<Scalars['String']['output']>;
-  collection_id: Scalars['String']['output'];
-  collection_offer_id: Scalars['String']['output'];
-  contract_address: Scalars['String']['output'];
-  /** An object relationship */
-  current_collection_v2?: Maybe<Current_Collections_V2>;
-  entry_function_id_str: Scalars['String']['output'];
-  expiration_time: Scalars['numeric']['output'];
-  fee_schedule_id: Scalars['String']['output'];
-  is_deleted: Scalars['Boolean']['output'];
-  item_price: Scalars['numeric']['output'];
-  last_transaction_timestamp: Scalars['timestamptz']['output'];
-  last_transaction_version: Scalars['bigint']['output'];
-  marketplace: Scalars['String']['output'];
-  remaining_token_amount: Scalars['numeric']['output'];
-  token_standard: Scalars['String']['output'];
-};
-
-/** Boolean expression to filter rows from the table "nft_marketplace_v2.current_nft_marketplace_collection_offers". All fields are combined with a logical 'AND'. */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers_Bool_Exp = {
-  _and?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers_Bool_Exp>>;
-  _not?: InputMaybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers_Bool_Exp>;
-  _or?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers_Bool_Exp>>;
-  buyer?: InputMaybe<String_Comparison_Exp>;
-  coin_type?: InputMaybe<String_Comparison_Exp>;
-  collection_id?: InputMaybe<String_Comparison_Exp>;
-  collection_offer_id?: InputMaybe<String_Comparison_Exp>;
-  contract_address?: InputMaybe<String_Comparison_Exp>;
-  current_collection_v2?: InputMaybe<Current_Collections_V2_Bool_Exp>;
-  entry_function_id_str?: InputMaybe<String_Comparison_Exp>;
-  expiration_time?: InputMaybe<Numeric_Comparison_Exp>;
-  fee_schedule_id?: InputMaybe<String_Comparison_Exp>;
-  is_deleted?: InputMaybe<Boolean_Comparison_Exp>;
-  item_price?: InputMaybe<Numeric_Comparison_Exp>;
-  last_transaction_timestamp?: InputMaybe<Timestamptz_Comparison_Exp>;
-  last_transaction_version?: InputMaybe<Bigint_Comparison_Exp>;
-  marketplace?: InputMaybe<String_Comparison_Exp>;
-  remaining_token_amount?: InputMaybe<Numeric_Comparison_Exp>;
-  token_standard?: InputMaybe<String_Comparison_Exp>;
-};
-
-/** Ordering options when selecting data from "nft_marketplace_v2.current_nft_marketplace_collection_offers". */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers_Order_By = {
-  buyer?: InputMaybe<Order_By>;
-  coin_type?: InputMaybe<Order_By>;
-  collection_id?: InputMaybe<Order_By>;
-  collection_offer_id?: InputMaybe<Order_By>;
-  contract_address?: InputMaybe<Order_By>;
-  current_collection_v2?: InputMaybe<Current_Collections_V2_Order_By>;
-  entry_function_id_str?: InputMaybe<Order_By>;
-  expiration_time?: InputMaybe<Order_By>;
-  fee_schedule_id?: InputMaybe<Order_By>;
-  is_deleted?: InputMaybe<Order_By>;
-  item_price?: InputMaybe<Order_By>;
-  last_transaction_timestamp?: InputMaybe<Order_By>;
-  last_transaction_version?: InputMaybe<Order_By>;
-  marketplace?: InputMaybe<Order_By>;
-  remaining_token_amount?: InputMaybe<Order_By>;
-  token_standard?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "nft_marketplace_v2.current_nft_marketplace_collection_offers" */
-export enum Nft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers_Select_Column {
-  /** column name */
-  Buyer = 'buyer',
-  /** column name */
-  CoinType = 'coin_type',
-  /** column name */
-  CollectionId = 'collection_id',
-  /** column name */
-  CollectionOfferId = 'collection_offer_id',
-  /** column name */
-  ContractAddress = 'contract_address',
-  /** column name */
-  EntryFunctionIdStr = 'entry_function_id_str',
-  /** column name */
-  ExpirationTime = 'expiration_time',
-  /** column name */
-  FeeScheduleId = 'fee_schedule_id',
-  /** column name */
-  IsDeleted = 'is_deleted',
-  /** column name */
-  ItemPrice = 'item_price',
-  /** column name */
-  LastTransactionTimestamp = 'last_transaction_timestamp',
-  /** column name */
-  LastTransactionVersion = 'last_transaction_version',
-  /** column name */
-  Marketplace = 'marketplace',
-  /** column name */
-  RemainingTokenAmount = 'remaining_token_amount',
-  /** column name */
-  TokenStandard = 'token_standard'
-}
-
-/** Streaming cursor of the table "nft_marketplace_v2_current_nft_marketplace_collection_offers" */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers_Stream_Cursor_Input = {
-  /** Stream column input with initial value */
-  initial_value: Nft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers_Stream_Cursor_Value_Input;
-  /** cursor ordering */
-  ordering?: InputMaybe<Cursor_Ordering>;
-};
-
-/** Initial value of the column from where the streaming should start */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers_Stream_Cursor_Value_Input = {
-  buyer?: InputMaybe<Scalars['String']['input']>;
-  coin_type?: InputMaybe<Scalars['String']['input']>;
-  collection_id?: InputMaybe<Scalars['String']['input']>;
-  collection_offer_id?: InputMaybe<Scalars['String']['input']>;
-  contract_address?: InputMaybe<Scalars['String']['input']>;
-  entry_function_id_str?: InputMaybe<Scalars['String']['input']>;
-  expiration_time?: InputMaybe<Scalars['numeric']['input']>;
-  fee_schedule_id?: InputMaybe<Scalars['String']['input']>;
-  is_deleted?: InputMaybe<Scalars['Boolean']['input']>;
-  item_price?: InputMaybe<Scalars['numeric']['input']>;
-  last_transaction_timestamp?: InputMaybe<Scalars['timestamptz']['input']>;
-  last_transaction_version?: InputMaybe<Scalars['bigint']['input']>;
-  marketplace?: InputMaybe<Scalars['String']['input']>;
-  remaining_token_amount?: InputMaybe<Scalars['numeric']['input']>;
-  token_standard?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** columns and relationships of "nft_marketplace_v2.current_nft_marketplace_listings" */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Listings = {
-  __typename?: 'nft_marketplace_v2_current_nft_marketplace_listings';
-  coin_type?: Maybe<Scalars['String']['output']>;
-  collection_id: Scalars['String']['output'];
-  contract_address: Scalars['String']['output'];
-  /** An object relationship */
-  current_token_data?: Maybe<Current_Token_Datas_V2>;
-  entry_function_id_str: Scalars['String']['output'];
-  fee_schedule_id: Scalars['String']['output'];
-  is_deleted: Scalars['Boolean']['output'];
-  last_transaction_timestamp: Scalars['timestamptz']['output'];
-  last_transaction_version: Scalars['bigint']['output'];
-  listing_id: Scalars['String']['output'];
-  marketplace: Scalars['String']['output'];
-  price: Scalars['numeric']['output'];
-  seller: Scalars['String']['output'];
-  token_amount: Scalars['numeric']['output'];
-  token_data_id: Scalars['String']['output'];
-  token_standard: Scalars['String']['output'];
-};
-
-/** aggregated selection of "nft_marketplace_v2.current_nft_marketplace_listings" */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Aggregate = {
-  __typename?: 'nft_marketplace_v2_current_nft_marketplace_listings_aggregate';
-  aggregate?: Maybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Aggregate_Fields>;
-  nodes: Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings>;
-};
-
-/** aggregate fields of "nft_marketplace_v2.current_nft_marketplace_listings" */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Aggregate_Fields = {
-  __typename?: 'nft_marketplace_v2_current_nft_marketplace_listings_aggregate_fields';
-  avg?: Maybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Max_Fields>;
-  min?: Maybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Min_Fields>;
-  stddev?: Maybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Stddev_Fields>;
-  stddev_pop?: Maybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Stddev_Samp_Fields>;
-  sum?: Maybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Sum_Fields>;
-  var_pop?: Maybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Var_Pop_Fields>;
-  var_samp?: Maybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Var_Samp_Fields>;
-  variance?: Maybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Variance_Fields>;
-};
-
-
-/** aggregate fields of "nft_marketplace_v2.current_nft_marketplace_listings" */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Avg_Fields = {
-  __typename?: 'nft_marketplace_v2_current_nft_marketplace_listings_avg_fields';
-  last_transaction_version?: Maybe<Scalars['Float']['output']>;
-  price?: Maybe<Scalars['Float']['output']>;
-  token_amount?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "nft_marketplace_v2.current_nft_marketplace_listings". All fields are combined with a logical 'AND'. */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Bool_Exp = {
-  _and?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Bool_Exp>>;
-  _not?: InputMaybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Bool_Exp>;
-  _or?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Bool_Exp>>;
-  coin_type?: InputMaybe<String_Comparison_Exp>;
-  collection_id?: InputMaybe<String_Comparison_Exp>;
-  contract_address?: InputMaybe<String_Comparison_Exp>;
-  current_token_data?: InputMaybe<Current_Token_Datas_V2_Bool_Exp>;
-  entry_function_id_str?: InputMaybe<String_Comparison_Exp>;
-  fee_schedule_id?: InputMaybe<String_Comparison_Exp>;
-  is_deleted?: InputMaybe<Boolean_Comparison_Exp>;
-  last_transaction_timestamp?: InputMaybe<Timestamptz_Comparison_Exp>;
-  last_transaction_version?: InputMaybe<Bigint_Comparison_Exp>;
-  listing_id?: InputMaybe<String_Comparison_Exp>;
-  marketplace?: InputMaybe<String_Comparison_Exp>;
-  price?: InputMaybe<Numeric_Comparison_Exp>;
-  seller?: InputMaybe<String_Comparison_Exp>;
-  token_amount?: InputMaybe<Numeric_Comparison_Exp>;
-  token_data_id?: InputMaybe<String_Comparison_Exp>;
-  token_standard?: InputMaybe<String_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Max_Fields = {
-  __typename?: 'nft_marketplace_v2_current_nft_marketplace_listings_max_fields';
-  coin_type?: Maybe<Scalars['String']['output']>;
-  collection_id?: Maybe<Scalars['String']['output']>;
-  contract_address?: Maybe<Scalars['String']['output']>;
-  entry_function_id_str?: Maybe<Scalars['String']['output']>;
-  fee_schedule_id?: Maybe<Scalars['String']['output']>;
-  last_transaction_timestamp?: Maybe<Scalars['timestamptz']['output']>;
-  last_transaction_version?: Maybe<Scalars['bigint']['output']>;
-  listing_id?: Maybe<Scalars['String']['output']>;
-  marketplace?: Maybe<Scalars['String']['output']>;
-  price?: Maybe<Scalars['numeric']['output']>;
-  seller?: Maybe<Scalars['String']['output']>;
-  token_amount?: Maybe<Scalars['numeric']['output']>;
-  token_data_id?: Maybe<Scalars['String']['output']>;
-  token_standard?: Maybe<Scalars['String']['output']>;
-};
-
-/** aggregate min on columns */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Min_Fields = {
-  __typename?: 'nft_marketplace_v2_current_nft_marketplace_listings_min_fields';
-  coin_type?: Maybe<Scalars['String']['output']>;
-  collection_id?: Maybe<Scalars['String']['output']>;
-  contract_address?: Maybe<Scalars['String']['output']>;
-  entry_function_id_str?: Maybe<Scalars['String']['output']>;
-  fee_schedule_id?: Maybe<Scalars['String']['output']>;
-  last_transaction_timestamp?: Maybe<Scalars['timestamptz']['output']>;
-  last_transaction_version?: Maybe<Scalars['bigint']['output']>;
-  listing_id?: Maybe<Scalars['String']['output']>;
-  marketplace?: Maybe<Scalars['String']['output']>;
-  price?: Maybe<Scalars['numeric']['output']>;
-  seller?: Maybe<Scalars['String']['output']>;
-  token_amount?: Maybe<Scalars['numeric']['output']>;
-  token_data_id?: Maybe<Scalars['String']['output']>;
-  token_standard?: Maybe<Scalars['String']['output']>;
-};
-
-/** Ordering options when selecting data from "nft_marketplace_v2.current_nft_marketplace_listings". */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Order_By = {
-  coin_type?: InputMaybe<Order_By>;
-  collection_id?: InputMaybe<Order_By>;
-  contract_address?: InputMaybe<Order_By>;
-  current_token_data?: InputMaybe<Current_Token_Datas_V2_Order_By>;
-  entry_function_id_str?: InputMaybe<Order_By>;
-  fee_schedule_id?: InputMaybe<Order_By>;
-  is_deleted?: InputMaybe<Order_By>;
-  last_transaction_timestamp?: InputMaybe<Order_By>;
-  last_transaction_version?: InputMaybe<Order_By>;
-  listing_id?: InputMaybe<Order_By>;
-  marketplace?: InputMaybe<Order_By>;
-  price?: InputMaybe<Order_By>;
-  seller?: InputMaybe<Order_By>;
-  token_amount?: InputMaybe<Order_By>;
-  token_data_id?: InputMaybe<Order_By>;
-  token_standard?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "nft_marketplace_v2.current_nft_marketplace_listings" */
-export enum Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Select_Column {
-  /** column name */
-  CoinType = 'coin_type',
-  /** column name */
-  CollectionId = 'collection_id',
-  /** column name */
-  ContractAddress = 'contract_address',
-  /** column name */
-  EntryFunctionIdStr = 'entry_function_id_str',
-  /** column name */
-  FeeScheduleId = 'fee_schedule_id',
-  /** column name */
-  IsDeleted = 'is_deleted',
-  /** column name */
-  LastTransactionTimestamp = 'last_transaction_timestamp',
-  /** column name */
-  LastTransactionVersion = 'last_transaction_version',
-  /** column name */
-  ListingId = 'listing_id',
-  /** column name */
-  Marketplace = 'marketplace',
-  /** column name */
-  Price = 'price',
-  /** column name */
-  Seller = 'seller',
-  /** column name */
-  TokenAmount = 'token_amount',
-  /** column name */
-  TokenDataId = 'token_data_id',
-  /** column name */
-  TokenStandard = 'token_standard'
-}
-
-/** aggregate stddev on columns */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Stddev_Fields = {
-  __typename?: 'nft_marketplace_v2_current_nft_marketplace_listings_stddev_fields';
-  last_transaction_version?: Maybe<Scalars['Float']['output']>;
-  price?: Maybe<Scalars['Float']['output']>;
-  token_amount?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Stddev_Pop_Fields = {
-  __typename?: 'nft_marketplace_v2_current_nft_marketplace_listings_stddev_pop_fields';
-  last_transaction_version?: Maybe<Scalars['Float']['output']>;
-  price?: Maybe<Scalars['Float']['output']>;
-  token_amount?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Stddev_Samp_Fields = {
-  __typename?: 'nft_marketplace_v2_current_nft_marketplace_listings_stddev_samp_fields';
-  last_transaction_version?: Maybe<Scalars['Float']['output']>;
-  price?: Maybe<Scalars['Float']['output']>;
-  token_amount?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Streaming cursor of the table "nft_marketplace_v2_current_nft_marketplace_listings" */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Stream_Cursor_Input = {
-  /** Stream column input with initial value */
-  initial_value: Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Stream_Cursor_Value_Input;
-  /** cursor ordering */
-  ordering?: InputMaybe<Cursor_Ordering>;
-};
-
-/** Initial value of the column from where the streaming should start */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Stream_Cursor_Value_Input = {
-  coin_type?: InputMaybe<Scalars['String']['input']>;
-  collection_id?: InputMaybe<Scalars['String']['input']>;
-  contract_address?: InputMaybe<Scalars['String']['input']>;
-  entry_function_id_str?: InputMaybe<Scalars['String']['input']>;
-  fee_schedule_id?: InputMaybe<Scalars['String']['input']>;
-  is_deleted?: InputMaybe<Scalars['Boolean']['input']>;
-  last_transaction_timestamp?: InputMaybe<Scalars['timestamptz']['input']>;
-  last_transaction_version?: InputMaybe<Scalars['bigint']['input']>;
-  listing_id?: InputMaybe<Scalars['String']['input']>;
-  marketplace?: InputMaybe<Scalars['String']['input']>;
-  price?: InputMaybe<Scalars['numeric']['input']>;
-  seller?: InputMaybe<Scalars['String']['input']>;
-  token_amount?: InputMaybe<Scalars['numeric']['input']>;
-  token_data_id?: InputMaybe<Scalars['String']['input']>;
-  token_standard?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** aggregate sum on columns */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Sum_Fields = {
-  __typename?: 'nft_marketplace_v2_current_nft_marketplace_listings_sum_fields';
-  last_transaction_version?: Maybe<Scalars['bigint']['output']>;
-  price?: Maybe<Scalars['numeric']['output']>;
-  token_amount?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Var_Pop_Fields = {
-  __typename?: 'nft_marketplace_v2_current_nft_marketplace_listings_var_pop_fields';
-  last_transaction_version?: Maybe<Scalars['Float']['output']>;
-  price?: Maybe<Scalars['Float']['output']>;
-  token_amount?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Var_Samp_Fields = {
-  __typename?: 'nft_marketplace_v2_current_nft_marketplace_listings_var_samp_fields';
-  last_transaction_version?: Maybe<Scalars['Float']['output']>;
-  price?: Maybe<Scalars['Float']['output']>;
-  token_amount?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Variance_Fields = {
-  __typename?: 'nft_marketplace_v2_current_nft_marketplace_listings_variance_fields';
-  last_transaction_version?: Maybe<Scalars['Float']['output']>;
-  price?: Maybe<Scalars['Float']['output']>;
-  token_amount?: Maybe<Scalars['Float']['output']>;
-};
-
-/** columns and relationships of "nft_marketplace_v2.current_nft_marketplace_token_offers" */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers = {
-  __typename?: 'nft_marketplace_v2_current_nft_marketplace_token_offers';
-  buyer: Scalars['String']['output'];
-  coin_type?: Maybe<Scalars['String']['output']>;
-  collection_id: Scalars['String']['output'];
-  contract_address: Scalars['String']['output'];
-  /** An object relationship */
-  current_token_data?: Maybe<Current_Token_Datas_V2>;
-  entry_function_id_str: Scalars['String']['output'];
-  expiration_time: Scalars['numeric']['output'];
-  fee_schedule_id: Scalars['String']['output'];
-  is_deleted: Scalars['Boolean']['output'];
-  last_transaction_timestamp: Scalars['timestamptz']['output'];
-  last_transaction_version: Scalars['bigint']['output'];
-  marketplace: Scalars['String']['output'];
-  offer_id: Scalars['String']['output'];
-  price: Scalars['numeric']['output'];
-  token_amount: Scalars['numeric']['output'];
-  token_data_id: Scalars['String']['output'];
-  token_standard: Scalars['String']['output'];
-};
-
-/** Boolean expression to filter rows from the table "nft_marketplace_v2.current_nft_marketplace_token_offers". All fields are combined with a logical 'AND'. */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers_Bool_Exp = {
-  _and?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers_Bool_Exp>>;
-  _not?: InputMaybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers_Bool_Exp>;
-  _or?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers_Bool_Exp>>;
-  buyer?: InputMaybe<String_Comparison_Exp>;
-  coin_type?: InputMaybe<String_Comparison_Exp>;
-  collection_id?: InputMaybe<String_Comparison_Exp>;
-  contract_address?: InputMaybe<String_Comparison_Exp>;
-  current_token_data?: InputMaybe<Current_Token_Datas_V2_Bool_Exp>;
-  entry_function_id_str?: InputMaybe<String_Comparison_Exp>;
-  expiration_time?: InputMaybe<Numeric_Comparison_Exp>;
-  fee_schedule_id?: InputMaybe<String_Comparison_Exp>;
-  is_deleted?: InputMaybe<Boolean_Comparison_Exp>;
-  last_transaction_timestamp?: InputMaybe<Timestamptz_Comparison_Exp>;
-  last_transaction_version?: InputMaybe<Bigint_Comparison_Exp>;
-  marketplace?: InputMaybe<String_Comparison_Exp>;
-  offer_id?: InputMaybe<String_Comparison_Exp>;
-  price?: InputMaybe<Numeric_Comparison_Exp>;
-  token_amount?: InputMaybe<Numeric_Comparison_Exp>;
-  token_data_id?: InputMaybe<String_Comparison_Exp>;
-  token_standard?: InputMaybe<String_Comparison_Exp>;
-};
-
-/** Ordering options when selecting data from "nft_marketplace_v2.current_nft_marketplace_token_offers". */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers_Order_By = {
-  buyer?: InputMaybe<Order_By>;
-  coin_type?: InputMaybe<Order_By>;
-  collection_id?: InputMaybe<Order_By>;
-  contract_address?: InputMaybe<Order_By>;
-  current_token_data?: InputMaybe<Current_Token_Datas_V2_Order_By>;
-  entry_function_id_str?: InputMaybe<Order_By>;
-  expiration_time?: InputMaybe<Order_By>;
-  fee_schedule_id?: InputMaybe<Order_By>;
-  is_deleted?: InputMaybe<Order_By>;
-  last_transaction_timestamp?: InputMaybe<Order_By>;
-  last_transaction_version?: InputMaybe<Order_By>;
-  marketplace?: InputMaybe<Order_By>;
-  offer_id?: InputMaybe<Order_By>;
-  price?: InputMaybe<Order_By>;
-  token_amount?: InputMaybe<Order_By>;
-  token_data_id?: InputMaybe<Order_By>;
-  token_standard?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "nft_marketplace_v2.current_nft_marketplace_token_offers" */
-export enum Nft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers_Select_Column {
-  /** column name */
-  Buyer = 'buyer',
-  /** column name */
-  CoinType = 'coin_type',
-  /** column name */
-  CollectionId = 'collection_id',
-  /** column name */
-  ContractAddress = 'contract_address',
-  /** column name */
-  EntryFunctionIdStr = 'entry_function_id_str',
-  /** column name */
-  ExpirationTime = 'expiration_time',
-  /** column name */
-  FeeScheduleId = 'fee_schedule_id',
-  /** column name */
-  IsDeleted = 'is_deleted',
-  /** column name */
-  LastTransactionTimestamp = 'last_transaction_timestamp',
-  /** column name */
-  LastTransactionVersion = 'last_transaction_version',
-  /** column name */
-  Marketplace = 'marketplace',
-  /** column name */
-  OfferId = 'offer_id',
-  /** column name */
-  Price = 'price',
-  /** column name */
-  TokenAmount = 'token_amount',
-  /** column name */
-  TokenDataId = 'token_data_id',
-  /** column name */
-  TokenStandard = 'token_standard'
-}
-
-/** Streaming cursor of the table "nft_marketplace_v2_current_nft_marketplace_token_offers" */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers_Stream_Cursor_Input = {
-  /** Stream column input with initial value */
-  initial_value: Nft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers_Stream_Cursor_Value_Input;
-  /** cursor ordering */
-  ordering?: InputMaybe<Cursor_Ordering>;
-};
-
-/** Initial value of the column from where the streaming should start */
-export type Nft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers_Stream_Cursor_Value_Input = {
-  buyer?: InputMaybe<Scalars['String']['input']>;
-  coin_type?: InputMaybe<Scalars['String']['input']>;
-  collection_id?: InputMaybe<Scalars['String']['input']>;
-  contract_address?: InputMaybe<Scalars['String']['input']>;
-  entry_function_id_str?: InputMaybe<Scalars['String']['input']>;
-  expiration_time?: InputMaybe<Scalars['numeric']['input']>;
-  fee_schedule_id?: InputMaybe<Scalars['String']['input']>;
-  is_deleted?: InputMaybe<Scalars['Boolean']['input']>;
-  last_transaction_timestamp?: InputMaybe<Scalars['timestamptz']['input']>;
-  last_transaction_version?: InputMaybe<Scalars['bigint']['input']>;
-  marketplace?: InputMaybe<Scalars['String']['input']>;
-  offer_id?: InputMaybe<Scalars['String']['input']>;
-  price?: InputMaybe<Scalars['numeric']['input']>;
-  token_amount?: InputMaybe<Scalars['numeric']['input']>;
-  token_data_id?: InputMaybe<Scalars['String']['input']>;
-  token_standard?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** columns and relationships of "nft_marketplace_v2.nft_marketplace_activities" */
-export type Nft_Marketplace_V2_Nft_Marketplace_Activities = {
-  __typename?: 'nft_marketplace_v2_nft_marketplace_activities';
-  buyer?: Maybe<Scalars['String']['output']>;
-  coin_type?: Maybe<Scalars['String']['output']>;
-  collection_id: Scalars['String']['output'];
-  collection_name: Scalars['String']['output'];
-  contract_address: Scalars['String']['output'];
-  creator_address: Scalars['String']['output'];
-  /** An object relationship */
-  current_token_data?: Maybe<Current_Token_Datas_V2>;
-  entry_function_id_str: Scalars['String']['output'];
-  event_index: Scalars['bigint']['output'];
-  event_type: Scalars['String']['output'];
-  fee_schedule_id: Scalars['String']['output'];
-  marketplace: Scalars['String']['output'];
-  offer_or_listing_id: Scalars['String']['output'];
-  price: Scalars['numeric']['output'];
-  property_version?: Maybe<Scalars['String']['output']>;
-  seller?: Maybe<Scalars['String']['output']>;
-  token_amount: Scalars['numeric']['output'];
-  token_data_id?: Maybe<Scalars['String']['output']>;
-  token_name?: Maybe<Scalars['String']['output']>;
-  token_standard: Scalars['String']['output'];
-  transaction_timestamp: Scalars['timestamptz']['output'];
-  transaction_version: Scalars['bigint']['output'];
-};
-
-/** Boolean expression to filter rows from the table "nft_marketplace_v2.nft_marketplace_activities". All fields are combined with a logical 'AND'. */
-export type Nft_Marketplace_V2_Nft_Marketplace_Activities_Bool_Exp = {
-  _and?: InputMaybe<Array<Nft_Marketplace_V2_Nft_Marketplace_Activities_Bool_Exp>>;
-  _not?: InputMaybe<Nft_Marketplace_V2_Nft_Marketplace_Activities_Bool_Exp>;
-  _or?: InputMaybe<Array<Nft_Marketplace_V2_Nft_Marketplace_Activities_Bool_Exp>>;
-  buyer?: InputMaybe<String_Comparison_Exp>;
-  coin_type?: InputMaybe<String_Comparison_Exp>;
-  collection_id?: InputMaybe<String_Comparison_Exp>;
-  collection_name?: InputMaybe<String_Comparison_Exp>;
-  contract_address?: InputMaybe<String_Comparison_Exp>;
-  creator_address?: InputMaybe<String_Comparison_Exp>;
-  current_token_data?: InputMaybe<Current_Token_Datas_V2_Bool_Exp>;
-  entry_function_id_str?: InputMaybe<String_Comparison_Exp>;
-  event_index?: InputMaybe<Bigint_Comparison_Exp>;
-  event_type?: InputMaybe<String_Comparison_Exp>;
-  fee_schedule_id?: InputMaybe<String_Comparison_Exp>;
-  marketplace?: InputMaybe<String_Comparison_Exp>;
-  offer_or_listing_id?: InputMaybe<String_Comparison_Exp>;
-  price?: InputMaybe<Numeric_Comparison_Exp>;
-  property_version?: InputMaybe<String_Comparison_Exp>;
-  seller?: InputMaybe<String_Comparison_Exp>;
-  token_amount?: InputMaybe<Numeric_Comparison_Exp>;
-  token_data_id?: InputMaybe<String_Comparison_Exp>;
-  token_name?: InputMaybe<String_Comparison_Exp>;
-  token_standard?: InputMaybe<String_Comparison_Exp>;
-  transaction_timestamp?: InputMaybe<Timestamptz_Comparison_Exp>;
-  transaction_version?: InputMaybe<Bigint_Comparison_Exp>;
-};
-
-/** Ordering options when selecting data from "nft_marketplace_v2.nft_marketplace_activities". */
-export type Nft_Marketplace_V2_Nft_Marketplace_Activities_Order_By = {
-  buyer?: InputMaybe<Order_By>;
-  coin_type?: InputMaybe<Order_By>;
-  collection_id?: InputMaybe<Order_By>;
-  collection_name?: InputMaybe<Order_By>;
-  contract_address?: InputMaybe<Order_By>;
-  creator_address?: InputMaybe<Order_By>;
-  current_token_data?: InputMaybe<Current_Token_Datas_V2_Order_By>;
-  entry_function_id_str?: InputMaybe<Order_By>;
-  event_index?: InputMaybe<Order_By>;
-  event_type?: InputMaybe<Order_By>;
-  fee_schedule_id?: InputMaybe<Order_By>;
-  marketplace?: InputMaybe<Order_By>;
-  offer_or_listing_id?: InputMaybe<Order_By>;
-  price?: InputMaybe<Order_By>;
-  property_version?: InputMaybe<Order_By>;
-  seller?: InputMaybe<Order_By>;
-  token_amount?: InputMaybe<Order_By>;
-  token_data_id?: InputMaybe<Order_By>;
-  token_name?: InputMaybe<Order_By>;
-  token_standard?: InputMaybe<Order_By>;
-  transaction_timestamp?: InputMaybe<Order_By>;
-  transaction_version?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "nft_marketplace_v2.nft_marketplace_activities" */
-export enum Nft_Marketplace_V2_Nft_Marketplace_Activities_Select_Column {
-  /** column name */
-  Buyer = 'buyer',
-  /** column name */
-  CoinType = 'coin_type',
-  /** column name */
-  CollectionId = 'collection_id',
-  /** column name */
-  CollectionName = 'collection_name',
-  /** column name */
-  ContractAddress = 'contract_address',
-  /** column name */
-  CreatorAddress = 'creator_address',
-  /** column name */
-  EntryFunctionIdStr = 'entry_function_id_str',
-  /** column name */
-  EventIndex = 'event_index',
-  /** column name */
-  EventType = 'event_type',
-  /** column name */
-  FeeScheduleId = 'fee_schedule_id',
-  /** column name */
-  Marketplace = 'marketplace',
-  /** column name */
-  OfferOrListingId = 'offer_or_listing_id',
-  /** column name */
-  Price = 'price',
-  /** column name */
-  PropertyVersion = 'property_version',
-  /** column name */
-  Seller = 'seller',
-  /** column name */
-  TokenAmount = 'token_amount',
-  /** column name */
-  TokenDataId = 'token_data_id',
-  /** column name */
-  TokenName = 'token_name',
-  /** column name */
-  TokenStandard = 'token_standard',
-  /** column name */
-  TransactionTimestamp = 'transaction_timestamp',
-  /** column name */
-  TransactionVersion = 'transaction_version'
-}
-
-/** Streaming cursor of the table "nft_marketplace_v2_nft_marketplace_activities" */
-export type Nft_Marketplace_V2_Nft_Marketplace_Activities_Stream_Cursor_Input = {
-  /** Stream column input with initial value */
-  initial_value: Nft_Marketplace_V2_Nft_Marketplace_Activities_Stream_Cursor_Value_Input;
-  /** cursor ordering */
-  ordering?: InputMaybe<Cursor_Ordering>;
-};
-
-/** Initial value of the column from where the streaming should start */
-export type Nft_Marketplace_V2_Nft_Marketplace_Activities_Stream_Cursor_Value_Input = {
-  buyer?: InputMaybe<Scalars['String']['input']>;
-  coin_type?: InputMaybe<Scalars['String']['input']>;
-  collection_id?: InputMaybe<Scalars['String']['input']>;
-  collection_name?: InputMaybe<Scalars['String']['input']>;
-  contract_address?: InputMaybe<Scalars['String']['input']>;
-  creator_address?: InputMaybe<Scalars['String']['input']>;
-  entry_function_id_str?: InputMaybe<Scalars['String']['input']>;
-  event_index?: InputMaybe<Scalars['bigint']['input']>;
-  event_type?: InputMaybe<Scalars['String']['input']>;
-  fee_schedule_id?: InputMaybe<Scalars['String']['input']>;
-  marketplace?: InputMaybe<Scalars['String']['input']>;
-  offer_or_listing_id?: InputMaybe<Scalars['String']['input']>;
-  price?: InputMaybe<Scalars['numeric']['input']>;
-  property_version?: InputMaybe<Scalars['String']['input']>;
-  seller?: InputMaybe<Scalars['String']['input']>;
-  token_amount?: InputMaybe<Scalars['numeric']['input']>;
-  token_data_id?: InputMaybe<Scalars['String']['input']>;
-  token_name?: InputMaybe<Scalars['String']['input']>;
-  token_standard?: InputMaybe<Scalars['String']['input']>;
-  transaction_timestamp?: InputMaybe<Scalars['timestamptz']['input']>;
-  transaction_version?: InputMaybe<Scalars['bigint']['input']>;
-};
-
 /** columns and relationships of "nft_metadata_crawler.parsed_asset_uris" */
 export type Nft_Metadata_Crawler_Parsed_Asset_Uris = {
   __typename?: 'nft_metadata_crawler_parsed_asset_uris';
@@ -7306,11 +6645,11 @@ export type Query_Root = {
   current_delegator_balances: Array<Current_Delegator_Balances>;
   /** fetch data from the table: "current_delegator_balances" using primary key columns */
   current_delegator_balances_by_pk?: Maybe<Current_Delegator_Balances>;
-  /** fetch data from the table: "current_unified_fungible_asset_balances_to_be_renamed" */
+  /** fetch data from the table: "current_fungible_asset_balances" */
   current_fungible_asset_balances: Array<Current_Fungible_Asset_Balances>;
-  /** fetch aggregated fields from the table: "current_unified_fungible_asset_balances_to_be_renamed" */
+  /** fetch aggregated fields from the table: "current_fungible_asset_balances" */
   current_fungible_asset_balances_aggregate: Current_Fungible_Asset_Balances_Aggregate;
-  /** fetch data from the table: "current_unified_fungible_asset_balances_to_be_renamed" using primary key columns */
+  /** fetch data from the table: "current_fungible_asset_balances" using primary key columns */
   current_fungible_asset_balances_by_pk?: Maybe<Current_Fungible_Asset_Balances>;
   /** fetch data from the table: "current_objects" */
   current_objects: Array<Current_Objects>;
@@ -7344,6 +6683,10 @@ export type Query_Root = {
   current_token_pending_claims: Array<Current_Token_Pending_Claims>;
   /** fetch data from the table: "current_token_pending_claims" using primary key columns */
   current_token_pending_claims_by_pk?: Maybe<Current_Token_Pending_Claims>;
+  /** fetch data from the table: "current_token_royalty_v1" */
+  current_token_royalty_v1: Array<Current_Token_Royalty_V1>;
+  /** fetch data from the table: "current_token_royalty_v1" using primary key columns */
+  current_token_royalty_v1_by_pk?: Maybe<Current_Token_Royalty_V1>;
   /** An array relationship */
   delegated_staking_activities: Array<Delegated_Staking_Activities>;
   /** fetch data from the table: "delegated_staking_activities" using primary key columns */
@@ -7386,28 +6729,6 @@ export type Query_Root = {
   move_resources: Array<Move_Resources>;
   /** fetch aggregated fields from the table: "legacy_migration_v1.move_resources" */
   move_resources_aggregate: Move_Resources_Aggregate;
-  /** fetch data from the table: "nft_marketplace_v2.current_nft_marketplace_auctions" */
-  nft_marketplace_v2_current_nft_marketplace_auctions: Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Auctions>;
-  /** fetch data from the table: "nft_marketplace_v2.current_nft_marketplace_auctions" using primary key columns */
-  nft_marketplace_v2_current_nft_marketplace_auctions_by_pk?: Maybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Auctions>;
-  /** fetch data from the table: "nft_marketplace_v2.current_nft_marketplace_collection_offers" */
-  nft_marketplace_v2_current_nft_marketplace_collection_offers: Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers>;
-  /** fetch data from the table: "nft_marketplace_v2.current_nft_marketplace_collection_offers" using primary key columns */
-  nft_marketplace_v2_current_nft_marketplace_collection_offers_by_pk?: Maybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers>;
-  /** fetch data from the table: "nft_marketplace_v2.current_nft_marketplace_listings" */
-  nft_marketplace_v2_current_nft_marketplace_listings: Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings>;
-  /** fetch aggregated fields from the table: "nft_marketplace_v2.current_nft_marketplace_listings" */
-  nft_marketplace_v2_current_nft_marketplace_listings_aggregate: Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Aggregate;
-  /** fetch data from the table: "nft_marketplace_v2.current_nft_marketplace_listings" using primary key columns */
-  nft_marketplace_v2_current_nft_marketplace_listings_by_pk?: Maybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings>;
-  /** fetch data from the table: "nft_marketplace_v2.current_nft_marketplace_token_offers" */
-  nft_marketplace_v2_current_nft_marketplace_token_offers: Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers>;
-  /** fetch data from the table: "nft_marketplace_v2.current_nft_marketplace_token_offers" using primary key columns */
-  nft_marketplace_v2_current_nft_marketplace_token_offers_by_pk?: Maybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers>;
-  /** fetch data from the table: "nft_marketplace_v2.nft_marketplace_activities" */
-  nft_marketplace_v2_nft_marketplace_activities: Array<Nft_Marketplace_V2_Nft_Marketplace_Activities>;
-  /** fetch data from the table: "nft_marketplace_v2.nft_marketplace_activities" using primary key columns */
-  nft_marketplace_v2_nft_marketplace_activities_by_pk?: Maybe<Nft_Marketplace_V2_Nft_Marketplace_Activities>;
   /** fetch data from the table: "nft_metadata_crawler.parsed_asset_uris" */
   nft_metadata_crawler_parsed_asset_uris: Array<Nft_Metadata_Crawler_Parsed_Asset_Uris>;
   /** fetch data from the table: "nft_metadata_crawler.parsed_asset_uris" using primary key columns */
@@ -7891,6 +7212,20 @@ export type Query_RootCurrent_Token_Pending_Claims_By_PkArgs = {
 };
 
 
+export type Query_RootCurrent_Token_Royalty_V1Args = {
+  distinct_on?: InputMaybe<Array<Current_Token_Royalty_V1_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Current_Token_Royalty_V1_Order_By>>;
+  where?: InputMaybe<Current_Token_Royalty_V1_Bool_Exp>;
+};
+
+
+export type Query_RootCurrent_Token_Royalty_V1_By_PkArgs = {
+  token_data_id: Scalars['String']['input'];
+};
+
+
 export type Query_RootDelegated_Staking_ActivitiesArgs = {
   distinct_on?: InputMaybe<Array<Delegated_Staking_Activities_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -8049,90 +7384,6 @@ export type Query_RootMove_Resources_AggregateArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   order_by?: InputMaybe<Array<Move_Resources_Order_By>>;
   where?: InputMaybe<Move_Resources_Bool_Exp>;
-};
-
-
-export type Query_RootNft_Marketplace_V2_Current_Nft_Marketplace_AuctionsArgs = {
-  distinct_on?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Auctions_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Auctions_Order_By>>;
-  where?: InputMaybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Auctions_Bool_Exp>;
-};
-
-
-export type Query_RootNft_Marketplace_V2_Current_Nft_Marketplace_Auctions_By_PkArgs = {
-  listing_id: Scalars['String']['input'];
-  token_data_id: Scalars['String']['input'];
-};
-
-
-export type Query_RootNft_Marketplace_V2_Current_Nft_Marketplace_Collection_OffersArgs = {
-  distinct_on?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers_Order_By>>;
-  where?: InputMaybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers_Bool_Exp>;
-};
-
-
-export type Query_RootNft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers_By_PkArgs = {
-  collection_id: Scalars['String']['input'];
-  collection_offer_id: Scalars['String']['input'];
-};
-
-
-export type Query_RootNft_Marketplace_V2_Current_Nft_Marketplace_ListingsArgs = {
-  distinct_on?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Order_By>>;
-  where?: InputMaybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Bool_Exp>;
-};
-
-
-export type Query_RootNft_Marketplace_V2_Current_Nft_Marketplace_Listings_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Order_By>>;
-  where?: InputMaybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Bool_Exp>;
-};
-
-
-export type Query_RootNft_Marketplace_V2_Current_Nft_Marketplace_Listings_By_PkArgs = {
-  listing_id: Scalars['String']['input'];
-  token_data_id: Scalars['String']['input'];
-};
-
-
-export type Query_RootNft_Marketplace_V2_Current_Nft_Marketplace_Token_OffersArgs = {
-  distinct_on?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers_Order_By>>;
-  where?: InputMaybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers_Bool_Exp>;
-};
-
-
-export type Query_RootNft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers_By_PkArgs = {
-  offer_id: Scalars['String']['input'];
-  token_data_id: Scalars['String']['input'];
-};
-
-
-export type Query_RootNft_Marketplace_V2_Nft_Marketplace_ActivitiesArgs = {
-  distinct_on?: InputMaybe<Array<Nft_Marketplace_V2_Nft_Marketplace_Activities_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Nft_Marketplace_V2_Nft_Marketplace_Activities_Order_By>>;
-  where?: InputMaybe<Nft_Marketplace_V2_Nft_Marketplace_Activities_Bool_Exp>;
-};
-
-
-export type Query_RootNft_Marketplace_V2_Nft_Marketplace_Activities_By_PkArgs = {
-  event_index: Scalars['bigint']['input'];
-  transaction_version: Scalars['bigint']['input'];
 };
 
 
@@ -8540,13 +7791,13 @@ export type Subscription_Root = {
   current_delegator_balances_by_pk?: Maybe<Current_Delegator_Balances>;
   /** fetch data from the table in a streaming manner: "current_delegator_balances" */
   current_delegator_balances_stream: Array<Current_Delegator_Balances>;
-  /** fetch data from the table: "current_unified_fungible_asset_balances_to_be_renamed" */
+  /** fetch data from the table: "current_fungible_asset_balances" */
   current_fungible_asset_balances: Array<Current_Fungible_Asset_Balances>;
-  /** fetch aggregated fields from the table: "current_unified_fungible_asset_balances_to_be_renamed" */
+  /** fetch aggregated fields from the table: "current_fungible_asset_balances" */
   current_fungible_asset_balances_aggregate: Current_Fungible_Asset_Balances_Aggregate;
-  /** fetch data from the table: "current_unified_fungible_asset_balances_to_be_renamed" using primary key columns */
+  /** fetch data from the table: "current_fungible_asset_balances" using primary key columns */
   current_fungible_asset_balances_by_pk?: Maybe<Current_Fungible_Asset_Balances>;
-  /** fetch data from the table in a streaming manner: "current_unified_fungible_asset_balances_to_be_renamed" */
+  /** fetch data from the table in a streaming manner: "current_fungible_asset_balances" */
   current_fungible_asset_balances_stream: Array<Current_Fungible_Asset_Balances>;
   /** fetch data from the table: "current_objects" */
   current_objects: Array<Current_Objects>;
@@ -8596,6 +7847,12 @@ export type Subscription_Root = {
   current_token_pending_claims_by_pk?: Maybe<Current_Token_Pending_Claims>;
   /** fetch data from the table in a streaming manner: "current_token_pending_claims" */
   current_token_pending_claims_stream: Array<Current_Token_Pending_Claims>;
+  /** fetch data from the table: "current_token_royalty_v1" */
+  current_token_royalty_v1: Array<Current_Token_Royalty_V1>;
+  /** fetch data from the table: "current_token_royalty_v1" using primary key columns */
+  current_token_royalty_v1_by_pk?: Maybe<Current_Token_Royalty_V1>;
+  /** fetch data from the table in a streaming manner: "current_token_royalty_v1" */
+  current_token_royalty_v1_stream: Array<Current_Token_Royalty_V1>;
   /** An array relationship */
   delegated_staking_activities: Array<Delegated_Staking_Activities>;
   /** fetch data from the table: "delegated_staking_activities" using primary key columns */
@@ -8658,38 +7915,6 @@ export type Subscription_Root = {
   move_resources_aggregate: Move_Resources_Aggregate;
   /** fetch data from the table in a streaming manner: "legacy_migration_v1.move_resources" */
   move_resources_stream: Array<Move_Resources>;
-  /** fetch data from the table: "nft_marketplace_v2.current_nft_marketplace_auctions" */
-  nft_marketplace_v2_current_nft_marketplace_auctions: Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Auctions>;
-  /** fetch data from the table: "nft_marketplace_v2.current_nft_marketplace_auctions" using primary key columns */
-  nft_marketplace_v2_current_nft_marketplace_auctions_by_pk?: Maybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Auctions>;
-  /** fetch data from the table in a streaming manner: "nft_marketplace_v2.current_nft_marketplace_auctions" */
-  nft_marketplace_v2_current_nft_marketplace_auctions_stream: Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Auctions>;
-  /** fetch data from the table: "nft_marketplace_v2.current_nft_marketplace_collection_offers" */
-  nft_marketplace_v2_current_nft_marketplace_collection_offers: Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers>;
-  /** fetch data from the table: "nft_marketplace_v2.current_nft_marketplace_collection_offers" using primary key columns */
-  nft_marketplace_v2_current_nft_marketplace_collection_offers_by_pk?: Maybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers>;
-  /** fetch data from the table in a streaming manner: "nft_marketplace_v2.current_nft_marketplace_collection_offers" */
-  nft_marketplace_v2_current_nft_marketplace_collection_offers_stream: Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers>;
-  /** fetch data from the table: "nft_marketplace_v2.current_nft_marketplace_listings" */
-  nft_marketplace_v2_current_nft_marketplace_listings: Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings>;
-  /** fetch aggregated fields from the table: "nft_marketplace_v2.current_nft_marketplace_listings" */
-  nft_marketplace_v2_current_nft_marketplace_listings_aggregate: Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Aggregate;
-  /** fetch data from the table: "nft_marketplace_v2.current_nft_marketplace_listings" using primary key columns */
-  nft_marketplace_v2_current_nft_marketplace_listings_by_pk?: Maybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings>;
-  /** fetch data from the table in a streaming manner: "nft_marketplace_v2.current_nft_marketplace_listings" */
-  nft_marketplace_v2_current_nft_marketplace_listings_stream: Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings>;
-  /** fetch data from the table: "nft_marketplace_v2.current_nft_marketplace_token_offers" */
-  nft_marketplace_v2_current_nft_marketplace_token_offers: Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers>;
-  /** fetch data from the table: "nft_marketplace_v2.current_nft_marketplace_token_offers" using primary key columns */
-  nft_marketplace_v2_current_nft_marketplace_token_offers_by_pk?: Maybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers>;
-  /** fetch data from the table in a streaming manner: "nft_marketplace_v2.current_nft_marketplace_token_offers" */
-  nft_marketplace_v2_current_nft_marketplace_token_offers_stream: Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers>;
-  /** fetch data from the table: "nft_marketplace_v2.nft_marketplace_activities" */
-  nft_marketplace_v2_nft_marketplace_activities: Array<Nft_Marketplace_V2_Nft_Marketplace_Activities>;
-  /** fetch data from the table: "nft_marketplace_v2.nft_marketplace_activities" using primary key columns */
-  nft_marketplace_v2_nft_marketplace_activities_by_pk?: Maybe<Nft_Marketplace_V2_Nft_Marketplace_Activities>;
-  /** fetch data from the table in a streaming manner: "nft_marketplace_v2.nft_marketplace_activities" */
-  nft_marketplace_v2_nft_marketplace_activities_stream: Array<Nft_Marketplace_V2_Nft_Marketplace_Activities>;
   /** fetch data from the table: "nft_metadata_crawler.parsed_asset_uris" */
   nft_metadata_crawler_parsed_asset_uris: Array<Nft_Metadata_Crawler_Parsed_Asset_Uris>;
   /** fetch data from the table: "nft_metadata_crawler.parsed_asset_uris" using primary key columns */
@@ -9402,6 +8627,27 @@ export type Subscription_RootCurrent_Token_Pending_Claims_StreamArgs = {
 };
 
 
+export type Subscription_RootCurrent_Token_Royalty_V1Args = {
+  distinct_on?: InputMaybe<Array<Current_Token_Royalty_V1_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Current_Token_Royalty_V1_Order_By>>;
+  where?: InputMaybe<Current_Token_Royalty_V1_Bool_Exp>;
+};
+
+
+export type Subscription_RootCurrent_Token_Royalty_V1_By_PkArgs = {
+  token_data_id: Scalars['String']['input'];
+};
+
+
+export type Subscription_RootCurrent_Token_Royalty_V1_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Current_Token_Royalty_V1_Stream_Cursor_Input>>;
+  where?: InputMaybe<Current_Token_Royalty_V1_Bool_Exp>;
+};
+
+
 export type Subscription_RootDelegated_Staking_ActivitiesArgs = {
   distinct_on?: InputMaybe<Array<Delegated_Staking_Activities_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -9630,125 +8876,6 @@ export type Subscription_RootMove_Resources_StreamArgs = {
   batch_size: Scalars['Int']['input'];
   cursor: Array<InputMaybe<Move_Resources_Stream_Cursor_Input>>;
   where?: InputMaybe<Move_Resources_Bool_Exp>;
-};
-
-
-export type Subscription_RootNft_Marketplace_V2_Current_Nft_Marketplace_AuctionsArgs = {
-  distinct_on?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Auctions_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Auctions_Order_By>>;
-  where?: InputMaybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Auctions_Bool_Exp>;
-};
-
-
-export type Subscription_RootNft_Marketplace_V2_Current_Nft_Marketplace_Auctions_By_PkArgs = {
-  listing_id: Scalars['String']['input'];
-  token_data_id: Scalars['String']['input'];
-};
-
-
-export type Subscription_RootNft_Marketplace_V2_Current_Nft_Marketplace_Auctions_StreamArgs = {
-  batch_size: Scalars['Int']['input'];
-  cursor: Array<InputMaybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Auctions_Stream_Cursor_Input>>;
-  where?: InputMaybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Auctions_Bool_Exp>;
-};
-
-
-export type Subscription_RootNft_Marketplace_V2_Current_Nft_Marketplace_Collection_OffersArgs = {
-  distinct_on?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers_Order_By>>;
-  where?: InputMaybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers_Bool_Exp>;
-};
-
-
-export type Subscription_RootNft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers_By_PkArgs = {
-  collection_id: Scalars['String']['input'];
-  collection_offer_id: Scalars['String']['input'];
-};
-
-
-export type Subscription_RootNft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers_StreamArgs = {
-  batch_size: Scalars['Int']['input'];
-  cursor: Array<InputMaybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers_Stream_Cursor_Input>>;
-  where?: InputMaybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Collection_Offers_Bool_Exp>;
-};
-
-
-export type Subscription_RootNft_Marketplace_V2_Current_Nft_Marketplace_ListingsArgs = {
-  distinct_on?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Order_By>>;
-  where?: InputMaybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Bool_Exp>;
-};
-
-
-export type Subscription_RootNft_Marketplace_V2_Current_Nft_Marketplace_Listings_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Order_By>>;
-  where?: InputMaybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Bool_Exp>;
-};
-
-
-export type Subscription_RootNft_Marketplace_V2_Current_Nft_Marketplace_Listings_By_PkArgs = {
-  listing_id: Scalars['String']['input'];
-  token_data_id: Scalars['String']['input'];
-};
-
-
-export type Subscription_RootNft_Marketplace_V2_Current_Nft_Marketplace_Listings_StreamArgs = {
-  batch_size: Scalars['Int']['input'];
-  cursor: Array<InputMaybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Stream_Cursor_Input>>;
-  where?: InputMaybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Listings_Bool_Exp>;
-};
-
-
-export type Subscription_RootNft_Marketplace_V2_Current_Nft_Marketplace_Token_OffersArgs = {
-  distinct_on?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Nft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers_Order_By>>;
-  where?: InputMaybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers_Bool_Exp>;
-};
-
-
-export type Subscription_RootNft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers_By_PkArgs = {
-  offer_id: Scalars['String']['input'];
-  token_data_id: Scalars['String']['input'];
-};
-
-
-export type Subscription_RootNft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers_StreamArgs = {
-  batch_size: Scalars['Int']['input'];
-  cursor: Array<InputMaybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers_Stream_Cursor_Input>>;
-  where?: InputMaybe<Nft_Marketplace_V2_Current_Nft_Marketplace_Token_Offers_Bool_Exp>;
-};
-
-
-export type Subscription_RootNft_Marketplace_V2_Nft_Marketplace_ActivitiesArgs = {
-  distinct_on?: InputMaybe<Array<Nft_Marketplace_V2_Nft_Marketplace_Activities_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Nft_Marketplace_V2_Nft_Marketplace_Activities_Order_By>>;
-  where?: InputMaybe<Nft_Marketplace_V2_Nft_Marketplace_Activities_Bool_Exp>;
-};
-
-
-export type Subscription_RootNft_Marketplace_V2_Nft_Marketplace_Activities_By_PkArgs = {
-  event_index: Scalars['bigint']['input'];
-  transaction_version: Scalars['bigint']['input'];
-};
-
-
-export type Subscription_RootNft_Marketplace_V2_Nft_Marketplace_Activities_StreamArgs = {
-  batch_size: Scalars['Int']['input'];
-  cursor: Array<InputMaybe<Nft_Marketplace_V2_Nft_Marketplace_Activities_Stream_Cursor_Input>>;
-  where?: InputMaybe<Nft_Marketplace_V2_Nft_Marketplace_Activities_Bool_Exp>;
 };
 
 
@@ -10174,19 +9301,6 @@ export type Timestamp_Comparison_Exp = {
   _lte?: InputMaybe<Scalars['timestamp']['input']>;
   _neq?: InputMaybe<Scalars['timestamp']['input']>;
   _nin?: InputMaybe<Array<Scalars['timestamp']['input']>>;
-};
-
-/** Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'. */
-export type Timestamptz_Comparison_Exp = {
-  _eq?: InputMaybe<Scalars['timestamptz']['input']>;
-  _gt?: InputMaybe<Scalars['timestamptz']['input']>;
-  _gte?: InputMaybe<Scalars['timestamptz']['input']>;
-  _in?: InputMaybe<Array<Scalars['timestamptz']['input']>>;
-  _is_null?: InputMaybe<Scalars['Boolean']['input']>;
-  _lt?: InputMaybe<Scalars['timestamptz']['input']>;
-  _lte?: InputMaybe<Scalars['timestamptz']['input']>;
-  _neq?: InputMaybe<Scalars['timestamptz']['input']>;
-  _nin?: InputMaybe<Array<Scalars['timestamptz']['input']>>;
 };
 
 /** columns and relationships of "legacy_migration_v1.token_activities" */

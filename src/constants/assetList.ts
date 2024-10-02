@@ -1,13 +1,12 @@
-import { AccountAddress } from '@aptos-labs/ts-sdk'
+import { AccountAddress, Network } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import mirageConfig from '../../mirage_config.json'
-import { getModuleAddress, mirageAddress } from './accounts'
+import { getModuleAddress, mirageAddress, mirageConfigFromNetwork } from './accounts'
 
-export const getAllVaultCollectionObjectAddresses = (): string[] => {
+export const getAllVaultCollectionObjectAddresses = (network: string | Network): string[] => {
   const vaultCollectionAddresses: string[] = []
 
-  Object.values(mirageConfig.vaults).forEach((vault) => {
+  Object.values(mirageConfigFromNetwork(network).vaults).forEach((vault) => {
     Object.values(vault).forEach((address) => {
       vaultCollectionAddresses.push(address)
     })
@@ -16,10 +15,10 @@ export const getAllVaultCollectionObjectAddresses = (): string[] => {
   return vaultCollectionAddresses
 }
 
-export const getAllMarketObjectAddresses = (): string[] => {
+export const getAllMarketObjectAddresses = (network: string | Network): string[] => {
   const marketAddresses: string[] = []
 
-  Object.values(mirageConfig.markets).forEach((market) => {
+  Object.values(mirageConfigFromNetwork(network).markets).forEach((market) => {
     Object.values(market).forEach((address) => {
       marketAddresses.push(address)
     })
@@ -28,11 +27,15 @@ export const getAllMarketObjectAddresses = (): string[] => {
   return marketAddresses
 }
 
-export const getPairFromMarketAddress = (marketObjectAddress: string): { marginToken: MoveToken; perp: Perpetual } => {
+export const getPairFromMarketAddress = (
+  marketObjectAddress: string,
+  network: string | Network,
+): { marginToken: MoveToken; perp: Perpetual } => {
   let usedAddr = marketObjectAddress
   while (usedAddr.length < 66) {
     usedAddr = usedAddr.replace('0x', '0x0')
   }
+  const mirageConfig = mirageConfigFromNetwork(network)
   for (const marginToken in mirageConfig.markets) {
     for (const perp in mirageConfig.markets[marginToken]) {
       if (mirageConfig.markets[marginToken][perp] === usedAddr) {
@@ -46,11 +49,13 @@ export const getPairFromMarketAddress = (marketObjectAddress: string): { marginT
 
 export const getPairFromVaultCollectionAddress = (
   vaultObjectAddress: string,
+  network: string | Network,
 ): { collateralAsset: MoveAsset; borrow: MoveToken } => {
   let usedAddr = vaultObjectAddress
   while (usedAddr.length < 66) {
     usedAddr = usedAddr.replace('0x', '0x0')
   }
+  const mirageConfig = mirageConfigFromNetwork(network)
   for (const collateralAsset in mirageConfig.vaults) {
     for (const borrow in mirageConfig.vaults[collateralAsset]) {
       if (mirageConfig.vaults[collateralAsset][borrow] === usedAddr) {
@@ -245,12 +250,22 @@ export const typeToPerpetual = (type: string): Perpetual | undefined => {
   return undefined
 }
 
-export const getCollectionIdForPerpPair = (marginToken: MoveToken, perp: Perpetual): string => {
+export const getCollectionIdForPerpPair = (
+  marginToken: MoveToken,
+  perp: Perpetual,
+  network: Network | string,
+): string => {
+  const mirageConfig = mirageConfigFromNetwork(network)
   if (!(Perpetual[perp] in mirageConfig.markets[MoveToken[marginToken]])) throw new Error('Not a valid perp pair')
   return mirageConfig.markets[MoveToken[marginToken]][Perpetual[perp]]
 }
 
-export const getCollectionIdForVaultPair = (collateralAsset: MoveAsset, borrowToken: MoveToken): string => {
+export const getCollectionIdForVaultPair = (
+  collateralAsset: MoveAsset,
+  borrowToken: MoveToken,
+  network: Network | string,
+): string => {
+  const mirageConfig = mirageConfigFromNetwork(network)
   if (getTypeFromMoveAsset(collateralAsset) == 'MoveCoin') {
     if (!(MoveToken[borrowToken] in mirageConfig.vaults[MoveCoin[collateralAsset]]))
       throw new Error('Not a valid vault pair')
@@ -263,7 +278,8 @@ export const getCollectionIdForVaultPair = (collateralAsset: MoveAsset, borrowTo
   throw new Error('Not a valid vault pair')
 }
 
-export const getAssetTokenMetadata = (asset: MoveAsset): string => {
+export const getAssetTokenMetadata = (asset: MoveAsset, network: Network | string): string => {
+  const mirageConfig = mirageConfigFromNetwork(network)
   if (getTypeFromMoveAsset(asset) == 'MoveCoin') {
     if (!(MoveCoin[asset] in mirageConfig.tokens)) throw new Error('token metadata not found')
     return mirageConfig.tokens[MoveCoin[asset]]
@@ -275,162 +291,166 @@ export const getAssetTokenMetadata = (asset: MoveAsset): string => {
 }
 
 // A list of all coins and their info in the Mirage ecosystem
-const mirageAssetList: { readonly [coin in MoveAsset | Perpetual]: AssetInfo | MoveAssetInfo } = {
-  [MoveCoin.APT]: {
-    name: 'Aptos Coin',
-    symbol: 'APT',
-    decimals: 8,
-    address: AccountAddress.ONE,
-    type: '0x1::aptos_coin::AptosCoin',
-  },
-  [MoveToken.MIRA]: {
-    name: 'Mirage Coin',
-    symbol: 'MIRA',
-    decimals: 8,
-    address: mirageAddress(),
-    type: `${mirageAddress()}::mirage::Mirage`,
-  },
-  [MoveToken.mUSD]: {
-    name: 'Mirage USD',
-    symbol: 'mUSD',
-    decimals: 8,
-    address: mirageAddress(),
-    type: `${mirageAddress()}::mirage::MUSD`,
-  },
-  [MoveToken.mAPT]: {
-    name: 'Mirage Aptos',
-    symbol: 'mAPT',
-    decimals: 8,
-    address: mirageAddress(),
-    type: `${mirageAddress()}::mirage::MAPT`,
-  },
-  [MoveToken.mETH]: {
-    name: 'Mirage Ethereum',
-    symbol: 'mETH',
-    decimals: 8,
-    address: mirageAddress(),
-    type: `${mirageAddress()}::mirage::METH`,
-  },
-  [MoveCoin.zUSDC]: {
-    name: 'Layer-Zero USDC',
-    symbol: 'zUSDC',
-    decimals: 6,
-    address: getModuleAddress('layer_zero'),
-    type: `${getModuleAddress('layer_zero')}::asset::USDC`,
-  },
-  [MoveToken.tUSDC]: {
-    name: 'Testnet USDC',
-    symbol: 'tUSDC',
-    decimals: 8,
-    address: getModuleAddress('mirage'),
-    type: `${getModuleAddress('mirage')}::devUSDC::DevUSDC`,
-  },
-  [MoveToken.APT_MUSD_LP]: {
-    name: 'APT-MUSD LP Coin',
-    symbol: 'musd-lp',
-    decimals: 8,
-    // TODO FIX WITH MIRAGE SWAP
-    address: getModuleAddress('mirage'),
-    type: `${getModuleAddress('mirage')}::devUSDC::DevUSDC`,
-  },
-  [Perpetual.APTPERP]: {
-    name: 'Aptos Perpetuals Market',
-    symbol: 'APT',
-    type: `${mirageAddress()}::market_types::APTPERP`,
-  },
-  [Perpetual.ARBPERP]: {
-    name: 'Arbitrum Perpetuals Market',
-    symbol: 'ARB',
-    type: `${mirageAddress()}::market_types::ARBPERP`,
-  },
-  [Perpetual.BTCPERP]: {
-    name: 'Bitcoin Perpetuals Market',
-    symbol: 'BTC',
-    type: `${mirageAddress()}::market_types::BTCPERP`,
-  },
-  [Perpetual.ETHPERP]: {
-    name: 'Ethereum Perpetuals Market',
-    symbol: 'ETH',
-    type: `${mirageAddress()}::market_types::ETHPERP`,
-  },
-  [Perpetual.OPPERP]: {
-    name: 'Optimism Perpetuals Market',
-    symbol: 'OP',
-    type: `${mirageAddress()}::market_types::OPPERP`,
-  },
-  [Perpetual.PEPE1000PERP]: {
-    name: '1000 Pepe Perpetuals Market',
-    symbol: '1000PEPE',
-    type: `${mirageAddress()}::market_types::PEPE1000PERP`,
-  },
-  [Perpetual.SOLPERP]: {
-    name: 'Solana Perpetuals Market',
-    symbol: 'SOL',
-    type: `${mirageAddress()}::market_types::SOLPERP`,
-  },
-  [Perpetual.SUIPERP]: {
-    name: 'Sui Perpetuals Market',
-    symbol: 'SUI',
-    type: `${mirageAddress()}::market_types::SUIPERP`,
-  },
-  [Perpetual.DOGEPERP]: {
-    name: 'Doge Perpetuals Market',
-    symbol: 'DOGE',
-    type: `${mirageAddress()}::market_types::DOGEPERP`,
-  },
-  [Perpetual.AVAXPERP]: {
-    name: 'Avax Perpetuals Market',
-    symbol: 'AVAX',
-    type: `${mirageAddress()}::market_types::AVAXPERP`,
-  },
-  [Perpetual.PYTHPERP]: {
-    name: 'Pyth Perpetuals Market',
-    symbol: 'PYTH',
-    type: `${mirageAddress()}::market_types::PYTHPERP`,
-  },
-  [Perpetual.STXPERP]: {
-    name: 'Stacks Perpetuals Market',
-    symbol: 'STX',
-    type: `${mirageAddress()}::market_types::STXPERP`,
-  },
-  [Perpetual.WIFPERP]: {
-    name: 'Stacks Perpetuals Market',
-    symbol: 'WIF',
-    type: `${mirageAddress()}::market_types::WIFPERP`,
-  },
-  [Perpetual.MKRPERP]: {
-    name: 'Maker Perpetuals Market',
-    symbol: 'MKR',
-    type: `${mirageAddress()}::market_types::MKRPERP`,
-  },
-  [Perpetual.MNTPERP]: {
-    name: 'Mantle Perpetuals Market',
-    symbol: 'MNT',
-    type: `${mirageAddress()}::market_types::MNTPERP`,
-  },
-  [Perpetual.XAGPERP]: {
-    name: 'Silver Perpetuals Market',
-    symbol: 'XAG',
-    type: `${mirageAddress()}::market_types::XAGPERP`,
-  },
-  [Perpetual.XAUPERP]: {
-    name: 'Gold Perpetuals Market',
-    symbol: 'XAU',
-    type: `${mirageAddress()}::market_types::XAUPERP`,
-  },
-  [Perpetual.EURPERP]: {
-    name: 'Euro Perpetuals Market',
-    symbol: 'EUR',
-    type: `${mirageAddress()}::market_types::EURPERP`,
-  },
-  [Perpetual.GBPPERP]: {
-    name: 'British Pound Perpetuals Market',
-    symbol: 'GBP',
-    type: `${mirageAddress()}::market_types::GBPPERP`,
-  },
-  [Perpetual.JPYPERP]: {
-    name: 'Japanese Yen Perpetuals Market',
-    symbol: 'JPY',
-    type: `${mirageAddress()}::market_types::JPYPERP`,
-  },
+const mirageAssetList = (
+  network: string | Network,
+): { readonly [coin in MoveAsset | Perpetual]: AssetInfo | MoveAssetInfo } => {
+  return {
+    [MoveCoin.APT]: {
+      name: 'Aptos Coin',
+      symbol: 'APT',
+      decimals: 8,
+      address: AccountAddress.ONE,
+      type: '0x1::aptos_coin::AptosCoin',
+    },
+    [MoveToken.MIRA]: {
+      name: 'Mirage Coin',
+      symbol: 'MIRA',
+      decimals: 8,
+      address: mirageAddress(network),
+      type: `${mirageAddress(network)}::mirage::Mirage`,
+    },
+    [MoveToken.mUSD]: {
+      name: 'Mirage USD',
+      symbol: 'mUSD',
+      decimals: 8,
+      address: mirageAddress(network),
+      type: `${mirageAddress(network)}::mirage::MUSD`,
+    },
+    [MoveToken.mAPT]: {
+      name: 'Mirage Aptos',
+      symbol: 'mAPT',
+      decimals: 8,
+      address: mirageAddress(network),
+      type: `${mirageAddress(network)}::mirage::MAPT`,
+    },
+    [MoveToken.mETH]: {
+      name: 'Mirage Ethereum',
+      symbol: 'mETH',
+      decimals: 8,
+      address: mirageAddress(network),
+      type: `${mirageAddress(network)}::mirage::METH`,
+    },
+    [MoveCoin.zUSDC]: {
+      name: 'Layer-Zero USDC',
+      symbol: 'zUSDC',
+      decimals: 6,
+      address: getModuleAddress('layer_zero', network),
+      type: `${getModuleAddress('layer_zero', network)}::asset::USDC`,
+    },
+    [MoveToken.tUSDC]: {
+      name: 'Testnet USDC',
+      symbol: 'tUSDC',
+      decimals: 8,
+      address: getModuleAddress('mirage', network),
+      type: `${getModuleAddress('mirage', network)}::devUSDC::DevUSDC`,
+    },
+    [MoveToken.APT_MUSD_LP]: {
+      name: 'APT-MUSD LP Coin',
+      symbol: 'musd-lp',
+      decimals: 8,
+      // TODO FIX WITH MIRAGE SWAP
+      address: getModuleAddress('mirage', network),
+      type: `${getModuleAddress('mirage', network)}::devUSDC::DevUSDC`,
+    },
+    [Perpetual.APTPERP]: {
+      name: 'Aptos Perpetuals Market',
+      symbol: 'APT',
+      type: `${mirageAddress(network)}::market_types::APTPERP`,
+    },
+    [Perpetual.ARBPERP]: {
+      name: 'Arbitrum Perpetuals Market',
+      symbol: 'ARB',
+      type: `${mirageAddress(network)}::market_types::ARBPERP`,
+    },
+    [Perpetual.BTCPERP]: {
+      name: 'Bitcoin Perpetuals Market',
+      symbol: 'BTC',
+      type: `${mirageAddress(network)}::market_types::BTCPERP`,
+    },
+    [Perpetual.ETHPERP]: {
+      name: 'Ethereum Perpetuals Market',
+      symbol: 'ETH',
+      type: `${mirageAddress(network)}::market_types::ETHPERP`,
+    },
+    [Perpetual.OPPERP]: {
+      name: 'Optimism Perpetuals Market',
+      symbol: 'OP',
+      type: `${mirageAddress(network)}::market_types::OPPERP`,
+    },
+    [Perpetual.PEPE1000PERP]: {
+      name: '1000 Pepe Perpetuals Market',
+      symbol: '1000PEPE',
+      type: `${mirageAddress(network)}::market_types::PEPE1000PERP`,
+    },
+    [Perpetual.SOLPERP]: {
+      name: 'Solana Perpetuals Market',
+      symbol: 'SOL',
+      type: `${mirageAddress(network)}::market_types::SOLPERP`,
+    },
+    [Perpetual.SUIPERP]: {
+      name: 'Sui Perpetuals Market',
+      symbol: 'SUI',
+      type: `${mirageAddress(network)}::market_types::SUIPERP`,
+    },
+    [Perpetual.DOGEPERP]: {
+      name: 'Doge Perpetuals Market',
+      symbol: 'DOGE',
+      type: `${mirageAddress(network)}::market_types::DOGEPERP`,
+    },
+    [Perpetual.AVAXPERP]: {
+      name: 'Avax Perpetuals Market',
+      symbol: 'AVAX',
+      type: `${mirageAddress(network)}::market_types::AVAXPERP`,
+    },
+    [Perpetual.PYTHPERP]: {
+      name: 'Pyth Perpetuals Market',
+      symbol: 'PYTH',
+      type: `${mirageAddress(network)}::market_types::PYTHPERP`,
+    },
+    [Perpetual.STXPERP]: {
+      name: 'Stacks Perpetuals Market',
+      symbol: 'STX',
+      type: `${mirageAddress(network)}::market_types::STXPERP`,
+    },
+    [Perpetual.WIFPERP]: {
+      name: 'Stacks Perpetuals Market',
+      symbol: 'WIF',
+      type: `${mirageAddress(network)}::market_types::WIFPERP`,
+    },
+    [Perpetual.MKRPERP]: {
+      name: 'Maker Perpetuals Market',
+      symbol: 'MKR',
+      type: `${mirageAddress(network)}::market_types::MKRPERP`,
+    },
+    [Perpetual.MNTPERP]: {
+      name: 'Mantle Perpetuals Market',
+      symbol: 'MNT',
+      type: `${mirageAddress(network)}::market_types::MNTPERP`,
+    },
+    [Perpetual.XAGPERP]: {
+      name: 'Silver Perpetuals Market',
+      symbol: 'XAG',
+      type: `${mirageAddress(network)}::market_types::XAGPERP`,
+    },
+    [Perpetual.XAUPERP]: {
+      name: 'Gold Perpetuals Market',
+      symbol: 'XAU',
+      type: `${mirageAddress(network)}::market_types::XAUPERP`,
+    },
+    [Perpetual.EURPERP]: {
+      name: 'Euro Perpetuals Market',
+      symbol: 'EUR',
+      type: `${mirageAddress(network)}::market_types::EURPERP`,
+    },
+    [Perpetual.GBPPERP]: {
+      name: 'British Pound Perpetuals Market',
+      symbol: 'GBP',
+      type: `${mirageAddress(network)}::market_types::GBPPERP`,
+    },
+    [Perpetual.JPYPERP]: {
+      name: 'Japanese Yen Perpetuals Market',
+      symbol: 'JPY',
+      type: `${mirageAddress(network)}::market_types::JPYPERP`,
+    },
+  }
 }
