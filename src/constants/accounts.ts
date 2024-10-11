@@ -23,6 +23,7 @@ export enum MoveModules {
   MIRAGE_CORE = 'mirage_core',
   MIRAGE_ORACLE = 'mirage_oracle',
   MIRAGE_SWAP = 'mirage_swap',
+  MARKET = 'market',
   LAYER_ZERO = 'layer_zero', // "asset",
   // swap
   // gov
@@ -58,6 +59,7 @@ export type ModulesConfig = {
   mirage_scripts: string
   mirage_swap: string
   keeper_scripts: string
+  market: string
 }
 
 export type MarketsConfig = {
@@ -123,6 +125,10 @@ export const MODULES = (network: Network | string): { readonly [module in MoveMo
     ['keeper_scripts']: {
       name: 'keeper_scripts',
       address: AccountAddress.from(mirageConfig.modules.keeper_scripts),
+    },
+    ['market']: {
+      name: 'market',
+      address: AccountAddress.from(mirageConfig.modules.market),
     },
     // TODO is this right for all networks
     ['layer_zero']: {

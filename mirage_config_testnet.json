@@ -1,6 +1,7 @@
 {
   "modules": {
     "mirage": "0xce8b4fae12c51e5266106f8766e96ffa1c7b35d32cb4aa7678842550f99e69d8",
+    "market": "0xce8b4fae12c51e5266106f8766e96ffa1c7b35d32cb4aa7678842550f99e69d8",
     "mirage_core": "0x8933313486d5ee6b7102254d4e4e692e339127e8561d9c8a405b196a79193ca1",
     "mirage_oracle": "0x9af172d2c0a1cae6401a70fbaae1bd33dc2ebcb1a533ee24e5db561a348c3cb5",
     "mirage_scripts": "0x89495b66933cc2826d3feb1b7d5dc330b67b031acd160d39206d0e89d35fcb77",

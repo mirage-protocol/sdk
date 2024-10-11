@@ -1,27 +1,18 @@
 import { InputEntryFunctionData, MoveObjectType, Network } from '@aptos-labs/ts-sdk'
 
-import {
-  getNetwork,
-  getPriceFeed,
-  getPriceFeedUpdateData,
-  mirageAddress,
-  MODULES,
-  MoveCoin,
-  MoveToken,
-  Perpetual,
-} from '../constants'
+import { getNetwork, getPriceFeed, getPriceFeedUpdateData, MODULES, MoveCoin, MoveToken, Perpetual } from '../constants'
 import { PositionSide } from '../entities'
 import { getAssetAmountArgument, getDecimal8Argument } from './'
 
 // Get the types for this market
 export const getMarketTypeArgument = (network: Network | string): Array<string> => {
-  return [`${mirageAddress(network)}::market::Market`]
+  return [`${MODULES(network).market.address}::market::Market`]
 }
 export const getPositionTypeArgument = (network: Network | string): Array<string> => {
-  return [`${mirageAddress(network)}::market::Position`]
+  return [`${MODULES(network).market.address}::market::Position`]
 }
 export const getLimitOrdersTypeArgument = (network: Network | string): Array<string> => {
-  return [`${mirageAddress(network)}::market::LimitOrders`]
+  return [`${MODULES(network).market.address}::market::LimitOrders`]
 }
 
 /**
@@ -239,7 +230,7 @@ export const updateTpsl = async (
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
 
   const payload = {
-    function: `${mirageAddress(network)}::market::update_tpsl` as `${string}::${string}::${string}`,
+    function: `${MODULES(network).market.address}::market::update_tpsl` as `${string}::${string}::${string}`,
     functionArguments: [
       positionObject,
       perpetualVaas,
@@ -508,7 +499,7 @@ export const updatePositionSize = async (
 
   const payload = {
     function: `${
-      newPositionSize > oldPositionSize ? mirageAddress(network) : MODULES(network).mirage_scripts.address
+      newPositionSize > oldPositionSize ? MODULES(network).market.address : MODULES(network).mirage_scripts.address
     }::${functionName}` as `${string}::${string}::${string}`,
     functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(diff)],
     typeArguments: getPositionTypeArgument(network),
@@ -534,7 +525,7 @@ export const increasePositionSize = async (
   const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
 
   const payload = {
-    function: `${mirageAddress(network)}::market::increase_position_size` as `${string}::${string}::${string}`,
+    function: `${MODULES(network).market.address}::market::increase_position_size` as `${string}::${string}::${string}`,
     functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(increasePositionSize)],
     typeArguments: getPositionTypeArgument(network),
   }
