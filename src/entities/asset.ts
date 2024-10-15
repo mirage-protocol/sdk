@@ -48,7 +48,7 @@ export class Asset {
    * @param asset which asset to find data for
    */
   constructor(balance: BigNumber, asset: MoveAsset | string, network: Network | string = Network.MAINNET) {
-    const { name, symbol, decimals, type } = moveAssetInfo(asset)
+    const { name, symbol, decimals, type } = moveAssetInfo(asset, network)
 
     const precision = BigNumber(10).pow(decimals)
 

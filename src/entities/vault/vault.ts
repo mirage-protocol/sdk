@@ -72,7 +72,7 @@ export class Vault {
     const propertyMap = vaultObjectResources.find((resource) => resource.type === propertyMapType)
 
     this.collateralAmount = !!vault
-      ? assetBalanceToDecimal(BigNumber((vault.data as any).collateral_amount), this.collateralAsset)
+      ? assetBalanceToDecimal(BigNumber((vault.data as any).collateral_amount), this.collateralAsset, network)
       : ZERO
 
     // need to use global debt rebase

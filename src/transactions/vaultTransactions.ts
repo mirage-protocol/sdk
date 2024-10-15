@@ -71,7 +71,7 @@ export const createVaultAndAddCollateral = async (
     function: `${mirageAddress(network)}::vault::register_and_add_collateral_${getFunctionSuffix(
       getTypeFromMoveAsset(collateralAsset),
     )}`,
-    functionArguments: [collectionObject, getAssetAmountArgument(collateralAsset, amount)],
+    functionArguments: [collectionObject, getAssetAmountArgument(collateralAsset, amount, network)],
     typeArguments: getCollectionAndCoinTypeArgument(collateralAsset, network),
   }
 }
@@ -95,8 +95,8 @@ export const createVaultAndAddCollateralAndBorrow = async (
     )}_and_borrow_entry`,
     functionArguments: [
       collectionObject,
-      getAssetAmountArgument(collateralAsset, collateralAmount),
-      getAssetAmountArgument(collateralAsset, borrowAmount),
+      getAssetAmountArgument(collateralAsset, collateralAmount, network),
+      getAssetAmountArgument(collateralAsset, borrowAmount, network),
       collateralVaas,
       borrowVaas,
     ],
@@ -119,7 +119,7 @@ export const addCollateral = async (
 ): Promise<InputEntryFunctionData> => {
   return {
     function: `${mirageAddress(network)}::vault::add_collateral_${getFunctionSuffix(getTypeFromMoveAsset(collateralAsset))}`,
-    functionArguments: [vaultObject, getAssetAmountArgument(collateralAsset, amount)],
+    functionArguments: [vaultObject, getAssetAmountArgument(collateralAsset, amount, network)],
     typeArguments: getVaultAndCoinTypeArgument(collateralAsset, network),
   }
 }
@@ -148,7 +148,7 @@ export const borrow = async (
 
   return {
     function: `${mirageAddress(network)}::vault::borrow_entry`,
-    functionArguments: [vaultObject, getAssetAmountArgument(borrowToken, borrowAmount), collateralVaas, borrowVaas],
+    functionArguments: [vaultObject, getAssetAmountArgument(borrowToken, borrowAmount, network), collateralVaas, borrowVaas],
     typeArguments: getVaultTypeArgument(network),
   }
 }
@@ -178,7 +178,7 @@ export const removeCollateral = async (
     function: `${mirageAddress(network)}::vault::remove_collateral_${getFunctionSuffix(
       getTypeFromMoveAsset(collateralAsset),
     )}`,
-    functionArguments: [vaultObject, getAssetAmountArgument(collateralAsset, removeAmount), collateralVaas, borrowVaas],
+    functionArguments: [vaultObject, getAssetAmountArgument(collateralAsset, removeAmount, network), collateralVaas, borrowVaas],
     typeArguments: getVaultAndCoinTypeArgument(collateralAsset, network),
   }
 }
@@ -198,7 +198,7 @@ export const repayDebt = async (
 ): Promise<InputEntryFunctionData> => {
   return {
     function: `${mirageAddress(network)}::vault::repay_entry`,
-    functionArguments: [vaultObject, getAssetAmountArgument(borrowToken, repayAmount)],
+    functionArguments: [vaultObject, getAssetAmountArgument(borrowToken, repayAmount, network)],
     typeArguments: getVaultTypeArgument(network),
   }
 }
@@ -233,8 +233,8 @@ export const addCollateralAndBorrow = async (
     )}_and_borrow`,
     functionArguments: [
       vaultObject,
-      getAssetAmountArgument(collateralAsset, addAmount),
-      getAssetAmountArgument(borrowToken, borrowAmount),
+      getAssetAmountArgument(collateralAsset, addAmount, network),
+      getAssetAmountArgument(borrowToken, borrowAmount, network),
       collateralVaas,
       borrowVaas,
     ],
@@ -272,8 +272,8 @@ export const repayDebtAndRemoveCollateral = async (
     )}_and_repay`,
     functionArguments: [
       vaultObject,
-      getAssetAmountArgument(collateralAsset, removeAmount),
-      getAssetAmountArgument(borrowToken, repayAmount),
+      getAssetAmountArgument(collateralAsset, removeAmount, network),
+      getAssetAmountArgument(borrowToken, repayAmount, network),
       collateralVaas,
       borrowVaas,
     ],
@@ -304,8 +304,8 @@ export const addCollateralAndRepayDebt = async (
     )}_and_repay`,
     functionArguments: [
       vaultObject,
-      getAssetAmountArgument(collateralAsset, addAmount),
-      getAssetAmountArgument(borrowToken, repayAmount),
+      getAssetAmountArgument(collateralAsset, addAmount, network),
+      getAssetAmountArgument(borrowToken, repayAmount, network),
     ],
     typeArguments: getVaultAndCoinTypeArgument(collateralAsset, network),
   }
@@ -341,8 +341,8 @@ export const removeCollateralAndBorrow = async (
     )}_and_borrow`,
     functionArguments: [
       vaultObject,
-      getAssetAmountArgument(collateralAsset, removeAmount),
-      getAssetAmountArgument(borrowToken, borrowAmount),
+      getAssetAmountArgument(collateralAsset, removeAmount, network),
+      getAssetAmountArgument(borrowToken, borrowAmount, network),
       collateralVaas,
       borrowVaas,
     ],
@@ -386,7 +386,7 @@ export const liquidateVaultWithTokens = async (
     function: `${MODULES(network).keeper_scripts.address}::vault_scripts::liquidate_vault_with_tokens`,
     functionArguments: [
       vaultObject,
-      getAssetAmountArgument(borrowToken, debtAmountToLiquidate),
+      getAssetAmountArgument(borrowToken, debtAmountToLiquidate, network),
       collateralVaas,
       borrowVaas,
     ],

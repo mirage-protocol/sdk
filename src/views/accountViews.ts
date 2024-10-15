@@ -22,7 +22,7 @@ export const getUserAssetBalance = async (
       balance = BigNumber(
         await aptosClient(network).getAccountCoinAmount({
           accountAddress: userAddress,
-          coinType: assetInfo(asset).type as `${string}::${string}::${string}`,
+          coinType: assetInfo(asset, network).type as `${string}::${string}::${string}`,
         }),
       )
       break
@@ -39,5 +39,5 @@ export const getUserAssetBalance = async (
       balance = BigNumber(data[0]?.amount ?? 0)
       break
   }
-  return assetBalanceToDecimal(balance, asset)
+  return assetBalanceToDecimal(balance, asset, network)
 }

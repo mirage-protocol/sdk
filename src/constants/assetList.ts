@@ -179,11 +179,11 @@ const checkPerpSymbolUnSafe = (symbol: string): Perpetual => {
  * @param coin the MoveToken to get info for
  * @returns the AssetInfo for the specific coin
  */
-export const assetInfo = (asset: MoveAsset | Perpetual | string): AssetInfo => {
+export const assetInfo = (asset: MoveAsset | Perpetual | string, network: Network | string): AssetInfo => {
   if (typeof asset === 'string') {
-    return mirageAssetList[MoveToken[asset] || Perpetual[asset] || MoveCoin[asset]]
+    return mirageAssetList(network)[MoveToken[asset] || Perpetual[asset] || MoveCoin[asset]]
   }
-  return mirageAssetList[asset]
+  return mirageAssetList(network)[asset]
 }
 
 /**
@@ -191,11 +191,11 @@ export const assetInfo = (asset: MoveAsset | Perpetual | string): AssetInfo => {
  * @param coin the MoveToken to get info for
  * @returns the MoveAssetInfo for the specific coin or token
  */
-export const moveAssetInfo = (coin: MoveAsset | string): MoveAssetInfo => {
+export const moveAssetInfo = (coin: MoveAsset | string, network: Network | string): MoveAssetInfo => {
   if (typeof coin === 'string') {
-    return mirageAssetList[MoveToken[coin]] ?? mirageAssetList[MoveCoin[coin]]
+    return mirageAssetList(network)[MoveToken[coin]] ?? mirageAssetList(network)[MoveCoin[coin]]
   }
-  return mirageAssetList[coin]
+  return mirageAssetList(network)[coin]
 }
 
 /**
@@ -204,8 +204,8 @@ export const moveAssetInfo = (coin: MoveAsset | string): MoveAssetInfo => {
  * @param coin the coin
  * @returns a human-readable balance value
  */
-export const assetBalanceToDecimal = (balance: BigNumber, coin: MoveToken | string): BigNumber => {
-  return balance.div(BigNumber(10).pow(moveAssetInfo(coin).decimals))
+export const assetBalanceToDecimal = (balance: BigNumber, coin: MoveToken | string, network: Network | string): BigNumber => {
+  return balance.div(BigNumber(10).pow(moveAssetInfo(coin, network).decimals))
 }
 
 /**
@@ -213,9 +213,9 @@ export const assetBalanceToDecimal = (balance: BigNumber, coin: MoveToken | stri
  * @param type the type of the perp
  * @returns a move token
  */
-export const typeToMoveToken = (type: string): MoveToken | undefined => {
-  for (const asset in mirageAssetList) {
-    if (asset in MoveToken && mirageAssetList[asset].type == type) {
+export const typeToMoveToken = (type: string, network: Network | string): MoveToken | undefined => {
+  for (const asset in mirageAssetList(network)) {
+    if (asset in MoveToken && mirageAssetList(network)[asset].type == type) {
       return MoveToken[asset]
     }
   }
@@ -227,9 +227,9 @@ export const typeToMoveToken = (type: string): MoveToken | undefined => {
  * @param type the type of the perp
  * @returns a move Coin
  */
-export const typeToMoveCoin = (type: string): MoveCoin | undefined => {
-  for (const asset in mirageAssetList) {
-    if (asset in MoveCoin && mirageAssetList[asset].type == type) {
+export const typeToMoveCoin = (type: string, network: Network | string): MoveCoin | undefined => {
+  for (const asset in mirageAssetList(network)) {
+    if (asset in MoveCoin && mirageAssetList(network)[asset].type == type) {
       return MoveCoin[asset]
     }
   }
@@ -241,9 +241,9 @@ export const typeToMoveCoin = (type: string): MoveCoin | undefined => {
  * @param type the type of the perp
  * @returns a perpetual asset
  */
-export const typeToPerpetual = (type: string): Perpetual | undefined => {
-  for (const asset in mirageAssetList) {
-    if (asset in Perpetual && mirageAssetList[asset].type == type) {
+export const typeToPerpetual = (type: string, network: Network | string): Perpetual | undefined => {
+  for (const asset in (mirageAssetList(network))) {
+    if (asset in Perpetual && mirageAssetList(network)[asset].type == type) {
       return Perpetual[asset]
     }
   }

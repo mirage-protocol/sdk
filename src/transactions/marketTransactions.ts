@@ -91,7 +91,7 @@ export const openPositionWithTpsl = async (
       getDecimal8Argument(maxPriceSlippage),
       getDecimal8Argument(takeProfitPrice),
       getDecimal8Argument(stopLossPrice),
-      getAssetAmountArgument(MoveCoin.APT, triggerPaymentAmount),
+      getAssetAmountArgument(MoveCoin.APT, triggerPaymentAmount, network),
     ],
     typeArguments: getMarketTypeArgument(network),
   }

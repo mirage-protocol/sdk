@@ -153,7 +153,7 @@ export class VaultCollection {
           .div(PRECISION_8)
       : ZERO
     this.totalCollateral = !!vaultCollection
-      ? assetBalanceToDecimal(BigNumber((vaultCollection.data as any).total_collateral), this.collateral)
+      ? assetBalanceToDecimal(BigNumber((vaultCollection.data as any).total_collateral), this.collateral, network)
       : ZERO
 
     this.isEmergency = !!vaultCollection ? (vaultCollection.data as any).is_emergency : false
