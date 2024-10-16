@@ -1,6 +1,5 @@
-import BigNumber from 'bignumber.js'
 import { Network } from '@aptos-labs/ts-sdk'
-
+import BigNumber from 'bignumber.js'
 
 import { MoveAsset, moveAssetInfo, PRECISION_8 } from '../constants'
 
@@ -12,7 +11,11 @@ export const getAssetAmountArgument = (coin: MoveAsset | string, amount: number,
 }
 
 // Get the proper payload amount
-export const getBCSCoinAmountArgument = (coin: MoveAsset | string, amount: number, network: Network | string): bigint => {
+export const getBCSCoinAmountArgument = (
+  coin: MoveAsset | string,
+  amount: number,
+  network: Network | string,
+): bigint => {
   return BigInt(getAssetAmountArgument(coin, amount, network))
 }
 

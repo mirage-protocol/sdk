@@ -204,7 +204,11 @@ export const moveAssetInfo = (coin: MoveAsset | string, network: Network | strin
  * @param coin the coin
  * @returns a human-readable balance value
  */
-export const assetBalanceToDecimal = (balance: BigNumber, coin: MoveToken | string, network: Network | string): BigNumber => {
+export const assetBalanceToDecimal = (
+  balance: BigNumber,
+  coin: MoveToken | string,
+  network: Network | string,
+): BigNumber => {
   return balance.div(BigNumber(10).pow(moveAssetInfo(coin, network).decimals))
 }
 
@@ -242,7 +246,7 @@ export const typeToMoveCoin = (type: string, network: Network | string): MoveCoi
  * @returns a perpetual asset
  */
 export const typeToPerpetual = (type: string, network: Network | string): Perpetual | undefined => {
-  for (const asset in (mirageAssetList(network))) {
+  for (const asset in mirageAssetList(network)) {
     if (asset in Perpetual && mirageAssetList(network)[asset].type == type) {
       return Perpetual[asset]
     }

@@ -148,7 +148,12 @@ export const borrow = async (
 
   return {
     function: `${mirageAddress(network)}::vault::borrow_entry`,
-    functionArguments: [vaultObject, getAssetAmountArgument(borrowToken, borrowAmount, network), collateralVaas, borrowVaas],
+    functionArguments: [
+      vaultObject,
+      getAssetAmountArgument(borrowToken, borrowAmount, network),
+      collateralVaas,
+      borrowVaas,
+    ],
     typeArguments: getVaultTypeArgument(network),
   }
 }
@@ -178,7 +183,12 @@ export const removeCollateral = async (
     function: `${mirageAddress(network)}::vault::remove_collateral_${getFunctionSuffix(
       getTypeFromMoveAsset(collateralAsset),
     )}`,
-    functionArguments: [vaultObject, getAssetAmountArgument(collateralAsset, removeAmount, network), collateralVaas, borrowVaas],
+    functionArguments: [
+      vaultObject,
+      getAssetAmountArgument(collateralAsset, removeAmount, network),
+      collateralVaas,
+      borrowVaas,
+    ],
     typeArguments: getVaultAndCoinTypeArgument(collateralAsset, network),
   }
 }

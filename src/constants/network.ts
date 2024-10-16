@@ -44,6 +44,9 @@ export const aptosClient = (network: Network | string | string = Network.MAINNET
   switch (network) {
     case Network.MAINNET:
       return defaultMainnetClient
+    // TODO make it work for movement-mainnet (network custom needs a seperate switch somehow)
+    case Network.CUSTOM:
+      return defaultMovementTestnetClient
     case 'movement-testnet':
       return defaultMovementTestnetClient
     default:
