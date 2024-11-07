@@ -1,19 +1,15 @@
 import { InputEntryFunctionData, MoveObjectType, Network } from '@aptos-labs/ts-sdk'
 
-import { getNetwork, getPriceFeed, getPriceFeedUpdateData, MODULES, MoveCoin, MoveToken, Perpetual } from '../constants'
+import {
+  getModuleAddress,
+  getPriceFeed,
+  getPriceFeedUpdateData,
+  MoveFungibleAsset,
+  MoveModules,
+  Perpetual,
+} from '../constants'
 import { PositionSide } from '../entities'
-import { getAssetAmountArgument, getDecimal8Argument } from './'
-
-// Get the types for this market
-export const getMarketTypeArgument = (network: Network | string): Array<string> => {
-  return [`${MODULES(network).market.address}::market::Market`]
-}
-export const getPositionTypeArgument = (network: Network | string): Array<string> => {
-  return [`${MODULES(network).market.address}::market::Position`]
-}
-export const getLimitOrdersTypeArgument = (network: Network | string): Array<string> => {
-  return [`${MODULES(network).market.address}::market::LimitOrders`]
-}
+import { getDecimal8Argument } from './'
 
 /**
  * Open a position in a market at the current price and registers user resources if uninitialized
@@ -21,7 +17,7 @@ export const getLimitOrdersTypeArgument = (network: Network | string): Array<str
  */
 export const openPosition = async (
   marketObject: MoveObjectType,
-  marginCoin: MoveToken,
+  marginCoin: MoveFungibleAsset,
   perpetual: Perpetual,
   marginAmount: number,
   positionSize: number,
@@ -33,12 +29,11 @@ export const openPosition = async (
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetual, network)
 
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, network) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, network) : []
 
   return {
-    function: `${MODULES(network).mirage_scripts.address}::market_scripts::open_position_entry`,
-
+    function: `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::market_scripts::open_position_entry`,
     functionArguments: [
       marketObject,
       perpetualVaas,
@@ -49,7 +44,7 @@ export const openPosition = async (
       getDecimal8Argument(desired_price),
       getDecimal8Argument(maxPriceSlippage),
     ],
-    typeArguments: getMarketTypeArgument(network),
+    typeArguments: [],
   }
 }
 
@@ -59,7 +54,7 @@ export const openPosition = async (
  */
 export const openPositionWithTpsl = async (
   marketObject: MoveObjectType,
-  marginCoin: MoveToken,
+  marginCoin: MoveFungibleAsset,
   perpetual: Perpetual,
   marginAmount: number,
   positionSize: number,
@@ -68,17 +63,16 @@ export const openPositionWithTpsl = async (
   maxPriceSlippage: number,
   takeProfitPrice: number,
   stopLossPrice: number,
-  triggerPaymentAmount: number,
   network: Network,
 ): Promise<InputEntryFunctionData> => {
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetual, network)
 
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, network) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, network) : []
 
   return {
-    function: `${MODULES(network).mirage_scripts.address}::market_scripts::open_position_entry_with_tpsl`,
+    function: `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::market_scripts::open_position_entry_with_tpsl`,
 
     functionArguments: [
       marketObject,
@@ -91,9 +85,8 @@ export const openPositionWithTpsl = async (
       getDecimal8Argument(maxPriceSlippage),
       getDecimal8Argument(takeProfitPrice),
       getDecimal8Argument(stopLossPrice),
-      getAssetAmountArgument(MoveCoin.APT, triggerPaymentAmount, network),
     ],
-    typeArguments: getMarketTypeArgument(network),
+    typeArguments: [],
   }
 }
 
@@ -103,21 +96,21 @@ export const openPositionWithTpsl = async (
  */
 export const closePosition = async (
   positionObject: MoveObjectType,
-  marginCoin: MoveToken,
+  marginCoin: MoveFungibleAsset,
   perpetual: Perpetual,
   network: Network,
 ): Promise<InputEntryFunctionData> => {
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetual, network)
 
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, network) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, network) : []
 
   const payload = {
     function:
-      `${MODULES(network).mirage_scripts.address}::market_scripts::close_position_entry` as `${string}::${string}::${string}`,
+      `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::market_scripts::close_position_entry` as `${string}::${string}::${string}`,
     functionArguments: [positionObject, perpetualVaas, marginVaas],
-    typeArguments: getPositionTypeArgument(network),
+    typeArguments: [],
   }
   return payload
 }
@@ -135,16 +128,15 @@ export const openPositionAndPlaceLimitOrder = async (
   triggerPrice: number,
   maxPriceSlippage: number,
   triggersAbove: boolean,
-  triggerPaymentAmount: number,
   expiration: bigint, // in seconds,
   isLong: boolean,
   network: Network,
 ): Promise<InputEntryFunctionData> => {
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, network) : []
 
   return {
-    function: `${MODULES(network).mirage_scripts.address}::market_scripts::create_position_and_place_limit_order`,
+    function: `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::market_scripts::create_position_and_place_limit_order`,
     functionArguments: [
       marketObject,
       perpetualVaas,
@@ -154,11 +146,10 @@ export const openPositionAndPlaceLimitOrder = async (
       getDecimal8Argument(maxPriceSlippage),
       true, // always is increase when creating a new position
       triggersAbove,
-      getDecimal8Argument(triggerPaymentAmount),
       expiration.toString(), // sdk breaks for large non-string integers
       isLong,
     ],
-    typeArguments: getMarketTypeArgument(network),
+    typeArguments: [],
   }
 }
 
@@ -176,15 +167,14 @@ export const placeLimitOrder = async (
   maxPriceSlippage: number,
   isIncrease: boolean,
   triggersAbove: boolean,
-  triggerPaymentAmount: number,
   expiration: bigint, // in seconds
   network: Network,
 ): Promise<InputEntryFunctionData> => {
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, network) : []
 
   return {
-    function: `${MODULES(network).mirage_scripts.address}::market_scripts::place_limit_order_entry`,
+    function: `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::market_scripts::place_limit_order_entry`,
     functionArguments: [
       positionObject,
       perpetualVaas,
@@ -194,10 +184,9 @@ export const placeLimitOrder = async (
       getDecimal8Argument(maxPriceSlippage),
       isIncrease,
       triggersAbove,
-      getDecimal8Argument(triggerPaymentAmount),
       expiration.toString(), // sdk breaks for large non-string integers
     ],
-    typeArguments: getPositionTypeArgument(network),
+    typeArguments: [],
   }
 }
 
@@ -206,64 +195,62 @@ export const placeLimitOrder = async (
  * @returns payload promise for the transaction
  */
 export const cancelLimitOrder = async (
-  limitOrdersObject: MoveObjectType,
-  index: number,
-  network: Network | string,
+  limitOrderObject: MoveObjectType,
+  network: Network,
 ): Promise<InputEntryFunctionData> => {
   const payload = {
     function:
-      `${MODULES(network).mirage_scripts.address}::market_scripts::cancel_limit_order_entry` as `${string}::${string}::${string}`,
-    functionArguments: [limitOrdersObject, index],
-    typeArguments: getLimitOrdersTypeArgument(network),
+      `${getModuleAddress(network, MoveModules.MARKET)}::limit_order::cancel_limit_order` as `${string}::${string}::${string}`,
+    functionArguments: [limitOrderObject],
+    typeArguments: [],
   }
   return payload
 }
 
 export const updateTpsl = async (
-  positionObject: MoveObjectType,
+  tpslObject: MoveObjectType,
   perpetualAsset: Perpetual,
   take_profit_price: number,
   stop_loss_price: number,
   network: Network,
 ): Promise<InputEntryFunctionData> => {
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, network) : []
 
   const payload = {
-    function: `${MODULES(network).market.address}::market::update_tpsl` as `${string}::${string}::${string}`,
+    function:
+      `${getModuleAddress(network, MoveModules.MARKET)}::tpsl::update_tpsl` as `${string}::${string}::${string}`,
     functionArguments: [
-      positionObject,
+      tpslObject,
       perpetualVaas,
       getDecimal8Argument(take_profit_price),
       getDecimal8Argument(stop_loss_price),
     ],
-    typeArguments: getPositionTypeArgument(network),
+    typeArguments: [],
   }
   return payload
 }
 
 export const placeTpsl = async (
-  positionObject: MoveObjectType,
+  tpslObject: MoveObjectType,
   perpetualAsset: Perpetual,
   take_profit_price: number,
   stop_loss_price: number,
-  trigger_amount: number,
   network: Network,
 ): Promise<InputEntryFunctionData> => {
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, network) : []
 
   const payload = {
     function:
-      `${MODULES(network).mirage_scripts.address}::market_scripts::place_tpsl_entry` as `${string}::${string}::${string}`,
+      `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::market_scripts::place_tpsl_entry` as `${string}::${string}::${string}`,
     functionArguments: [
-      positionObject,
+      tpslObject,
       perpetualVaas,
       getDecimal8Argument(take_profit_price),
       getDecimal8Argument(stop_loss_price),
-      getDecimal8Argument(trigger_amount),
     ],
-    typeArguments: getPositionTypeArgument(network),
+    typeArguments: [],
   }
   return payload
 }
@@ -274,7 +261,7 @@ export const placeTpsl = async (
  */
 export const updateMargin = async (
   positionObject: MoveObjectType,
-  marginCoin: MoveToken,
+  marginCoin: MoveFungibleAsset,
   perpetualAsset: Perpetual,
   oldMarginAmount: number,
   newMarginAmount: number,
@@ -283,15 +270,15 @@ export const updateMargin = async (
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
 
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, network) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, network) : []
   const diff = newMarginAmount > oldMarginAmount ? newMarginAmount - oldMarginAmount : oldMarginAmount - newMarginAmount
   const functionName = newMarginAmount > oldMarginAmount ? 'increase' : 'decrease'
   const payload = {
     function:
-      `${MODULES(network).mirage_scripts.address}::market_scripts::${functionName}_margin_entry` as `${string}::${string}::${string}`,
+      `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::market_scripts::${functionName}_margin_entry` as `${string}::${string}::${string}`,
     functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(diff)],
-    typeArguments: getPositionTypeArgument(network),
+    typeArguments: [],
   }
   return payload
 }
@@ -302,7 +289,7 @@ export const updateMargin = async (
  */
 export const increaseMargin = async (
   positionObject: MoveObjectType,
-  marginCoin: MoveToken,
+  marginCoin: MoveFungibleAsset,
   perpetualAsset: Perpetual,
   increaseMarginAmount: number,
   network: Network,
@@ -310,13 +297,13 @@ export const increaseMargin = async (
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
 
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, network) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, network) : []
   const payload = {
     function:
-      `${MODULES(network).mirage_scripts.address}::market_scripts::increase_margin_entry` as `${string}::${string}::${string}`,
+      `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::market_scripts::increase_margin_entry` as `${string}::${string}::${string}`,
     functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(increaseMarginAmount)],
-    typeArguments: getPositionTypeArgument(network),
+    typeArguments: [],
   }
   return payload
 }
@@ -327,7 +314,7 @@ export const increaseMargin = async (
  */
 export const increaseSizeAndIncreaseMargin = async (
   positionObject: MoveObjectType,
-  marginCoin: MoveToken,
+  marginCoin: MoveFungibleAsset,
   perpetualAsset: Perpetual,
   increasePositionSize: number,
   increaseMarginAmount: number,
@@ -336,11 +323,11 @@ export const increaseSizeAndIncreaseMargin = async (
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
 
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, network) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, network) : []
   const payload = {
     function:
-      `${MODULES(network).mirage_scripts.address}::market_scripts::increase_position_size_and_increase_margin_entry` as `${string}::${string}::${string}`,
+      `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::market_scripts::increase_position_size_and_increase_margin_entry` as `${string}::${string}::${string}`,
     functionArguments: [
       positionObject,
       perpetualVaas,
@@ -348,7 +335,7 @@ export const increaseSizeAndIncreaseMargin = async (
       getDecimal8Argument(increasePositionSize),
       getDecimal8Argument(increaseMarginAmount),
     ],
-    typeArguments: getPositionTypeArgument(network),
+    typeArguments: [],
   }
   return payload
 }
@@ -359,7 +346,7 @@ export const increaseSizeAndIncreaseMargin = async (
  */
 export const increaseSizeAndDecreaseMargin = async (
   positionObject: MoveObjectType,
-  marginCoin: MoveToken,
+  marginCoin: MoveFungibleAsset,
   perpetualAsset: Perpetual,
   increasePositionSize: number,
   decreaseMarginAmount: number,
@@ -368,11 +355,11 @@ export const increaseSizeAndDecreaseMargin = async (
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
 
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, network) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, network) : []
   const payload = {
     function:
-      `${MODULES(network).mirage_scripts.address}::market_scripts::increase_position_size_and_decrease_margin_entry` as `${string}::${string}::${string}`,
+      `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}:::market_scripts::increase_position_size_and_decrease_margin_entry` as `${string}::${string}::${string}`,
     functionArguments: [
       positionObject,
       perpetualVaas,
@@ -380,7 +367,7 @@ export const increaseSizeAndDecreaseMargin = async (
       getDecimal8Argument(increasePositionSize),
       getDecimal8Argument(decreaseMarginAmount),
     ],
-    typeArguments: getPositionTypeArgument(network),
+    typeArguments: [],
   }
   return payload
 }
@@ -391,7 +378,7 @@ export const increaseSizeAndDecreaseMargin = async (
  */
 export const decreaseSizeAndDecreaseMargin = async (
   positionObject: MoveObjectType,
-  marginCoin: MoveToken,
+  marginCoin: MoveFungibleAsset,
   perpetualAsset: Perpetual,
   decreasePositionSize: number,
   decreaseMarginAmount: number,
@@ -400,11 +387,11 @@ export const decreaseSizeAndDecreaseMargin = async (
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
 
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, network) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, network) : []
   const payload = {
     function:
-      `${MODULES(network).mirage_scripts.address}::market_scripts::decrease_position_size_and_decrease_margin_entry` as `${string}::${string}::${string}`,
+      `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::market_scripts::decrease_position_size_and_decrease_margin_entry` as `${string}::${string}::${string}`,
     functionArguments: [
       positionObject,
       perpetualVaas,
@@ -412,7 +399,7 @@ export const decreaseSizeAndDecreaseMargin = async (
       getDecimal8Argument(decreasePositionSize),
       getDecimal8Argument(decreaseMarginAmount),
     ],
-    typeArguments: getPositionTypeArgument(network),
+    typeArguments: [],
   }
   return payload
 }
@@ -423,7 +410,7 @@ export const decreaseSizeAndDecreaseMargin = async (
  */
 export const decreaseSizeAndIncreaseMargin = async (
   positionObject: MoveObjectType,
-  marginCoin: MoveToken,
+  marginCoin: MoveFungibleAsset,
   perpetualAsset: Perpetual,
   decreasePositionSize: number,
   increaseMarginAmount: number,
@@ -432,11 +419,11 @@ export const decreaseSizeAndIncreaseMargin = async (
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
 
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, network) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, network) : []
   const payload = {
     function:
-      `${MODULES(network).mirage_scripts.address}::market_scripts::decrease_position_size_and_increase_margin_entry` as `${string}::${string}::${string}`,
+      `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::market_scripts::decrease_position_size_and_increase_margin_entry` as `${string}::${string}::${string}`,
     functionArguments: [
       positionObject,
       perpetualVaas,
@@ -444,7 +431,7 @@ export const decreaseSizeAndIncreaseMargin = async (
       getDecimal8Argument(decreasePositionSize),
       getDecimal8Argument(increaseMarginAmount),
     ],
-    typeArguments: getPositionTypeArgument(network),
+    typeArguments: [],
   }
   return payload
 }
@@ -455,7 +442,7 @@ export const decreaseSizeAndIncreaseMargin = async (
  */
 export const decreaseMargin = async (
   positionObject: MoveObjectType,
-  marginCoin: MoveToken,
+  marginCoin: MoveFungibleAsset,
   perpetualAsset: Perpetual,
   decreaseMarginAmount: number,
   network: Network,
@@ -463,13 +450,13 @@ export const decreaseMargin = async (
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
 
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, network) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, network) : []
   const payload = {
     function:
-      `${MODULES(network).mirage_scripts.address}::market_scripts::decrease_margin_entry` as `${string}::${string}::${string}`,
+      `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::market_scripts::decrease_margin_entry` as `${string}::${string}::${string}`,
     functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(decreaseMarginAmount)],
-    typeArguments: getPositionTypeArgument(network),
+    typeArguments: [],
   }
   return payload
 }
@@ -480,7 +467,7 @@ export const decreaseMargin = async (
  */
 export const updatePositionSize = async (
   positionObject: MoveObjectType,
-  marginCoin: MoveToken,
+  marginCoin: MoveFungibleAsset,
   perpetualAsset: Perpetual,
   oldPositionSize: number,
   newPositionSize: number,
@@ -489,22 +476,20 @@ export const updatePositionSize = async (
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
 
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, network) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, network) : []
   const diff = newPositionSize > oldPositionSize ? newPositionSize - oldPositionSize : oldPositionSize - newPositionSize
-  const functionName =
+  const functionName = (
     newPositionSize > oldPositionSize
-      ? 'market::increase_position_size'
-      : 'market_scripts::decrease_position_size_entry'
+      ? `${getModuleAddress(network, MoveModules.MARKET)}::market::increase_position_size`
+      : `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::market_scripts::decrease_position_size_entry`
+  ) as `${string}::${string}::${string}`
 
-  const payload = {
-    function: `${
-      newPositionSize > oldPositionSize ? MODULES(network).market.address : MODULES(network).mirage_scripts.address
-    }::${functionName}` as `${string}::${string}::${string}`,
+  return {
+    function: functionName,
     functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(diff)],
-    typeArguments: getPositionTypeArgument(network),
+    typeArguments: [],
   }
-  return payload
 }
 
 /**
@@ -513,7 +498,7 @@ export const updatePositionSize = async (
  */
 export const increasePositionSize = async (
   positionObject: MoveObjectType,
-  marginCoin: MoveToken,
+  marginCoin: MoveFungibleAsset,
   perpetualAsset: Perpetual,
   increasePositionSize: number,
   network: Network,
@@ -521,13 +506,14 @@ export const increasePositionSize = async (
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
 
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, network) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, network) : []
 
   const payload = {
-    function: `${MODULES(network).market.address}::market::increase_position_size` as `${string}::${string}::${string}`,
+    function:
+      `${getModuleAddress(network, MoveModules.MARKET)}::market::increase_position_size` as `${string}::${string}::${string}`,
     functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(increasePositionSize)],
-    typeArguments: getPositionTypeArgument(network),
+    typeArguments: [],
   }
   return payload
 }
@@ -538,7 +524,7 @@ export const increasePositionSize = async (
  */
 export const decreasePositionSize = async (
   positionObject: MoveObjectType,
-  marginCoin: MoveToken,
+  marginCoin: MoveFungibleAsset,
   perpetualAsset: Perpetual,
   decreasePositionSize: number,
   network: Network,
@@ -546,114 +532,88 @@ export const decreasePositionSize = async (
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
 
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, network) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, network) : []
 
   const payload = {
     function:
-      `${MODULES(network).mirage_scripts.address}::market_scripts::decrease_position_size_entry` as `${string}::${string}::${string}`,
+      `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::market_scripts::decrease_position_size_entry` as `${string}::${string}::${string}`,
     functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(decreasePositionSize)],
-    typeArguments: getPositionTypeArgument(network),
+    typeArguments: [],
   }
   return payload
 }
 
 /**
- * Trigger a take profit or stop loss of the position at address to_trigger
+ * Trigger tpslObject and deposit trigger payment at depositToAddr
  * @returns payload promise for the transaction
  */
 export const triggerTpsl = async (
-  triggererAddress: string,
-  positionObject: MoveObjectType,
-  marginCoin: MoveToken,
+  depositToAddr: string,
+  tpslObject: MoveObjectType,
+  marginCoin: MoveFungibleAsset,
   perpetualAsset: Perpetual,
   network: Network,
 ): Promise<InputEntryFunctionData> => {
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, network) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, network) : []
   const payload = {
     function:
-      `${MODULES(network).mirage_scripts.address}::market_scripts::trigger_tpsl_entry` as `${string}::${string}::${string}`,
-    functionArguments: [triggererAddress, positionObject, perpetualVaas, marginVaas],
-    typeArguments: getPositionTypeArgument(network),
+      `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::market_scripts::trigger_tpsl_entry` as `${string}::${string}::${string}`,
+    functionArguments: [depositToAddr, tpslObject, perpetualVaas, marginVaas],
+    typeArguments: [],
   }
   return payload
 }
 
 /**
- * Liquidate a position at address to_trigger
+ * Liquidate positionObject and deposit the trigger payment at depositToAddr
  * @returns payload promise for the transaction
  */
 export const liquidatePosition = async (
+  depositToAddr: string,
   positionObject: MoveObjectType,
-  marginCoin: MoveToken,
+  marginCoin: MoveFungibleAsset,
   perpetualAsset: Perpetual,
   network: Network,
 ): Promise<InputEntryFunctionData> => {
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, network) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, network) : []
 
   const payload = {
     function:
-      `${MODULES(network).mirage_scripts.address}::market_scripts::liquidate_position_entry` as `${string}::${string}::${string}`,
-    functionArguments: [positionObject, perpetualVaas, marginVaas],
-    typeArguments: getPositionTypeArgument(network),
+      `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::market_scripts::liquidate_position_entry` as `${string}::${string}::${string}`,
+    functionArguments: [depositToAddr, positionObject, perpetualVaas, marginVaas],
+    typeArguments: [],
   }
   return payload
 }
 
 /**
- * Trigger a limit order at the index at address to_trigger
+ * Trigger a limitOrderObject and deposit trigger payment at depositToAddr
  * @returns payload promise for the transaction
  */
 export const triggerLimitOrder = async (
-  triggererAddress: string,
-  positionObject: MoveObjectType,
-  marginCoin: MoveToken,
+  depositToAddr: string,
+  limitOrderObject: MoveObjectType,
+  marginCoin: MoveFungibleAsset,
   perpetualAsset: Perpetual,
-  index: number,
   network: Network,
 ): Promise<InputEntryFunctionData> => {
   const marginFeed = getPriceFeed(marginCoin, network)
   const perpetualFeed = getPriceFeed(perpetualAsset, network)
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
+  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, network) : []
+  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, network) : []
 
   const payload = {
     function:
-      `${MODULES(network).mirage_scripts.address}::market_scripts::trigger_limit_order_entry` as `${string}::${string}::${string}`,
-    functionArguments: [triggererAddress, positionObject, index, perpetualVaas, marginVaas],
-    typeArguments: getPositionTypeArgument(network),
-  }
-  return payload
-}
-
-/**
- * Trigger a limit order by id
- * @returns payload promise for the transaction
- */
-export const triggerLimitOrderById = async (
-  triggererAddress: string,
-  positionObject: MoveObjectType,
-  marginCoin: MoveToken,
-  perpetualAsset: Perpetual,
-  orderId: bigint,
-  network: Network,
-): Promise<InputEntryFunctionData> => {
-  const marginFeed = getPriceFeed(marginCoin, network)
-  const perpetualFeed = getPriceFeed(perpetualAsset, network)
-  const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(network)) : []
-  const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(network)) : []
-
-  const payload = {
-    function:
-      `${MODULES(network).mirage_scripts.address}::market_scripts::trigger_limit_order_by_id_entry` as `${string}::${string}::${string}`,
-    functionArguments: [triggererAddress, positionObject, orderId, perpetualVaas, marginVaas],
-    typeArguments: getPositionTypeArgument(network),
+      `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::market_scripts::trigger_limit_order_entry` as `${string}::${string}::${string}`,
+    functionArguments: [depositToAddr, limitOrderObject, perpetualVaas, marginVaas],
+    typeArguments: [],
   }
   return payload
 }

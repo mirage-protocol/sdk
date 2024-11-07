@@ -1,18 +1,21 @@
 import { InputViewFunctionData, MoveOption, Network, U128 } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { aptosClient, getNetwork } from '../constants'
-import { getAssetTokenMetadata, getTypeFromMoveAsset, MoveAsset, moveAssetInfo, MoveCoin } from '../constants/assetList'
+import { aptosClient } from '../constants'
+import {
+  fungibleAssetList,
+  getAssetDecimals,
+  getAssetName,
+  getAssetSymbol,
+  MoveAsset,
+  MoveFungibleAsset,
+} from '../constants/assetList'
 
 /**
  * Represents an on-chain AssetStore with a unique type and stores some metadata.
  * Holds the balance of a given user's resources.
  */
 export class Asset {
-  /**
-   * The asset type
-   */
-  public readonly type: string
   /**
    * The asset represented by the class
    */
@@ -47,18 +50,13 @@ export class Asset {
    * @param userResources resources of some account
    * @param asset which asset to find data for
    */
-  constructor(balance: BigNumber, asset: MoveAsset | string, network: Network | string = Network.MAINNET) {
-    const { name, symbol, decimals, type } = moveAssetInfo(asset, network)
-
-    const precision = BigNumber(10).pow(decimals)
-
-    this.network = getNetwork(network)
-    this.type = type
-    this.name = name
-    this.symbol = symbol
-    this.decimals = decimals
-    this.asset = asset as MoveCoin
-    this.precision = precision
+  constructor(balance: BigNumber, asset: MoveAsset, network: Network) {
+    this.network = network
+    this.name = getAssetName(asset, network)
+    this.symbol = getAssetSymbol(asset, network)
+    this.decimals = getAssetDecimals(asset, network)
+    this.asset = asset
+    this.precision = BigNumber(10).pow(this.decimals)
     this.balance = balance
   }
 
@@ -66,11 +64,11 @@ export class Asset {
    * Get the coin's total supply (no precision)
    * @returns The coin's current supply
    */
-  public async getTotalSupply(): Promise<BigNumber> {
-    const isToken = getTypeFromMoveAsset(this.asset) == 'MoveToken'
+  public async getTotalSupply(network: Network): Promise<BigNumber> {
+    const isFA = this.asset in MoveFungibleAsset
     const payload: InputViewFunctionData = {
-      function: (isToken ? '0x1::fungible_asset::supply' : '0x1::coin::supply') as `${string}::${string}::${string}`,
-      functionArguments: isToken ? [getAssetTokenMetadata(this.asset, this.network)] : [],
+      function: (isFA ? '0x1::fungible_asset::supply' : '0x1::coin::supply') as `${string}::${string}::${string}`,
+      functionArguments: isFA ? [fungibleAssetList(network)[this.asset]] : [],
     }
     const [val] = await aptosClient(this.network).view({ payload })
     const val_option = val as MoveOption<U128>

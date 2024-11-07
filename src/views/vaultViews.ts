@@ -12,11 +12,12 @@ import { Client } from 'urql'
 import {
   getAllVaultCollectionObjectAddresses,
   getCollectionIdForVaultPair,
+  getModuleAddress,
   mirageAddress,
   mirageGraphQlClient,
-  MODULES,
   MoveAsset,
-  MoveToken,
+  MoveFungibleAsset,
+  MoveModules,
   PRECISION_8,
 } from '../constants'
 import { Rebase } from '../entities'
@@ -28,18 +29,14 @@ import {
 } from '../generated/aptos/graphql'
 import { GetVaultCollectionAprDocument, GetVaultCollectionAprQueryVariables } from '../generated/mirage/graphql'
 
-const getVaultCollectionTypeArgument = (network: Network | string): `${string}::${string}::${string}`[] => {
-  return [`${mirageAddress(network)}::vault::VaultCollection`]
-}
-
 export const getAllVaultIdsByOwner = async (
-  owner: string,
+  owner: AccountAddress,
   graphqlClient: Client,
-  network: Network | string,
+  network: Network,
 ): Promise<string[]> => {
   const variables: GetTokenIdsFromCollectionsByOwnerQueryVariables = {
     COLLECTIONS: getAllVaultCollectionObjectAddresses(network),
-    OWNER: owner,
+    OWNER: owner.toStringLong(),
   }
   try {
     const result = await graphqlClient.query(GetTokenIdsFromCollectionsByOwnerDocument, variables).toPromise()
@@ -63,14 +60,14 @@ export const getAllVaultIdsByOwner = async (
 
 export const getVaultTokenIdsByCollectionAndOwner = async (
   collateralAsset: MoveAsset,
-  borrowToken: MoveToken,
-  owner: string,
+  borrowToken: MoveFungibleAsset,
+  owner: AccountAddress,
   graphqlClient: Client,
-  network: Network | string,
+  network: Network,
 ): Promise<string[]> => {
   const variables: GetTokenIdsFromCollectionByOwnerQueryVariables = {
     COLLECTION: getCollectionIdForVaultPair(collateralAsset, borrowToken, network),
-    OWNER: owner,
+    OWNER: owner.toStringLong(),
   }
   try {
     const result = await graphqlClient.query(GetTokenIdsFromCollectionByOwnerDocument, variables).toPromise()
@@ -94,23 +91,23 @@ export const getVaultTokenIdsByCollectionAndOwner = async (
 
 export const getBorrowTokenFromCollection = async (
   collectionObject: MoveObjectType,
-  network: Network | string,
+  network: Network,
 ): Promise<InputViewFunctionData> => {
   return {
     function: `${mirageAddress(network)}::vault::borrow_token`,
     functionArguments: [collectionObject],
-    typeArguments: getVaultCollectionTypeArgument(network),
+    typeArguments: [],
   }
 }
 
 export const getCollateralTokenFromCollection = async (
   collectionObject: MoveObjectType,
-  network: Network | string,
+  network: Network,
 ): Promise<InputViewFunctionData> => {
   return {
     function: `${mirageAddress(network)}::vault::collateral_token`,
     functionArguments: [collectionObject],
-    typeArguments: getVaultCollectionTypeArgument(network),
+    typeArguments: [],
   }
 }
 
@@ -179,11 +176,11 @@ export const getVaultCollectionAPR = async (beginDate: Date, collectionId: Accou
 export const getLiquidatableAmountsBulk = async (
   vaultObjectAddresses: MoveObjectType[],
   client: Aptos,
-  network: Network | string,
+  network: Network,
 ): Promise<number[]> => {
   const payload = {
     function:
-      `${MODULES(network).keeper_scripts.address}::vault_scripts::get_liquidatable_amounts_bulk` as `${string}::${string}::${string}`,
+      `${getModuleAddress(network, MoveModules.KEEPER_SCRIPTS)}::vault_scripts::get_liquidatable_amounts_bulk` as `${string}::${string}::${string}`,
     functionArguments: [vaultObjectAddresses],
   }
   const ret = await client.view({ payload })

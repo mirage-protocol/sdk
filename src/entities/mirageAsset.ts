@@ -1,17 +1,17 @@
 import { MoveResource, Network } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { mirageAddress, MoveToken, ZERO } from '../constants'
+import { getModuleAddress, MoveFungibleAsset, MoveModules, ZERO } from '../constants'
 import { Rebase } from './rebase'
 
 export class MirageAsset {
-  public readonly debt: MoveToken
+  public readonly debt: MoveFungibleAsset
   public readonly debtRebase: Rebase
 
-  constructor(tokenObjectResources: MoveResource[], debt: MoveToken | string, network: Network | string) {
-    this.debt = debt as MoveToken
+  constructor(tokenObjectResources: MoveResource[], debt: MoveFungibleAsset, network: Network) {
+    this.debt = debt as MoveFungibleAsset
 
-    const debtStoreType = `${mirageAddress(network)}::mirage::MirageDebtStore`
+    const debtStoreType = `${getModuleAddress(network, MoveModules.MIRAGE)}::mirage::MirageDebtStore`
     const mirage = tokenObjectResources.find((resource) => resource.type === debtStoreType)
 
     this.debtRebase = !!mirage

@@ -4,40 +4,37 @@ import BigNumber from 'bignumber.js'
 import {
   aptosClient,
   assetBalanceToDecimal,
-  assetInfo,
-  getAssetTokenMetadata,
-  getTypeFromMoveAsset,
+  coinList,
+  getCoinType,
+  getFungibleAssetAddress,
   MoveAsset,
-  ZERO,
+  MoveCoin,
+  MoveFungibleAsset,
 } from '../constants'
 
 export const getUserAssetBalance = async (
-  userAddress: string,
+  userAddress: AccountAddress,
   asset: MoveAsset,
   network: Network,
 ): Promise<BigNumber> => {
-  let balance = ZERO
-  switch (getTypeFromMoveAsset(asset)) {
-    case 'MoveCoin':
-      balance = BigNumber(
-        await aptosClient(network).getAccountCoinAmount({
-          accountAddress: userAddress,
-          coinType: assetInfo(asset, network).type as `${string}::${string}::${string}`,
-        }),
-      )
-      break
-    case 'MoveToken':
-      const data = await aptosClient(network).getCurrentFungibleAssetBalances({
-        options: {
-          where: {
-            owner_address: { _eq: AccountAddress.from(userAddress).toStringLong() },
-            asset_type: { _eq: getAssetTokenMetadata(asset, network) },
-            is_primary: { _eq: true },
-          },
-        },
-      })
-      balance = BigNumber(data[0]?.amount ?? 0)
-      break
-  }
+  const balance =
+    asset in coinList
+      ? BigNumber(
+          await aptosClient(network).getAccountCoinAmount({
+            accountAddress: userAddress,
+            coinType: getCoinType(asset as MoveCoin, network),
+          }),
+        )
+      : (
+          await aptosClient(network).getCurrentFungibleAssetBalances({
+            options: {
+              where: {
+                owner_address: { _eq: userAddress.toStringLong() },
+                asset_type: { _eq: getFungibleAssetAddress(asset as MoveFungibleAsset, network).toStringLong() },
+                is_primary: { _eq: true },
+              },
+            },
+          })
+        )[0]?.amount
   return assetBalanceToDecimal(balance, asset, network)
 }

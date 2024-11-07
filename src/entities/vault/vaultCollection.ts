@@ -11,8 +11,8 @@ import {
   ZERO,
 } from '../../constants'
 import { mirageAddress } from '../../constants/accounts'
-import { assetBalanceToDecimal, MoveAsset, MoveToken } from '../../constants/assetList'
-import { MirageAsset } from '../mirage_asset'
+import { assetBalanceToDecimal, MoveAsset, MoveFungibleAsset } from '../../constants/assetList'
+import { MirageAsset } from '../mirageAsset'
 import { Rebase } from '../rebase'
 
 /**
@@ -27,7 +27,7 @@ export class VaultCollection {
   /**
    * The borrow asset of the vault (a mirage asset e.g. mUSD)
    */
-  public readonly borrow: MoveToken
+  public readonly borrow: MoveFungibleAsset
   /**
    * The rebase representing the total borrow in the vault
    */
@@ -93,13 +93,13 @@ export class VaultCollection {
   constructor(
     collectionObjectResources: MoveResource[],
     borrowTokenObjectResources: MoveResource[],
-    collateral: MoveToken | string,
-    borrow: MoveToken | string,
+    collateral: MoveAsset,
+    borrow: MoveFungibleAsset,
     objectAddress: string,
-    network: Network | string,
+    network: Network,
   ) {
-    this.collateral = collateral as MoveToken
-    this.borrow = borrow as MoveToken
+    this.collateral = collateral
+    this.borrow = borrow
     this.mirage = new MirageAsset(borrowTokenObjectResources, this.borrow, network)
     this.objectAddress = objectAddress
 
@@ -159,8 +159,8 @@ export class VaultCollection {
     this.isEmergency = !!vaultCollection ? (vaultCollection.data as any).is_emergency : false
 
     this.priceFeeds = {
-      collateral: getPriceFeed(this.collateral),
-      borrow: getPriceFeed(this.borrow),
+      collateral: getPriceFeed(this.collateral, network),
+      borrow: getPriceFeed(this.borrow, network),
     }
   }
 

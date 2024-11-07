@@ -1,14 +1,15 @@
-import { Aptos, MoveObjectType, MoveUint64Type, Network } from '@aptos-labs/ts-sdk'
+import { AccountAddress, Aptos, MoveObjectType, MoveUint64Type, Network } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 import { Client } from 'urql'
 
 import {
   aptosClient,
   getAllMarketObjectAddresses,
-  getCollectionIdForPerpPair,
+  getModuleAddress,
+  getPerpMarketAddress,
   mirageAddress,
-  MODULES,
-  MoveToken,
+  MoveFungibleAsset,
+  MoveModules,
   Perpetual,
   PRECISION_8,
 } from '../constants'
@@ -18,28 +19,31 @@ import {
   GetTokenIdsFromCollectionsByOwnerDocument,
   GetTokenIdsFromCollectionsByOwnerQueryVariables,
 } from '../generated/aptos/graphql'
-import { getDecimal8Argument, getMarketTypeArgument, getPositionTypeArgument } from '../transactions'
+import { getDecimal8Argument } from '../transactions'
 
-export const getMarginTokenFromPosition = async (positionObjectAddress: string, network: Network): Promise<string> => {
+export const getMarginTokenFromPosition = async (
+  positionObjectAddress: MoveObjectType,
+  network: Network,
+): Promise<string> => {
   return (
     await aptosClient(network).view({
       payload: {
         function: `${mirageAddress(network)}::market::position_margin_token`,
         functionArguments: [positionObjectAddress],
-        typeArguments: [`${mirageAddress(network)}::market::Position`],
+        typeArguments: [],
       },
     })
   )[0] as MoveObjectType
 }
 
 export const getAllPositionIdsByOwner = async (
-  owner: string,
+  owner: AccountAddress,
   graphqlClient: Client,
-  network: Network | string,
+  network: Network,
 ): Promise<string[]> => {
   const variables: GetTokenIdsFromCollectionsByOwnerQueryVariables = {
     COLLECTIONS: getAllMarketObjectAddresses(network),
-    OWNER: owner,
+    OWNER: owner.toStringLong(),
   }
   try {
     const result = await graphqlClient.query(GetTokenIdsFromCollectionsByOwnerDocument, variables).toPromise()
@@ -60,15 +64,15 @@ export const getAllPositionIdsByOwner = async (
 }
 
 export const getPositionIdsByMarketAndOwner = async (
-  marginToken: MoveToken,
+  marginToken: MoveFungibleAsset,
   perp: Perpetual,
-  owner: string,
+  owner: AccountAddress,
   graphqlClient: Client,
-  network: Network | string,
+  network: Network,
 ): Promise<string[]> => {
   const variables: GetTokenIdsFromCollectionByOwnerQueryVariables = {
-    COLLECTION: getCollectionIdForPerpPair(marginToken, perp, network),
-    OWNER: owner,
+    COLLECTION: getPerpMarketAddress(perp, marginToken, network).toStringLong(),
+    OWNER: owner.toStringLong(),
   }
   try {
     const result = await graphqlClient.query(GetTokenIdsFromCollectionByOwnerDocument, variables).toPromise()
@@ -95,12 +99,13 @@ export const isLimitOrderTriggerable = async (
   index: number,
   perpPrice: number,
   client: Aptos,
-  network: Network | string,
+  network: Network,
 ): Promise<boolean> => {
   const payload = {
-    function: `${mirageAddress(network)}::market::is_limit_order_triggerable` as `${string}::${string}::${string}`,
-    typeArguments: getPositionTypeArgument(network),
+    function:
+      `${getModuleAddress(network, MoveModules.MARKET)}::limit_order::is_limit_order_triggerable` as `${string}::${string}::${string}`,
     functionArguments: [positionObjectAddress, index, getDecimal8Argument(perpPrice)],
+    typeArguments: [],
   }
   const ret = await client.view({ payload })
   return ret[0] as boolean
@@ -111,11 +116,11 @@ export const isLimitOrderTriggerableBulk = async (
   indexes: number[],
   perpPrice: number,
   client: Aptos,
-  network: Network | string,
+  network: Network,
 ): Promise<boolean[]> => {
   const payload = {
     function:
-      `${MODULES(network).keeper_scripts.address}::market_scripts::get_is_limit_order_triggerable_states_same_perp` as `${string}::${string}::${string}`,
+      `${getModuleAddress(network, MoveModules.KEEPER_SCRIPTS)}::market_scripts::get_is_limit_order_triggerable_states_same_perp` as `${string}::${string}::${string}`,
     functionArguments: [positionObjectAddresses, indexes, getDecimal8Argument(perpPrice)],
   }
   const ret = await client.view({ payload })
@@ -127,12 +132,12 @@ export const getLiquidationPrice = async (
   perpetualPrice: number,
   marginPrice: number,
   client: Aptos,
-  network: Network | string,
+  network: Network,
 ): Promise<number> => {
   const payload = {
     function: `${mirageAddress(network)}::market::get_liquidation_price` as `${string}::${string}::${string}`,
-    typeArguments: getPositionTypeArgument(network),
     functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
+    typeArguments: [],
   }
   const ret = await client.view({ payload })
   return BigNumber(ret[0] as MoveUint64Type)
@@ -145,11 +150,11 @@ export const getLiquidationPriceBulk = async (
   perpetualPrice: number,
   marginPrice: number,
   client: Aptos,
-  network: Network | string,
+  network: Network,
 ): Promise<number[]> => {
   const payload = {
     function:
-      `${MODULES(network).keeper_scripts.address}::market_scripts::get_liquidation_prices_same_perp` as `${string}::${string}::${string}`,
+      `${getModuleAddress(network, MoveModules.KEEPER_SCRIPTS)}::market_scripts::get_liquidation_prices_same_perp` as `${string}::${string}::${string}`,
     functionArguments: [positionObjectAddresses, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
   }
   const ret = await client.view({ payload })
@@ -177,8 +182,8 @@ export const estimateFee = async (
   network: Network,
 ): Promise<number> => {
   const payload = {
-    function: `${mirageAddress(network)}::market::get_open_close_fee` as `${string}::${string}::${string}`,
-    typeArguments: getMarketTypeArgument(network),
+    function: `${getModuleAddress(network, MoveModules.MARKET)}::market::get_fee` as `${string}::${string}::${string}`,
+    typeArguments: [],
     functionArguments: [
       marketObjectAddress,
       isLong,
@@ -202,9 +207,9 @@ export const getPositionMaintenanceMarginMusd = async (
 ): Promise<number> => {
   const payload = {
     function:
-      `${mirageAddress(network)}::market::get_position_maintenance_margin_musd` as `${string}::${string}::${string}`,
-    typeArguments: getPositionTypeArgument(network),
+      `${getModuleAddress(network, MoveModules.MARKET)}::market::get_position_maintenance_margin_musd` as `${string}::${string}::${string}`,
     functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
+    typeArguments: [],
   }
   const ret = await aptosClient(network).view({ payload })
   return BigNumber(ret[0] as MoveUint64Type)
@@ -233,9 +238,10 @@ export const getAllPositionInfo = async (
   network: Network,
 ): Promise<AllPositionInfo> => {
   const payload = {
-    function: `${mirageAddress(network)}::market::all_position_info` as `${string}::${string}::${string}`,
-    typeArguments: getPositionTypeArgument(network),
+    function:
+      `${getModuleAddress(network, MoveModules.MARKET)}::market::all_position_info` as `${string}::${string}::${string}`,
     functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
+    typeArguments: [],
   }
   const ret = await aptosClient(network).view({ payload })
   const data = ret[0] as any

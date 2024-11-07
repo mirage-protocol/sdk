@@ -5,7 +5,7 @@ import BigNumber from 'bignumber.js'
 import { FEE_PRECISION, PRECISION_8 } from '../../constants'
 import { PERCENT_PRECISION, ZERO } from '../../constants'
 import { mirageAddress } from '../../constants/accounts'
-import { MoveToken, Perpetual } from '../../constants/assetList'
+import { MoveFungibleAsset, Perpetual } from '../../constants/assetList'
 import { PositionSide } from './position'
 /**
  * Represents a mirage-protocol perpetuals market.
@@ -14,7 +14,7 @@ export class Market {
   /**
    * The base asset of the market
    */
-  public readonly marginToken: MoveToken
+  public readonly marginToken: MoveFungibleAsset
   /**
    * The underlying asset of the market
    */
@@ -146,12 +146,12 @@ export class Market {
    */
   constructor(
     marketObjectResources: MoveResource[],
-    marginCoin: MoveToken | string,
+    marginCoin: MoveFungibleAsset | string,
     perpetualAsset: Perpetual | string,
     network: Network,
     objectAddress: string,
   ) {
-    this.marginToken = marginCoin as MoveToken
+    this.marginToken = marginCoin as MoveFungibleAsset
     this.perpetualAsset = perpetualAsset as Perpetual
     this.objectAddress = objectAddress
     this.network = network

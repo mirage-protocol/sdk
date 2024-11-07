@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js'
 
 import { PRECISION_8, ZERO } from '../../constants'
 import { mirageAddress } from '../../constants/accounts'
-import { assetBalanceToDecimal, MoveAsset, MoveToken } from '../../constants/assetList'
+import { assetBalanceToDecimal, MoveAsset, MoveFungibleAsset } from '../../constants/assetList'
 import { getPropertyMapSigned64, getPropertyMapU64 } from '../../utils'
 import { VaultCollection } from './vaultCollection'
 
@@ -19,7 +19,7 @@ export class Vault {
   /**
    * The borrow token of the vault (a mirage asset e.g. mUSD)
    */
-  public readonly borrowToken: MoveToken
+  public readonly borrowToken: MoveFungibleAsset
   /**
    * The amount of collateral deposited
    */
@@ -55,13 +55,13 @@ export class Vault {
   constructor(
     vaultObjectResources: MoveResource[],
     vaultCollection: VaultCollection,
-    collateral: MoveToken | string,
-    borrow: MoveToken | string,
+    collateral: MoveAsset,
+    borrow: MoveFungibleAsset,
     objectAddress: string,
-    network: Network | string,
+    network: Network,
   ) {
-    this.collateralAsset = collateral as MoveToken
-    this.borrowToken = borrow as MoveToken
+    this.collateralAsset = collateral
+    this.borrowToken = borrow
     this.vaultCollection = vaultCollection
     this.objectAddress = objectAddress
 

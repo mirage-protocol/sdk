@@ -3,8 +3,10 @@ import BigNumber from 'bignumber.js'
 
 import {
   FEE_PRECISION,
+  getModuleAddress,
   mirageAddress,
-  MoveToken,
+  MoveFungibleAsset,
+  MoveModules,
   PERCENT_PRECISION,
   Perpetual,
   PRECISION_8,
@@ -12,7 +14,7 @@ import {
   ZERO,
 } from '../../constants'
 import { getPropertyMapSigned64, getPropertyMapU64 } from '../../utils'
-import { LimitOrder, LimitOrderData } from './limitOrder'
+import { LimitOrder } from './limitOrder'
 import { Market } from './market'
 
 /**
@@ -58,7 +60,7 @@ export class Position {
   /**
    * The margin asset of the position
    */
-  public readonly marginToken: MoveToken
+  public readonly marginToken: MoveFungibleAsset
   /**
    * The perpetual asset being traded
    */
@@ -120,13 +122,13 @@ export class Position {
     // userAddress: string,
     positionObjectResources: MoveResource[],
     market: Market,
-    marginCoin: MoveToken | string,
+    marginCoin: MoveFungibleAsset | string,
     perpetualAsset: Perpetual | string,
     objectAddress: string,
-    network: Network | string,
+    network: Network,
   ) {
     // this.userAddress = userAddress
-    this.marginToken = marginCoin as MoveToken
+    this.marginToken = marginCoin as MoveFungibleAsset
     this.perpetualAsset = perpetualAsset as Perpetual
     this.market = market
     this.objectAddress = objectAddress
@@ -178,7 +180,7 @@ export class Position {
       : ZERO
     const fundingAccrued = !!position ? marketFundingAccumulated.minus(lastPositionFunding).times(positionSize) : ZERO
 
-    const tpslType = `${mirageAddress(network)}::market::TpSl`
+    const tpslType = `${getModuleAddress(network, MoveModules.MARKET)}::market::TpSl`
     const tpsl = positionObjectResources.find((resource) => resource.type === tpslType)
     const tpslExists = !!tpsl
     const takeProfitPrice = tpslExists ? BigNumber((tpsl as any).data.take_profit_price).div(PRECISION_8) : ZERO
@@ -200,29 +202,29 @@ export class Position {
         }
       : undefined
 
-    const limitOrderType = `${mirageAddress(network)}::market::LimitOrders`
+    // const limitOrderType = `${mirageAddress(network)}::market::LimitOrders`
 
-    const limitOrders = positionObjectResources.find((resource) => resource.type === limitOrderType)
+    // const limitOrders = positionObjectResources.find((resource) => resource.type === limitOrderType)
 
-    const ordersArr = !!limitOrders ? (limitOrders.data as any).orders : []
+    // const ordersArr = !!limitOrders ? (limitOrders.data as any).orders : []
     const tempOrders: LimitOrder[] = []
 
-    try {
-      for (let index = 0; index < ordersArr.length; index++) {
-        tempOrders.push(
-          new LimitOrder(
-            ordersArr[index] as LimitOrderData,
-            index,
-            this.marginToken,
-            this.perpetualAsset,
-            side,
-            this.objectAddress,
-          ),
-        )
-      }
-    } catch (error) {
-      console.error(`Error deserializing limit order ${error}`)
-    }
+    // try {
+    //   for (let index = 0; index < ordersArr.length; index++) {
+    //     tempOrders.push(
+    //       new LimitOrder(
+    //         ordersArr[index] as LimitOrderData,
+    //         index,
+    //         this.marginToken,
+    //         this.perpetualAsset,
+    //         side,
+    //         this.objectAddress,
+    //       ),
+    //     )
+    //   }
+    // } catch (error) {
+    //   console.error(`Error deserializing limit order ${error}`)
+    // }
 
     this.limitOrders = tempOrders
   }

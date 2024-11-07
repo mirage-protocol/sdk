@@ -1,9 +1,9 @@
-import { AccountAddress, Network } from '@aptos-labs/ts-sdk'
+import { AccountAddress, createResourceAddress, Network } from '@aptos-labs/ts-sdk'
 
 import mirageConfigMainnet from '../../mirage_config_mainnet.json'
 import mirageConfigMovementTestnet from '../../mirage_config_movement_testnet.json'
 import mirageConfigTestnet from '../../mirage_config_testnet.json'
-import { getNetwork } from './network'
+import { getDeployerAddress } from './network'
 
 /**
  * An Aptos account
@@ -17,39 +17,23 @@ export interface Account {
  * Move modules that Mirage Protocol utilizes
  */
 export enum MoveModules {
-  MIRAGE = 'mirage',
-  MIRAGE_SCRIPTS = 'mirage_scripts',
-  KEEPER_SCRIPTS = 'keeper_scripts',
-  MIRAGE_CORE = 'mirage_core',
-  MIRAGE_ORACLE = 'mirage_oracle',
-  MIRAGE_SWAP = 'mirage_swap',
-  MARKET = 'market',
-  LAYER_ZERO = 'layer_zero', // "asset",
+  MIRAGE = 'MIRAGE',
+  MIRAGE_SCRIPTS = 'MIRAGE_SCRIPTS',
+  KEEPER_SCRIPTS = 'KEEPER_SCRIPTS',
+  MIRAGE_CORE = 'MIRAGE_CORE',
+  MIRAGE_ORACLE = 'MIRAGE_ORACLE',
+  MARKET = 'MARKET',
+  LAYER_ZERO = 'LAYER_ZERO', // "asset",
   // swap
   // gov
   // deployer
 }
 
 /**
- * Get the address of a module
- * @param module the module to get the address of, can pass type or string
- * @returns the module address if it was found
- */
-export const getModuleAddress = (module: MoveModules | string, network: Network | string): AccountAddress => {
-  return MODULES(network)[module as MoveModules].address
-}
-
-/**
- * The account of Mirage Protocol
- */
-export const mirageAccount = (network: Network | string): Account => {
-  return MODULES(network)['mirage']
-}
-/**
  * The address of Mirage Protocol
  */
-export const mirageAddress = (network: Network | string): AccountAddress => {
-  return MODULES(network)['mirage'].address
+export const mirageAddress = (network: Network): AccountAddress => {
+  return getModuleAddress(network, MoveModules.MIRAGE)
 }
 
 export type ModulesConfig = {
@@ -85,9 +69,8 @@ export type MirageConfig = {
   tokens: TokensConfig
 }
 
-export const mirageConfigFromNetwork = (network: Network | string): MirageConfig => {
-  const n = getNetwork(network)
-  switch (n) {
+export const mirageConfigFromNetwork = (network: Network): MirageConfig => {
+  switch (network) {
     case Network.MAINNET:
       return mirageConfigMainnet
     case Network.CUSTOM:
@@ -99,41 +82,11 @@ export const mirageConfigFromNetwork = (network: Network | string): MirageConfig
 
 // Relevant modules
 // NOTE: devUSDC is the same as mirage
-export const MODULES = (network: Network | string): { readonly [module in MoveModules]: Account } => {
-  const mirageConfig = mirageConfigFromNetwork(network)
-  return {
-    ['mirage']: {
-      name: 'mirage',
-      address: AccountAddress.from(mirageConfig.modules.mirage),
-    },
-    ['mirage_scripts']: {
-      name: 'mirage_scripts',
-      address: AccountAddress.from(mirageConfig.modules.mirage_scripts),
-    },
-    ['mirage_core']: {
-      name: 'mirage_core',
-      address: AccountAddress.from(mirageConfig.modules.mirage_core),
-    },
-    ['mirage_oracle']: {
-      name: 'mirage_oracle',
-      address: AccountAddress.from(mirageConfig.modules.mirage_oracle),
-    },
-    ['mirage_swap']: {
-      name: 'mirage_swap',
-      address: AccountAddress.from(mirageConfig.modules.mirage_swap),
-    },
-    ['keeper_scripts']: {
-      name: 'keeper_scripts',
-      address: AccountAddress.from(mirageConfig.modules.keeper_scripts),
-    },
-    ['market']: {
-      name: 'market',
-      address: AccountAddress.from(mirageConfig.modules.market),
-    },
-    // TODO is this right for all networks
-    ['layer_zero']: {
-      name: 'asset',
-      address: AccountAddress.from('0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa'),
-    },
+export const getModuleAddress = (network: Network, module: MoveModules): AccountAddress => {
+  if (module == MoveModules.LAYER_ZERO) {
+    // TODO: check mainnet/movement deployment address
+    return AccountAddress.from('0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa')
   }
+  const deployer_address = getDeployerAddress(network)
+  return createResourceAddress(deployer_address, module)
 }

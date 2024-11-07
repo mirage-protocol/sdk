@@ -1,4 +1,4 @@
-import { Aptos, AptosConfig, Network } from '@aptos-labs/ts-sdk'
+import { AccountAddress, Aptos, AptosConfig, Network } from '@aptos-labs/ts-sdk'
 import { AptosPriceServiceConnection } from '@pythnetwork/pyth-aptos-js'
 import { AuthConfig, authExchange, AuthUtilities } from '@urql/exchange-auth'
 import { cacheExchange, Client, CombinedError, createClient, errorExchange, fetchExchange, Operation } from 'urql'
@@ -37,17 +37,14 @@ const testnetPythClient = new AptosPriceServiceConnection(`https://hermes-beta.p
  * @param network the network to use, if not specific = "mainnet"
  * @returns a useable aptos client
  */
-export const aptosClient = (network: Network | string | string = Network.MAINNET, nodeURI?: string): Aptos => {
+export const aptosClient = (network: Network, nodeURI?: string): Aptos => {
   if (nodeURI !== undefined) {
-    return new Aptos(new AptosConfig({ network: getNetwork(network), fullnode: nodeURI }))
+    return new Aptos(new AptosConfig({ network, fullnode: nodeURI }))
   }
   switch (network) {
     case Network.MAINNET:
       return defaultMainnetClient
-    // TODO make it work for movement-mainnet (network custom needs a seperate switch somehow)
-    case Network.CUSTOM:
-      return defaultMovementTestnetClient
-    case 'movement-testnet':
+    case Network.TESTNET:
       return defaultMovementTestnetClient
     default:
       return defaultTestnetClient
@@ -59,24 +56,18 @@ export const aptosClient = (network: Network | string | string = Network.MAINNET
  * @param network the network to use, if not specific = "mainnet"
  * @returns a useable aptos client
  */
-export const pythClient = (network: Network | string = Network.MAINNET): AptosPriceServiceConnection => {
-  return getNetwork(network) === Network.MAINNET ? mainnetPythClient : testnetPythClient
+export const pythClient = (network: Network): AptosPriceServiceConnection => {
+  return network === Network.MAINNET ? mainnetPythClient : testnetPythClient
 }
 
-export const getNetwork = (network: Network | string): Network => {
-  if (typeof network === 'string') {
-    switch (network) {
-      case 'mainnet':
-        return Network.MAINNET
-      case 'movement-testnet':
-        return Network.CUSTOM
-      case 'custom':
-        return Network.CUSTOM
-      default:
-        return Network.TESTNET
-    }
+export const getDeployerAddress = (network: Network): AccountAddress => {
+  switch (network) {
+    case Network.TESTNET:
+      return AccountAddress.fromString('0x0aff88e863b8f70d81f243deff4c59ab89213b853d490e513407084a5265c799')
+    default:
+      console.error('NO DEPLOYMENT')
+      return AccountAddress.fromString('0x0')
   }
-  return network
 }
 
 export const graphqlClientWithUri = (gqlURI: string, API_KEY?: string): Client => {

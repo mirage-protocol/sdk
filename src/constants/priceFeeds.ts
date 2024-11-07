@@ -2,43 +2,8 @@ import { Network } from '@aptos-labs/ts-sdk'
 import { Price } from '@pythnetwork/pyth-aptos-js'
 import BigNumber from 'bignumber.js'
 
-import { getNetwork, pythClient } from '../constants/network'
-import { MoveAsset, MoveCoin, MoveToken, Perpetual } from './assetList'
-
-/**
- * All the coins with price feeds
- */
-export const coinsWithPriceFeeds = [
-  MoveCoin.APT,
-  MoveToken.mAPT,
-  MoveToken.mETH,
-  MoveToken.tUSDC,
-  // Crypto perps
-  Perpetual.APTPERP,
-  Perpetual.ARBPERP,
-  Perpetual.BTCPERP,
-  Perpetual.ETHPERP,
-  Perpetual.OPPERP,
-  Perpetual.PEPE1000PERP,
-  Perpetual.SOLPERP,
-  Perpetual.SUIPERP,
-  Perpetual.DOGEPERP,
-  Perpetual.AVAXPERP,
-  Perpetual.PYTHPERP,
-  Perpetual.STXPERP,
-  Perpetual.WIFPERP,
-  Perpetual.MKRPERP,
-  Perpetual.MNTPERP,
-  // Metal perps
-  Perpetual.XAGPERP,
-  Perpetual.XAUPERP,
-  // Fx perps
-  Perpetual.EURPERP,
-  Perpetual.GBPPERP,
-  Perpetual.JPYPERP,
-] as const
-
-type CoinsWithPriceFeeds = (typeof coinsWithPriceFeeds)[number]
+import { pythClient } from '../constants/network'
+import { MoveAsset, MoveCoin, MoveFungibleAsset, Perpetual } from './assetList'
 
 /**
  * Check if a asset has a price feed
@@ -55,11 +20,8 @@ export const hasPriceFeed = (asset: MoveAsset): boolean => {
  * @param network
  * @returns
  */
-export const getPriceFeed = (
-  coin: MoveAsset | Perpetual,
-  network: Network | string = Network.MAINNET,
-): string | undefined => {
-  return !!PRICE_FEEDS[coin.valueOf()] ? PRICE_FEEDS[coin.valueOf()][getNetwork(network)] : undefined
+export const getPriceFeed = (coin: MoveAsset | Perpetual, network: Network): string | undefined => {
+  return !!PRICE_FEEDS[coin.valueOf()] ? PRICE_FEEDS[coin.valueOf()][network] : undefined
 }
 
 /**
@@ -68,23 +30,20 @@ export const getPriceFeed = (
  * @param network the network, default mainnet
  * @returns the update data promise
  */
-export const getPriceFeedUpdateData = async (
-  priceFeedId: string,
-  network: Network | string = Network.MAINNET,
-): Promise<number[]> => {
+export const getPriceFeedUpdateData = async (priceFeedId: string, network: Network): Promise<number[]> => {
   if (!priceFeedId) return []
   try {
     console.debug('Attempting to get pyth vaas')
-    const updateData = await pythClient(getNetwork(network)).getPriceFeedsUpdateData([priceFeedId])
+    const updateData = await pythClient(network).getPriceFeedsUpdateData([priceFeedId])
     return updateData ? updateData[0] : []
   } catch (e) {
     return []
   }
 }
 
-export const getPrice = async (priceFeedId: string, network: Network | string = Network.MAINNET): Promise<number> => {
+export const getPrice = async (priceFeedId: string, network: Network): Promise<number> => {
   if (!priceFeedId) return 0
-  const response = await pythClient(getNetwork(network)).getLatestPriceFeeds([priceFeedId])
+  const response = await pythClient(network).getLatestPriceFeeds([priceFeedId])
   if (response == undefined || response?.length == 0) return 0
   return getContractPrice(response[0].getPriceUnchecked())
 }
@@ -115,26 +74,27 @@ export const getUiPythPrice = ({ price, expo }: Price): number => {
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 const USED_NETWORKS = [Network.MAINNET, Network.TESTNET, Network.CUSTOM] as const
+type AssetsWithPriceFeeds = (MoveCoin | MoveFungibleAsset | Perpetual)[number]
 type Networks = (typeof USED_NETWORKS)[number]
 
 // Price feeds of coins by network
-const PRICE_FEEDS: { readonly [coin in CoinsWithPriceFeeds]: { readonly [network in Networks]: string } } = {
+const PRICE_FEEDS: { readonly [asset in AssetsWithPriceFeeds]: { readonly [network in Networks]: string } } = {
   [MoveCoin.APT]: {
     [Network.MAINNET]: '0x03ae4db29ed4ae33d323568895aa00337e658e348b37509f5372ae51f0af00d5',
     [Network.TESTNET]: '0x44a93dddd8effa54ea51076c4e851b6cbbfd938e82eb90197de38fe8876bb66e',
     [Network.CUSTOM]: '0x44a93dddd8effa54ea51076c4e851b6cbbfd938e82eb90197de38fe8876bb66e',
   },
-  [MoveToken.mAPT]: {
-    [Network.MAINNET]: '0x03ae4db29ed4ae33d323568895aa00337e658e348b37509f5372ae51f0af00d5',
-    [Network.TESTNET]: '0x44a93dddd8effa54ea51076c4e851b6cbbfd938e82eb90197de38fe8876bb66e',
-    [Network.CUSTOM]: '0x44a93dddd8effa54ea51076c4e851b6cbbfd938e82eb90197de38fe8876bb66e',
+  [MoveFungibleAsset.mUSD]: {
+    [Network.MAINNET]: '',
+    [Network.TESTNET]: '',
+    [Network.CUSTOM]: '',
   },
-  [MoveToken.mETH]: {
-    [Network.MAINNET]: '0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace',
-    [Network.TESTNET]: '0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6',
-    [Network.CUSTOM]: '0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6',
+  [MoveFungibleAsset.tUSDC]: {
+    [Network.MAINNET]: '0xeaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a',
+    [Network.TESTNET]: '0x41f3625971ca2ed2263e78573fe5ce23e13d2558ed3f2e47ab0f84fb9e7ae722',
+    [Network.CUSTOM]: '0x41f3625971ca2ed2263e78573fe5ce23e13d2558ed3f2e47ab0f84fb9e7ae722',
   },
-  [MoveToken.tUSDC]: {
+  [MoveCoin.zUSDC]: {
     [Network.MAINNET]: '0xeaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a',
     [Network.TESTNET]: '0x41f3625971ca2ed2263e78573fe5ce23e13d2558ed3f2e47ab0f84fb9e7ae722',
     [Network.CUSTOM]: '0x41f3625971ca2ed2263e78573fe5ce23e13d2558ed3f2e47ab0f84fb9e7ae722',

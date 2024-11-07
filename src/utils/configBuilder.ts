@@ -9,10 +9,7 @@ export type CollectionInfo = {
   collection_id: string
 }
 
-export const getCollectionsFromMirage = async (
-  graphqlClient: Client,
-  network: Network | string,
-): Promise<CollectionInfo[]> => {
+export const getCollectionsFromMirage = async (graphqlClient: Client, network: Network): Promise<CollectionInfo[]> => {
   const variables: GetCollectionsByOwnerQueryVariables = {
     OWNER: mirageAddress(network).toString(),
   }

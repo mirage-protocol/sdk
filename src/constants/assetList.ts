@@ -1,9 +1,10 @@
-import { AccountAddress, Network } from '@aptos-labs/ts-sdk'
+import { AccountAddress, createObjectAddress, Network } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { getModuleAddress, mirageAddress, mirageConfigFromNetwork } from './accounts'
+import { getModuleAddress, mirageConfigFromNetwork, MoveModules } from './accounts'
+import { getDeployerAddress } from './network'
 
-export const getAllVaultCollectionObjectAddresses = (network: string | Network): string[] => {
+export const getAllVaultCollectionObjectAddresses = (network: Network): string[] => {
   const vaultCollectionAddresses: string[] = []
 
   Object.values(mirageConfigFromNetwork(network).vaults).forEach((vault) => {
@@ -15,7 +16,7 @@ export const getAllVaultCollectionObjectAddresses = (network: string | Network):
   return vaultCollectionAddresses
 }
 
-export const getAllMarketObjectAddresses = (network: string | Network): string[] => {
+export const getAllMarketObjectAddresses = (network: Network): string[] => {
   const marketAddresses: string[] = []
 
   Object.values(mirageConfigFromNetwork(network).markets).forEach((market) => {
@@ -28,19 +29,15 @@ export const getAllMarketObjectAddresses = (network: string | Network): string[]
 }
 
 export const getPairFromMarketAddress = (
-  marketObjectAddress: string,
-  network: string | Network,
-): { marginToken: MoveToken; perp: Perpetual } => {
-  let usedAddr = marketObjectAddress
-  while (usedAddr.length < 66) {
-    usedAddr = usedAddr.replace('0x', '0x0')
-  }
+  marketObjectAddress: AccountAddress,
+  network: Network,
+): { marginToken: MoveFungibleAsset; perp: Perpetual } => {
   const mirageConfig = mirageConfigFromNetwork(network)
   for (const marginToken in mirageConfig.markets) {
     for (const perp in mirageConfig.markets[marginToken]) {
-      if (mirageConfig.markets[marginToken][perp] === usedAddr) {
+      if (AccountAddress.from(mirageConfig.markets[marginToken][perp]) == marketObjectAddress) {
         // Assuming Perpetual is a more complex type, you might need to instantiate it or fetch it from somewhere
-        return { marginToken: getMoveAssetFromSymbol(marginToken) as MoveToken, perp: checkPerpSymbolUnSafe(perp) }
+        return { marginToken: MoveFungibleAsset[marginToken], perp: Perpetual[perp] }
       }
     }
   }
@@ -48,20 +45,16 @@ export const getPairFromMarketAddress = (
 }
 
 export const getPairFromVaultCollectionAddress = (
-  vaultObjectAddress: string,
-  network: string | Network,
-): { collateralAsset: MoveAsset; borrow: MoveToken } => {
-  let usedAddr = vaultObjectAddress
-  while (usedAddr.length < 66) {
-    usedAddr = usedAddr.replace('0x', '0x0')
-  }
+  vaultObjectAddress: AccountAddress,
+  network: Network,
+): { collateralAsset: MoveAsset; borrow: MoveFungibleAsset } => {
   const mirageConfig = mirageConfigFromNetwork(network)
   for (const collateralAsset in mirageConfig.vaults) {
     for (const borrow in mirageConfig.vaults[collateralAsset]) {
-      if (mirageConfig.vaults[collateralAsset][borrow] === usedAddr) {
+      if (AccountAddress.from(mirageConfig.vaults[collateralAsset][borrow]) == vaultObjectAddress) {
         return {
-          collateralAsset: getMoveAssetFromSymbol(collateralAsset) as MoveAsset,
-          borrow: getMoveAssetFromSymbol(borrow) as MoveToken,
+          collateralAsset: MoveCoin[collateralAsset] || MoveFungibleAsset[collateralAsset],
+          borrow: MoveFungibleAsset[borrow],
         }
       }
     }
@@ -72,13 +65,9 @@ export const getPairFromVaultCollectionAddress = (
 /**
  * All Tokens relevant to the mirage-protocol ecosystem
  */
-export enum MoveToken {
-  MIRA = 'MIRA', // Mirage coin
-  mAPT = 'mAPT', // mirage-Aptos
-  mETH = 'mETH', // mirage-Ethereum
-  mUSD = 'mUSD', // mirage-Usd
+export enum MoveFungibleAsset {
+  mUSD = 'mUSD', // mirage stablecoin
   tUSDC = 'tUSDC', // testnet USDC
-  APT_MUSD_LP = 'APT_MUSD_LP', // APT/MUSD LP
 }
 
 /**
@@ -121,82 +110,60 @@ export enum Perpetual {
 /**
  * All synthetic mirage assets
  */
-export const MIRAGE_ASSETS: readonly MoveToken[] = [MoveToken.mAPT, MoveToken.mUSD, MoveToken.mETH]
+export const MIRAGE_ASSETS: readonly MoveFungibleAsset[] = [MoveFungibleAsset.mUSD]
 
-export type AssetInfo = {
+export type CoinInfo = {
   readonly name: string
   readonly symbol: string
-  readonly type: string
+  readonly decimals: number
+  readonly type: `${string}::${string}::${string}`
 }
 
-/**
- * Info for a move asset
- */
-export type MoveAssetInfo = AssetInfo & {
+export type FungibleAssetInfo = {
+  readonly name: string
+  readonly symbol: string
   readonly decimals: number
   readonly address: AccountAddress
 }
 
-export type MoveAsset = MoveCoin | MoveToken
-
-export const getTypeFromMoveAsset = (asset: MoveAsset): string => {
-  if (MoveToken[asset] != undefined) {
-    return 'MoveToken'
-  } else if (MoveCoin[asset] != undefined) {
-    return 'MoveCoin'
-  }
-  throw new Error('Not a valid move asset!')
+export type PerpetualsInfo = {
+  readonly name: string
+  readonly symbol: string
+  readonly address: AccountAddress
+  readonly marginToken: MoveFungibleAsset
 }
+
+export type MoveAsset = MoveCoin | MoveFungibleAsset
 
 /**
  * Get the MoveToken or MoveCoin of a given symbol
  * @param symbol string symbol of coin
  * @returns the MoveToken or undefined if not valid
  */
-export const getMoveAssetFromSymbol = (symbol: string): MoveAsset | undefined => {
-  return MoveToken[symbol] ?? MoveCoin[symbol]
+
+export const getCoinType = (coin: MoveCoin, network: Network): `${string}::${string}::${string}` => {
+  return coinList(network)[coin].type
+}
+
+export const getAssetName = (asset: MoveAsset | Perpetual, network: Network): string => {
+  return assetList(network)[asset].name
+}
+
+export const getAssetSymbol = (asset: MoveAsset | Perpetual, network: Network): string => {
+  return assetList(network)[asset].symbol
+}
+
+export const getAssetDecimals = (asset: MoveAsset | Perpetual, network: Network): number => {
+  if (asset in Perpetual) {
+    return 8
+  } else if (asset in MoveCoin) {
+    return coinList(network)[asset].decimals
+  } else {
+    return fungibleAssetList(network)[asset].decimals
+  }
 }
 
 /**
- * Get the Perpetual of a given symbol
- * @param symbol string symbol of coin
- * @returns the Perpetual or undefined if not valid
- */
-export const checkPerpSymbol = (symbol: string): Perpetual | undefined => {
-  return Perpetual[symbol]
-}
-
-const checkPerpSymbolUnSafe = (symbol: string): Perpetual => {
-  const perp = checkPerpSymbol(symbol)
-  if (perp == undefined) {
-    throw new Error(`perp not found for ${symbol}`)
-  }
-  return perp
-}
-
-/**
- * Get info about a specific asset
- * @param coin the MoveToken to get info for
- * @returns the AssetInfo for the specific coin
- */
-export const assetInfo = (asset: MoveAsset | Perpetual | string, network: Network | string): AssetInfo => {
-  if (typeof asset === 'string') {
-    return mirageAssetList(network)[MoveToken[asset] || Perpetual[asset] || MoveCoin[asset]]
-  }
-  return mirageAssetList(network)[asset]
-}
-
-/**
- * Get info about a specific asset
- * @param coin the MoveToken to get info for
- * @returns the MoveAssetInfo for the specific coin or token
- */
-export const moveAssetInfo = (coin: MoveAsset | string, network: Network | string): MoveAssetInfo => {
-  if (typeof coin === 'string') {
-    return mirageAssetList(network)[MoveToken[coin]] ?? mirageAssetList(network)[MoveCoin[coin]]
-  }
-  return mirageAssetList(network)[coin]
-}
 
 /**
  * Get the balance of a coin in a Ui friendly format
@@ -206,255 +173,214 @@ export const moveAssetInfo = (coin: MoveAsset | string, network: Network | strin
  */
 export const assetBalanceToDecimal = (
   balance: BigNumber,
-  coin: MoveToken | string,
-  network: Network | string,
+  asset: MoveCoin | MoveFungibleAsset,
+  network: Network,
 ): BigNumber => {
-  return balance.div(BigNumber(10).pow(moveAssetInfo(coin, network).decimals))
+  return balance.div(BigNumber(10).pow(getAssetDecimals(asset, network)))
 }
 
-/**
- * Convert move token type to MoveToken
- * @param type the type of the perp
- * @returns a move token
- */
-export const typeToMoveToken = (type: string, network: Network | string): MoveToken | undefined => {
-  for (const asset in mirageAssetList(network)) {
-    if (asset in MoveToken && mirageAssetList(network)[asset].type == type) {
-      return MoveToken[asset]
-    }
-  }
-  return undefined
-}
-
-/**
- * Convert move Coin type to MoveCoin
- * @param type the type of the perp
- * @returns a move Coin
- */
-export const typeToMoveCoin = (type: string, network: Network | string): MoveCoin | undefined => {
-  for (const asset in mirageAssetList(network)) {
-    if (asset in MoveCoin && mirageAssetList(network)[asset].type == type) {
-      return MoveCoin[asset]
-    }
-  }
-  return undefined
-}
-
-/**
- * Convert perpetual move type to Perpetual
- * @param type the type of the perp
- * @returns a perpetual asset
- */
-export const typeToPerpetual = (type: string, network: Network | string): Perpetual | undefined => {
-  for (const asset in mirageAssetList(network)) {
-    if (asset in Perpetual && mirageAssetList(network)[asset].type == type) {
-      return Perpetual[asset]
-    }
-  }
-  return undefined
-}
-
-export const getCollectionIdForPerpPair = (
-  marginToken: MoveToken,
-  perp: Perpetual,
-  network: Network | string,
-): string => {
-  const mirageConfig = mirageConfigFromNetwork(network)
-  if (!(Perpetual[perp] in mirageConfig.markets[MoveToken[marginToken]])) throw new Error('Not a valid perp pair')
-  return mirageConfig.markets[MoveToken[marginToken]][Perpetual[perp]]
+export const getMarketAddress = (perp: Perpetual, network: Network): AccountAddress => {
+  return perpetualList(network)[perp].address
 }
 
 export const getCollectionIdForVaultPair = (
   collateralAsset: MoveAsset,
-  borrowToken: MoveToken,
-  network: Network | string,
+  borrowToken: MoveFungibleAsset,
+  network: Network,
 ): string => {
   const mirageConfig = mirageConfigFromNetwork(network)
-  if (getTypeFromMoveAsset(collateralAsset) == 'MoveCoin') {
-    if (!(MoveToken[borrowToken] in mirageConfig.vaults[MoveCoin[collateralAsset]]))
-      throw new Error('Not a valid vault pair')
-    return mirageConfig.vaults[MoveCoin[collateralAsset]][MoveToken[borrowToken]]
-  } else if (getTypeFromMoveAsset(collateralAsset) == 'MoveToken') {
-    if (!(MoveToken[borrowToken] in mirageConfig.vaults[MoveToken[collateralAsset]]))
-      throw new Error('Not a valid vault pair')
-    return mirageConfig.vaults[MoveToken[collateralAsset]][MoveToken[borrowToken]]
+  if (!(collateralAsset in mirageConfig.vaults || !(borrowToken in mirageConfig.vaults[collateralAsset]))) {
+    throw new Error('Not a valid vault pair')
   }
-  throw new Error('Not a valid vault pair')
+  return mirageConfig.vaults[collateralAsset][borrowToken]
 }
 
-export const getAssetTokenMetadata = (asset: MoveAsset, network: Network | string): string => {
-  const mirageConfig = mirageConfigFromNetwork(network)
-  if (getTypeFromMoveAsset(asset) == 'MoveCoin') {
-    if (!(MoveCoin[asset] in mirageConfig.tokens)) throw new Error('token metadata not found')
-    return mirageConfig.tokens[MoveCoin[asset]]
-  } else if (getTypeFromMoveAsset(asset) == 'MoveToken') {
-    if (!(MoveToken[asset] in mirageConfig.tokens)) throw new Error('token metadata not found')
-    return mirageConfig.tokens[MoveToken[asset]]
+export const getFungibleAssetAddress = (asset: MoveFungibleAsset | string, network: Network): AccountAddress => {
+  if (!(asset in MoveFungibleAsset)) {
+    throw new Error('Not a valid vault pair')
   }
-  throw new Error('token metadata not found')
+  return fungibleAssetList(network)[asset].address
 }
 
-// A list of all coins and their info in the Mirage ecosystem
-const mirageAssetList = (
-  network: string | Network,
-): { readonly [coin in MoveAsset | Perpetual]: AssetInfo | MoveAssetInfo } => {
+export const getPerpMarketAddress = (
+  perp: Perpetual | string,
+  _marginToken: MoveFungibleAsset,
+  network: Network,
+): AccountAddress => {
+  if (!(perp in Perpetual)) {
+    throw new Error('Not a valid vault pair')
+  }
+  return perpetualList(network)[perp].address
+}
+
+export const coinList = (network: Network): { readonly [coin in MoveCoin]: CoinInfo } => {
   return {
     [MoveCoin.APT]: {
       name: 'Aptos Coin',
       symbol: 'APT',
       decimals: 8,
-      address: AccountAddress.ONE,
       type: '0x1::aptos_coin::AptosCoin',
-    },
-    [MoveToken.MIRA]: {
-      name: 'Mirage Coin',
-      symbol: 'MIRA',
-      decimals: 8,
-      address: mirageAddress(network),
-      type: `${mirageAddress(network)}::mirage::Mirage`,
-    },
-    [MoveToken.mUSD]: {
-      name: 'Mirage USD',
-      symbol: 'mUSD',
-      decimals: 8,
-      address: mirageAddress(network),
-      type: `${mirageAddress(network)}::mirage::MUSD`,
-    },
-    [MoveToken.mAPT]: {
-      name: 'Mirage Aptos',
-      symbol: 'mAPT',
-      decimals: 8,
-      address: mirageAddress(network),
-      type: `${mirageAddress(network)}::mirage::MAPT`,
-    },
-    [MoveToken.mETH]: {
-      name: 'Mirage Ethereum',
-      symbol: 'mETH',
-      decimals: 8,
-      address: mirageAddress(network),
-      type: `${mirageAddress(network)}::mirage::METH`,
     },
     [MoveCoin.zUSDC]: {
       name: 'Layer-Zero USDC',
       symbol: 'zUSDC',
       decimals: 6,
-      address: getModuleAddress('layer_zero', network),
-      type: `${getModuleAddress('layer_zero', network)}::asset::USDC`,
+      type: `${getModuleAddress(network, MoveModules.LAYER_ZERO)}::asset::USDC`,
     },
-    [MoveToken.tUSDC]: {
+  }
+}
+
+export const fungibleAssetList = (
+  network: Network,
+): { readonly [fungibleAsset in MoveFungibleAsset]: FungibleAssetInfo } => {
+  const config = mirageConfigFromNetwork(network)
+  const deployAddress = getDeployerAddress(network)
+
+  return {
+    [MoveFungibleAsset.mUSD]: {
+      name: 'Mirage USD',
+      symbol: 'mUSD',
+      decimals: 8,
+      address: AccountAddress.from(config.tokens['mUSD']),
+    },
+    [MoveFungibleAsset.tUSDC]: {
       name: 'Testnet USDC',
       symbol: 'tUSDC',
       decimals: 8,
-      address: getModuleAddress('mirage', network),
-      type: `${getModuleAddress('mirage', network)}::devUSDC::DevUSDC`,
+      address: createObjectAddress(deployAddress, 'tUSDC'),
     },
-    [MoveToken.APT_MUSD_LP]: {
-      name: 'APT-MUSD LP Coin',
-      symbol: 'musd-lp',
-      decimals: 8,
-      // TODO FIX WITH MIRAGE SWAP
-      address: getModuleAddress('mirage', network),
-      type: `${getModuleAddress('mirage', network)}::devUSDC::DevUSDC`,
-    },
+  }
+}
+
+// A list of all coins and their info in the Mirage ecosystem
+export const perpetualList = (network: Network): { readonly [perpetual in Perpetual]: PerpetualsInfo } => {
+  const config = mirageConfigFromNetwork(network)
+  return {
     [Perpetual.APTPERP]: {
       name: 'Aptos Perpetuals Market',
       symbol: 'APT',
-      type: `${mirageAddress(network)}::market_types::APTPERP`,
+      address: AccountAddress.from(config.markets[MoveFungibleAsset.mUSD][Perpetual.APTPERP]),
+      marginToken: MoveFungibleAsset.mUSD,
     },
     [Perpetual.ARBPERP]: {
       name: 'Arbitrum Perpetuals Market',
       symbol: 'ARB',
-      type: `${mirageAddress(network)}::market_types::ARBPERP`,
+      address: AccountAddress.from(config.markets[MoveFungibleAsset.mUSD][Perpetual.ARBPERP]),
+      marginToken: MoveFungibleAsset.mUSD,
     },
     [Perpetual.BTCPERP]: {
       name: 'Bitcoin Perpetuals Market',
       symbol: 'BTC',
-      type: `${mirageAddress(network)}::market_types::BTCPERP`,
+      address: AccountAddress.from(config.markets[MoveFungibleAsset.mUSD][Perpetual.BTCPERP]),
+      marginToken: MoveFungibleAsset.mUSD,
     },
     [Perpetual.ETHPERP]: {
       name: 'Ethereum Perpetuals Market',
       symbol: 'ETH',
-      type: `${mirageAddress(network)}::market_types::ETHPERP`,
+      address: AccountAddress.from(config.markets[MoveFungibleAsset.mUSD][Perpetual.ETHPERP]),
+      marginToken: MoveFungibleAsset.mUSD,
     },
     [Perpetual.OPPERP]: {
       name: 'Optimism Perpetuals Market',
       symbol: 'OP',
-      type: `${mirageAddress(network)}::market_types::OPPERP`,
+      address: AccountAddress.from(config.markets[MoveFungibleAsset.mUSD][Perpetual.OPPERP]),
+      marginToken: MoveFungibleAsset.mUSD,
     },
     [Perpetual.PEPE1000PERP]: {
       name: '1000 Pepe Perpetuals Market',
       symbol: '1000PEPE',
-      type: `${mirageAddress(network)}::market_types::PEPE1000PERP`,
+      address: AccountAddress.from(config.markets[MoveFungibleAsset.mUSD][Perpetual.PEPE1000PERP]),
+      marginToken: MoveFungibleAsset.mUSD,
     },
     [Perpetual.SOLPERP]: {
       name: 'Solana Perpetuals Market',
       symbol: 'SOL',
-      type: `${mirageAddress(network)}::market_types::SOLPERP`,
+      address: AccountAddress.from(config.markets[MoveFungibleAsset.mUSD][Perpetual.SOLPERP]),
+      marginToken: MoveFungibleAsset.mUSD,
     },
     [Perpetual.SUIPERP]: {
       name: 'Sui Perpetuals Market',
       symbol: 'SUI',
-      type: `${mirageAddress(network)}::market_types::SUIPERP`,
+      address: AccountAddress.from(config.markets[MoveFungibleAsset.mUSD][Perpetual.SUIPERP]),
+      marginToken: MoveFungibleAsset.mUSD,
     },
     [Perpetual.DOGEPERP]: {
       name: 'Doge Perpetuals Market',
       symbol: 'DOGE',
-      type: `${mirageAddress(network)}::market_types::DOGEPERP`,
+      address: AccountAddress.from(config.markets[MoveFungibleAsset.mUSD][Perpetual.DOGEPERP]),
+      marginToken: MoveFungibleAsset.mUSD,
     },
     [Perpetual.AVAXPERP]: {
       name: 'Avax Perpetuals Market',
       symbol: 'AVAX',
-      type: `${mirageAddress(network)}::market_types::AVAXPERP`,
+      address: AccountAddress.from(config.markets[MoveFungibleAsset.mUSD][Perpetual.AVAXPERP]),
+      marginToken: MoveFungibleAsset.mUSD,
     },
     [Perpetual.PYTHPERP]: {
       name: 'Pyth Perpetuals Market',
       symbol: 'PYTH',
-      type: `${mirageAddress(network)}::market_types::PYTHPERP`,
+      address: AccountAddress.from(config.markets[MoveFungibleAsset.mUSD][Perpetual.PYTHPERP]),
+      marginToken: MoveFungibleAsset.mUSD,
     },
     [Perpetual.STXPERP]: {
       name: 'Stacks Perpetuals Market',
       symbol: 'STX',
-      type: `${mirageAddress(network)}::market_types::STXPERP`,
+      address: AccountAddress.from(config.markets[MoveFungibleAsset.mUSD][Perpetual.STXPERP]),
+      marginToken: MoveFungibleAsset.mUSD,
     },
     [Perpetual.WIFPERP]: {
       name: 'Stacks Perpetuals Market',
       symbol: 'WIF',
-      type: `${mirageAddress(network)}::market_types::WIFPERP`,
+      address: AccountAddress.from(config.markets[MoveFungibleAsset.mUSD][Perpetual.WIFPERP]),
+      marginToken: MoveFungibleAsset.mUSD,
     },
     [Perpetual.MKRPERP]: {
       name: 'Maker Perpetuals Market',
       symbol: 'MKR',
-      type: `${mirageAddress(network)}::market_types::MKRPERP`,
+      address: AccountAddress.from(config.markets[MoveFungibleAsset.mUSD][Perpetual.MKRPERP]),
+      marginToken: MoveFungibleAsset.mUSD,
     },
     [Perpetual.MNTPERP]: {
       name: 'Mantle Perpetuals Market',
       symbol: 'MNT',
-      type: `${mirageAddress(network)}::market_types::MNTPERP`,
+      address: AccountAddress.from(config.markets[MoveFungibleAsset.mUSD][Perpetual.MNTPERP]),
+      marginToken: MoveFungibleAsset.mUSD,
     },
     [Perpetual.XAGPERP]: {
       name: 'Silver Perpetuals Market',
       symbol: 'XAG',
-      type: `${mirageAddress(network)}::market_types::XAGPERP`,
+      address: AccountAddress.from(config.markets[MoveFungibleAsset.mUSD][Perpetual.XAGPERP]),
+      marginToken: MoveFungibleAsset.mUSD,
     },
     [Perpetual.XAUPERP]: {
       name: 'Gold Perpetuals Market',
       symbol: 'XAU',
-      type: `${mirageAddress(network)}::market_types::XAUPERP`,
+      address: AccountAddress.from(config.markets[MoveFungibleAsset.mUSD][Perpetual.XAUPERP]),
+      marginToken: MoveFungibleAsset.mUSD,
     },
     [Perpetual.EURPERP]: {
       name: 'Euro Perpetuals Market',
       symbol: 'EUR',
-      type: `${mirageAddress(network)}::market_types::EURPERP`,
+      address: AccountAddress.from(config.markets[MoveFungibleAsset.mUSD][Perpetual.EURPERP]),
+      marginToken: MoveFungibleAsset.mUSD,
     },
     [Perpetual.GBPPERP]: {
       name: 'British Pound Perpetuals Market',
       symbol: 'GBP',
-      type: `${mirageAddress(network)}::market_types::GBPPERP`,
+      address: AccountAddress.from(config.markets[MoveFungibleAsset.mUSD][Perpetual.GBPPERP]),
+      marginToken: MoveFungibleAsset.mUSD,
     },
     [Perpetual.JPYPERP]: {
       name: 'Japanese Yen Perpetuals Market',
       symbol: 'JPY',
-      type: `${mirageAddress(network)}::market_types::JPYPERP`,
+      address: AccountAddress.from(config.markets[MoveFungibleAsset.mUSD][Perpetual.JPYPERP]),
+      marginToken: MoveFungibleAsset.mUSD,
     },
   }
+}
+
+export const assetList = (
+  network: Network,
+): { readonly [asset in Perpetual | MoveCoin]: PerpetualsInfo | CoinInfo | FungibleAssetInfo } => {
+  return { ...perpetualList(network), ...coinList(network), ...fungibleAssetList(network) }
 }
