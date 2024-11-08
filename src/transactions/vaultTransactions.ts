@@ -6,10 +6,10 @@ import {
   getPriceFeed,
   getPriceFeedUpdateData,
   mirageAddress,
+  MirageModules,
   MoveAsset,
   MoveCoin,
   MoveFungibleAsset,
-  MoveModules,
 } from '../constants'
 import { getAssetAmountArgument } from './'
 
@@ -21,7 +21,7 @@ export const createVault = async (
 ): Promise<InputEntryFunctionData> => {
   const isFA = collateralAsset in MoveCoin
   const functionName =
-    `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::vault_scripts::create_vault${isFA ? '' : '_coin'}_entry` as `${string}::${string}::${string}`
+    `${getModuleAddress(MirageModules.MirageScripts, network)}::vault_scripts::create_vault${isFA ? '' : '_coin'}_entry` as `${string}::${string}::${string}`
   const typeArguments = isFA ? [] : [getCoinType(collateralAsset as MoveCoin, network)]
   return {
     function: functionName,
@@ -46,7 +46,7 @@ export const createVaultAndBorrow = async (
 
   const isFA = collateralAsset in MoveCoin
   const functionName =
-    `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::vault_scripts::create_and_borrow${isFA ? '' : '_coin'}_entry` as `${string}::${string}::${string}`
+    `${getModuleAddress(MirageModules.MirageScripts, network)}::vault_scripts::create_and_borrow${isFA ? '' : '_coin'}_entry` as `${string}::${string}::${string}`
   const typeArguments = isFA ? [] : [getCoinType(collateralAsset as MoveCoin, network)]
 
   return {
@@ -77,7 +77,7 @@ export const addCollateral = async (
 ): Promise<InputEntryFunctionData> => {
   const isFA = collateralAsset in MoveCoin
   const functionName =
-    `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::vault_scripts::add_collateral${isFA ? '' : '_coin'}_entry` as `${string}::${string}::${string}`
+    `${getModuleAddress(MirageModules.MirageScripts, network)}::vault_scripts::add_collateral${isFA ? '' : '_coin'}_entry` as `${string}::${string}::${string}`
   const typeArguments = isFA ? [] : [getCoinType(collateralAsset as MoveCoin, network)]
 
   return {
@@ -110,7 +110,7 @@ export const borrow = async (
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, network) : []
 
   return {
-    function: `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::vault_scripts::borrow_entry`,
+    function: `${getModuleAddress(MirageModules.MirageScripts, network)}::vault_scripts::borrow_entry`,
     functionArguments: [
       vaultObject,
       getAssetAmountArgument(borrowToken, borrowAmount, network),
@@ -144,7 +144,7 @@ export const removeCollateral = async (
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, network) : []
 
   return {
-    function: `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::vault_scripts::remove_collateral_entry`,
+    function: `${getModuleAddress(MirageModules.MirageScripts, network)}::vault_scripts::remove_collateral_entry`,
     functionArguments: [
       vaultObject,
       getAssetAmountArgument(collateralAsset, removeAmount, network),
@@ -201,7 +201,7 @@ export const addCollateralAndBorrow = async (
 
   const isFA = collateralAsset in MoveCoin
   const functionName =
-    `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::vault_scripts::add_and_borrow${isFA ? '' : '_coin'}_entry` as `${string}::${string}::${string}`
+    `${getModuleAddress(MirageModules.MirageScripts, network)}::vault_scripts::add_and_borrow${isFA ? '' : '_coin'}_entry` as `${string}::${string}::${string}`
   const typeArguments = isFA ? [] : [getCoinType(collateralAsset as MoveCoin, network)]
 
   return {
@@ -241,7 +241,7 @@ export const repayDebtAndRemoveCollateral = async (
   const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, network) : []
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, network) : []
   const functionName =
-    `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::vault_scripts::repay_and_remove_entry` as `${string}::${string}::${string}`
+    `${getModuleAddress(MirageModules.MirageScripts, network)}::vault_scripts::repay_and_remove_entry` as `${string}::${string}::${string}`
 
   return {
     function: functionName,
@@ -275,7 +275,7 @@ export const addCollateralAndRepayDebt = async (
 ): Promise<InputEntryFunctionData> => {
   const isFA = collateralAsset in MoveCoin
   const functionName =
-    `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::vault_scripts::add_and_repay${isFA ? '' : '_coin'}_entry` as `${string}::${string}::${string}`
+    `${getModuleAddress(MirageModules.MirageScripts, network)}::vault_scripts::add_and_repay${isFA ? '' : '_coin'}_entry` as `${string}::${string}::${string}`
   const typeArguments = isFA ? [] : [getCoinType(collateralAsset as MoveCoin, network)]
 
   return {
@@ -313,7 +313,7 @@ export const removeCollateralAndBorrow = async (
   const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, network) : []
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, network) : []
   const functionName =
-    `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::vault_scripts::remove_and_borrow` as `${string}::${string}::${string}`
+    `${getModuleAddress(MirageModules.MirageScripts, network)}::vault_scripts::remove_and_borrow` as `${string}::${string}::${string}`
 
   return {
     function: functionName,

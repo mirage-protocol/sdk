@@ -15,9 +15,9 @@ import {
   getModuleAddress,
   mirageAddress,
   mirageGraphQlClient,
+  MirageModules,
   MoveAsset,
   MoveFungibleAsset,
-  MoveModules,
   PRECISION_8,
 } from '../constants'
 import { Rebase } from '../entities'
@@ -180,7 +180,7 @@ export const getLiquidatableAmountsBulk = async (
 ): Promise<number[]> => {
   const payload = {
     function:
-      `${getModuleAddress(network, MoveModules.KEEPER_SCRIPTS)}::vault_scripts::get_liquidatable_amounts_bulk` as `${string}::${string}::${string}`,
+      `${getModuleAddress(MirageModules.KeeperScripts, network)}::vault_scripts::get_liquidatable_amounts_bulk` as `${string}::${string}::${string}`,
     functionArguments: [vaultObjectAddresses],
   }
   const ret = await client.view({ payload })

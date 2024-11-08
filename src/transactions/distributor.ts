@@ -1,6 +1,6 @@
 import { InputEntryFunctionData, Network } from '@aptos-labs/ts-sdk'
 
-import { getModuleAddress, getPriceFeed, getPriceFeedUpdateData, MoveFungibleAsset, MoveModules } from '../constants'
+import { getModuleAddress, getPriceFeed, getPriceFeedUpdateData, MirageModules, MoveFungibleAsset } from '../constants'
 
 /**
  * Claims testnet airdrop (creates vault if first claim, always deposits tusdc and borrows musd)
@@ -12,7 +12,7 @@ export const claimAirdrop = async (network: Network): Promise<InputEntryFunction
   const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, network) : []
   const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, network) : []
   return {
-    function: `${getModuleAddress(network, MoveModules.MIRAGE_SCRIPTS)}::testnet_airdropper::claim_airdrop`,
+    function: `${getModuleAddress(MirageModules.MirageScripts, network)}::testnet_airdropper::claim_airdrop`,
     functionArguments: [collateralVaas, borrowVaas],
     typeArguments: [],
   }

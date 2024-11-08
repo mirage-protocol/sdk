@@ -1,7 +1,7 @@
 import { AccountAddress, createObjectAddress, Network } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { getModuleAddress, mirageConfigFromNetwork, MoveModules } from './accounts'
+import { getModuleAddress, mirageConfigFromNetwork, MirageModules } from './accounts'
 import { getDeployerAddress } from './network'
 
 export const getAllVaultCollectionObjectAddresses = (network: Network): string[] => {
@@ -135,12 +135,6 @@ export type PerpetualsInfo = {
 
 export type MoveAsset = MoveCoin | MoveFungibleAsset
 
-/**
- * Get the MoveToken or MoveCoin of a given symbol
- * @param symbol string symbol of coin
- * @returns the MoveToken or undefined if not valid
- */
-
 export const getCoinType = (coin: MoveCoin, network: Network): `${string}::${string}::${string}` => {
   return coinList(network)[coin].type
 }
@@ -151,6 +145,20 @@ export const getAssetName = (asset: MoveAsset | Perpetual, network: Network): st
 
 export const getAssetSymbol = (asset: MoveAsset | Perpetual, network: Network): string => {
   return assetList(network)[asset].symbol
+}
+
+/**
+ * Get the MoveToken or MoveCoin of a given symbol
+ * @param symbol string symbol of coin
+ * @returns the MoveToken or undefined if not valid
+ */
+export const getMoveAssetFromSymbol = (symbol: string, network: Network): MoveAsset | undefined => {
+  for (const [key, value] of Object.entries(assetList(network))) {
+    if (value.symbol == symbol) {
+      return key as MoveAsset
+    }
+  }
+  return undefined
 }
 
 export const getAssetDecimals = (asset: MoveAsset | Perpetual, network: Network): number => {
@@ -225,7 +233,7 @@ export const coinList = (network: Network): { readonly [coin in MoveCoin]: CoinI
       name: 'Layer-Zero USDC',
       symbol: 'zUSDC',
       decimals: 6,
-      type: `${getModuleAddress(network, MoveModules.LAYER_ZERO)}::asset::USDC`,
+      type: `${getModuleAddress(MirageModules.LayerZero, network)}::asset::USDC`,
     },
   }
 }

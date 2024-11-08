@@ -8,8 +8,8 @@ import {
   getModuleAddress,
   getPerpMarketAddress,
   mirageAddress,
+  MirageModules,
   MoveFungibleAsset,
-  MoveModules,
   Perpetual,
   PRECISION_8,
 } from '../constants'
@@ -103,7 +103,7 @@ export const isLimitOrderTriggerable = async (
 ): Promise<boolean> => {
   const payload = {
     function:
-      `${getModuleAddress(network, MoveModules.MARKET)}::limit_order::is_limit_order_triggerable` as `${string}::${string}::${string}`,
+      `${getModuleAddress(MirageModules.Market, network)}::limit_order::is_limit_order_triggerable` as `${string}::${string}::${string}`,
     functionArguments: [positionObjectAddress, index, getDecimal8Argument(perpPrice)],
     typeArguments: [],
   }
@@ -120,7 +120,7 @@ export const isLimitOrderTriggerableBulk = async (
 ): Promise<boolean[]> => {
   const payload = {
     function:
-      `${getModuleAddress(network, MoveModules.KEEPER_SCRIPTS)}::market_scripts::get_is_limit_order_triggerable_states_same_perp` as `${string}::${string}::${string}`,
+      `${getModuleAddress(MirageModules.KeeperScripts, network)}::market_scripts::get_is_limit_order_triggerable_states_same_perp` as `${string}::${string}::${string}`,
     functionArguments: [positionObjectAddresses, indexes, getDecimal8Argument(perpPrice)],
   }
   const ret = await client.view({ payload })
@@ -154,7 +154,7 @@ export const getLiquidationPriceBulk = async (
 ): Promise<number[]> => {
   const payload = {
     function:
-      `${getModuleAddress(network, MoveModules.KEEPER_SCRIPTS)}::market_scripts::get_liquidation_prices_same_perp` as `${string}::${string}::${string}`,
+      `${getModuleAddress(MirageModules.KeeperScripts, network)}::market_scripts::get_liquidation_prices_same_perp` as `${string}::${string}::${string}`,
     functionArguments: [positionObjectAddresses, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
   }
   const ret = await client.view({ payload })
@@ -182,7 +182,8 @@ export const estimateFee = async (
   network: Network,
 ): Promise<number> => {
   const payload = {
-    function: `${getModuleAddress(network, MoveModules.MARKET)}::market::get_fee` as `${string}::${string}::${string}`,
+    function:
+      `${getModuleAddress(MirageModules.Market, network)}::market::get_fee` as `${string}::${string}::${string}`,
     typeArguments: [],
     functionArguments: [
       marketObjectAddress,
@@ -207,7 +208,7 @@ export const getPositionMaintenanceMarginMusd = async (
 ): Promise<number> => {
   const payload = {
     function:
-      `${getModuleAddress(network, MoveModules.MARKET)}::market::get_position_maintenance_margin_musd` as `${string}::${string}::${string}`,
+      `${getModuleAddress(MirageModules.Market, network)}::market::get_position_maintenance_margin_musd` as `${string}::${string}::${string}`,
     functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
     typeArguments: [],
   }
@@ -239,7 +240,7 @@ export const getAllPositionInfo = async (
 ): Promise<AllPositionInfo> => {
   const payload = {
     function:
-      `${getModuleAddress(network, MoveModules.MARKET)}::market::all_position_info` as `${string}::${string}::${string}`,
+      `${getModuleAddress(MirageModules.Market, network)}::market::all_position_info` as `${string}::${string}::${string}`,
     functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
     typeArguments: [],
   }

@@ -6,44 +6,23 @@ import mirageConfigTestnet from '../../mirage_config_testnet.json'
 import { getDeployerAddress } from './network'
 
 /**
- * An Aptos account
- */
-export interface Account {
-  readonly name: string
-  address: AccountAddress // allow other modules to override module address
-}
-
-/**
  * Move modules that Mirage Protocol utilizes
  */
-export enum MoveModules {
-  MIRAGE = 'MIRAGE',
-  MIRAGE_SCRIPTS = 'MIRAGE_SCRIPTS',
-  KEEPER_SCRIPTS = 'KEEPER_SCRIPTS',
-  MIRAGE_CORE = 'MIRAGE_CORE',
-  MIRAGE_ORACLE = 'MIRAGE_ORACLE',
-  MARKET = 'MARKET',
-  LAYER_ZERO = 'LAYER_ZERO', // "asset",
-  // swap
-  // gov
-  // deployer
+export enum MirageModules {
+  Mirage,
+  MirageScripts,
+  KeeperScripts,
+  MirageCore,
+  MirageOracle,
+  Market,
+  LayerZero, // "asset",
 }
 
 /**
  * The address of Mirage Protocol
  */
 export const mirageAddress = (network: Network): AccountAddress => {
-  return getModuleAddress(network, MoveModules.MIRAGE)
-}
-
-export type ModulesConfig = {
-  mirage: string
-  mirage_core: string
-  mirage_oracle: string
-  mirage_scripts: string
-  mirage_swap: string
-  keeper_scripts: string
-  market: string
+  return getModuleAddress(MirageModules.Mirage, network)
 }
 
 export type MarketsConfig = {
@@ -63,7 +42,6 @@ export type TokensConfig = {
 }
 
 export type MirageConfig = {
-  modules: ModulesConfig
   markets: MarketsConfig
   vaults: VaultsConfig
   tokens: TokensConfig
@@ -80,13 +58,42 @@ export const mirageConfigFromNetwork = (network: Network): MirageConfig => {
   }
 }
 
-// Relevant modules
-// NOTE: devUSDC is the same as mirage
-export const getModuleAddress = (network: Network, module: MoveModules): AccountAddress => {
-  if (module == MoveModules.LAYER_ZERO) {
-    // TODO: check mainnet/movement deployment address
-    return AccountAddress.from('0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa')
-  }
+const createModuleAddress = (seed: string, network: Network): AccountAddress => {
   const deployer_address = getDeployerAddress(network)
-  return createResourceAddress(deployer_address, module)
+  return createResourceAddress(deployer_address, seed)
+}
+
+export const getModuleAddress = (module: MirageModules, network: Network): AccountAddress => {
+  return modulesList(network)[module].address
+}
+
+export type ModuleInfo = {
+  address: AccountAddress
+}
+
+export const modulesList = (network: Network): { readonly [module in MirageModules]: ModuleInfo } => {
+  return {
+    [MirageModules.Mirage]: {
+      // NOTE: devUSDC is the same as mirage
+      address: createModuleAddress('MIRAGE', network),
+    },
+    [MirageModules.MirageScripts]: {
+      address: createModuleAddress('MIRAGE_SCRIPTS', network),
+    },
+    [MirageModules.KeeperScripts]: {
+      address: createModuleAddress('KEEPER_SCRIPTS', network),
+    },
+    [MirageModules.MirageCore]: {
+      address: createModuleAddress('MIRAGE_CORE', network),
+    },
+    [MirageModules.MirageOracle]: {
+      address: createModuleAddress('MIRAGE_ORACLE', network),
+    },
+    [MirageModules.Market]: {
+      address: createModuleAddress('MARKET', network),
+    },
+    [MirageModules.LayerZero]: {
+      address: AccountAddress.from('0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa'),
+    },
+  }
 }

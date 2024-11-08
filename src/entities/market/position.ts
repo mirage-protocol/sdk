@@ -5,8 +5,8 @@ import {
   FEE_PRECISION,
   getModuleAddress,
   mirageAddress,
+  MirageModules,
   MoveFungibleAsset,
-  MoveModules,
   PERCENT_PRECISION,
   Perpetual,
   PRECISION_8,
@@ -180,7 +180,7 @@ export class Position {
       : ZERO
     const fundingAccrued = !!position ? marketFundingAccumulated.minus(lastPositionFunding).times(positionSize) : ZERO
 
-    const tpslType = `${getModuleAddress(network, MoveModules.MARKET)}::market::TpSl`
+    const tpslType = `${getModuleAddress(MirageModules.Market, network)}::market::TpSl`
     const tpsl = positionObjectResources.find((resource) => resource.type === tpslType)
     const tpslExists = !!tpsl
     const takeProfitPrice = tpslExists ? BigNumber((tpsl as any).data.take_profit_price).div(PRECISION_8) : ZERO
