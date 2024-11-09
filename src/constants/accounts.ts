@@ -1,5 +1,4 @@
 import { AccountAddress, createResourceAddress, Network } from '@aptos-labs/ts-sdk'
-
 import mirageConfigMainnet from '../../mirage_config_mainnet.json'
 import mirageConfigMovementTestnet from '../../mirage_config_movement_testnet.json'
 import mirageConfigTestnet from '../../mirage_config_testnet.json'
@@ -9,13 +8,13 @@ import { getDeployerAddress } from './network'
  * Move modules that Mirage Protocol utilizes
  */
 export enum MirageModules {
-  Mirage,
-  MirageScripts,
-  KeeperScripts,
-  MirageCore,
-  MirageOracle,
-  Market,
-  LayerZero, // "asset",
+  Mirage = 'Mirage',
+  MirageScripts = 'MirageScripts',
+  KeeperScripts = 'KeeperScripts',
+  MirageCore = 'MirageCore',
+  MirageOracle = 'MirageOracle',
+  Market = 'Market',
+  LayerZero = 'LayerZero'
 }
 
 /**
@@ -67,33 +66,48 @@ export const getModuleAddress = (module: MirageModules, network: Network): Accou
   return modulesList(network)[module].address
 }
 
+export const getModuleFromName = (name: string, network: Network): MirageModules => {
+  const found = Object.entries(modulesList(network)).find(([_, value]) => value.name === name)
+  if (!found) {
+    throw new Error(`Module not found for name: ${name}`)
+  }
+  return MirageModules[found[0] as keyof typeof MirageModules]
+}
+
 export type ModuleInfo = {
   address: AccountAddress
+  name: string
 }
 
 export const modulesList = (network: Network): { readonly [module in MirageModules]: ModuleInfo } => {
   return {
     [MirageModules.Mirage]: {
-      // NOTE: devUSDC is the same as mirage
       address: createModuleAddress('MIRAGE', network),
+      name: 'mirage'
     },
     [MirageModules.MirageScripts]: {
       address: createModuleAddress('MIRAGE_SCRIPTS', network),
+      name: 'mirage_scripts'
     },
     [MirageModules.KeeperScripts]: {
       address: createModuleAddress('KEEPER_SCRIPTS', network),
+      name: 'keeper_scripts'
     },
     [MirageModules.MirageCore]: {
       address: createModuleAddress('MIRAGE_CORE', network),
+      name: 'mirage_core'
     },
     [MirageModules.MirageOracle]: {
       address: createModuleAddress('MIRAGE_ORACLE', network),
+      name: 'mirage_oracle'
     },
     [MirageModules.Market]: {
       address: createModuleAddress('MARKET', network),
+      name: 'market'
     },
     [MirageModules.LayerZero]: {
       address: AccountAddress.from('0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa'),
+      name: 'layer_zero'
     },
   }
 }

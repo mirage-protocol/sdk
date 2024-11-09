@@ -33,11 +33,15 @@ export const getPairFromMarketAddress = (
   network: Network,
 ): { marginToken: MoveFungibleAsset; perp: Perpetual } => {
   const mirageConfig = mirageConfigFromNetwork(network)
-  for (const marginToken in mirageConfig.markets) {
-    for (const perp in mirageConfig.markets[marginToken]) {
-      if (AccountAddress.from(mirageConfig.markets[marginToken][perp]) == marketObjectAddress) {
-        // Assuming Perpetual is a more complex type, you might need to instantiate it or fetch it from somewhere
-        return { marginToken: MoveFungibleAsset[marginToken], perp: Perpetual[perp] }
+  for (const marginToken of Object.keys(mirageConfig.markets)) {
+    for (const perp of Object.keys(mirageConfig.markets[marginToken])) {
+      if (AccountAddress.from(mirageConfig.markets[marginToken][perp]).equals(marketObjectAddress)) {
+        if (isMoveFungibleAsset(marginToken) && isPerpetual(perp)) {
+          return {
+            marginToken: MoveFungibleAsset[marginToken as keyof typeof MoveFungibleAsset],
+            perp: Perpetual[perp as keyof typeof Perpetual]
+          }
+        }
       }
     }
   }
@@ -49,12 +53,16 @@ export const getPairFromVaultCollectionAddress = (
   network: Network,
 ): { collateralAsset: MoveAsset; borrow: MoveFungibleAsset } => {
   const mirageConfig = mirageConfigFromNetwork(network)
-  for (const collateralAsset in mirageConfig.vaults) {
-    for (const borrow in mirageConfig.vaults[collateralAsset]) {
-      if (AccountAddress.from(mirageConfig.vaults[collateralAsset][borrow]) == vaultObjectAddress) {
-        return {
-          collateralAsset: MoveCoin[collateralAsset] || MoveFungibleAsset[collateralAsset],
-          borrow: MoveFungibleAsset[borrow],
+  for (const collateralAsset of Object.keys(mirageConfig.vaults)) {
+    for (const borrow of Object.keys(mirageConfig.vaults[collateralAsset])) {
+      if (AccountAddress.from(mirageConfig.vaults[collateralAsset][borrow]).equals(vaultObjectAddress)) {
+        if (isMoveFungibleAsset(borrow)) {
+          return {
+            collateralAsset: isMoveAsset(collateralAsset) 
+              ? (MoveCoin[collateralAsset as keyof typeof MoveCoin] || MoveFungibleAsset[collateralAsset as keyof typeof MoveFungibleAsset])
+              : MoveFungibleAsset.mUSD, // Default fallback
+            borrow: MoveFungibleAsset[borrow as keyof typeof MoveFungibleAsset]
+          }
         }
       }
     }
@@ -107,6 +115,23 @@ export enum Perpetual {
   JPYPERP = 'JPYPERP',
 }
 
+// Type guards
+export const isMoveFungibleAsset = (value: string): value is keyof typeof MoveFungibleAsset => {
+  return value in MoveFungibleAsset
+}
+
+export const isMoveCoin = (value: string): value is keyof typeof MoveCoin => {
+  return value in MoveCoin
+}
+
+export const isPerpetual = (value: string): value is keyof typeof Perpetual => {
+  return value in Perpetual
+}
+
+export const isMoveAsset = (value: string): value is keyof typeof MoveCoin | keyof typeof MoveFungibleAsset => {
+  return isMoveCoin(value) || isMoveFungibleAsset(value)
+}
+
 /**
  * All synthetic mirage assets
  */
@@ -147,16 +172,14 @@ export const getAssetSymbol = (asset: MoveAsset | Perpetual, network: Network): 
   return assetList(network)[asset].symbol
 }
 
-/**
- * Get the MoveToken or MoveCoin of a given symbol
- * @param symbol string symbol of coin
- * @returns the MoveToken or undefined if not valid
- */
 export const getMoveAssetFromSymbol = (symbol: string, network: Network): MoveAsset | undefined => {
-  for (const [key, value] of Object.entries(assetList(network))) {
-    if (value.symbol == symbol) {
-      return key as MoveAsset
-    }
+  const assets = assetList(network)
+  const found = Object.entries(assets).find(([_, value]) => value.symbol === symbol)
+  if (!found) return undefined
+  
+  const [key] = found
+  if (isMoveAsset(key)) {
+    return key as MoveAsset
   }
   return undefined
 }
@@ -187,38 +210,83 @@ export const assetBalanceToDecimal = (
   return balance.div(BigNumber(10).pow(getAssetDecimals(asset, network)))
 }
 
+/**
+ * Get the market address for a perpetual
+ */
 export const getMarketAddress = (perp: Perpetual, network: Network): AccountAddress => {
+  if (!isPerpetual(perp)) {
+    throw new Error(`Invalid perpetual: ${perp}`)
+  }
   return perpetualList(network)[perp].address
 }
 
+/**
+ * Get the collection ID for a vault pair
+ */
 export const getCollectionIdForVaultPair = (
   collateralAsset: MoveAsset,
   borrowToken: MoveFungibleAsset,
   network: Network,
 ): string => {
   const mirageConfig = mirageConfigFromNetwork(network)
-  if (!(collateralAsset in mirageConfig.vaults || !(borrowToken in mirageConfig.vaults[collateralAsset]))) {
-    throw new Error('Not a valid vault pair')
+  
+  if (!isMoveAsset(collateralAsset)) {
+    throw new Error(`Invalid collateral asset: ${collateralAsset}`)
   }
+  
+  if (!isMoveFungibleAsset(borrowToken)) {
+    throw new Error(`Invalid borrow token: ${borrowToken}`)
+  }
+  
+  if (!(collateralAsset in mirageConfig.vaults) || 
+      !(borrowToken in mirageConfig.vaults[collateralAsset])) {
+    throw new Error(`Invalid vault pair: ${collateralAsset}/${borrowToken}`)
+  }
+  
   return mirageConfig.vaults[collateralAsset][borrowToken]
 }
 
-export const getFungibleAssetAddress = (asset: MoveFungibleAsset | string, network: Network): AccountAddress => {
-  if (!(asset in MoveFungibleAsset)) {
-    throw new Error('Not a valid vault pair')
+/**
+ * Get the fungible asset address for a given asset
+ */
+export const getFungibleAssetAddress = (
+  asset: MoveFungibleAsset | string,
+  network: Network
+): AccountAddress => {
+  if (!isMoveFungibleAsset(asset)) {
+    throw new Error(`Invalid fungible asset: ${asset}`)
   }
-  return fungibleAssetList(network)[asset].address
+  
+  const assetList = fungibleAssetList(network)
+  if (!(asset in assetList)) {
+    throw new Error(`Fungible asset not found: ${asset}`)
+  }
+  
+  return assetList[asset].address
 }
 
+/**
+ * Get the perpetual market address
+ */
 export const getPerpMarketAddress = (
   perp: Perpetual | string,
-  _marginToken: MoveFungibleAsset,
+  marginToken: MoveFungibleAsset,
   network: Network,
 ): AccountAddress => {
-  if (!(perp in Perpetual)) {
-    throw new Error('Not a valid vault pair')
+  if (!isPerpetual(perp)) {
+    throw new Error(`Invalid perpetual: ${perp}`)
   }
-  return perpetualList(network)[perp].address
+  
+  if (!isMoveFungibleAsset(marginToken)) {
+    throw new Error(`Invalid margin token: ${marginToken}`)
+  }
+  
+  const markets = perpetualList(network)
+  if (!(perp in markets)) {
+    throw new Error(`Market not found for perpetual: ${perp}`)
+  }
+  
+  return markets[perp].address
 }
 
 export const coinList = (network: Network): { readonly [coin in MoveCoin]: CoinInfo } => {
