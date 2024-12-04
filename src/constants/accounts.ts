@@ -35,21 +35,21 @@ export enum MoveModules {
  * @param module the module to get the address of, can pass type or string
  * @returns the module address if it was found
  */
-export const getModuleAddress = (module: MoveModules | string, network: Network | string): AccountAddress => {
-  return MODULES(network)[module as MoveModules].address
+export const getModuleAddress = (module: MoveModules | string, config: MirageConfig): AccountAddress => {
+  return MODULES(config)[module as MoveModules].address
 }
 
 /**
  * The account of Mirage Protocol
  */
-export const mirageAccount = (network: Network | string): Account => {
-  return MODULES(network)['mirage']
+export const mirageAccount = (config: MirageConfig): Account => {
+  return MODULES(config)['mirage']
 }
 /**
  * The address of Mirage Protocol
  */
-export const mirageAddress = (network: Network | string): AccountAddress => {
-  return MODULES(network)['mirage'].address
+export const mirageAddress = (config: MirageConfig): AccountAddress => {
+  return MODULES(config)['mirage'].address
 }
 
 export type ModulesConfig = {
@@ -99,36 +99,35 @@ export const mirageConfigFromNetwork = (network: Network | string): MirageConfig
 
 // Relevant modules
 // NOTE: devUSDC is the same as mirage
-export const MODULES = (network: Network | string): { readonly [module in MoveModules]: Account } => {
-  const mirageConfig = mirageConfigFromNetwork(network)
+export const MODULES = (config: MirageConfig): { readonly [module in MoveModules]: Account } => {
   return {
     ['mirage']: {
       name: 'mirage',
-      address: AccountAddress.from(mirageConfig.modules.mirage),
+      address: AccountAddress.from(config.modules.mirage),
     },
     ['mirage_scripts']: {
       name: 'mirage_scripts',
-      address: AccountAddress.from(mirageConfig.modules.mirage_scripts),
+      address: AccountAddress.from(config.modules.mirage_scripts),
     },
     ['mirage_core']: {
       name: 'mirage_core',
-      address: AccountAddress.from(mirageConfig.modules.mirage_core),
+      address: AccountAddress.from(config.modules.mirage_core),
     },
     ['mirage_oracle']: {
       name: 'mirage_oracle',
-      address: AccountAddress.from(mirageConfig.modules.mirage_oracle),
+      address: AccountAddress.from(config.modules.mirage_oracle),
     },
     ['mirage_swap']: {
       name: 'mirage_swap',
-      address: AccountAddress.from(mirageConfig.modules.mirage_swap),
+      address: AccountAddress.from(config.modules.mirage_swap),
     },
     ['keeper_scripts']: {
       name: 'keeper_scripts',
-      address: AccountAddress.from(mirageConfig.modules.keeper_scripts),
+      address: AccountAddress.from(config.modules.keeper_scripts),
     },
     ['market']: {
       name: 'market',
-      address: AccountAddress.from(mirageConfig.modules.market),
+      address: AccountAddress.from(config.modules.market),
     },
     // TODO is this right for all networks
     ['layer_zero']: {

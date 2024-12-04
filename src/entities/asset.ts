@@ -1,7 +1,7 @@
 import { InputViewFunctionData, MoveOption, Network, U128 } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { aptosClient, getNetwork } from '../constants'
+import { defaultAptosClient, getNetwork, MirageConfig } from '../constants'
 import { getAssetTokenMetadata, getTypeFromMoveAsset, MoveAsset, moveAssetInfo, MoveCoin } from '../constants/assetList'
 
 /**
@@ -21,6 +21,7 @@ export class Asset {
    * The current network being used
    */
   private readonly network: Network
+  private readonly config: MirageConfig
   /**
    * The name of the asset
    */
@@ -47,12 +48,13 @@ export class Asset {
    * @param userResources resources of some account
    * @param asset which asset to find data for
    */
-  constructor(balance: BigNumber, asset: MoveAsset | string, network: Network | string = Network.MAINNET) {
-    const { name, symbol, decimals, type } = moveAssetInfo(asset, network)
+  constructor(balance: BigNumber, asset: MoveAsset | string, config: MirageConfig, network: Network | string) {
+    const { name, symbol, decimals, type } = moveAssetInfo(asset, config)
 
     const precision = BigNumber(10).pow(decimals)
 
     this.network = getNetwork(network)
+    this.config = config
     this.type = type
     this.name = name
     this.symbol = symbol
@@ -70,9 +72,9 @@ export class Asset {
     const isToken = getTypeFromMoveAsset(this.asset) == 'MoveToken'
     const payload: InputViewFunctionData = {
       function: (isToken ? '0x1::fungible_asset::supply' : '0x1::coin::supply') as `${string}::${string}::${string}`,
-      functionArguments: isToken ? [getAssetTokenMetadata(this.asset, this.network)] : [],
+      functionArguments: isToken ? [getAssetTokenMetadata(this.asset, this.config)] : [],
     }
-    const [val] = await aptosClient(this.network).view({ payload })
+    const [val] = await defaultAptosClient(this.network).view({ payload })
     const val_option = val as MoveOption<U128>
     const val_raw_num = val_option.unwrap() as unknown as number
     return BigNumber(val_raw_num).div(BigNumber(10).pow(this.decimals))

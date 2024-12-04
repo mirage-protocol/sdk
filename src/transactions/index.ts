@@ -1,22 +1,17 @@
-import { Network } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { MoveAsset, moveAssetInfo, PRECISION_8 } from '../constants'
+import { MirageConfig, MoveAsset, moveAssetInfo, PRECISION_8 } from '../constants'
 
 // Get the proper payload amount
-export const getAssetAmountArgument = (coin: MoveAsset | string, amount: number, network: Network | string): string => {
+export const getAssetAmountArgument = (coin: MoveAsset | string, amount: number, config: MirageConfig): string => {
   return BigNumber(amount)
-    .times(BigNumber(10).pow(moveAssetInfo(coin, network).decimals))
+    .times(BigNumber(10).pow(moveAssetInfo(coin, config).decimals))
     .toFixed(0)
 }
 
 // Get the proper payload amount
-export const getBCSCoinAmountArgument = (
-  coin: MoveAsset | string,
-  amount: number,
-  network: Network | string,
-): bigint => {
-  return BigInt(getAssetAmountArgument(coin, amount, network))
+export const getBCSCoinAmountArgument = (coin: MoveAsset | string, amount: number, config: MirageConfig): bigint => {
+  return BigInt(getAssetAmountArgument(coin, amount, config))
 }
 
 // Get the proper payload amount
@@ -30,6 +25,6 @@ export const getBCSDecimal8Argument = (amount: number): bigint => {
   return BigInt(getDecimal8Argument(amount))
 }
 
-export * from './distributor'
 export * from './marketTransactions'
+export * from './testnetTransactions'
 export * from './vaultTransactions'

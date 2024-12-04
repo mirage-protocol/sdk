@@ -10,32 +10,39 @@ yarn install
 ```
 
 ## How to Use
+TODO: improve this section
 
-You have to collect the resources for the sdk to parse yourself. You can use the exported `APTOS_CLIENT` to make the request. Some classes require the resources of the mirage protocol account itself. You can get these by using the exported `MIRAGE_ADDRESS` alongside the client.
+To use this sdk, you need to first initialize a client singleton.
 
-Resources can be kept up to date through time and fed to the sdk to keep an updated protocol state, for example on a frontend.
+The only required parameter is the network (aptos testnet/mainnet, movement testnet/mainnet).
 
-```typescript
-import { Vault, Coin, MoveToken, aptosClient, MIRAGE_ADDRESS } from '@mirage-protocol/sdk'
+You can also inject the following optional configs/clients as desired:
+  - config: a mirage specific config detailing relevant modules/assets/vaults/markets etc.  Without declaration, a default is injected, but if you want to inject other optional variables you can explicilty use this default by importing eg mirage_config_testnet and injecting it.
+  - aptosClient: the client used for inline views (only views use this - all transactions must be submitted via a wallet client)
+  - aptosGraphqlApiKey: an api key if needed for your custom aptos graphql (indexer) client
+  - aptosGraphqlClient: a graphql client pointing to an aptos indexer gql endpoint.  this endpoint must support the same queries as the official aptos indexer
+  - mirageGraphqlClient: a graphql client pointing to a mirage indexer gql endpoint.  this endpoint must support the same queries as the official mirage indexer
 
-// Get coin balance of a user account
-const getUserAptosBalance = async (userAddr: string) => {
-  // Get the resources for a user account
-  const resources = await aptosClient().getAccountResources(userAddr)
+```ts
+// simple initiation
+const network = Network.TESTNET
+const mirageClient = new MirageClient(network)
 
-  // Coin class contains useful functions
-  const coin = new Coin(resources, 'APT')
+// sending transactions
+const { account, signAndSubmitTransaction, connected } = useWallet() // from '@aptos-labs/wallet-adapter-react'
+...
+const vaultCollectionAddr = mirageClient.addresses.getCollectionIdForVaultPair(MoveCoin.APT, MoveToken.mUSD)
+const createVaultPayload = await mirageClient.vaultTransactions.createVaultAndAddCollateral(vaultCollectionAddr, 10)
+await signAndSubmitTransaction({ sender: account.address, data: {...createVaultPayload } })
 
-  // Get the balance
-  return coin.getUiBalance()
-}
+// calling views
+const vaultIds = await mirageClient.vaultViews.getAllVaultIdsByOwner("0xcafe")
+console.log(vaultIds)
 
-// get total collateral deposited in the APT / MUSD testnet vault
-const getTotalTestnetCollateral = async () => {
-  return new Vault(
-    await aptosClient('testnet').getAccountResources(MIRAGE_ADDRESS),
-    'APT',
-    'mUSD'
-  ).getUiTotalCollateral()
-}
+// creating entities
+const aptosClient = defaultAptosClient(Network.TESTNET) // mirage provides a default aptos client constructor, you can also create your own via the 'Aptos' object from the '@aptos-labs/ts-sdk'
+const vaultCollectionResources = await aptosClient().getAccountResources({ accountAddress: vaultCollectionAddr })
+const musdTokenResources = await aptosClient().getAccountResources({ accountAddress: mirageClient.addresses.getAssetTokenMetadata(MoveToken.mUSD)})
+const vaultCollection = mirageClient.vaultEntities.createVaultCollection(vaultCollectionResources, musdTokenResources, vaultCollectionAddr)
+console.log(vaultCollection.totalCollateral)
 ```

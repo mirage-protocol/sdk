@@ -1,7 +1,6 @@
-import { Network } from '@aptos-labs/ts-sdk'
 import { Client } from 'urql'
 
-import { mirageAddress } from '../constants'
+import { mirageAddress, MirageConfig } from '../constants'
 import { GetCollectionsByOwnerDocument, GetCollectionsByOwnerQueryVariables } from '../generated/aptos/graphql'
 
 export type CollectionInfo = {
@@ -11,10 +10,10 @@ export type CollectionInfo = {
 
 export const getCollectionsFromMirage = async (
   graphqlClient: Client,
-  network: Network | string,
+  config: MirageConfig,
 ): Promise<CollectionInfo[]> => {
   const variables: GetCollectionsByOwnerQueryVariables = {
-    OWNER: mirageAddress(network).toString(),
+    OWNER: mirageAddress(config).toString(),
   }
   try {
     const result = await graphqlClient.query(GetCollectionsByOwnerDocument, variables).toPromise()

@@ -37,7 +37,7 @@ const testnetPythClient = new AptosPriceServiceConnection(`https://hermes-beta.p
  * @param network the network to use, if not specific = "mainnet"
  * @returns a useable aptos client
  */
-export const aptosClient = (network: Network | string | string = Network.MAINNET, nodeURI?: string): Aptos => {
+export const defaultAptosClient = (network: Network | string | string = Network.MAINNET, nodeURI?: string): Aptos => {
   if (nodeURI !== undefined) {
     return new Aptos(new AptosConfig({ network: getNetwork(network), fullnode: nodeURI }))
   }
@@ -115,19 +115,37 @@ export const graphqlClientWithUri = (gqlURI: string, API_KEY?: string): Client =
 }
 
 // TODO: make this not fixed to aptos testnet
-export const graphqlClient = (API_KEY?: string): Client => {
-  return graphqlClientWithUri('https://api.testnet.aptoslabs.com/v1/graphql', API_KEY)
+export const defaultAptosGraphqlClient = (network: string, API_KEY?: string): Client => {
+  // TODO: UPDATE WITH NEW API ENDPOINTS
+  let uriStr = 'https://api.testnet.aptoslabs.com/v1/graphql'
+  if (network == 'testnet') {
+    uriStr = 'https://api.testnet.aptoslabs.com/v1/graphql'
+  } else if (network == 'mainnet') {
+    uriStr = 'https://api.mainnet.aptoslabs.com/v1/graphql'
+  } else if (network == 'movement-testnet') {
+    uriStr = 'https://indexer.testnet.porto.movementnetwork.xyz/v1/graphql'
+  }
+  return graphqlClientWithUri(uriStr, API_KEY)
 }
 
-export const mirageGraphQlClient = createClient({
-  url: 'https://api.mirage.money/v1/graphql',
-  exchanges: [
-    fetchExchange,
-    cacheExchange,
-    errorExchange({
-      onError: (error) => {
-        console.error('GraphQL Error:', error)
-      },
-    }),
-  ],
-})
+export const defaultMirageGraphqlClient = (network: string): Client => {
+  // TODO: UPDATE WITH NEW API ENDPOINTS
+  let uriStr = ''
+  if (network == 'testnet') {
+    uriStr = 'https://api-movement-testnet.mirage.money/v1/graphql'
+  } else {
+    uriStr = 'https://api-movement-testnet.mirage.money/v1/graphql'
+  }
+  return createClient({
+    url: uriStr,
+    exchanges: [
+      fetchExchange,
+      cacheExchange,
+      errorExchange({
+        onError: (error) => {
+          console.error('GraphQL Error:', error)
+        },
+      }),
+    ],
+  })
+}
