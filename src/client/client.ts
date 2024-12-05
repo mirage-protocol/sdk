@@ -4,21 +4,24 @@ import { Client } from 'urql'
 import { Addresses, MirageConfig } from '../constants'
 import { Assets } from '../constants/assets'
 import { AssetEntities } from '../entities/assetEntities'
-import { DistributorEntities } from '../entities/distributor/distributorEntities'
 import { MarketEntities } from '../entities/market/marketEntities'
 import { VaultEntities } from '../entities/vault/vaultEntities'
 import { MarketTransactions, TestnetTransactions, VaultTransactions } from '../transactions'
+import { ReferralTransactions } from '../transactions/referralTransactions'
 import { AccountViews, MarketViews, TestnetViews, VaultViews } from '../views'
+import { ReferralViews } from '../views/referralViews'
 import { MirageClientBase } from './base'
 
 export class MirageClient extends MirageClientBase {
   marketTransactions: MarketTransactions
   vaultTransactions: VaultTransactions
+  referralTransactions: ReferralTransactions
   testnetTransactions: TestnetTransactions
 
   accountViews: AccountViews
   marketViews: MarketViews
   vaultViews: VaultViews
+  referralViews: ReferralViews
   testnetViews: TestnetViews
 
   assets: Assets
@@ -27,7 +30,6 @@ export class MirageClient extends MirageClientBase {
   vaultEntities: VaultEntities
   assetEntities: AssetEntities
   marketEntities: MarketEntities
-  distributorEntities: DistributorEntities
 
   constructor(
     network: Network,
@@ -62,6 +64,19 @@ export class MirageClient extends MirageClientBase {
     Object.getOwnPropertyNames(VaultTransactions.prototype).forEach((name) => {
       if (name !== 'constructor') {
         ;(this as any)[name] = this.vaultTransactions[name].bind(this.vaultTransactions)
+      }
+    })
+    this.referralTransactions = new ReferralTransactions(
+      network,
+      config,
+      aptosClient,
+      aptosGraphqlApiKey,
+      aptosGraphqlClient,
+      mirageGraphqlClient,
+    )
+    Object.getOwnPropertyNames(ReferralTransactions.prototype).forEach((name) => {
+      if (name !== 'constructor') {
+        ;(this as any)[name] = this.referralTransactions[name].bind(this.referralTransactions)
       }
     })
     this.testnetTransactions = new TestnetTransactions(
@@ -115,6 +130,19 @@ export class MirageClient extends MirageClientBase {
     Object.getOwnPropertyNames(AccountViews.prototype).forEach((name) => {
       if (name !== 'constructor') {
         ;(this as any)[name] = this.accountViews[name].bind(this.accountViews)
+      }
+    })
+    this.referralViews = new ReferralViews(
+      network,
+      config,
+      aptosClient,
+      aptosGraphqlApiKey,
+      aptosGraphqlClient,
+      mirageGraphqlClient,
+    )
+    Object.getOwnPropertyNames(ReferralViews.prototype).forEach((name) => {
+      if (name !== 'constructor') {
+        ;(this as any)[name] = this.referralViews[name].bind(this.referralViews)
       }
     })
     this.testnetViews = new TestnetViews(
@@ -187,19 +215,6 @@ export class MirageClient extends MirageClientBase {
     Object.getOwnPropertyNames(MarketEntities.prototype).forEach((name) => {
       if (name !== 'constructor') {
         ;(this as any)[name] = this.marketEntities[name].bind(this.marketEntities)
-      }
-    })
-    this.distributorEntities = new DistributorEntities(
-      network,
-      config,
-      aptosClient,
-      aptosGraphqlApiKey,
-      aptosGraphqlClient,
-      mirageGraphqlClient,
-    )
-    Object.getOwnPropertyNames(DistributorEntities.prototype).forEach((name) => {
-      if (name !== 'constructor') {
-        ;(this as any)[name] = this.distributorEntities[name].bind(this.distributorEntities)
       }
     })
   }

@@ -6,25 +6,12 @@ import {
   getPairFromMarketAddress,
   getPriceFeed,
   getPriceFeedUpdateData,
-  MirageConfig,
   MODULES,
-  MoveCoin,
   MoveToken,
   Perpetual,
 } from '../constants'
 import { PositionSide } from '../entities'
-import { getAssetAmountArgument, getDecimal8Argument } from './'
-
-// Get the types for this market
-export const getMarketTypeArgument = (config: MirageConfig): Array<string> => {
-  return [`${MODULES(config).market.address}::market::Market`]
-}
-export const getPositionTypeArgument = (config: MirageConfig): Array<string> => {
-  return [`${MODULES(config).market.address}::market::Position`]
-}
-export const getLimitOrdersTypeArgument = (config: MirageConfig): Array<string> => {
-  return [`${MODULES(config).market.address}::market::LimitOrders`]
-}
+import { getDecimal8Argument } from './'
 
 export class MarketTransactions extends MirageClientBase {
   /**
@@ -47,7 +34,7 @@ export class MarketTransactions extends MirageClientBase {
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
 
     return {
-      function: `${MODULES(this.config).mirage_scripts.address}::market_scripts::open_position_entry`,
+      function: `${MODULES(this.config).mirage_scripts.address}::market_scripts::create_and_open_position_entry`,
 
       functionArguments: [
         marketObject,
@@ -59,7 +46,6 @@ export class MarketTransactions extends MirageClientBase {
         getDecimal8Argument(desired_price),
         getDecimal8Argument(maxPriceSlippage),
       ],
-      typeArguments: getMarketTypeArgument(this.config),
     }
   }
 
@@ -76,7 +62,6 @@ export class MarketTransactions extends MirageClientBase {
     maxPriceSlippage: number,
     takeProfitPrice: number,
     stopLossPrice: number,
-    triggerPaymentAmount: number,
   ): Promise<InputEntryFunctionData> {
     const { marginToken: marginCoin, perp: perpetual } = getPairFromMarketAddress(marketObject, this.config)
     const marginFeed = getPriceFeed(marginCoin, this.network)
@@ -86,7 +71,7 @@ export class MarketTransactions extends MirageClientBase {
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
 
     return {
-      function: `${MODULES(this.config).mirage_scripts.address}::market_scripts::open_position_entry_with_tpsl`,
+      function: `${MODULES(this.config).mirage_scripts.address}::market_scripts::create_and_open_position_with_tpsl_entry`,
 
       functionArguments: [
         marketObject,
@@ -99,9 +84,7 @@ export class MarketTransactions extends MirageClientBase {
         getDecimal8Argument(maxPriceSlippage),
         getDecimal8Argument(takeProfitPrice),
         getDecimal8Argument(stopLossPrice),
-        getAssetAmountArgument(MoveCoin.APT, triggerPaymentAmount, this.config),
       ],
-      typeArguments: getMarketTypeArgument(this.config),
     }
   }
 
@@ -124,7 +107,6 @@ export class MarketTransactions extends MirageClientBase {
       function:
         `${MODULES(this.config).mirage_scripts.address}::market_scripts::close_position_entry` as `${string}::${string}::${string}`,
       functionArguments: [positionObject, perpetualVaas, marginVaas],
-      typeArguments: getPositionTypeArgument(this.config),
     }
     return payload
   }
@@ -141,7 +123,6 @@ export class MarketTransactions extends MirageClientBase {
     triggerPrice: number,
     maxPriceSlippage: number,
     triggersAbove: boolean,
-    triggerPaymentAmount: number,
     expiration: bigint, // in seconds,
     isLong: boolean,
   ): Promise<InputEntryFunctionData> {
@@ -151,7 +132,7 @@ export class MarketTransactions extends MirageClientBase {
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
 
     return {
-      function: `${MODULES(this.config).mirage_scripts.address}::market_scripts::create_position_and_place_limit_order`,
+      function: `${MODULES(this.config).mirage_scripts.address}::market_scripts::create_position_and_place_limit_order_entry`,
       functionArguments: [
         marketObject,
         perpetualVaas,
@@ -159,13 +140,11 @@ export class MarketTransactions extends MirageClientBase {
         getDecimal8Argument(positionSize),
         getDecimal8Argument(triggerPrice),
         getDecimal8Argument(maxPriceSlippage),
-        true, // always is increase when creating a new position
+        false, // is_decrease only is always false when creating a new position
         triggersAbove,
-        getDecimal8Argument(triggerPaymentAmount),
         expiration.toString(), // sdk breaks for large non-string integers
         isLong,
       ],
-      typeArguments: getMarketTypeArgument(this.config),
     }
   }
 
@@ -179,11 +158,11 @@ export class MarketTransactions extends MirageClientBase {
     perpetualAsset: Perpetual,
     marginAmount: number,
     positionSize: number,
+    isLong: boolean,
     triggerPrice: number,
     maxPriceSlippage: number,
     isIncrease: boolean,
     triggersAbove: boolean,
-    triggerPaymentAmount: number,
     expiration: bigint, // in seconds
   ): Promise<InputEntryFunctionData> {
     const perpetualFeed = getPriceFeed(perpetualAsset, this.network)
@@ -196,14 +175,43 @@ export class MarketTransactions extends MirageClientBase {
         perpetualVaas,
         getDecimal8Argument(marginAmount), // always 8 decimals
         getDecimal8Argument(positionSize),
+        isLong,
         getDecimal8Argument(triggerPrice),
         getDecimal8Argument(maxPriceSlippage),
         isIncrease,
         triggersAbove,
-        getDecimal8Argument(triggerPaymentAmount),
         expiration.toString(), // sdk breaks for large non-string integers
       ],
-      typeArguments: getPositionTypeArgument(this.config),
+    }
+  }
+
+  async updateLimitOrder(
+    limitOrderObject: MoveObjectType,
+    perpetualAsset: Perpetual,
+    positionSize: number,
+    isLong: boolean,
+    triggerPrice: number,
+    maxPriceSlippage: number,
+    isDecreaseOnly: boolean,
+    triggersAbove: boolean,
+    expiration: bigint, // in seconds
+  ): Promise<InputEntryFunctionData> {
+    const perpetualFeed = getPriceFeed(perpetualAsset, this.network)
+    const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
+
+    return {
+      function: `${MODULES(this.config).market.address}::limit_order::update_limit_order`,
+      functionArguments: [
+        limitOrderObject,
+        perpetualVaas,
+        getDecimal8Argument(positionSize),
+        isLong,
+        getDecimal8Argument(triggerPrice),
+        getDecimal8Argument(maxPriceSlippage),
+        isDecreaseOnly,
+        triggersAbove,
+        expiration.toString(), // sdk breaks for large non-string integers
+      ],
     }
   }
 
@@ -211,18 +219,17 @@ export class MarketTransactions extends MirageClientBase {
    * Cancel a limit order
    * @returns payload promise for the transaction
    */
-  async cancelLimitOrder(limitOrdersObject: MoveObjectType, index: number): Promise<InputEntryFunctionData> {
+  async cancelLimitOrder(limitOrdersObject: MoveObjectType): Promise<InputEntryFunctionData> {
     const payload = {
       function:
-        `${MODULES(this.config).mirage_scripts.address}::market_scripts::cancel_limit_order_entry` as `${string}::${string}::${string}`,
-      functionArguments: [limitOrdersObject, index],
-      typeArguments: getLimitOrdersTypeArgument(this.config),
+        `${MODULES(this.config).market.address}::limit_order::cancel_limit_order_entry` as `${string}::${string}::${string}`,
+      functionArguments: [limitOrdersObject],
     }
     return payload
   }
 
   async updateTpsl(
-    positionObject: MoveObjectType,
+    tpslObject: MoveObjectType,
     perpetualAsset: Perpetual,
     take_profit_price: number,
     stop_loss_price: number,
@@ -231,14 +238,13 @@ export class MarketTransactions extends MirageClientBase {
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
 
     const payload = {
-      function: `${MODULES(this.config).market.address}::market::update_tpsl` as `${string}::${string}::${string}`,
+      function: `${MODULES(this.config).market.address}::tpsl::update_tpsl` as `${string}::${string}::${string}`,
       functionArguments: [
-        positionObject,
+        tpslObject,
         perpetualVaas,
         getDecimal8Argument(take_profit_price),
         getDecimal8Argument(stop_loss_price),
       ],
-      typeArguments: getPositionTypeArgument(this.config),
     }
     return payload
   }
@@ -248,7 +254,6 @@ export class MarketTransactions extends MirageClientBase {
     perpetualAsset: Perpetual,
     take_profit_price: number,
     stop_loss_price: number,
-    trigger_amount: number,
   ): Promise<InputEntryFunctionData> {
     const perpetualFeed = getPriceFeed(perpetualAsset, this.network)
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
@@ -261,9 +266,19 @@ export class MarketTransactions extends MirageClientBase {
         perpetualVaas,
         getDecimal8Argument(take_profit_price),
         getDecimal8Argument(stop_loss_price),
-        getDecimal8Argument(trigger_amount),
       ],
-      typeArguments: getPositionTypeArgument(this.config),
+    }
+    return payload
+  }
+
+  /**
+   * Cancel a limit order
+   * @returns payload promise for the transaction
+   */
+  async cancelTpsl(tpslObject: MoveObjectType): Promise<InputEntryFunctionData> {
+    const payload = {
+      function: `${MODULES(this.config).market.address}::tpsl::cancel_tpsl` as `${string}::${string}::${string}`,
+      functionArguments: [tpslObject],
     }
     return payload
   }
@@ -291,7 +306,6 @@ export class MarketTransactions extends MirageClientBase {
       function:
         `${MODULES(this.config).mirage_scripts.address}::market_scripts::${functionName}_margin_entry` as `${string}::${string}::${string}`,
       functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(diff)],
-      typeArguments: getPositionTypeArgument(this.config),
     }
     return payload
   }
@@ -315,7 +329,38 @@ export class MarketTransactions extends MirageClientBase {
       function:
         `${MODULES(this.config).mirage_scripts.address}::market_scripts::increase_margin_entry` as `${string}::${string}::${string}`,
       functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(increaseMarginAmount)],
-      typeArguments: getPositionTypeArgument(this.config),
+    }
+    return payload
+  }
+
+  /**
+   * increase the margin of a limit order
+   * @returns payload promise for the transaction
+   */
+  async increaseLimitOrderMargin(
+    limitOrderObject: MoveObjectType,
+    increaseMarginAmount: number,
+  ): Promise<InputEntryFunctionData> {
+    const payload = {
+      function:
+        `${MODULES(this.config).mirage_scripts.address}::market_scripts::increase_limit_order_margin_entry` as `${string}::${string}::${string}`,
+      functionArguments: [limitOrderObject, getDecimal8Argument(increaseMarginAmount)],
+    }
+    return payload
+  }
+
+  /**
+   * decrease the margin of a limit order
+   * @returns payload promise for the transaction
+   */
+  async decreaseLimitOrderMargin(
+    limitOrderObject: MoveObjectType,
+    decreaseMarginAmount: number,
+  ): Promise<InputEntryFunctionData> {
+    const payload = {
+      function:
+        `${MODULES(this.config).mirage_scripts.address}::market_scripts::decrease_limit_order_margin_entry` as `${string}::${string}::${string}`,
+      functionArguments: [limitOrderObject, getDecimal8Argument(decreaseMarginAmount)],
     }
     return payload
   }
@@ -346,7 +391,6 @@ export class MarketTransactions extends MirageClientBase {
         getDecimal8Argument(increasePositionSize),
         getDecimal8Argument(increaseMarginAmount),
       ],
-      typeArguments: getPositionTypeArgument(this.config),
     }
     return payload
   }
@@ -377,7 +421,6 @@ export class MarketTransactions extends MirageClientBase {
         getDecimal8Argument(increasePositionSize),
         getDecimal8Argument(decreaseMarginAmount),
       ],
-      typeArguments: getPositionTypeArgument(this.config),
     }
     return payload
   }
@@ -408,7 +451,6 @@ export class MarketTransactions extends MirageClientBase {
         getDecimal8Argument(decreasePositionSize),
         getDecimal8Argument(decreaseMarginAmount),
       ],
-      typeArguments: getPositionTypeArgument(this.config),
     }
     return payload
   }
@@ -439,7 +481,6 @@ export class MarketTransactions extends MirageClientBase {
         getDecimal8Argument(decreasePositionSize),
         getDecimal8Argument(increaseMarginAmount),
       ],
-      typeArguments: getPositionTypeArgument(this.config),
     }
     return payload
   }
@@ -463,7 +504,6 @@ export class MarketTransactions extends MirageClientBase {
       function:
         `${MODULES(this.config).mirage_scripts.address}::market_scripts::decrease_margin_entry` as `${string}::${string}::${string}`,
       functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(decreaseMarginAmount)],
-      typeArguments: getPositionTypeArgument(this.config),
     }
     return payload
   }
@@ -498,7 +538,6 @@ export class MarketTransactions extends MirageClientBase {
           : MODULES(this.config).mirage_scripts.address
       }::${functionName}` as `${string}::${string}::${string}`,
       functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(diff)],
-      typeArguments: getPositionTypeArgument(this.config),
     }
     return payload
   }
@@ -523,7 +562,6 @@ export class MarketTransactions extends MirageClientBase {
       function:
         `${MODULES(this.config).market.address}::market::increase_position_size` as `${string}::${string}::${string}`,
       functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(increasePositionSize)],
-      typeArguments: getPositionTypeArgument(this.config),
     }
     return payload
   }
@@ -548,7 +586,6 @@ export class MarketTransactions extends MirageClientBase {
       function:
         `${MODULES(this.config).mirage_scripts.address}::market_scripts::decrease_position_size_entry` as `${string}::${string}::${string}`,
       functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(decreasePositionSize)],
-      typeArguments: getPositionTypeArgument(this.config),
     }
     return payload
   }
@@ -559,7 +596,7 @@ export class MarketTransactions extends MirageClientBase {
    */
   async triggerTpsl(
     triggererAddress: string,
-    positionObject: MoveObjectType,
+    tpslObject: MoveObjectType,
     marginCoin: MoveToken,
     perpetualAsset: Perpetual,
   ): Promise<InputEntryFunctionData> {
@@ -570,8 +607,19 @@ export class MarketTransactions extends MirageClientBase {
     const payload = {
       function:
         `${MODULES(this.config).mirage_scripts.address}::market_scripts::trigger_tpsl_entry` as `${string}::${string}::${string}`,
-      functionArguments: [triggererAddress, positionObject, perpetualVaas, marginVaas],
-      typeArguments: getPositionTypeArgument(this.config),
+      functionArguments: [triggererAddress, tpslObject, perpetualVaas, marginVaas],
+    }
+    return payload
+  }
+
+  /**
+   * cleanup tpsl object for destroyed positions for gas refund
+   * @returns payload promise for the transaction
+   */
+  async cleanupTpsl(tpslObject: MoveObjectType): Promise<InputEntryFunctionData> {
+    const payload = {
+      function: `${MODULES(this.config).market.address}::tpsl::cleanup_tpsl` as `${string}::${string}::${string}`,
+      functionArguments: [tpslObject],
     }
     return payload
   }
@@ -581,6 +629,7 @@ export class MarketTransactions extends MirageClientBase {
    * @returns payload promise for the transaction
    */
   async liquidatePosition(
+    triggererAddress: string,
     positionObject: MoveObjectType,
     marginCoin: MoveToken,
     perpetualAsset: Perpetual,
@@ -593,8 +642,7 @@ export class MarketTransactions extends MirageClientBase {
     const payload = {
       function:
         `${MODULES(this.config).mirage_scripts.address}::market_scripts::liquidate_position_entry` as `${string}::${string}::${string}`,
-      functionArguments: [positionObject, perpetualVaas, marginVaas],
-      typeArguments: getPositionTypeArgument(this.config),
+      functionArguments: [triggererAddress, positionObject, perpetualVaas, marginVaas],
     }
     return payload
   }
@@ -605,10 +653,9 @@ export class MarketTransactions extends MirageClientBase {
    */
   async triggerLimitOrder(
     triggererAddress: string,
-    positionObject: MoveObjectType,
+    limitOrderObject: MoveObjectType,
     marginCoin: MoveToken,
     perpetualAsset: Perpetual,
-    index: number,
   ): Promise<InputEntryFunctionData> {
     const marginFeed = getPriceFeed(marginCoin, this.network)
     const perpetualFeed = getPriceFeed(perpetualAsset, this.network)
@@ -618,33 +665,20 @@ export class MarketTransactions extends MirageClientBase {
     const payload = {
       function:
         `${MODULES(this.config).mirage_scripts.address}::market_scripts::trigger_limit_order_entry` as `${string}::${string}::${string}`,
-      functionArguments: [triggererAddress, positionObject, index, perpetualVaas, marginVaas],
-      typeArguments: getPositionTypeArgument(this.config),
+      functionArguments: [triggererAddress, limitOrderObject, perpetualVaas, marginVaas],
     }
     return payload
   }
 
   /**
-   * Trigger a limit order by id
+   * cleanup limit order object for destroyed positions for gas refund
    * @returns payload promise for the transaction
    */
-  async triggerLimitOrderById(
-    triggererAddress: string,
-    positionObject: MoveObjectType,
-    marginCoin: MoveToken,
-    perpetualAsset: Perpetual,
-    orderId: bigint,
-  ): Promise<InputEntryFunctionData> {
-    const marginFeed = getPriceFeed(marginCoin, this.network)
-    const perpetualFeed = getPriceFeed(perpetualAsset, this.network)
-    const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(this.network)) : []
-    const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
-
+  async cleanupLimitOrder(limitOrderObject: MoveObjectType): Promise<InputEntryFunctionData> {
     const payload = {
       function:
-        `${MODULES(this.config).mirage_scripts.address}::market_scripts::trigger_limit_order_by_id_entry` as `${string}::${string}::${string}`,
-      functionArguments: [triggererAddress, positionObject, orderId, perpetualVaas, marginVaas],
-      typeArguments: getPositionTypeArgument(this.config),
+        `${MODULES(this.config).market.address}::limit_order::cleanup_limit_order` as `${string}::${string}::${string}`,
+      functionArguments: [limitOrderObject],
     }
     return payload
   }

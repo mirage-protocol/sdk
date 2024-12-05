@@ -18,7 +18,7 @@ import {
   GetTokenIdsFromCollectionsByOwnerDocument,
   GetTokenIdsFromCollectionsByOwnerQueryVariables,
 } from '../generated/aptos/graphql'
-import { getDecimal8Argument, getMarketTypeArgument, getPositionTypeArgument } from '../transactions'
+import { getDecimal8Argument } from '../transactions'
 
 export type AllPositionInfo = {
   marketObjectAddress: string
@@ -27,25 +27,22 @@ export type AllPositionInfo = {
   marginAmount: number
   positionSize: number
   outstandingFunding: number
-  takeProfitPrice: number
-  stopLossPrice: number
   liquidationPrice: number
   maintenanceMarginUsd: number
-  limitOrderCount: number
 }
 
 export class MarketViews extends MirageClientBase {
-  async getMarginTokenFromPosition(positionObjectAddress: string): Promise<string> {
-    return (
-      await this.aptosClient.view({
-        payload: {
-          function: `${mirageAddress(this.config)}::market::position_margin_token`,
-          functionArguments: [positionObjectAddress],
-          typeArguments: [`${mirageAddress(this.config)}::market::Position`],
-        },
-      })
-    )[0] as MoveObjectType
-  }
+  //TODO delete? function no longer exists and is uncalled in interface - could also chain calls with get_market_from_position if this is needed
+  // async getMarginTokenFromPosition(positionObjectAddress: string): Promise<string> {
+  //   return (
+  //     await this.aptosClient.view({
+  //       payload: {
+  //         function: `${mirageAddress(this.config)}::market::position_margin_token`,
+  //         functionArguments: [positionObjectAddress],
+  //       },
+  //     })
+  //   )[0] as MoveObjectType
+  // }
 
   async getAllPositionIdsByOwner(owner: string): Promise<string[]> {
     const variables: GetTokenIdsFromCollectionsByOwnerQueryVariables = {
@@ -99,30 +96,24 @@ export class MarketViews extends MirageClientBase {
     }
   }
 
-  async isLimitOrderTriggerable(
-    positionObjectAddress: MoveObjectType,
-    index: number,
-    perpPrice: number,
-  ): Promise<boolean> {
+  async isLimitOrderTriggerable(limitOrderObject: MoveObjectType, perpPrice: number): Promise<boolean> {
     const payload = {
       function:
-        `${mirageAddress(this.config)}::market::is_limit_order_triggerable` as `${string}::${string}::${string}`,
-      typeArguments: getPositionTypeArgument(this.config),
-      functionArguments: [positionObjectAddress, index, getDecimal8Argument(perpPrice)],
+        `${MODULES(this.config).market.address}::limit_order::is_limit_order_triggerable` as `${string}::${string}::${string}`,
+      functionArguments: [limitOrderObject, getDecimal8Argument(perpPrice)],
     }
     const ret = await this.aptosClient.view({ payload })
     return ret[0] as boolean
   }
 
   async isLimitOrderTriggerableBulk(
-    positionObjectAddresses: MoveObjectType[],
-    indexes: number[],
+    limitOrderObjectAddresses: MoveObjectType[],
     perpPrice: number,
   ): Promise<boolean[]> {
     const payload = {
       function:
         `${MODULES(this.config).keeper_scripts.address}::market_scripts::get_is_limit_order_triggerable_states_same_perp` as `${string}::${string}::${string}`,
-      functionArguments: [positionObjectAddresses, indexes, getDecimal8Argument(perpPrice)],
+      functionArguments: [limitOrderObjectAddresses, getDecimal8Argument(perpPrice)],
     }
     const ret = await this.aptosClient.view({ payload })
     return (ret as any)[0] as boolean[]
@@ -135,7 +126,6 @@ export class MarketViews extends MirageClientBase {
   ): Promise<number> {
     const payload = {
       function: `${mirageAddress(this.config)}::market::get_liquidation_price` as `${string}::${string}::${string}`,
-      typeArguments: getPositionTypeArgument(this.config),
       functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
     }
     const ret = await this.aptosClient.view({ payload })
@@ -177,17 +167,14 @@ export class MarketViews extends MirageClientBase {
     marketObjectAddress: string,
     positionSizeAsset: number,
     isLong: boolean,
-    isClose: boolean,
     perpPrice: number,
     marginPrice: number,
   ): Promise<number> {
     const payload = {
-      function: `${mirageAddress(this.config)}::market::get_open_close_fee` as `${string}::${string}::${string}`,
-      typeArguments: getMarketTypeArgument(this.config),
+      function: `${mirageAddress(this.config)}::market::get_fee` as `${string}::${string}::${string}`,
       functionArguments: [
         marketObjectAddress,
         isLong,
-        isClose,
         getDecimal8Argument(positionSizeAsset),
         getDecimal8Argument(perpPrice),
         getDecimal8Argument(marginPrice),
@@ -207,7 +194,6 @@ export class MarketViews extends MirageClientBase {
     const payload = {
       function:
         `${mirageAddress(this.config)}::market::get_position_maintenance_margin_musd` as `${string}::${string}::${string}`,
-      typeArguments: getPositionTypeArgument(this.config),
       functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
     }
     const ret = await defaultAptosClient(this.network).view({ payload })
@@ -223,7 +209,6 @@ export class MarketViews extends MirageClientBase {
   ): Promise<AllPositionInfo> {
     const payload = {
       function: `${mirageAddress(this.config)}::market::all_position_info` as `${string}::${string}::${string}`,
-      typeArguments: getPositionTypeArgument(this.config),
       functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
     }
     const ret = await defaultAptosClient(this.network).view({ payload })
@@ -242,19 +227,10 @@ export class MarketViews extends MirageClientBase {
     result.outstandingFunding = BigNumber(data.outstandingFunding.magnitude as MoveUint64Type).times(
       result.outstandingFunding.negative ? -1 : 1,
     )
-    result.takeProfitPrice = BigNumber(data.takeProfitPrice as MoveUint64Type)
-      .div(PRECISION_8)
-      .toNumber()
-    result.stopLossPrice = BigNumber(data.stopLossPrice as MoveUint64Type)
-      .div(PRECISION_8)
-      .toNumber()
     result.liquidationPrice = BigNumber(data.liquidationPrice as MoveUint64Type)
       .div(PRECISION_8)
       .toNumber()
     result.maintenanceMarginUsd = BigNumber(data.maintenanceMarginUsd as MoveUint64Type)
-      .div(PRECISION_8)
-      .toNumber()
-    result.limitOrderCount = BigNumber(data.limitOrderCount as MoveUint64Type)
       .div(PRECISION_8)
       .toNumber()
     return result

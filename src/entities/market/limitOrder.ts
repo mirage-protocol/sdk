@@ -7,14 +7,12 @@ import { PositionSide } from './position'
  * LimitOrder struct data
  */
 export type LimitOrderData = {
-  id: BigNumber
   is_long: boolean
-  is_increase: boolean
+  is_decrease_only: boolean
   position_size: BigNumber
   margin_amount: BigNumber
   trigger_price: BigNumber
   triggers_above: boolean
-  trigger_payment_amount: BigNumber
   max_price_slippage: BigNumber
   expiration: number
 }
@@ -32,22 +30,14 @@ export class LimitOrder {
    */
   public readonly perpetualAsset: Perpetual
   /**
-   * The id of the order, global across all markets
-   */
-  public readonly id: BigNumber
-  /**
-   * The index of the order in the users account
-   */
-  public readonly index: number
-  /**
    * The side of the order
    */
   public readonly side: PositionSide
 
   /**
-   * Is this a limit order to increase or decrease a position
+   * Is this a limit order only to decrease a position
    */
-  public readonly isIncrease: boolean
+  public readonly isDecreaseOnly: boolean
   /**
    * Position size in units of the asset
    */
@@ -64,10 +54,6 @@ export class LimitOrder {
    * Will this order trigger above or below the triggerPrice
    */
   public readonly triggersAbove: boolean
-  /**
-   * The amount of Aptos Coin resting in the order to pay for a trigger
-   */
-  public readonly triggerPayment: BigNumber
 
   /**
    * The max price slippage on trigger for the order
@@ -87,7 +73,6 @@ export class LimitOrder {
    */
   constructor(
     limitOrderData: LimitOrderData,
-    index: number,
     marginToken: MoveToken,
     perpetualAsset: Perpetual,
     positionSide: PositionSide,
@@ -96,18 +81,14 @@ export class LimitOrder {
     this.marginToken = marginToken
     this.perpetualAsset = perpetualAsset
 
-    this.id = BigNumber(limitOrderData.id)
-    this.index = index
-
     this.objectAddress = objectAddress
 
     this.side = positionSide
-    this.isIncrease = limitOrderData.is_increase
+    this.isDecreaseOnly = limitOrderData.is_decrease_only
     this.positionSize = BigNumber(limitOrderData.position_size).div(PRECISION_8)
     this.margin = BigNumber(limitOrderData.margin_amount).div(PRECISION_8)
     this.triggerPrice = BigNumber(limitOrderData.trigger_price).div(PRECISION_8)
     this.triggersAbove = limitOrderData.triggers_above
-    this.triggerPayment = BigNumber(limitOrderData.trigger_payment_amount).div(PRECISION_8)
     this.maxPriceSlippage = BigNumber(limitOrderData.max_price_slippage).div(PRECISION_8)
     this.expiration = BigInt(limitOrderData.expiration)
   }

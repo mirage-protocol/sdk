@@ -78,10 +78,6 @@ export class Market {
    * Max maker fee at equal oi
    */
   public readonly maxMakerFee: number
-  /**
-   * The percent fee given to liquidators
-   */
-  public readonly liquidationFee: number
 
   // FundingInfo
 
@@ -199,9 +195,6 @@ export class Market {
       : 0
     this.maxMakerFee = !!market
       ? new BigNumber((market.data as any).config.fees.max_maker_fee).div(FEE_PRECISION).toNumber()
-      : 0
-    this.liquidationFee = !!market
-      ? new BigNumber((market.data as any).config.fees.liquidation_fee).div(PERCENT_PRECISION).toNumber()
       : 0
 
     // funding

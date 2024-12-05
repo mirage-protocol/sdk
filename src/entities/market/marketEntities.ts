@@ -19,13 +19,12 @@ export class MarketEntities extends MirageClientBase {
 
   createLimitOrder(
     limitOrderData: LimitOrderData,
-    index: number,
     marginToken: MoveToken,
     perpetualAsset: Perpetual,
     positionSide: PositionSide,
     objectAddress: string,
   ): LimitOrder {
-    return new LimitOrder(limitOrderData, index, marginToken, perpetualAsset, positionSide, objectAddress)
+    return new LimitOrder(limitOrderData, marginToken, perpetualAsset, positionSide, objectAddress)
   }
 
   createMarket(

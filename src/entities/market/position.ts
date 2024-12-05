@@ -213,7 +213,6 @@ export class Position {
         tempOrders.push(
           new LimitOrder(
             ordersArr[index] as LimitOrderData,
-            index,
             this.marginToken,
             this.perpetualAsset,
             side,
