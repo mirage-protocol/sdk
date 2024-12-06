@@ -1,8 +1,8 @@
-import { InputViewFunctionData, MoveOption, Network, U128 } from '@aptos-labs/ts-sdk'
+import { Aptos, InputViewFunctionData, MoveOption, U128 } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { defaultAptosClient, getNetwork, MirageConfig } from '../constants'
 import { getAssetTokenMetadata, getTypeFromMoveAsset, MoveAsset, moveAssetInfo, MoveCoin } from '../constants/assetList'
+import { MirageConfig } from '../utils/config'
 
 /**
  * Represents an on-chain AssetStore with a unique type and stores some metadata.
@@ -17,11 +17,8 @@ export class Asset {
    * The asset represented by the class
    */
   public readonly asset: MoveAsset
-  /**
-   * The current network being used
-   */
-  private readonly network: Network
   private readonly config: MirageConfig
+  private readonly aptosClient: Aptos
   /**
    * The name of the asset
    */
@@ -48,12 +45,11 @@ export class Asset {
    * @param userResources resources of some account
    * @param asset which asset to find data for
    */
-  constructor(balance: BigNumber, asset: MoveAsset | string, config: MirageConfig, network: Network | string) {
+  constructor(balance: BigNumber, asset: MoveAsset | string, config: MirageConfig, aptosClient: Aptos) {
     const { name, symbol, decimals, type } = moveAssetInfo(asset, config)
 
     const precision = BigNumber(10).pow(decimals)
 
-    this.network = getNetwork(network)
     this.config = config
     this.type = type
     this.name = name
@@ -62,6 +58,7 @@ export class Asset {
     this.asset = asset as MoveCoin
     this.precision = precision
     this.balance = balance
+    this.aptosClient = aptosClient
   }
 
   /**
@@ -74,7 +71,7 @@ export class Asset {
       function: (isToken ? '0x1::fungible_asset::supply' : '0x1::coin::supply') as `${string}::${string}::${string}`,
       functionArguments: isToken ? [getAssetTokenMetadata(this.asset, this.config)] : [],
     }
-    const [val] = await defaultAptosClient(this.network).view({ payload })
+    const [val] = await this.aptosClient.view({ payload })
     const val_option = val as MoveOption<U128>
     const val_raw_num = val_option.unwrap() as unknown as number
     return BigNumber(val_raw_num).div(BigNumber(10).pow(this.decimals))

@@ -1,12 +1,12 @@
 import { MoveResource } from '@aptos-labs/ts-sdk'
 
-import { MirageClientBase } from '../../client/base'
 import { MoveToken, Perpetual } from '../../constants'
+import { BaseEntities } from '../baseEntities'
 import { LimitOrder, LimitOrderData } from './limitOrder'
 import { Market } from './market'
 import { Position, PositionSide } from './position'
 
-export class MarketEntities extends MirageClientBase {
+export class MarketEntities extends BaseEntities {
   createPosition(
     positionObjectResources: MoveResource[],
     market: Market,

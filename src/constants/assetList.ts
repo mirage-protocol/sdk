@@ -1,7 +1,8 @@
 import { AccountAddress } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { getModuleAddress, mirageAddress, MirageConfig } from './accounts'
+import { MirageConfig } from '../utils/config'
+import { getModuleAddress, mirageAddress } from './accounts'
 
 export const getAllVaultCollectionObjectAddresses = (config: MirageConfig): string[] => {
   const vaultCollectionAddresses: string[] = []

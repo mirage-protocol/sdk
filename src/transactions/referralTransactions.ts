@@ -1,9 +1,9 @@
 import { InputEntryFunctionData, MoveObjectType } from '@aptos-labs/ts-sdk'
 
-import { MirageClientBase } from '../client/base'
 import { MODULES } from '../constants'
+import { BaseTransactions } from './baseTransactions'
 
-export class ReferralTransactions extends MirageClientBase {
+export class ReferralTransactions extends BaseTransactions {
   /**
    * Adds custom referral code for user in referral program
    * @returns payload for the transaction

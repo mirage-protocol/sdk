@@ -1,6 +1,5 @@
 import { InputEntryFunctionData, MoveObjectType } from '@aptos-labs/ts-sdk'
 
-import { MirageClientBase } from '../client/base'
 import {
   getNetwork,
   getPairFromVaultCollectionAddress,
@@ -13,6 +12,7 @@ import {
   MoveToken,
 } from '../constants'
 import { getAssetAmountArgument } from './'
+import { BaseTransactions } from './baseTransactions'
 
 // const type = 'entry_function_payload'
 
@@ -38,11 +38,11 @@ const getFunctionSuffix = (type: string): string => {
   }
 }
 
-export class VaultTransactions extends MirageClientBase {
+export class VaultTransactions extends BaseTransactions {
   async createVaultAndAddCollateral(collectionObject: MoveObjectType, amount: number): Promise<InputEntryFunctionData> {
     const collateralAsset = getPairFromVaultCollectionAddress(collectionObject, this.config).collateralAsset
     return {
-      function: `${mirageAddress(this.config)}::vault::create_vault_${getFunctionSuffix(
+      function: `${MODULES(this.config).mirage_scripts.address}::vault_scripts::create_vault_${getFunctionSuffix(
         getTypeFromMoveAsset(collateralAsset),
       )}`,
       functionArguments: [collectionObject, getAssetAmountArgument(collateralAsset, amount, this.config)],

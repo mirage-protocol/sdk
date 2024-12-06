@@ -10,8 +10,9 @@ import {
   SECONDS_PER_YEAR,
   ZERO,
 } from '../../constants'
-import { mirageAddress, MirageConfig } from '../../constants/accounts'
+import { mirageAddress } from '../../constants/accounts'
 import { assetBalanceToDecimal, MoveAsset, MoveToken } from '../../constants/assetList'
+import { MirageConfig } from '../../utils/config'
 import { MirageAsset } from '../mirage_asset'
 import { Rebase } from '../rebase'
 

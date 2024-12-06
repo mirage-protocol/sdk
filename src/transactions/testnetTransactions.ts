@@ -1,9 +1,9 @@
 import { InputEntryFunctionData } from '@aptos-labs/ts-sdk'
 
-import { MirageClientBase } from '../client/base'
 import { getPriceFeed, getPriceFeedUpdateData, MODULES, MoveToken } from '../constants'
+import { BaseTransactions } from './baseTransactions'
 
-export class TestnetTransactions extends MirageClientBase {
+export class TestnetTransactions extends BaseTransactions {
   /**
    * Claims testnet airdrop (creates vault if first claim, always deposits tusdc and borrows musd)
    * @returns payload for the transaction

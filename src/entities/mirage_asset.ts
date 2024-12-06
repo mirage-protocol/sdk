@@ -1,7 +1,8 @@
 import { MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { mirageAddress, MirageConfig, MoveToken, ZERO } from '../constants'
+import { mirageAddress, MoveToken, ZERO } from '../constants'
+import { MirageConfig } from '../utils/config'
 import { Rebase } from './rebase'
 
 export class MirageAsset {

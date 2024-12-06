@@ -1,12 +1,10 @@
 import { AccountAddress, Aptos, InputViewFunctionData, MoveObjectType, MoveUint64Type } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { MirageClientBase } from '../client/base'
 import {
   getAllVaultCollectionObjectAddresses,
   getCollectionIdForVaultPair,
   mirageAddress,
-  MirageConfig,
   MODULES,
   MoveAsset,
   MoveToken,
@@ -20,12 +18,9 @@ import {
   GetTokenIdsFromCollectionsByOwnerQueryVariables,
 } from '../generated/aptos/graphql'
 import { GetVaultCollectionAprDocument, GetVaultCollectionAprQueryVariables } from '../generated/mirage/graphql'
+import { BaseViews } from './baseViews'
 
-const getVaultCollectionTypeArgument = (config: MirageConfig): `${string}::${string}::${string}`[] => {
-  return [`${mirageAddress(config)}::vault::VaultCollection`]
-}
-
-export class VaultViews extends MirageClientBase {
+export class VaultViews extends BaseViews {
   async getAllVaultIdsByOwner(owner: string): Promise<string[]> {
     const variables: GetTokenIdsFromCollectionsByOwnerQueryVariables = {
       COLLECTIONS: getAllVaultCollectionObjectAddresses(this.config),
@@ -86,7 +81,6 @@ export class VaultViews extends MirageClientBase {
     return {
       function: `${mirageAddress(this.config)}::vault::borrow_token`,
       functionArguments: [collectionObject],
-      typeArguments: getVaultCollectionTypeArgument(this.config),
     }
   }
 
@@ -94,7 +88,6 @@ export class VaultViews extends MirageClientBase {
     return {
       function: `${mirageAddress(this.config)}::vault::collateral_token`,
       functionArguments: [collectionObject],
-      typeArguments: getVaultCollectionTypeArgument(this.config),
     }
   }
 

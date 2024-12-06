@@ -7,7 +7,7 @@ import {
   defaultMirageGraphqlClient,
   MirageConfig,
   mirageConfigFromNetwork,
-} from '../constants'
+} from '../utils/config'
 
 export class MirageClientBase {
   protected network: Network
@@ -25,29 +25,9 @@ export class MirageClientBase {
     mirageGraphqlClient?: Client,
   ) {
     this.network = network
-
-    if (config) {
-      this.config = config
-    } else {
-      this.config = mirageConfigFromNetwork(network)
-    }
-
-    if (aptosGraphqlClient) {
-      this.aptosGraphqlClient = aptosGraphqlClient
-    } else {
-      this.aptosGraphqlClient = defaultAptosGraphqlClient(network, aptosGraphqlApiKey)
-    }
-
-    if (mirageGraphqlClient) {
-      this.mirageGraphqlClient = mirageGraphqlClient
-    } else {
-      this.mirageGraphqlClient = defaultMirageGraphqlClient(network)
-    }
-
-    if (aptosClient) {
-      this.aptosClient = aptosClient
-    } else {
-      this.aptosClient = defaultAptosClient(network)
-    }
+    this.config = config || mirageConfigFromNetwork(network)
+    this.aptosGraphqlClient = aptosGraphqlClient || defaultAptosGraphqlClient(network, aptosGraphqlApiKey)
+    this.mirageGraphqlClient = mirageGraphqlClient || defaultMirageGraphqlClient(network)
+    this.aptosClient = aptosClient || defaultAptosClient(network)
   }
 }

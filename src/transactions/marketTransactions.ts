@@ -1,6 +1,5 @@
 import { InputEntryFunctionData, MoveObjectType } from '@aptos-labs/ts-sdk'
 
-import { MirageClientBase } from '../client/base'
 import {
   getNetwork,
   getPairFromMarketAddress,
@@ -12,8 +11,9 @@ import {
 } from '../constants'
 import { PositionSide } from '../entities'
 import { getDecimal8Argument } from './'
+import { BaseTransactions } from './baseTransactions'
 
-export class MarketTransactions extends MirageClientBase {
+export class MarketTransactions extends BaseTransactions {
   /**
    * Open a position in a market at the current price and registers user resources if uninitialized
    * @returns script or payload promise for the transaction

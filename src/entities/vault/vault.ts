@@ -2,9 +2,10 @@ import { MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import { PRECISION_8, ZERO } from '../../constants'
-import { mirageAddress, MirageConfig } from '../../constants/accounts'
+import { mirageAddress } from '../../constants/accounts'
 import { assetBalanceToDecimal, MoveAsset, MoveToken } from '../../constants/assetList'
 import { getPropertyMapSigned64, getPropertyMapU64 } from '../../utils'
+import { MirageConfig } from '../../utils/config'
 import { VaultCollection } from './vaultCollection'
 
 /**

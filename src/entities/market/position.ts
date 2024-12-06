@@ -4,7 +4,6 @@ import BigNumber from 'bignumber.js'
 import {
   FEE_PRECISION,
   mirageAddress,
-  MirageConfig,
   MoveToken,
   PERCENT_PRECISION,
   Perpetual,
@@ -13,6 +12,7 @@ import {
   ZERO,
 } from '../../constants'
 import { getPropertyMapSigned64, getPropertyMapU64 } from '../../utils'
+import { MirageConfig } from '../../utils/config'
 import { LimitOrder, LimitOrderData } from './limitOrder'
 import { Market } from './market'
 

@@ -1,7 +1,8 @@
 import { Client } from 'urql'
 
-import { mirageAddress, MirageConfig } from '../constants'
+import { mirageAddress } from '../constants'
 import { GetCollectionsByOwnerDocument, GetCollectionsByOwnerQueryVariables } from '../generated/aptos/graphql'
+import { MirageConfig } from './config'
 
 export type CollectionInfo = {
   collection_name: string

@@ -1,11 +1,11 @@
 import { MoveResource } from '@aptos-labs/ts-sdk'
 
-import { MirageClientBase } from '../../client/base'
 import { getPairFromVaultCollectionAddress } from '../../constants'
+import { BaseEntities } from '../baseEntities'
 import { Vault } from './vault'
 import { VaultCollection } from './vaultCollection'
 
-export class VaultEntities extends MirageClientBase {
+export class VaultEntities extends BaseEntities {
   createVaultCollection(
     collectionObjectResources: MoveResource[],
     borrowTokenObjectResources: MoveResource[],

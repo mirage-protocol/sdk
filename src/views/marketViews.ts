@@ -1,9 +1,7 @@
 import { MoveObjectType, MoveUint64Type } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { MirageClientBase } from '../client/base'
 import {
-  defaultAptosClient,
   getAllMarketObjectAddresses,
   getCollectionIdForPerpPair,
   mirageAddress,
@@ -19,6 +17,7 @@ import {
   GetTokenIdsFromCollectionsByOwnerQueryVariables,
 } from '../generated/aptos/graphql'
 import { getDecimal8Argument } from '../transactions'
+import { BaseViews } from './baseViews'
 
 export type AllPositionInfo = {
   marketObjectAddress: string
@@ -31,7 +30,7 @@ export type AllPositionInfo = {
   maintenanceMarginUsd: number
 }
 
-export class MarketViews extends MirageClientBase {
+export class MarketViews extends BaseViews {
   //TODO delete? function no longer exists and is uncalled in interface - could also chain calls with get_market_from_position if this is needed
   // async getMarginTokenFromPosition(positionObjectAddress: string): Promise<string> {
   //   return (
@@ -180,7 +179,7 @@ export class MarketViews extends MirageClientBase {
         getDecimal8Argument(marginPrice),
       ],
     }
-    const ret = await defaultAptosClient(this.network).view({ payload })
+    const ret = await this.aptosClient.view({ payload })
     return BigNumber(ret[0] as MoveUint64Type)
       .div(PRECISION_8)
       .toNumber()
@@ -196,7 +195,7 @@ export class MarketViews extends MirageClientBase {
         `${mirageAddress(this.config)}::market::get_position_maintenance_margin_musd` as `${string}::${string}::${string}`,
       functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
     }
-    const ret = await defaultAptosClient(this.network).view({ payload })
+    const ret = await this.aptosClient.view({ payload })
     return BigNumber(ret[0] as MoveUint64Type)
       .div(PRECISION_8)
       .toNumber()
@@ -211,7 +210,7 @@ export class MarketViews extends MirageClientBase {
       function: `${mirageAddress(this.config)}::market::all_position_info` as `${string}::${string}::${string}`,
       functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
     }
-    const ret = await defaultAptosClient(this.network).view({ payload })
+    const ret = await this.aptosClient.view({ payload })
     const data = ret[0] as any
     const result = {} as any
     result.openingPrice = BigNumber(data.openingPrice as MoveUint64Type)

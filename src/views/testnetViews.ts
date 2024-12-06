@@ -1,10 +1,10 @@
 import { MoveUint64Type } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { MirageClientBase } from '../client/base'
 import { MODULES } from '../constants'
+import { BaseViews } from './baseViews'
 
-export class TestnetViews extends MirageClientBase {
+export class TestnetViews extends BaseViews {
   async numberOfClaimsAvailable(userAddress: string): Promise<number> {
     const payload = {
       function:

@@ -1,4 +1,3 @@
-import { MirageClientBase } from '../client/base'
 import {
   getAllMarketObjectAddresses,
   getAllVaultCollectionObjectAddresses,
@@ -11,8 +10,9 @@ import {
   MoveToken,
   Perpetual,
 } from './assetList'
+import { BaseConstants } from './baseConstants'
 
-export class Addresses extends MirageClientBase {
+export class Addresses extends BaseConstants {
   getAllVaultCollectionObjectAddresses(): string[] {
     return getAllVaultCollectionObjectAddresses(this.config)
   }

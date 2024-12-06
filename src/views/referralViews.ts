@@ -1,10 +1,10 @@
 import { MoveObjectType, MoveUint64Type } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { MirageClientBase } from '../client/base'
 import { MODULES } from '../constants'
+import { BaseViews } from './baseViews'
 
-export class ReferralViews extends MirageClientBase {
+export class ReferralViews extends BaseViews {
   async referralDepositAddress(feeSourcerObject: MoveObjectType): Promise<string> {
     const payload = {
       function:

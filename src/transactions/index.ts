@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js'
 
-import { MirageConfig, MoveAsset, moveAssetInfo, PRECISION_8 } from '../constants'
+import { MoveAsset, moveAssetInfo, PRECISION_8 } from '../constants'
+import { MirageConfig } from '../utils/config'
 
 // Get the proper payload amount
 export const getAssetAmountArgument = (coin: MoveAsset | string, amount: number, config: MirageConfig): string => {
@@ -25,6 +26,8 @@ export const getBCSDecimal8Argument = (amount: number): bigint => {
   return BigInt(getDecimal8Argument(amount))
 }
 
+export * from './baseTransactions'
 export * from './marketTransactions'
+export * from './referralTransactions'
 export * from './testnetTransactions'
 export * from './vaultTransactions'

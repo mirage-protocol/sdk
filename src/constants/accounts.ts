@@ -1,9 +1,6 @@
-import { AccountAddress, Network } from '@aptos-labs/ts-sdk'
+import { AccountAddress } from '@aptos-labs/ts-sdk'
 
-import mirageConfigMainnet from '../../mirage_config_mainnet.json'
-import mirageConfigMovementTestnet from '../../mirage_config_movement_testnet.json'
-import mirageConfigTestnet from '../../mirage_config_testnet.json'
-import { getNetwork } from './network'
+import { MirageConfig } from '../utils/config'
 
 /**
  * An Aptos account
@@ -50,51 +47,6 @@ export const mirageAccount = (config: MirageConfig): Account => {
  */
 export const mirageAddress = (config: MirageConfig): AccountAddress => {
   return MODULES(config)['mirage'].address
-}
-
-export type ModulesConfig = {
-  mirage: string
-  mirage_core: string
-  mirage_oracle: string
-  mirage_scripts: string
-  mirage_swap: string
-  keeper_scripts: string
-  market: string
-}
-
-export type MarketsConfig = {
-  [market: string]: {
-    [pair: string]: string
-  }
-}
-
-export type VaultsConfig = {
-  [token: string]: {
-    [denomination: string]: string
-  }
-}
-
-export type TokensConfig = {
-  [token: string]: string
-}
-
-export type MirageConfig = {
-  modules: ModulesConfig
-  markets: MarketsConfig
-  vaults: VaultsConfig
-  tokens: TokensConfig
-}
-
-export const mirageConfigFromNetwork = (network: Network | string): MirageConfig => {
-  const n = getNetwork(network)
-  switch (n) {
-    case Network.MAINNET:
-      return mirageConfigMainnet
-    case Network.CUSTOM:
-      return mirageConfigMovementTestnet
-    default:
-      return mirageConfigTestnet
-  }
 }
 
 // Relevant modules

@@ -1,6 +1,5 @@
 import BigNumber from 'bignumber.js'
 
-import { MirageClientBase } from '../client/base'
 import {
   assetBalanceToDecimal,
   AssetInfo,
@@ -17,8 +16,9 @@ import {
   typeToMoveToken,
   typeToPerpetual,
 } from './assetList'
+import { BaseConstants } from './baseConstants'
 
-export class Assets extends MirageClientBase {
+export class Assets extends BaseConstants {
   getTypeFromMoveAsset(asset: MoveAsset): string {
     return getTypeFromMoveAsset(asset)
   }

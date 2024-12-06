@@ -1,7 +1,6 @@
 import { AccountAddress } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { MirageClientBase } from '../client/base'
 import {
   assetBalanceToDecimal,
   assetInfo,
@@ -10,8 +9,9 @@ import {
   MoveAsset,
   ZERO,
 } from '../constants'
+import { BaseViews } from './baseViews'
 
-export class AccountViews extends MirageClientBase {
+export class AccountViews extends BaseViews {
   async getUserAssetBalance(userAddress: string, asset: MoveAsset): Promise<BigNumber> {
     let balance = ZERO
     switch (getTypeFromMoveAsset(asset)) {

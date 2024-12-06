@@ -4,8 +4,9 @@ import BigNumber from 'bignumber.js'
 
 import { FEE_PRECISION, PRECISION_8 } from '../../constants'
 import { PERCENT_PRECISION, ZERO } from '../../constants'
-import { mirageAddress, MirageConfig } from '../../constants/accounts'
+import { mirageAddress } from '../../constants/accounts'
 import { MoveToken, Perpetual } from '../../constants/assetList'
+import { MirageConfig } from '../../utils/config'
 import { PositionSide } from './position'
 /**
  * Represents a mirage-protocol perpetuals market.
