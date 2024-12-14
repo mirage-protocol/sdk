@@ -154,7 +154,7 @@ export class Market {
     this.objectAddress = objectAddress
     this.network = network
 
-    const marketType = `${mirageAddress(config)}::market::Market`
+    const marketType = `${mirageAddress(config)}::limit_order::Market`
 
     const market = marketObjectResources.find((resource) => resource.type === marketType)
 

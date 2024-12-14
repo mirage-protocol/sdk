@@ -41,11 +41,11 @@ export class MirageClient {
   ) {
     const params = [network, config, aptosClient, aptosGraphqlApiKey, aptosGraphqlClient, mirageGraphqlClient] as const
     this.marketTransactions = new MarketTransactions(...params)
-    // Object.getOwnPropertyNames(MarketTransactions.prototype).forEach((name) => {
-    //   if (name !== 'constructor') {
-    //     ;(this as any)[name] = this.marketTransactions[name].bind(this.marketTransactions)
-    //   }
-    // })
+    Object.getOwnPropertyNames(MarketTransactions.prototype).forEach((name) => {
+      if (name !== 'constructor') {
+        ;(this as any)[name] = this.marketTransactions[name].bind(this.marketTransactions)
+      }
+    })
     this.vaultTransactions = new VaultTransactions(...params)
     // Object.getOwnPropertyNames(VaultTransactions.prototype).forEach((name) => {
     //   if (name !== 'constructor') {

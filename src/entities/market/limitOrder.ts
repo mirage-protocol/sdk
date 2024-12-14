@@ -1,21 +1,9 @@
+import { MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { MoveToken, Perpetual, PRECISION_8, U64_MAX } from '../../constants'
+import { mirageAddress, MoveToken, Perpetual, PRECISION_8, U64_MAX, ZERO } from '../../constants'
+import { MirageConfig } from '../../utils'
 import { PositionSide } from './position'
-
-/**
- * LimitOrder struct data
- */
-export type LimitOrderData = {
-  is_long: boolean
-  is_decrease_only: boolean
-  position_size: BigNumber
-  margin_amount: BigNumber
-  trigger_price: BigNumber
-  triggers_above: boolean
-  max_price_slippage: BigNumber
-  expiration: number
-}
 
 /**
  * Represents a LimitOrder struct
@@ -72,25 +60,32 @@ export class LimitOrder {
    * @param limitOrderData the data to parse
    */
   constructor(
-    limitOrderData: LimitOrderData,
+    limitOrderResources: MoveResource[],
     marginToken: MoveToken,
     perpetualAsset: Perpetual,
     positionSide: PositionSide,
     objectAddress: string,
+    config: MirageConfig,
   ) {
+    const limitOrderType = `${mirageAddress(config)}::market::LimitOrder`
+
+    const limitOrder = limitOrderResources.find((resource) => resource.type === limitOrderType)
+
     this.marginToken = marginToken
     this.perpetualAsset = perpetualAsset
 
     this.objectAddress = objectAddress
 
     this.side = positionSide
-    this.isDecreaseOnly = limitOrderData.is_decrease_only
-    this.positionSize = BigNumber(limitOrderData.position_size).div(PRECISION_8)
-    this.margin = BigNumber(limitOrderData.margin_amount).div(PRECISION_8)
-    this.triggerPrice = BigNumber(limitOrderData.trigger_price).div(PRECISION_8)
-    this.triggersAbove = limitOrderData.triggers_above
-    this.maxPriceSlippage = BigNumber(limitOrderData.max_price_slippage).div(PRECISION_8)
-    this.expiration = BigInt(limitOrderData.expiration)
+    this.isDecreaseOnly = !!limitOrder ? (limitOrder.data as any).is_decrease_only : false
+    this.positionSize = !!limitOrder ? BigNumber((limitOrder.data as any).position_size).div(PRECISION_8) : ZERO
+    this.margin = !!limitOrder ? BigNumber((limitOrder.data as any).margin_amount).div(PRECISION_8) : ZERO
+    this.triggerPrice = !!limitOrder ? BigNumber((limitOrder.data as any).trigger_price).div(PRECISION_8) : ZERO
+    this.triggersAbove = !!limitOrder ? (limitOrder.data as any).triggers_above : false
+    this.maxPriceSlippage = !!limitOrder
+      ? BigNumber((limitOrder.data as any).max_price_slippage).div(PRECISION_8)
+      : ZERO
+    this.expiration = !!limitOrder ? BigInt((limitOrder.data as any).expiration) : BigInt(0)
   }
 
   // Good-til-cancelled expiration (U64_MAX)

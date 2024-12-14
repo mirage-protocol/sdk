@@ -2,7 +2,7 @@ import { MoveResource } from '@aptos-labs/ts-sdk'
 
 import { MoveToken, Perpetual } from '../../constants'
 import { BaseEntities } from '../baseEntities'
-import { LimitOrder, LimitOrderData } from './limitOrder'
+import { LimitOrder } from './limitOrder'
 import { Market } from './market'
 import { Position, PositionSide } from './position'
 
@@ -10,21 +10,28 @@ export class MarketEntities extends BaseEntities {
   createPosition(
     positionObjectResources: MoveResource[],
     market: Market,
-    marginCoin: MoveToken | string,
-    perpetualAsset: Perpetual | string,
     objectAddress: string,
+    limitOrderResourcesList: MoveResource[][],
   ): Position {
-    return new Position(positionObjectResources, market, marginCoin, perpetualAsset, objectAddress, this.config)
+    return new Position(
+      positionObjectResources,
+      market,
+      market.marginToken,
+      market.marginToken,
+      objectAddress,
+      this.config,
+      limitOrderResourcesList,
+    )
   }
 
   createLimitOrder(
-    limitOrderData: LimitOrderData,
+    limitOrderResources: MoveResource[],
     marginToken: MoveToken,
     perpetualAsset: Perpetual,
     positionSide: PositionSide,
     objectAddress: string,
   ): LimitOrder {
-    return new LimitOrder(limitOrderData, marginToken, perpetualAsset, positionSide, objectAddress)
+    return new LimitOrder(limitOrderResources, marginToken, perpetualAsset, positionSide, objectAddress, this.config)
   }
 
   createMarket(

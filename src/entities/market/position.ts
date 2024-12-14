@@ -13,7 +13,7 @@ import {
 } from '../../constants'
 import { getPropertyMapSigned64, getPropertyMapU64 } from '../../utils'
 import { MirageConfig } from '../../utils/config'
-import { LimitOrder, LimitOrderData } from './limitOrder'
+import { LimitOrder } from './limitOrder'
 import { Market } from './market'
 
 /**
@@ -125,6 +125,7 @@ export class Position {
     perpetualAsset: Perpetual | string,
     objectAddress: string,
     config: MirageConfig,
+    limitOrderResourcesList: MoveResource[][],
   ) {
     // this.userAddress = userAddress
     this.marginToken = marginCoin as MoveToken
@@ -201,22 +202,18 @@ export class Position {
         }
       : undefined
 
-    const limitOrderType = `${mirageAddress(config)}::market::LimitOrders`
-
-    const limitOrders = positionObjectResources.find((resource) => resource.type === limitOrderType)
-
-    const ordersArr = !!limitOrders ? (limitOrders.data as any).orders : []
     const tempOrders: LimitOrder[] = []
 
     try {
-      for (let index = 0; index < ordersArr.length; index++) {
+      for (let index = 0; index < limitOrderResourcesList.length; index++) {
         tempOrders.push(
           new LimitOrder(
-            ordersArr[index] as LimitOrderData,
+            limitOrderResourcesList[index],
             this.marginToken,
             this.perpetualAsset,
             side,
             this.objectAddress,
+            config,
           ),
         )
       }

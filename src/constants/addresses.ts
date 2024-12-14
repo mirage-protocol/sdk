@@ -1,3 +1,4 @@
+import { mirageAddress } from './accounts'
 import {
   getAllMarketObjectAddresses,
   getAllVaultCollectionObjectAddresses,
@@ -39,5 +40,9 @@ export class Addresses extends BaseConstants {
 
   getAssetTokenMetadata(asset: MoveAsset): string {
     return getAssetTokenMetadata(asset, this.config)
+  }
+
+  mirageAddress(): string {
+    return mirageAddress(this.config).toStringLong()
   }
 }
