@@ -4,6 +4,7 @@ import BigNumber from 'bignumber.js'
 
 export * from './configBuilder'
 export * from './sortTypes'
+export * from './config'
 
 export const getPropertyMapU64 = (key: string, data: any): BigNumber => {
   const property = data.inner.data.find((property: { key: string; value: any }) => {

@@ -1,9 +1,6 @@
-import { AccountAddress, Network } from '@aptos-labs/ts-sdk'
+import { AccountAddress } from '@aptos-labs/ts-sdk'
 
-import mirageConfigMainnet from '../../mirage_config_mainnet.json'
-import mirageConfigMovementTestnet from '../../mirage_config_movement_testnet.json'
-import mirageConfigTestnet from '../../mirage_config_testnet.json'
-import { getNetwork } from './network'
+import { MirageConfig } from '../utils/config'
 
 /**
  * An Aptos account
@@ -35,100 +32,54 @@ export enum MoveModules {
  * @param module the module to get the address of, can pass type or string
  * @returns the module address if it was found
  */
-export const getModuleAddress = (module: MoveModules | string, network: Network | string): AccountAddress => {
-  return MODULES(network)[module as MoveModules].address
+export const getModuleAddress = (module: MoveModules | string, config: MirageConfig): AccountAddress => {
+  return MODULES(config)[module as MoveModules].address
 }
 
 /**
  * The account of Mirage Protocol
  */
-export const mirageAccount = (network: Network | string): Account => {
-  return MODULES(network)['mirage']
+export const mirageAccount = (config: MirageConfig): Account => {
+  return MODULES(config)['mirage']
 }
 /**
  * The address of Mirage Protocol
  */
-export const mirageAddress = (network: Network | string): AccountAddress => {
-  return MODULES(network)['mirage'].address
-}
-
-export type ModulesConfig = {
-  mirage: string
-  mirage_core: string
-  mirage_oracle: string
-  mirage_scripts: string
-  mirage_swap: string
-  keeper_scripts: string
-  market: string
-}
-
-export type MarketsConfig = {
-  [market: string]: {
-    [pair: string]: string
-  }
-}
-
-export type VaultsConfig = {
-  [token: string]: {
-    [denomination: string]: string
-  }
-}
-
-export type TokensConfig = {
-  [token: string]: string
-}
-
-export type MirageConfig = {
-  modules: ModulesConfig
-  markets: MarketsConfig
-  vaults: VaultsConfig
-  tokens: TokensConfig
-}
-
-export const mirageConfigFromNetwork = (network: Network | string): MirageConfig => {
-  const n = getNetwork(network)
-  switch (n) {
-    case Network.MAINNET:
-      return mirageConfigMainnet
-    case Network.CUSTOM:
-      return mirageConfigMovementTestnet
-    default:
-      return mirageConfigTestnet
-  }
+export const mirageAddress = (config: MirageConfig): AccountAddress => {
+  return MODULES(config)['mirage'].address
 }
 
 // Relevant modules
 // NOTE: devUSDC is the same as mirage
-export const MODULES = (network: Network | string): { readonly [module in MoveModules]: Account } => {
-  const mirageConfig = mirageConfigFromNetwork(network)
+export const MODULES = (config: MirageConfig): { readonly [module in MoveModules]: Account } => {
   return {
     ['mirage']: {
       name: 'mirage',
-      address: AccountAddress.from(mirageConfig.modules.mirage),
+      address: AccountAddress.from(config.modules.mirage),
     },
     ['mirage_scripts']: {
       name: 'mirage_scripts',
-      address: AccountAddress.from(mirageConfig.modules.mirage_scripts),
+      address: AccountAddress.from(config.modules.mirage_scripts),
     },
     ['mirage_core']: {
       name: 'mirage_core',
-      address: AccountAddress.from(mirageConfig.modules.mirage_core),
+      address: AccountAddress.from(config.modules.mirage_core),
     },
     ['mirage_oracle']: {
       name: 'mirage_oracle',
-      address: AccountAddress.from(mirageConfig.modules.mirage_oracle),
+      address: AccountAddress.from(config.modules.mirage_oracle),
     },
     ['mirage_swap']: {
       name: 'mirage_swap',
-      address: AccountAddress.from(mirageConfig.modules.mirage_swap),
+      address: AccountAddress.from(config.modules.mirage_swap),
     },
     ['keeper_scripts']: {
       name: 'keeper_scripts',
-      address: AccountAddress.from(mirageConfig.modules.keeper_scripts),
+      address: AccountAddress.from(config.modules.keeper_scripts),
     },
     ['market']: {
       name: 'market',
-      address: AccountAddress.from(mirageConfig.modules.market),
+      address: AccountAddress.from(config.modules.market),
     },
     // TODO is this right for all networks
     ['layer_zero']: {

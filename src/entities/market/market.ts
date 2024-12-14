@@ -6,6 +6,7 @@ import { FEE_PRECISION, PRECISION_8 } from '../../constants'
 import { PERCENT_PRECISION, ZERO } from '../../constants'
 import { mirageAddress } from '../../constants/accounts'
 import { MoveToken, Perpetual } from '../../constants/assetList'
+import { MirageConfig } from '../../utils/config'
 import { PositionSide } from './position'
 /**
  * Represents a mirage-protocol perpetuals market.
@@ -78,10 +79,6 @@ export class Market {
    * Max maker fee at equal oi
    */
   public readonly maxMakerFee: number
-  /**
-   * The percent fee given to liquidators
-   */
-  public readonly liquidationFee: number
 
   // FundingInfo
 
@@ -148,15 +145,16 @@ export class Market {
     marketObjectResources: MoveResource[],
     marginCoin: MoveToken | string,
     perpetualAsset: Perpetual | string,
-    network: Network,
     objectAddress: string,
+    config: MirageConfig,
+    network: Network,
   ) {
     this.marginToken = marginCoin as MoveToken
     this.perpetualAsset = perpetualAsset as Perpetual
     this.objectAddress = objectAddress
     this.network = network
 
-    const marketType = `${mirageAddress(network)}::market::Market`
+    const marketType = `${mirageAddress(config)}::market::Market`
 
     const market = marketObjectResources.find((resource) => resource.type === marketType)
 
@@ -198,9 +196,6 @@ export class Market {
       : 0
     this.maxMakerFee = !!market
       ? new BigNumber((market.data as any).config.fees.max_maker_fee).div(FEE_PRECISION).toNumber()
-      : 0
-    this.liquidationFee = !!market
-      ? new BigNumber((market.data as any).config.fees.liquidation_fee).div(PERCENT_PRECISION).toNumber()
       : 0
 
     // funding

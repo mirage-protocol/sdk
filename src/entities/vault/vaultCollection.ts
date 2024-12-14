@@ -1,4 +1,4 @@
-import { MoveResource, Network } from '@aptos-labs/ts-sdk'
+import { MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import {
@@ -12,6 +12,7 @@ import {
 } from '../../constants'
 import { mirageAddress } from '../../constants/accounts'
 import { assetBalanceToDecimal, MoveAsset, MoveToken } from '../../constants/assetList'
+import { MirageConfig } from '../../utils/config'
 import { MirageAsset } from '../mirage_asset'
 import { Rebase } from '../rebase'
 
@@ -96,14 +97,14 @@ export class VaultCollection {
     collateral: MoveToken | string,
     borrow: MoveToken | string,
     objectAddress: string,
-    network: Network | string,
+    config: MirageConfig,
   ) {
     this.collateral = collateral as MoveToken
     this.borrow = borrow as MoveToken
-    this.mirage = new MirageAsset(borrowTokenObjectResources, this.borrow, network)
+    this.mirage = new MirageAsset(borrowTokenObjectResources, this.borrow, config)
     this.objectAddress = objectAddress
 
-    const vaultCollectionType = `${mirageAddress(network)}::vault::VaultCollection`
+    const vaultCollectionType = `${mirageAddress(config)}::vault::VaultCollection`
     const vaultCollection = collectionObjectResources.find((resource) => resource.type === vaultCollectionType)
 
     this.borrowFeePercent = !!vaultCollection
@@ -153,7 +154,7 @@ export class VaultCollection {
           .div(PRECISION_8)
       : ZERO
     this.totalCollateral = !!vaultCollection
-      ? assetBalanceToDecimal(BigNumber((vaultCollection.data as any).total_collateral), this.collateral, network)
+      ? assetBalanceToDecimal(BigNumber((vaultCollection.data as any).total_collateral), this.collateral, config)
       : ZERO
 
     this.isEmergency = !!vaultCollection ? (vaultCollection.data as any).is_emergency : false

@@ -1,10 +1,11 @@
-import { MoveResource, Network } from '@aptos-labs/ts-sdk'
+import { MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import { PRECISION_8, ZERO } from '../../constants'
 import { mirageAddress } from '../../constants/accounts'
 import { assetBalanceToDecimal, MoveAsset, MoveToken } from '../../constants/assetList'
 import { getPropertyMapSigned64, getPropertyMapU64 } from '../../utils'
+import { MirageConfig } from '../../utils/config'
 import { VaultCollection } from './vaultCollection'
 
 /**
@@ -58,21 +59,21 @@ export class Vault {
     collateral: MoveToken | string,
     borrow: MoveToken | string,
     objectAddress: string,
-    network: Network | string,
+    config: MirageConfig,
   ) {
     this.collateralAsset = collateral as MoveToken
     this.borrowToken = borrow as MoveToken
     this.vaultCollection = vaultCollection
     this.objectAddress = objectAddress
 
-    const vaultType = `${mirageAddress(network)}::vault::Vault`
+    const vaultType = `${mirageAddress(config)}::vault::Vault`
     const propertyMapType = `0x4::property_map::PropertyMap`
 
     const vault = vaultObjectResources.find((resource) => resource.type === vaultType)
     const propertyMap = vaultObjectResources.find((resource) => resource.type === propertyMapType)
 
     this.collateralAmount = !!vault
-      ? assetBalanceToDecimal(BigNumber((vault.data as any).collateral_amount), this.collateralAsset, network)
+      ? assetBalanceToDecimal(BigNumber((vault.data as any).collateral_amount), this.collateralAsset, config)
       : ZERO
 
     // need to use global debt rebase
