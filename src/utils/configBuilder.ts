@@ -1,6 +1,6 @@
 import { Client } from 'urql'
 
-import { mirageAddress } from '../constants'
+import { getModuleAddress, MoveModules } from '../constants'
 import { GetCollectionsByOwnerDocument, GetCollectionsByOwnerQueryVariables } from '../generated/aptos/graphql'
 import { MirageConfig } from './config'
 
@@ -14,7 +14,7 @@ export const getCollectionsFromMirage = async (
   config: MirageConfig,
 ): Promise<CollectionInfo[]> => {
   const variables: GetCollectionsByOwnerQueryVariables = {
-    OWNER: mirageAddress(config).toString(),
+    OWNER: getModuleAddress(MoveModules.MIRAGE, config.deployerAddress).toString(),
   }
   try {
     const result = await graphqlClient.query(GetCollectionsByOwnerDocument, variables).toPromise()

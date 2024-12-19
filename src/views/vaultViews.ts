@@ -4,9 +4,9 @@ import BigNumber from 'bignumber.js'
 import {
   getAllVaultCollectionObjectAddresses,
   getCollectionIdForVaultPair,
-  mirageAddress,
-  MODULES,
+  getModuleAddress,
   MoveAsset,
+  MoveModules,
   MoveToken,
   PRECISION_8,
 } from '../constants'
@@ -79,14 +79,14 @@ export class VaultViews extends BaseViews {
 
   async getBorrowTokenFromCollection(collectionObject: MoveObjectType): Promise<InputViewFunctionData> {
     return {
-      function: `${mirageAddress(this.config)}::vault::borrow_token`,
+      function: `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::vault::borrow_token`,
       functionArguments: [collectionObject],
     }
   }
 
   async getCollateralTokenFromCollection(collectionObject: MoveObjectType): Promise<InputViewFunctionData> {
     return {
-      function: `${mirageAddress(this.config)}::vault::collateral_token`,
+      function: `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::vault::collateral_token`,
       functionArguments: [collectionObject],
     }
   }
@@ -156,7 +156,7 @@ export class VaultViews extends BaseViews {
   async getLiquidatableAmountsBulk(vaultObjectAddresses: MoveObjectType[], client: Aptos): Promise<number[]> {
     const payload = {
       function:
-        `${MODULES(this.config).keeper_scripts.address}::vault_scripts::get_liquidatable_amounts_bulk` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.KEEPER_SCRIPTS, this.config.deployerAddress)}::vault_scripts::get_liquidatable_amounts_bulk` as `${string}::${string}::${string}`,
       functionArguments: [vaultObjectAddresses],
     }
     const ret = await client.view({ payload })

@@ -1,6 +1,6 @@
 import { InputEntryFunctionData } from '@aptos-labs/ts-sdk'
 
-import { getPriceFeed, getPriceFeedUpdateData, MODULES, MoveToken } from '../constants'
+import { getModuleAddress, getPriceFeed, getPriceFeedUpdateData, MoveModules, MoveToken } from '../constants'
 import { BaseTransactions } from './baseTransactions'
 
 export class TestnetTransactions extends BaseTransactions {
@@ -14,7 +14,7 @@ export class TestnetTransactions extends BaseTransactions {
     const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, this.network) : []
     const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, this.network) : []
     return {
-      function: `${MODULES(this.config).mirage_scripts.address}::testnet_airdropper::claim_airdrop`,
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::testnet_airdropper::claim_airdrop`,
       functionArguments: [collateralVaas, borrowVaas],
       typeArguments: [],
     }

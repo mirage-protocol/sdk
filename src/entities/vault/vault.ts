@@ -1,8 +1,7 @@
 import { MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { PRECISION_8, ZERO } from '../../constants'
-import { mirageAddress } from '../../constants/accounts'
+import { getModuleAddress, MoveModules, PRECISION_8, ZERO } from '../../constants'
 import { assetBalanceToDecimal, MoveAsset, MoveToken } from '../../constants/assetList'
 import { getPropertyMapSigned64, getPropertyMapU64 } from '../../utils'
 import { MirageConfig } from '../../utils/config'
@@ -66,7 +65,7 @@ export class Vault {
     this.vaultCollection = vaultCollection
     this.objectAddress = objectAddress
 
-    const vaultType = `${mirageAddress(config)}::vault::Vault`
+    const vaultType = `${getModuleAddress(MoveModules.MIRAGE, config.deployerAddress)}::vault::Vault`
     const propertyMapType = `0x4::property_map::PropertyMap`
 
     const vault = vaultObjectResources.find((resource) => resource.type === vaultType)

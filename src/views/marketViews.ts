@@ -4,8 +4,8 @@ import BigNumber from 'bignumber.js'
 import {
   getAllMarketObjectAddresses,
   getCollectionIdForPerpPair,
-  mirageAddress,
-  MODULES,
+  getModuleAddress,
+  MoveModules,
   MoveToken,
   Perpetual,
   PRECISION_8,
@@ -31,18 +31,6 @@ export type AllPositionInfo = {
 }
 
 export class MarketViews extends BaseViews {
-  //TODO delete? function no longer exists and is uncalled in interface - could also chain calls with get_market_from_position if this is needed
-  // async getMarginTokenFromPosition(positionObjectAddress: string): Promise<string> {
-  //   return (
-  //     await this.aptosClient.view({
-  //       payload: {
-  //         function: `${mirageAddress(this.config)}::market::position_margin_token`,
-  //         functionArguments: [positionObjectAddress],
-  //       },
-  //     })
-  //   )[0] as MoveObjectType
-  // }
-
   async getAllPositionIdsByOwner(owner: string): Promise<string[]> {
     const variables: GetTokenIdsFromCollectionsByOwnerQueryVariables = {
       COLLECTIONS: getAllMarketObjectAddresses(this.config),
@@ -98,7 +86,7 @@ export class MarketViews extends BaseViews {
   async isLimitOrderTriggerable(limitOrderObject: MoveObjectType, perpPrice: number): Promise<boolean> {
     const payload = {
       function:
-        `${MODULES(this.config).market.address}::limit_order::is_limit_order_triggerable` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MARKET, this.config.deployerAddress)}::limit_order::is_limit_order_triggerable` as `${string}::${string}::${string}`,
       functionArguments: [limitOrderObject, getDecimal8Argument(perpPrice)],
     }
     const ret = await this.aptosClient.view({ payload })
@@ -111,7 +99,7 @@ export class MarketViews extends BaseViews {
   ): Promise<boolean[]> {
     const payload = {
       function:
-        `${MODULES(this.config).keeper_scripts.address}::market_scripts::get_is_limit_order_triggerable_states_same_perp` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.KEEPER_SCRIPTS, this.config.deployerAddress)}::market_scripts::get_is_limit_order_triggerable_states_same_perp` as `${string}::${string}::${string}`,
       functionArguments: [limitOrderObjectAddresses, getDecimal8Argument(perpPrice)],
     }
     const ret = await this.aptosClient.view({ payload })
@@ -124,7 +112,8 @@ export class MarketViews extends BaseViews {
     marginPrice: number,
   ): Promise<number> {
     const payload = {
-      function: `${mirageAddress(this.config)}::market::get_liquidation_price` as `${string}::${string}::${string}`,
+      function:
+        `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::market::get_liquidation_price` as `${string}::${string}::${string}`,
       functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
     }
     const ret = await this.aptosClient.view({ payload })
@@ -140,7 +129,7 @@ export class MarketViews extends BaseViews {
   ): Promise<number[]> {
     const payload = {
       function:
-        `${MODULES(this.config).keeper_scripts.address}::market_scripts::get_liquidation_prices_same_perp` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.KEEPER_SCRIPTS, this.config.deployerAddress)}::market_scripts::get_liquidation_prices_same_perp` as `${string}::${string}::${string}`,
       functionArguments: [
         positionObjectAddresses,
         getDecimal8Argument(perpetualPrice),
@@ -170,7 +159,8 @@ export class MarketViews extends BaseViews {
     marginPrice: number,
   ): Promise<number> {
     const payload = {
-      function: `${mirageAddress(this.config)}::market::get_fee` as `${string}::${string}::${string}`,
+      function:
+        `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::market::get_fee` as `${string}::${string}::${string}`,
       functionArguments: [
         marketObjectAddress,
         isLong,
@@ -192,7 +182,7 @@ export class MarketViews extends BaseViews {
   ): Promise<number> {
     const payload = {
       function:
-        `${mirageAddress(this.config)}::market::get_position_maintenance_margin_musd` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::market::get_position_maintenance_margin_musd` as `${string}::${string}::${string}`,
       functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
     }
     const ret = await this.aptosClient.view({ payload })
@@ -207,7 +197,8 @@ export class MarketViews extends BaseViews {
     marginPrice: number,
   ): Promise<AllPositionInfo> {
     const payload = {
-      function: `${mirageAddress(this.config)}::market::all_position_info` as `${string}::${string}::${string}`,
+      function:
+        `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::market::all_position_info` as `${string}::${string}::${string}`,
       functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
     }
     const ret = await this.aptosClient.view({ payload })

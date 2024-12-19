@@ -1,14 +1,14 @@
 import { InputEntryFunctionData, MoveObjectType } from '@aptos-labs/ts-sdk'
 
 import {
+  getModuleAddress,
   getNetwork,
   getPairFromVaultCollectionAddress,
   getPriceFeed,
   getPriceFeedUpdateData,
   getTypeFromMoveAsset,
-  mirageAddress,
-  MODULES,
   MoveAsset,
+  MoveModules,
   MoveToken,
 } from '../constants'
 import { getAssetAmountArgument } from './'
@@ -42,7 +42,7 @@ export class VaultTransactions extends BaseTransactions {
   async createVaultAndAddCollateral(collectionObject: MoveObjectType, amount: number): Promise<InputEntryFunctionData> {
     const collateralAsset = getPairFromVaultCollectionAddress(collectionObject, this.config).collateralAsset
     return {
-      function: `${MODULES(this.config).mirage_scripts.address}::vault_scripts::create_vault_${getFunctionSuffix(
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}, this.config.deployerAddress)}::vault_scripts::create_vault_${getFunctionSuffix(
         getTypeFromMoveAsset(collateralAsset),
       )}`,
       functionArguments: [collectionObject, getAssetAmountArgument(collateralAsset, amount, this.config)],
@@ -62,7 +62,7 @@ export class VaultTransactions extends BaseTransactions {
     const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(this.network)) : []
     const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(this.network)) : []
     return {
-      function: `${MODULES(this.config).mirage_scripts.address}::vault_scripts::create_vault_and_borrow_${getFunctionSuffix(
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}, this.config.deployerAddress)}::vault_scripts::create_vault_and_borrow_${getFunctionSuffix(
         getTypeFromMoveAsset(collateralAsset),
       )}`,
       functionArguments: [
@@ -89,7 +89,7 @@ export class VaultTransactions extends BaseTransactions {
     amount: number,
   ): Promise<InputEntryFunctionData> {
     return {
-      function: `${MODULES(this.config).mirage_scripts.address}::vault_scripts::add_collateral_${getFunctionSuffix(getTypeFromMoveAsset(collateralAsset))}`,
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}, this.config.deployerAddress)}::vault_scripts::add_collateral_${getFunctionSuffix(getTypeFromMoveAsset(collateralAsset))}`,
       functionArguments: [vaultObject, getAssetAmountArgument(collateralAsset, amount, this.config)],
       typeArguments: getCoinTypeArgumentIfNeeded(collateralAsset),
     }
@@ -117,7 +117,7 @@ export class VaultTransactions extends BaseTransactions {
     const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(this.network)) : []
 
     return {
-      function: `${MODULES(this.config).mirage_scripts.address}::vault_scripts::borrow_entry`,
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}, this.config.deployerAddress)}::vault_scripts::borrow_entry`,
       functionArguments: [
         vaultObject,
         getAssetAmountArgument(borrowToken, borrowAmount, this.config),
@@ -148,7 +148,7 @@ export class VaultTransactions extends BaseTransactions {
     const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(this.network)) : []
     const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(this.network)) : []
     return {
-      function: `${MODULES(this.config).mirage_scripts.address}::vault_scripts::remove_collateral_entry`,
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}, this.config.deployerAddress)}::vault_scripts::remove_collateral_entry`,
       functionArguments: [
         vaultObject,
         getAssetAmountArgument(collateralAsset, removeAmount, this.config),
@@ -166,7 +166,7 @@ export class VaultTransactions extends BaseTransactions {
    */
   async repayDebtPart(vaultObject: MoveObjectType, repayPartAmount: number): Promise<InputEntryFunctionData> {
     return {
-      function: `${mirageAddress(this.config)}::vault::repay_part_entry`,
+      function: `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::vault::repay_part_entry`,
       functionArguments: [vaultObject, repayPartAmount],
     }
   }
@@ -195,7 +195,7 @@ export class VaultTransactions extends BaseTransactions {
     const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(this.network)) : []
 
     return {
-      function: `${MODULES(this.config).mirage_scripts.address}::vault_scripts::add_and_borrow_${getFunctionSuffix(
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}, this.config.deployerAddress)}::vault_scripts::add_and_borrow_${getFunctionSuffix(
         getTypeFromMoveAsset(collateralAsset),
       )}`,
       functionArguments: [
@@ -233,7 +233,7 @@ export class VaultTransactions extends BaseTransactions {
     const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(this.network)) : []
 
     return {
-      function: `${MODULES(this.config).mirage_scripts.address}::vault_scripts::repay_and_remove`,
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}, this.config.deployerAddress)}::vault_scripts::repay_and_remove`,
       functionArguments: [
         vaultObject,
         getAssetAmountArgument(collateralAsset, removeAmount, this.config),
@@ -259,7 +259,7 @@ export class VaultTransactions extends BaseTransactions {
     repayPartAmount: number,
   ): Promise<InputEntryFunctionData> {
     return {
-      function: `${MODULES(this.config).mirage_scripts.address}::vault_scripts::add_and_repay_${getFunctionSuffix(
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}, this.config.deployerAddress)}::vault_scripts::add_and_repay_${getFunctionSuffix(
         getTypeFromMoveAsset(collateralAsset),
       )}`,
       functionArguments: [
@@ -295,7 +295,7 @@ export class VaultTransactions extends BaseTransactions {
     const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(this.network)) : []
 
     return {
-      function: `${MODULES(this.config).mirage_scripts.address}::vault_scripts::remove_and_borrow_entry`,
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}, this.config.deployerAddress)}::vault_scripts::remove_and_borrow_entry`,
       functionArguments: [
         vaultObject,
         getAssetAmountArgument(collateralAsset, removeAmount, this.config),
@@ -319,7 +319,7 @@ export class VaultTransactions extends BaseTransactions {
     const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(this.network)) : []
 
     return {
-      function: `${mirageAddress(this.config)}::vault::liquidate_entry`,
+      function: `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::vault::liquidate_entry`,
       functionArguments: [vaultObject, partToLiquidate, collateralVaas, borrowVaas],
     }
   }
@@ -337,7 +337,7 @@ export class VaultTransactions extends BaseTransactions {
     const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(this.network)) : []
 
     return {
-      function: `${MODULES(this.config).mirage_scripts.address}::vault_scripts::liquidate_bankrupt_entry`,
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}, this.config.deployerAddress)}::vault_scripts::liquidate_bankrupt_entry`,
       functionArguments: [
         vaultObject,
         getAssetAmountArgument(borrowToken, debtAmountToLiquidate, this.config),
@@ -349,7 +349,7 @@ export class VaultTransactions extends BaseTransactions {
 
   async accrueInterest(vaultCollectionObject: MoveObjectType): Promise<InputEntryFunctionData> {
     return {
-      function: `${MODULES(this.config).mirage.address}::vault::accrue_interest`,
+      function: `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::vault::accrue_interest`,
       functionArguments: [vaultCollectionObject],
     }
   }
@@ -366,7 +366,7 @@ export class VaultTransactions extends BaseTransactions {
     const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(this.network)) : []
     const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(this.network)) : []
     return {
-      function: `${MODULES(this.config).mirage.address}::vault::merge_vaults`,
+      function: `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::vault::merge_vaults`,
       functionArguments: [dstVaultObject, srcVaultObject, collateralVaas, borrowVaas],
     }
   }

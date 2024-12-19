@@ -1,4 +1,4 @@
-import { Aptos, AptosConfig, Network } from '@aptos-labs/ts-sdk'
+import { AccountAddress, Aptos, AptosConfig, Network } from '@aptos-labs/ts-sdk'
 import { AuthConfig, authExchange, AuthUtilities } from '@urql/exchange-auth'
 import { cacheExchange, Client, CombinedError, createClient, errorExchange, fetchExchange, Operation } from 'urql'
 
@@ -32,22 +32,29 @@ export type TokensConfig = {
   [token: string]: string
 }
 
-export type MirageConfig = {
-  modules: ModulesConfig
+export class MirageConfig {
+  deployerAddress: AccountAddress
   markets: MarketsConfig
   vaults: VaultsConfig
   tokens: TokensConfig
+
+  constructor(config: { deployerAddress: string; markets: MarketsConfig; vaults: VaultsConfig; tokens: TokensConfig }) {
+    this.deployerAddress = AccountAddress.fromString(config.deployerAddress)
+    this.markets = config.markets
+    this.vaults = config.vaults
+    this.tokens = config.tokens
+  }
 }
 
 export const mirageConfigFromNetwork = (network: Network | string): MirageConfig => {
   const n = getNetwork(network)
   switch (n) {
     case Network.MAINNET:
-      return mirageConfigMainnet
+      return new MirageConfig({ ...mirageConfigMainnet })
     case Network.CUSTOM:
-      return mirageConfigMovementTestnet
+      return new MirageConfig({ ...mirageConfigMovementTestnet })
     default:
-      return mirageConfigTestnet
+      return new MirageConfig({ ...mirageConfigTestnet })
   }
 }
 

@@ -1,14 +1,14 @@
 import { MoveObjectType, MoveUint64Type } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { MODULES } from '../constants'
+import { getModuleAddress, MoveModules } from '../constants'
 import { BaseViews } from './baseViews'
 
 export class ReferralViews extends BaseViews {
   async referralDepositAddress(feeSourcerObject: MoveObjectType): Promise<string> {
     const payload = {
       function:
-        `${MODULES(this.config).mirage.address}::fee_manager::get_referral_deposit_address` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::fee_manager::get_referral_deposit_address` as `${string}::${string}::${string}`,
       functionArguments: [feeSourcerObject],
       typeArguments: [],
     }
@@ -20,7 +20,7 @@ export class ReferralViews extends BaseViews {
   async isUserSignedUpForReferrals(userAddress: string): Promise<boolean> {
     const payload = {
       function:
-        `${MODULES(this.config).mirage.address}::fee_manager::has_fee_sourcer` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::fee_manager::has_fee_sourcer` as `${string}::${string}::${string}`,
       functionArguments: [userAddress],
       typeArguments: [],
     }
@@ -32,7 +32,7 @@ export class ReferralViews extends BaseViews {
   async getReferreeReferrerAddress(userAddress: string): Promise<string> {
     const payload = {
       function:
-        `${MODULES(this.config).mirage.address}::fee_manager::get_fee_sourcer_owner_address_of_user` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::fee_manager::get_fee_sourcer_owner_address_of_user` as `${string}::${string}::${string}`,
       functionArguments: [userAddress],
       typeArguments: [],
     }
@@ -43,7 +43,7 @@ export class ReferralViews extends BaseViews {
   async activeReferralRateBps(feeSourcerObject: MoveObjectType): Promise<number> {
     const payload = {
       function:
-        `${MODULES(this.config).mirage.address}::fee_manager::get_current_period_fee_rate` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::fee_manager::get_current_period_fee_rate` as `${string}::${string}::${string}`,
       functionArguments: [feeSourcerObject],
       typeArguments: [],
     }
@@ -55,7 +55,7 @@ export class ReferralViews extends BaseViews {
   async getReferralVolumes(feeSourcerObject: MoveObjectType): Promise<number[]> {
     const payload = {
       function:
-        `${MODULES(this.config).mirage.address}::fee_manager::get_fee_sourcer_fee_volumes` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::fee_manager::get_fee_sourcer_fee_volumes` as `${string}::${string}::${string}`,
       functionArguments: [feeSourcerObject],
       typeArguments: [],
     }
@@ -66,7 +66,7 @@ export class ReferralViews extends BaseViews {
   async nextReferralRateBps(feeSourcerObject: MoveObjectType): Promise<number> {
     const payload = {
       function:
-        `${MODULES(this.config).mirage.address}::fee_manager::get_next_period_fee_rate` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::fee_manager::get_next_period_fee_rate` as `${string}::${string}::${string}`,
       functionArguments: [feeSourcerObject],
       typeArguments: [],
     }

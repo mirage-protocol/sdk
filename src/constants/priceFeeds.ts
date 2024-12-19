@@ -10,8 +10,6 @@ import { MoveAsset, MoveCoin, MoveToken, Perpetual } from './assetList'
  */
 export const coinsWithPriceFeeds = [
   MoveCoin.APT,
-  MoveToken.mAPT,
-  MoveToken.mETH,
   MoveToken.tUSDC,
   // Crypto perps
   Perpetual.APTPERP,
@@ -123,16 +121,6 @@ const PRICE_FEEDS: { readonly [coin in CoinsWithPriceFeeds]: { readonly [network
     [Network.MAINNET]: '0x03ae4db29ed4ae33d323568895aa00337e658e348b37509f5372ae51f0af00d5',
     [Network.TESTNET]: '0x44a93dddd8effa54ea51076c4e851b6cbbfd938e82eb90197de38fe8876bb66e',
     [Network.CUSTOM]: '0x44a93dddd8effa54ea51076c4e851b6cbbfd938e82eb90197de38fe8876bb66e',
-  },
-  [MoveToken.mAPT]: {
-    [Network.MAINNET]: '0x03ae4db29ed4ae33d323568895aa00337e658e348b37509f5372ae51f0af00d5',
-    [Network.TESTNET]: '0x44a93dddd8effa54ea51076c4e851b6cbbfd938e82eb90197de38fe8876bb66e',
-    [Network.CUSTOM]: '0x44a93dddd8effa54ea51076c4e851b6cbbfd938e82eb90197de38fe8876bb66e',
-  },
-  [MoveToken.mETH]: {
-    [Network.MAINNET]: '0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace',
-    [Network.TESTNET]: '0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6',
-    [Network.CUSTOM]: '0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6',
   },
   [MoveToken.tUSDC]: {
     [Network.MAINNET]: '0xeaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a',

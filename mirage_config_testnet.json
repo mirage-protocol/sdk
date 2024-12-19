@@ -1,13 +1,5 @@
 {
-  "modules": {
-    "mirage": "0xa00461726fd1a040933acbd8e17a4f3156d94980cd4c9b16d9b249b4a3b18eba",
-    "market": "0xa590c4a1f98b37a8c5a6d57be8b83ea7a4ad05a797d4ac61922d9fb5fa198688",
-    "mirage_core": "0x076a1f7291c97b0ce5ccc36c07aa360f06e623ace2b42491d30d13e6a609a6bf",
-    "mirage_oracle": "0x4eb522c49b5959236005a7bd7e4302de0357db0e7a0a6c472ee92b43ee3d3d40",
-    "mirage_scripts": "0x3b98162ac30a70acc12331ee4555d482e3219ac320657a9445f1f4dced01d78a",
-    "mirage_swap": "0x9f1b5d154b20a93ea79872a31c46952f7091091b9490b8abe4079f960083012a",
-    "keeper_scripts": "0xabcce92066f096f5db7c33f9b2a13c3161cfbc667cb57576686e123ed7618d62"
-  },
+  "deployerAddress": "0xcfd55d1a7b60b99e5a5ce4e3eec63c298b6472fc9d29d8c5cf176838199df922",
   "markets": {
     "mUSD": {
       "PEPE1000PERP": "0x4bd2790426592d53ff841840db180b59bd8407cea0cfde275fbd00102cb64342",

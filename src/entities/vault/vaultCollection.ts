@@ -3,14 +3,15 @@ import BigNumber from 'bignumber.js'
 
 import {
   EXCHANGE_RATE_PRECISION,
+  getModuleAddress,
   getPriceFeed,
   INTEREST_PRECISION,
+  MoveModules,
   PERCENT_PRECISION,
   PRECISION_8,
   SECONDS_PER_YEAR,
   ZERO,
 } from '../../constants'
-import { mirageAddress } from '../../constants/accounts'
 import { assetBalanceToDecimal, MoveAsset, MoveToken } from '../../constants/assetList'
 import { MirageConfig } from '../../utils/config'
 import { MirageAsset } from '../mirage_asset'
@@ -104,7 +105,7 @@ export class VaultCollection {
     this.mirage = new MirageAsset(borrowTokenObjectResources, this.borrow, config)
     this.objectAddress = objectAddress
 
-    const vaultCollectionType = `${mirageAddress(config)}::vault::VaultCollection`
+    const vaultCollectionType = `${getModuleAddress(MoveModules.MIRAGE, config.deployerAddress)}::vault::VaultCollection`
     const vaultCollection = collectionObjectResources.find((resource) => resource.type === vaultCollectionType)
 
     this.borrowFeePercent = !!vaultCollection

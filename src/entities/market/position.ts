@@ -3,7 +3,8 @@ import BigNumber from 'bignumber.js'
 
 import {
   FEE_PRECISION,
-  mirageAddress,
+  getModuleAddress,
+  MoveModules,
   MoveToken,
   PERCENT_PRECISION,
   Perpetual,
@@ -133,7 +134,7 @@ export class Position {
     this.objectAddress = objectAddress
     this.network = market.network
 
-    const positionType = `${mirageAddress(config)}::market::Position`
+    const positionType = `${getModuleAddress(MoveModules.MIRAGE, config.deployerAddress)}::market::Position`
     const tokenIdsType = '0x4::token::TokenIdentifiers'
     const propertyMapType = `0x4::property_map::PropertyMap`
 
@@ -179,7 +180,7 @@ export class Position {
       : ZERO
     const fundingAccrued = !!position ? marketFundingAccumulated.minus(lastPositionFunding).times(positionSize) : ZERO
 
-    const tpslType = `${mirageAddress(config)}::market::TpSl`
+    const tpslType = `${getModuleAddress(MoveModules.MIRAGE, config.deployerAddress)}::market::TpSl`
     const tpsl = positionObjectResources.find((resource) => resource.type === tpslType)
     const tpslExists = !!tpsl
     const takeProfitPrice = tpslExists ? BigNumber((tpsl as any).data.take_profit_price).div(PRECISION_8) : ZERO
@@ -201,7 +202,7 @@ export class Position {
         }
       : undefined
 
-    const limitOrderType = `${mirageAddress(config)}::market::LimitOrders`
+    const limitOrderType = `${getModuleAddress(MoveModules.MIRAGE, config.deployerAddress)}::market::LimitOrders`
 
     const limitOrders = positionObjectResources.find((resource) => resource.type === limitOrderType)
 

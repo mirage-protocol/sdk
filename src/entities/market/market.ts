@@ -2,9 +2,8 @@ import { Network } from '@aptos-labs/ts-sdk'
 import { MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { FEE_PRECISION, PRECISION_8 } from '../../constants'
+import { FEE_PRECISION, getModuleAddress, MoveModules, PRECISION_8 } from '../../constants'
 import { PERCENT_PRECISION, ZERO } from '../../constants'
-import { mirageAddress } from '../../constants/accounts'
 import { MoveToken, Perpetual } from '../../constants/assetList'
 import { MirageConfig } from '../../utils/config'
 import { PositionSide } from './position'
@@ -154,7 +153,7 @@ export class Market {
     this.objectAddress = objectAddress
     this.network = network
 
-    const marketType = `${mirageAddress(config)}::market::Market`
+    const marketType = `${getModuleAddress(MoveModules.MIRAGE, config.deployerAddress)}::market::Market`
 
     const market = marketObjectResources.find((resource) => resource.type === marketType)
 

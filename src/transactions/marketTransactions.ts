@@ -1,11 +1,12 @@
 import { InputEntryFunctionData, MoveObjectType } from '@aptos-labs/ts-sdk'
 
 import {
+  getModuleAddress,
   getNetwork,
   getPairFromMarketAddress,
   getPriceFeed,
   getPriceFeedUpdateData,
-  MODULES,
+  MoveModules,
   MoveToken,
   Perpetual,
 } from '../constants'
@@ -34,7 +35,7 @@ export class MarketTransactions extends BaseTransactions {
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
 
     return {
-      function: `${MODULES(this.config).mirage_scripts.address}::market_scripts::create_and_open_position_entry`,
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::create_and_open_position_entry`,
 
       functionArguments: [
         marketObject,
@@ -71,7 +72,7 @@ export class MarketTransactions extends BaseTransactions {
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
 
     return {
-      function: `${MODULES(this.config).mirage_scripts.address}::market_scripts::create_and_open_position_with_tpsl_entry`,
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::create_and_open_position_with_tpsl_entry`,
 
       functionArguments: [
         marketObject,
@@ -105,7 +106,7 @@ export class MarketTransactions extends BaseTransactions {
 
     const payload = {
       function:
-        `${MODULES(this.config).mirage_scripts.address}::market_scripts::close_position_entry` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::close_position_entry` as `${string}::${string}::${string}`,
       functionArguments: [positionObject, perpetualVaas, marginVaas],
     }
     return payload
@@ -132,7 +133,7 @@ export class MarketTransactions extends BaseTransactions {
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
 
     return {
-      function: `${MODULES(this.config).mirage_scripts.address}::market_scripts::create_position_and_place_limit_order_entry`,
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::create_position_and_place_limit_order_entry`,
       functionArguments: [
         marketObject,
         perpetualVaas,
@@ -169,7 +170,7 @@ export class MarketTransactions extends BaseTransactions {
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
 
     return {
-      function: `${MODULES(this.config).mirage_scripts.address}::market_scripts::place_limit_order_entry`,
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::place_limit_order_entry`,
       functionArguments: [
         positionObject,
         perpetualVaas,
@@ -200,7 +201,7 @@ export class MarketTransactions extends BaseTransactions {
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
 
     return {
-      function: `${MODULES(this.config).market.address}::limit_order::update_limit_order`,
+      function: `${getModuleAddress(MoveModules.MARKET, this.config.deployerAddress)}::limit_order::update_limit_order`,
       functionArguments: [
         limitOrderObject,
         perpetualVaas,
@@ -222,7 +223,7 @@ export class MarketTransactions extends BaseTransactions {
   async cancelLimitOrder(limitOrdersObject: MoveObjectType): Promise<InputEntryFunctionData> {
     const payload = {
       function:
-        `${MODULES(this.config).market.address}::limit_order::cancel_limit_order_entry` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MARKET, this.config.deployerAddress)}::limit_order::cancel_limit_order_entry` as `${string}::${string}::${string}`,
       functionArguments: [limitOrdersObject],
     }
     return payload
@@ -238,7 +239,8 @@ export class MarketTransactions extends BaseTransactions {
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
 
     const payload = {
-      function: `${MODULES(this.config).market.address}::tpsl::update_tpsl` as `${string}::${string}::${string}`,
+      function:
+        `${getModuleAddress(MoveModules.MARKET, this.config.deployerAddress)}::tpsl::update_tpsl` as `${string}::${string}::${string}`,
       functionArguments: [
         tpslObject,
         perpetualVaas,
@@ -260,7 +262,7 @@ export class MarketTransactions extends BaseTransactions {
 
     const payload = {
       function:
-        `${MODULES(this.config).mirage_scripts.address}::market_scripts::place_tpsl_entry` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::place_tpsl_entry` as `${string}::${string}::${string}`,
       functionArguments: [
         positionObject,
         perpetualVaas,
@@ -277,7 +279,8 @@ export class MarketTransactions extends BaseTransactions {
    */
   async cancelTpsl(tpslObject: MoveObjectType): Promise<InputEntryFunctionData> {
     const payload = {
-      function: `${MODULES(this.config).market.address}::tpsl::cancel_tpsl` as `${string}::${string}::${string}`,
+      function:
+        `${getModuleAddress(MoveModules.MARKET, this.config.deployerAddress)}::tpsl::cancel_tpsl` as `${string}::${string}::${string}`,
       functionArguments: [tpslObject],
     }
     return payload
@@ -304,7 +307,7 @@ export class MarketTransactions extends BaseTransactions {
     const functionName = newMarginAmount > oldMarginAmount ? 'increase' : 'decrease'
     const payload = {
       function:
-        `${MODULES(this.config).mirage_scripts.address}::market_scripts::${functionName}_margin_entry` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::${functionName}_margin_entry` as `${string}::${string}::${string}`,
       functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(diff)],
     }
     return payload
@@ -327,7 +330,7 @@ export class MarketTransactions extends BaseTransactions {
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
     const payload = {
       function:
-        `${MODULES(this.config).mirage_scripts.address}::market_scripts::increase_margin_entry` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::increase_margin_entry` as `${string}::${string}::${string}`,
       functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(increaseMarginAmount)],
     }
     return payload
@@ -343,7 +346,7 @@ export class MarketTransactions extends BaseTransactions {
   ): Promise<InputEntryFunctionData> {
     const payload = {
       function:
-        `${MODULES(this.config).mirage_scripts.address}::market_scripts::increase_limit_order_margin_entry` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::increase_limit_order_margin_entry` as `${string}::${string}::${string}`,
       functionArguments: [limitOrderObject, getDecimal8Argument(increaseMarginAmount)],
     }
     return payload
@@ -359,7 +362,7 @@ export class MarketTransactions extends BaseTransactions {
   ): Promise<InputEntryFunctionData> {
     const payload = {
       function:
-        `${MODULES(this.config).mirage_scripts.address}::market_scripts::decrease_limit_order_margin_entry` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::decrease_limit_order_margin_entry` as `${string}::${string}::${string}`,
       functionArguments: [limitOrderObject, getDecimal8Argument(decreaseMarginAmount)],
     }
     return payload
@@ -383,7 +386,7 @@ export class MarketTransactions extends BaseTransactions {
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
     const payload = {
       function:
-        `${MODULES(this.config).mirage_scripts.address}::market_scripts::increase_position_size_and_increase_margin_entry` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::increase_position_size_and_increase_margin_entry` as `${string}::${string}::${string}`,
       functionArguments: [
         positionObject,
         perpetualVaas,
@@ -413,7 +416,7 @@ export class MarketTransactions extends BaseTransactions {
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
     const payload = {
       function:
-        `${MODULES(this.config).mirage_scripts.address}::market_scripts::increase_position_size_and_decrease_margin_entry` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::increase_position_size_and_decrease_margin_entry` as `${string}::${string}::${string}`,
       functionArguments: [
         positionObject,
         perpetualVaas,
@@ -443,7 +446,7 @@ export class MarketTransactions extends BaseTransactions {
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
     const payload = {
       function:
-        `${MODULES(this.config).mirage_scripts.address}::market_scripts::decrease_position_size_and_decrease_margin_entry` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::decrease_position_size_and_decrease_margin_entry` as `${string}::${string}::${string}`,
       functionArguments: [
         positionObject,
         perpetualVaas,
@@ -473,7 +476,7 @@ export class MarketTransactions extends BaseTransactions {
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
     const payload = {
       function:
-        `${MODULES(this.config).mirage_scripts.address}::market_scripts::decrease_position_size_and_increase_margin_entry` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::decrease_position_size_and_increase_margin_entry` as `${string}::${string}::${string}`,
       functionArguments: [
         positionObject,
         perpetualVaas,
@@ -502,7 +505,7 @@ export class MarketTransactions extends BaseTransactions {
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
     const payload = {
       function:
-        `${MODULES(this.config).mirage_scripts.address}::market_scripts::decrease_margin_entry` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::decrease_margin_entry` as `${string}::${string}::${string}`,
       functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(decreaseMarginAmount)],
     }
     return payload
@@ -524,19 +527,13 @@ export class MarketTransactions extends BaseTransactions {
 
     const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(this.network)) : []
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
-    const diff =
-      newPositionSize > oldPositionSize ? newPositionSize - oldPositionSize : oldPositionSize - newPositionSize
-    const functionName =
-      newPositionSize > oldPositionSize
-        ? 'market::increase_position_size'
-        : 'market_scripts::decrease_position_size_entry'
+    const isIncrease = newPositionSize > oldPositionSize
+    const diff = isIncrease ? newPositionSize - oldPositionSize : oldPositionSize - newPositionSize
+    const functionName = isIncrease ? 'market::increase_position_size' : 'market::decrease_position_size'
 
     const payload = {
-      function: `${
-        newPositionSize > oldPositionSize
-          ? MODULES(this.config).market.address
-          : MODULES(this.config).mirage_scripts.address
-      }::${functionName}` as `${string}::${string}::${string}`,
+      function:
+        `${getModuleAddress(MoveModules.MARKET, this.config.deployerAddress)}::${functionName}` as `${string}::${string}::${string}`,
       functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(diff)],
     }
     return payload
@@ -560,7 +557,7 @@ export class MarketTransactions extends BaseTransactions {
 
     const payload = {
       function:
-        `${MODULES(this.config).market.address}::market::increase_position_size` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MARKET, this.config.deployerAddress)}::market::increase_position_size` as `${string}::${string}::${string}`,
       functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(increasePositionSize)],
     }
     return payload
@@ -584,7 +581,7 @@ export class MarketTransactions extends BaseTransactions {
 
     const payload = {
       function:
-        `${MODULES(this.config).mirage_scripts.address}::market_scripts::decrease_position_size_entry` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::decrease_position_size_entry` as `${string}::${string}::${string}`,
       functionArguments: [positionObject, perpetualVaas, marginVaas, getDecimal8Argument(decreasePositionSize)],
     }
     return payload
@@ -606,7 +603,7 @@ export class MarketTransactions extends BaseTransactions {
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
     const payload = {
       function:
-        `${MODULES(this.config).mirage_scripts.address}::market_scripts::trigger_tpsl_entry` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::trigger_tpsl_entry` as `${string}::${string}::${string}`,
       functionArguments: [triggererAddress, tpslObject, perpetualVaas, marginVaas],
     }
     return payload
@@ -618,7 +615,8 @@ export class MarketTransactions extends BaseTransactions {
    */
   async cleanupTpsl(tpslObject: MoveObjectType): Promise<InputEntryFunctionData> {
     const payload = {
-      function: `${MODULES(this.config).market.address}::tpsl::cleanup_tpsl` as `${string}::${string}::${string}`,
+      function:
+        `${getModuleAddress(MoveModules.MARKET, this.config.deployerAddress)}::tpsl::cleanup_tpsl` as `${string}::${string}::${string}`,
       functionArguments: [tpslObject],
     }
     return payload
@@ -641,7 +639,7 @@ export class MarketTransactions extends BaseTransactions {
 
     const payload = {
       function:
-        `${MODULES(this.config).mirage_scripts.address}::market_scripts::liquidate_position_entry` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::liquidate_position_entry` as `${string}::${string}::${string}`,
       functionArguments: [triggererAddress, positionObject, perpetualVaas, marginVaas],
     }
     return payload
@@ -664,7 +662,7 @@ export class MarketTransactions extends BaseTransactions {
 
     const payload = {
       function:
-        `${MODULES(this.config).mirage_scripts.address}::market_scripts::trigger_limit_order_entry` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::trigger_limit_order_entry` as `${string}::${string}::${string}`,
       functionArguments: [triggererAddress, limitOrderObject, perpetualVaas, marginVaas],
     }
     return payload
@@ -677,7 +675,7 @@ export class MarketTransactions extends BaseTransactions {
   async cleanupLimitOrder(limitOrderObject: MoveObjectType): Promise<InputEntryFunctionData> {
     const payload = {
       function:
-        `${MODULES(this.config).market.address}::limit_order::cleanup_limit_order` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MARKET, this.config.deployerAddress)}::limit_order::cleanup_limit_order` as `${string}::${string}::${string}`,
       functionArguments: [limitOrderObject],
     }
     return payload

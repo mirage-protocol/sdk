@@ -1,6 +1,6 @@
 import { InputEntryFunctionData, MoveObjectType } from '@aptos-labs/ts-sdk'
 
-import { MODULES } from '../constants'
+import { getModuleAddress, MoveModules } from '../constants'
 import { BaseTransactions } from './baseTransactions'
 
 export class ReferralTransactions extends BaseTransactions {
@@ -10,7 +10,7 @@ export class ReferralTransactions extends BaseTransactions {
    */
   async addCustomReferralCode(feeSourcerObject: MoveObjectType, code: string): Promise<InputEntryFunctionData> {
     return {
-      function: `${MODULES(this.config).mirage.address}::fee_manager::add_custom_referral_code`,
+      function: `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::fee_manager::add_custom_referral_code`,
       functionArguments: [feeSourcerObject, code],
     }
   }
@@ -24,7 +24,7 @@ export class ReferralTransactions extends BaseTransactions {
     toAddress: string,
   ): Promise<InputEntryFunctionData> {
     return {
-      function: `${MODULES(this.config).mirage.address}::fee_manager::update_referral_deposit_address`,
+      function: `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::fee_manager::update_referral_deposit_address`,
       functionArguments: [feeSourcerObject, toAddress],
     }
   }
@@ -35,7 +35,7 @@ export class ReferralTransactions extends BaseTransactions {
    */
   async signupForReferralsWithCode(code: string): Promise<InputEntryFunctionData> {
     return {
-      function: `${MODULES(this.config).mirage.address}::fee_manager::sign_up_as_fee_sourcer_with_custom_code`,
+      function: `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::fee_manager::sign_up_as_fee_sourcer_with_custom_code`,
       functionArguments: [code],
     }
   }
@@ -46,7 +46,7 @@ export class ReferralTransactions extends BaseTransactions {
    */
   async signupForReferrals(code: string): Promise<InputEntryFunctionData> {
     return {
-      function: `${MODULES(this.config).mirage.address}::fee_manager::sign_up_as_fee_sourcer`,
+      function: `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::fee_manager::sign_up_as_fee_sourcer`,
       functionArguments: [code],
     }
   }
@@ -57,7 +57,7 @@ export class ReferralTransactions extends BaseTransactions {
    */
   async addVipRateBps(feeSourcerObject: MoveObjectType, rateBps: number): Promise<InputEntryFunctionData> {
     return {
-      function: `${MODULES(this.config).mirage.address}::fee_manager::add_vip_referral_fee_rate`,
+      function: `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::fee_manager::add_vip_referral_fee_rate`,
       functionArguments: [feeSourcerObject, rateBps],
     }
   }
@@ -68,7 +68,7 @@ export class ReferralTransactions extends BaseTransactions {
    */
   async getReferredByCode(code: string): Promise<InputEntryFunctionData> {
     return {
-      function: `${MODULES(this.config).mirage.address}::fee_manager::refer_via_custom_referral_code`,
+      function: `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::fee_manager::refer_via_custom_referral_code`,
       functionArguments: [code],
     }
   }
@@ -79,7 +79,7 @@ export class ReferralTransactions extends BaseTransactions {
    */
   async getReferredByAddress(address: string): Promise<InputEntryFunctionData> {
     return {
-      function: `${MODULES(this.config).mirage.address}::fee_manager::refer_via_address`,
+      function: `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::fee_manager::refer_via_address`,
       functionArguments: [address],
     }
   }
@@ -90,7 +90,7 @@ export class ReferralTransactions extends BaseTransactions {
    */
   async getReferredByReferralId(id: number): Promise<InputEntryFunctionData> {
     return {
-      function: `${MODULES(this.config).mirage.address}::fee_manager::refer_via_counter`,
+      function: `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::fee_manager::refer_via_counter`,
       functionArguments: [id],
     }
   }
