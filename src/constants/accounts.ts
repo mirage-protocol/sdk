@@ -45,7 +45,7 @@ export const MODULES = (deployerAddress: AccountAddress): { readonly [module in 
       name: 'mirage_scripts',
     },
     [MoveModules.KEEPER_SCRIPTS]: {
-      address: createResourceAddress(deployerAddress, 'KEEPER_SCRIPTS'),
+      address: createResourceAddress(deployerAddress, 'MIRAGE_KEEPER_SCRIPTS'),
       name: 'keeper_scripts',
     },
     [MoveModules.MIRAGE_CORE]: {
@@ -57,7 +57,7 @@ export const MODULES = (deployerAddress: AccountAddress): { readonly [module in 
       name: 'mirage_oracle',
     },
     [MoveModules.MARKET]: {
-      address: createResourceAddress(deployerAddress, 'MARKET'),
+      address: createResourceAddress(deployerAddress, 'MIRAGE_MARKET'),
       name: 'market',
     },
     [MoveModules.LAYER_ZERO]: {

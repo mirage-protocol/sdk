@@ -21,6 +21,65 @@ import { GetVaultCollectionAprDocument, GetVaultCollectionAprQueryVariables } fr
 import { BaseViews } from './baseViews'
 
 export class VaultViews extends BaseViews {
+  async getAllVaultCollections(): Promise<MoveObjectType[]> {
+    const payload = {
+      function:
+        `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::vault::all_vault_collections` as `${string}::${string}::${string}`,
+      functionArguments: [],
+    }
+    const result = (await this.aptosClient.view({ payload }))[0] as { inner: string }[]
+    return result.map((value) => value.inner)
+  }
+
+  async getCollateralToken(vaultObj: MoveObjectType): Promise<MoveObjectType> {
+    const payload = {
+      function:
+        `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::vault::collateral_token` as `${string}::${string}::${string}`,
+      functionArguments: [vaultObj],
+    }
+    const result = (await this.aptosClient.view({ payload }))[0] as { inner: string }
+    return result.inner
+  }
+
+  async getBorrowToken(vaultObj: MoveObjectType): Promise<MoveObjectType> {
+    const payload = {
+      function:
+        `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::vault::borrow_token` as `${string}::${string}::${string}`,
+      functionArguments: [vaultObj],
+    }
+    const result = (await this.aptosClient.view({ payload }))[0] as { inner: string }
+    return result.inner
+  }
+
+  async getCollateralOracle(vaultObj: MoveObjectType): Promise<MoveObjectType> {
+    const payload = {
+      function:
+        `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::vault::collateral_oracle` as `${string}::${string}::${string}`,
+      functionArguments: [vaultObj],
+    }
+    const result = (await this.aptosClient.view({ payload }))[0] as { inner: string }
+    return result.inner
+  }
+
+  async getBorrowOracle(vaultObj: MoveObjectType): Promise<MoveObjectType> {
+    const payload = {
+      function:
+        `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::vault::borrow_oracle` as `${string}::${string}::${string}`,
+      functionArguments: [vaultObj],
+    }
+    const result = (await this.aptosClient.view({ payload }))[0] as { inner: string }
+    return result.inner
+  }
+
+  async getVaultCollectionName(collectionObj: MoveObjectType): Promise<MoveObjectType> {
+    const payload = {
+      function: `0x4::collection::name` as `${string}::${string}::${string}`,
+      functionArguments: [collectionObj],
+      typeArguments: ['0x4::collection::Collection'],
+    }
+    return (await this.aptosClient.view({ payload }))[0] as string
+  }
+
   async getAllVaultIdsByOwner(owner: string): Promise<string[]> {
     const variables: GetTokenIdsFromCollectionsByOwnerQueryVariables = {
       COLLECTIONS: getAllVaultCollectionObjectAddresses(this.config),

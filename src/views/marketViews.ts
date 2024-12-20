@@ -31,6 +31,66 @@ export type AllPositionInfo = {
 }
 
 export class MarketViews extends BaseViews {
+  async getAllMarketsView(): Promise<MoveObjectType[]> {
+    const payload = {
+      function:
+        `${getModuleAddress(MoveModules.MARKET, this.config.deployerAddress)}::market::all_markets` as `${string}::${string}::${string}`,
+      functionArguments: [],
+    }
+    const result = (await this.aptosClient.view({ payload }))[0] as { inner: string }[]
+    return result.map((value) => value.inner)
+  }
+
+  async getMarketPerpSymbol(market: MoveObjectType): Promise<string> {
+    const payload = {
+      function:
+        `${getModuleAddress(MoveModules.MARKET, this.config.deployerAddress)}::market::get_perp_symbol` as `${string}::${string}::${string}`,
+      functionArguments: [market],
+    }
+    return (await this.aptosClient.view({ payload }))[0] as MoveObjectType
+  }
+
+  async getMarketMarginOracle(marketObj: MoveObjectType): Promise<string> {
+    const payload = {
+      function:
+        `${getModuleAddress(MoveModules.MARKET, this.config.deployerAddress)}::market::margin_oracle` as `${string}::${string}::${string}`,
+      functionArguments: [marketObj],
+    }
+    const result = (await this.aptosClient.view({ payload }))[0] as { inner: string }
+    return result.inner
+  }
+
+  async getMarketPerpOracle(marketObj: MoveObjectType): Promise<string> {
+    const payload = {
+      function:
+        `${getModuleAddress(MoveModules.MARKET, this.config.deployerAddress)}::market::perp_oracle` as `${string}::${string}::${string}`,
+      functionArguments: [marketObj],
+    }
+    const result = (await this.aptosClient.view({ payload }))[0] as { inner: string }
+    return result.inner
+  }
+
+  async getMarketMarginToken(marketObj: MoveObjectType): Promise<string> {
+    const payload = {
+      function:
+        `${getModuleAddress(MoveModules.MARKET, this.config.deployerAddress)}::market::margin_token` as `${string}::${string}::${string}`,
+      functionArguments: [marketObj],
+    }
+    const result = (await this.aptosClient.view({ payload }))[0] as { inner: string }
+    return result.inner
+  }
+
+  async getMarketMarginTokenSymbol(marketObj: MoveObjectType): Promise<string> {
+    const metadataAddress = await this.getMarketMarginToken(marketObj)
+    const payload = {
+      function: `0x1::fungible_asset::symbol` as `${string}::${string}::${string}`,
+      functionArguments: [metadataAddress],
+      typeArguments: [`0x1::fungible_asset::Metadata`],
+    }
+    const result = (await this.aptosClient.view({ payload }))[0] as string
+    return result
+  }
+
   async getAllPositionIdsByOwner(owner: string): Promise<string[]> {
     const variables: GetTokenIdsFromCollectionsByOwnerQueryVariables = {
       COLLECTIONS: getAllMarketObjectAddresses(this.config),
@@ -113,7 +173,7 @@ export class MarketViews extends BaseViews {
   ): Promise<number> {
     const payload = {
       function:
-        `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::market::get_liquidation_price` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MARKET, this.config.deployerAddress)}::market::get_liquidation_price` as `${string}::${string}::${string}`,
       functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
     }
     const ret = await this.aptosClient.view({ payload })
@@ -160,7 +220,7 @@ export class MarketViews extends BaseViews {
   ): Promise<number> {
     const payload = {
       function:
-        `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::market::get_fee` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MARKET, this.config.deployerAddress)}::market::get_fee` as `${string}::${string}::${string}`,
       functionArguments: [
         marketObjectAddress,
         isLong,
@@ -182,7 +242,7 @@ export class MarketViews extends BaseViews {
   ): Promise<number> {
     const payload = {
       function:
-        `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::market::get_position_maintenance_margin_musd` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MARKET, this.config.deployerAddress)}::market::get_position_maintenance_margin_musd` as `${string}::${string}::${string}`,
       functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
     }
     const ret = await this.aptosClient.view({ payload })
@@ -198,7 +258,7 @@ export class MarketViews extends BaseViews {
   ): Promise<AllPositionInfo> {
     const payload = {
       function:
-        `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::market::all_position_info` as `${string}::${string}::${string}`,
+        `${getModuleAddress(MoveModules.MARKET, this.config.deployerAddress)}::market::all_position_info` as `${string}::${string}::${string}`,
       functionArguments: [positionObjectAddress, getDecimal8Argument(perpetualPrice), getDecimal8Argument(marginPrice)],
     }
     const ret = await this.aptosClient.view({ payload })

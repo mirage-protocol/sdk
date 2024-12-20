@@ -273,10 +273,10 @@ export const getCollectionIdForVaultPair = (
 export const getAssetTokenMetadata = (asset: MoveAsset, config: MirageConfig): string => {
   if (getTypeFromMoveAsset(asset) == 'MoveCoin') {
     if (!(MoveCoin[asset] in config.tokens)) throw new Error('token metadata not found')
-    return config.tokens[MoveCoin[asset]]
+    return config.tokens[MoveCoin[asset]].address
   } else if (getTypeFromMoveAsset(asset) == 'MoveToken') {
     if (!(MoveToken[asset] in config.tokens)) throw new Error('token metadata not found')
-    return config.tokens[MoveToken[asset]]
+    return config.tokens[MoveToken[asset]].address
   }
   throw new Error('token metadata not found')
 }

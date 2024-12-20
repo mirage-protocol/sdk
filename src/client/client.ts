@@ -9,7 +9,7 @@ import { VaultEntities } from '../entities/vault/vaultEntities'
 import { MarketTransactions, TestnetTransactions, VaultTransactions } from '../transactions'
 import { ReferralTransactions } from '../transactions/referralTransactions'
 import { MirageConfig } from '../utils/config'
-import { AccountViews, MarketViews, TestnetViews, VaultViews } from '../views'
+import { AccountViews, MarketViews, OracleViews, TestnetViews, VaultViews } from '../views'
 import { ReferralViews } from '../views/referralViews'
 
 export class MirageClient {
@@ -21,6 +21,7 @@ export class MirageClient {
   accountViews: AccountViews
   marketViews: MarketViews
   vaultViews: VaultViews
+  oracleViews: OracleViews
   referralViews: ReferralViews
   testnetViews: TestnetViews
 
@@ -65,6 +66,7 @@ export class MirageClient {
     //   }
     // })
 
+    this.oracleViews = new OracleViews(...params)
     this.marketViews = new MarketViews(...params)
     // Object.getOwnPropertyNames(MarketViews.prototype).forEach((name) => {
     //   if (name !== 'constructor') {

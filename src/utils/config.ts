@@ -1,35 +1,45 @@
-import { AccountAddress, Aptos, AptosConfig, Network } from '@aptos-labs/ts-sdk'
+import { AccountAddress, Aptos, AptosConfig, MoveObjectType, Network } from '@aptos-labs/ts-sdk'
 import { AuthConfig, authExchange, AuthUtilities } from '@urql/exchange-auth'
 import { cacheExchange, Client, CombinedError, createClient, errorExchange, fetchExchange, Operation } from 'urql'
 
-import mirageConfigMainnet from '../../mirage_config_mainnet.json'
-import mirageConfigMovementTestnet from '../../mirage_config_movement_testnet.json'
+// import mirageConfigMainnet from '../../mirage_config_mainnet.json'
+// import mirageConfigMovementTestnet from '../../mirage_config_movement_testnet.json'
 import mirageConfigTestnet from '../../mirage_config_testnet.json'
-
-export type ModulesConfig = {
-  mirage: string
-  mirage_core: string
-  mirage_oracle: string
-  mirage_scripts: string
-  mirage_swap: string
-  keeper_scripts: string
-  market: string
-}
 
 export type MarketsConfig = {
   [market: string]: {
-    [pair: string]: string
+    address: string
+    marginOracle: string
+    perpOracle: string
+    marginToken: string
+  }
+}
+
+export type OraclesConfig = {
+  [oracle: string]: {
+    address: string
+    priceFeedId: string
+    priceMultiplier: number
   }
 }
 
 export type VaultsConfig = {
-  [token: string]: {
-    [denomination: string]: string
+  [vault: string]: {
+    address: string
+    collateralToken: string
+    borrowToken: string
+    collateralOracle: string
+    borrowOracle: string
   }
 }
 
 export type TokensConfig = {
-  [token: string]: string
+  [token: string]: {
+    address: string
+    name: string
+    coinType: string
+    decimals: number
+  }
 }
 
 export class MirageConfig {
@@ -37,22 +47,38 @@ export class MirageConfig {
   markets: MarketsConfig
   vaults: VaultsConfig
   tokens: TokensConfig
+  oracles: OraclesConfig
 
-  constructor(config: { deployerAddress: string; markets: MarketsConfig; vaults: VaultsConfig; tokens: TokensConfig }) {
+  constructor(config: {
+    deployerAddress: string
+    markets: MarketsConfig
+    vaults: VaultsConfig
+    tokens: TokensConfig
+    oracles: OraclesConfig
+  }) {
     this.deployerAddress = AccountAddress.fromString(config.deployerAddress)
     this.markets = config.markets
     this.vaults = config.vaults
     this.tokens = config.tokens
+    this.oracles = config.oracles
+  }
+
+  public getOracleNameFromAddress = (oracleAddress: MoveObjectType): string | undefined => {
+    return Object.entries(this.oracles).find(([, oracleConfig]) => oracleConfig.address === oracleAddress)?.[0]
+  }
+
+  public getTokenSymbolFromAddress = (tokenAddress: MoveObjectType): string | undefined => {
+    return Object.entries(this.tokens).find(([, tokenConfig]) => tokenConfig.address === tokenAddress)?.[0]
   }
 }
 
 export const mirageConfigFromNetwork = (network: Network | string): MirageConfig => {
   const n = getNetwork(network)
   switch (n) {
-    case Network.MAINNET:
-      return new MirageConfig({ ...mirageConfigMainnet })
-    case Network.CUSTOM:
-      return new MirageConfig({ ...mirageConfigMovementTestnet })
+    // case Network.MAINNET:
+    //   return new MirageConfig({ ...mirageConfigMainnet })
+    // case Network.CUSTOM:
+    //   return new MirageConfig({ ...mirageConfigMovementTestnet })
     default:
       return new MirageConfig({ ...mirageConfigTestnet })
   }
