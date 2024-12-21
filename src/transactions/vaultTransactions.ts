@@ -1,78 +1,56 @@
 import { InputEntryFunctionData, MoveObjectType } from '@aptos-labs/ts-sdk'
 
-import {
-  getModuleAddress,
-  getNetwork,
-  getPairFromVaultCollectionAddress,
-  getPriceFeed,
-  getPriceFeedUpdateData,
-  getTypeFromMoveAsset,
-  MoveAsset,
-  MoveModules,
-  MoveToken,
-} from '../constants'
-import { getAssetAmountArgument } from './'
+import { getModuleAddress, getNetwork, getPriceFeedUpdateData, MoveModules } from '../constants'
+import { getAssetAmountArgument, getDecimal8Argument } from './'
 import { BaseTransactions } from './baseTransactions'
 
 // const type = 'entry_function_payload'
 
-const getCoinTypeArgumentIfNeeded = (collateralAsset: MoveAsset): string[] => {
-  switch (getTypeFromMoveAsset(collateralAsset)) {
-    case 'MoveToken':
-      return []
-    case 'MoveCoin': // TODO update this when we support more than just APT for coins as collateral
-      return ['0x1::aptos_coin::AptosCoin']
-    default:
-      return []
-  }
-}
-
-const getFunctionSuffix = (type: string): string => {
-  switch (type) {
-    case 'MoveToken':
-      return 'entry'
-    case 'MoveCoin':
-      return 'coin_entry'
-    default:
-      return 'fail_case'
-  }
+const getFunctionSuffix = (coinType: string): string => {
+  return coinType ? 'entry' : 'coin_entry'
 }
 
 export class VaultTransactions extends BaseTransactions {
-  async createVaultAndAddCollateral(collectionObject: MoveObjectType, amount: number): Promise<InputEntryFunctionData> {
-    const collateralAsset = getPairFromVaultCollectionAddress(collectionObject, this.config).collateralAsset
+  async createVaultAndAddCollateral(
+    collateralSymbol: string,
+    borrowSymbol: string,
+    amount: number,
+  ): Promise<InputEntryFunctionData> {
+    const collateralType = this.config.tokens[collateralSymbol].coinType
+    const collateralDecimals = this.config.tokens[collateralSymbol].decimals
+    const collectionObject = this.config.getVaultAddressFromTokens(collateralSymbol, borrowSymbol)
     return {
-      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}, this.config.deployerAddress)}::vault_scripts::create_vault_${getFunctionSuffix(
-        getTypeFromMoveAsset(collateralAsset),
-      )}`,
-      functionArguments: [collectionObject, getAssetAmountArgument(collateralAsset, amount, this.config)],
-      typeArguments: getCoinTypeArgumentIfNeeded(collateralAsset),
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::vault_scripts::create_vault_${getFunctionSuffix(collateralType)}`,
+      functionArguments: [collectionObject, getAssetAmountArgument(amount, collateralDecimals)],
+      typeArguments: collateralType ? [collateralType] : [],
     }
   }
 
   async createVaultAndAddCollateralAndBorrow(
-    collectionObject: MoveObjectType,
+    collateralSymbol: string,
+    borrowSymbol: string,
     collateralAmount: number,
     borrowAmount: number,
   ): Promise<InputEntryFunctionData> {
-    const { collateralAsset, borrow: borrowToken } = getPairFromVaultCollectionAddress(collectionObject, this.config)
-    const collateralFeed = getPriceFeed(collateralAsset, this.network)
-    const borrowFeed = getPriceFeed(borrowToken, this.network)
+    const collateralType = this.config.tokens[collateralSymbol].coinType
+    const collateralDecimals = this.config.tokens[collateralSymbol].decimals
+    const collectionObject = this.config.getVaultAddressFromTokens(collateralSymbol, borrowSymbol)
+
+    const collateralFeed = this.config.getVaultCollateralPriceFeedId(collateralSymbol, borrowSymbol)
+    const borrowFeed = this.config.getVaultBorrowPriceFeedId(collateralSymbol, borrowSymbol)
 
     const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(this.network)) : []
     const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(this.network)) : []
     return {
-      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}, this.config.deployerAddress)}::vault_scripts::create_vault_and_borrow_${getFunctionSuffix(
-        getTypeFromMoveAsset(collateralAsset),
-      )}`,
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::vault_scripts::create_vault_and_borrow_${getFunctionSuffix(collateralType)}`,
       functionArguments: [
         collectionObject,
-        getAssetAmountArgument(collateralAsset, collateralAmount, this.config),
-        getAssetAmountArgument(borrowToken, borrowAmount, this.config),
+        getAssetAmountArgument(collateralAmount, collateralDecimals),
+        getDecimal8Argument(borrowAmount),
         collateralVaas,
         borrowVaas,
       ],
-      typeArguments: getCoinTypeArgumentIfNeeded(collateralAsset),
+      typeArguments: collateralType ? [collateralType] : [],
     }
   }
 
@@ -85,13 +63,16 @@ export class VaultTransactions extends BaseTransactions {
    */
   async addCollateral(
     vaultObject: MoveObjectType,
-    collateralAsset: MoveAsset,
+    collateralSymbol: string,
     amount: number,
   ): Promise<InputEntryFunctionData> {
+    const collateralType = this.config.tokens[collateralSymbol].coinType
+    const collateralDecimals = this.config.tokens[collateralSymbol].decimals
+
     return {
-      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}, this.config.deployerAddress)}::vault_scripts::add_collateral_${getFunctionSuffix(getTypeFromMoveAsset(collateralAsset))}`,
-      functionArguments: [vaultObject, getAssetAmountArgument(collateralAsset, amount, this.config)],
-      typeArguments: getCoinTypeArgumentIfNeeded(collateralAsset),
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::vault_scripts::add_collateral_${getFunctionSuffix(collateralType)}`,
+      functionArguments: [vaultObject, getAssetAmountArgument(amount, collateralDecimals)],
+      typeArguments: collateralType ? [collateralType] : [],
     }
   }
 
@@ -106,24 +87,19 @@ export class VaultTransactions extends BaseTransactions {
    */
   async borrow(
     vaultObject: MoveObjectType,
-    collateralAsset: MoveAsset,
-    borrowToken: MoveToken,
+    collateralSymbol: string,
+    borrowSymbol: string,
     borrowAmount: number,
   ): Promise<InputEntryFunctionData> {
-    const collateralFeed = getPriceFeed(collateralAsset, this.network)
-    const borrowFeed = getPriceFeed(borrowToken, this.network)
+    const collateralFeed = this.config.getVaultCollateralPriceFeedId(collateralSymbol, borrowSymbol)
+    const borrowFeed = this.config.getVaultBorrowPriceFeedId(collateralSymbol, borrowSymbol)
 
     const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(this.network)) : []
     const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(this.network)) : []
 
     return {
-      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}, this.config.deployerAddress)}::vault_scripts::borrow_entry`,
-      functionArguments: [
-        vaultObject,
-        getAssetAmountArgument(borrowToken, borrowAmount, this.config),
-        collateralVaas,
-        borrowVaas,
-      ],
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::vault_scripts::borrow_entry`,
+      functionArguments: [vaultObject, getDecimal8Argument(borrowAmount), collateralVaas, borrowVaas],
     }
   }
 
@@ -138,20 +114,21 @@ export class VaultTransactions extends BaseTransactions {
    */
   async removeCollateral(
     vaultObject: MoveObjectType,
-    collateralAsset: MoveAsset,
-    borrowToken: MoveToken,
+    collateralSymbol: string,
+    borrowSymbol: string,
     removeAmount: number,
   ): Promise<InputEntryFunctionData> {
-    const collateralFeed = getPriceFeed(collateralAsset, this.network)
-    const borrowFeed = getPriceFeed(borrowToken, this.network)
+    const collateralFeed = this.config.getVaultCollateralPriceFeedId(collateralSymbol, borrowSymbol)
+    const borrowFeed = this.config.getVaultBorrowPriceFeedId(collateralSymbol, borrowSymbol)
+    const collateralDecimals = this.config.tokens[collateralSymbol].decimals
 
     const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(this.network)) : []
     const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(this.network)) : []
     return {
-      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}, this.config.deployerAddress)}::vault_scripts::remove_collateral_entry`,
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::vault_scripts::remove_collateral_entry`,
       functionArguments: [
         vaultObject,
-        getAssetAmountArgument(collateralAsset, removeAmount, this.config),
+        getAssetAmountArgument(removeAmount, collateralDecimals),
         collateralVaas,
         borrowVaas,
       ],
@@ -183,29 +160,30 @@ export class VaultTransactions extends BaseTransactions {
    */
   async addCollateralAndBorrow(
     vaultObject: MoveObjectType,
-    collateralAsset: MoveAsset,
-    borrowToken: MoveToken,
+    collateralSymbol: string,
+    borrowSymbol: string,
     addAmount: number,
     borrowAmount: number,
   ): Promise<InputEntryFunctionData> {
-    const collateralFeed = getPriceFeed(collateralAsset, this.network)
-    const borrowFeed = getPriceFeed(borrowToken, this.network)
+    const collateralType = this.config.tokens[collateralSymbol].coinType
+    const collateralDecimals = this.config.tokens[collateralSymbol].decimals
+
+    const collateralFeed = this.config.getVaultCollateralPriceFeedId(collateralSymbol, borrowSymbol)
+    const borrowFeed = this.config.getVaultBorrowPriceFeedId(collateralSymbol, borrowSymbol)
 
     const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(this.network)) : []
     const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(this.network)) : []
 
     return {
-      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}, this.config.deployerAddress)}::vault_scripts::add_and_borrow_${getFunctionSuffix(
-        getTypeFromMoveAsset(collateralAsset),
-      )}`,
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::vault_scripts::add_and_borrow_${getFunctionSuffix(collateralType)}`,
       functionArguments: [
         vaultObject,
-        getAssetAmountArgument(collateralAsset, addAmount, this.config),
-        getAssetAmountArgument(borrowToken, borrowAmount, this.config),
+        getAssetAmountArgument(addAmount, collateralDecimals),
+        getDecimal8Argument(borrowAmount),
         collateralVaas,
         borrowVaas,
       ],
-      typeArguments: getCoinTypeArgumentIfNeeded(collateralAsset),
+      typeArguments: collateralType ? [collateralType] : [],
     }
   }
 
@@ -221,22 +199,24 @@ export class VaultTransactions extends BaseTransactions {
    */
   async repayDebtAndRemoveCollateral(
     vaultObject: MoveObjectType,
-    collateralAsset: MoveAsset,
-    borrowToken: MoveToken,
+    collateralSymbol: string,
+    borrowSymbol: string,
     removeAmount: number,
     repayPartAmount: number,
   ): Promise<InputEntryFunctionData> {
-    const collateralFeed = getPriceFeed(collateralAsset, this.network)
-    const borrowFeed = getPriceFeed(borrowToken, this.network)
+    const collateralDecimals = this.config.tokens[collateralSymbol].decimals
+
+    const collateralFeed = this.config.getVaultCollateralPriceFeedId(collateralSymbol, borrowSymbol)
+    const borrowFeed = this.config.getVaultBorrowPriceFeedId(collateralSymbol, borrowSymbol)
 
     const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(this.network)) : []
     const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(this.network)) : []
 
     return {
-      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}, this.config.deployerAddress)}::vault_scripts::repay_and_remove`,
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::vault_scripts::repay_and_remove`,
       functionArguments: [
         vaultObject,
-        getAssetAmountArgument(collateralAsset, removeAmount, this.config),
+        getAssetAmountArgument(removeAmount, collateralDecimals),
         repayPartAmount,
         collateralVaas,
         borrowVaas,
@@ -254,20 +234,17 @@ export class VaultTransactions extends BaseTransactions {
    */
   async addCollateralAndRepayDebt(
     vaultObject: MoveObjectType,
-    collateralAsset: MoveAsset,
+    collateralSymbol: string,
     addAmount: number,
     repayPartAmount: number,
   ): Promise<InputEntryFunctionData> {
+    const collateralType = this.config.tokens[collateralSymbol].coinType
+    const collateralDecimals = this.config.tokens[collateralSymbol].decimals
+
     return {
-      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}, this.config.deployerAddress)}::vault_scripts::add_and_repay_${getFunctionSuffix(
-        getTypeFromMoveAsset(collateralAsset),
-      )}`,
-      functionArguments: [
-        vaultObject,
-        getAssetAmountArgument(collateralAsset, addAmount, this.config),
-        repayPartAmount,
-      ],
-      typeArguments: getCoinTypeArgumentIfNeeded(collateralAsset),
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::vault_scripts::add_and_repay_${getFunctionSuffix(collateralSymbol)}`,
+      functionArguments: [vaultObject, getAssetAmountArgument(addAmount, collateralDecimals), repayPartAmount],
+      typeArguments: collateralType ? [collateralType] : [],
     }
   }
 
@@ -283,13 +260,15 @@ export class VaultTransactions extends BaseTransactions {
    */
   async removeCollateralAndBorrow(
     vaultObject: MoveObjectType,
-    collateralAsset: MoveAsset,
-    borrowToken: MoveToken,
+    collateralSymbol: string,
+    borrowSymbol: string,
     removeAmount: number,
     borrowAmount: number,
   ): Promise<InputEntryFunctionData> {
-    const collateralFeed = getPriceFeed(collateralAsset, this.network)
-    const borrowFeed = getPriceFeed(borrowToken, this.network)
+    const collateralDecimals = this.config.tokens[collateralSymbol].decimals
+
+    const collateralFeed = this.config.getVaultCollateralPriceFeedId(collateralSymbol, borrowSymbol)
+    const borrowFeed = this.config.getVaultBorrowPriceFeedId(collateralSymbol, borrowSymbol)
 
     const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(this.network)) : []
     const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(this.network)) : []
@@ -298,8 +277,8 @@ export class VaultTransactions extends BaseTransactions {
       function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}, this.config.deployerAddress)}::vault_scripts::remove_and_borrow_entry`,
       functionArguments: [
         vaultObject,
-        getAssetAmountArgument(collateralAsset, removeAmount, this.config),
-        getAssetAmountArgument(borrowToken, borrowAmount, this.config),
+        getAssetAmountArgument(removeAmount, collateralDecimals),
+        getDecimal8Argument(borrowAmount),
         collateralVaas,
         borrowVaas,
       ],
@@ -308,12 +287,12 @@ export class VaultTransactions extends BaseTransactions {
 
   async liquidateVaultWithPart(
     vaultObject: MoveObjectType,
-    collateralAsset: MoveAsset,
-    borrowToken: MoveToken,
+    collateralSymbol: string,
+    borrowSymbol: string,
     partToLiquidate: number,
   ): Promise<InputEntryFunctionData> {
-    const collateralFeed = getPriceFeed(collateralAsset, this.network)
-    const borrowFeed = getPriceFeed(borrowToken, this.network)
+    const collateralFeed = this.config.getVaultCollateralPriceFeedId(collateralSymbol, borrowSymbol)
+    const borrowFeed = this.config.getVaultBorrowPriceFeedId(collateralSymbol, borrowSymbol)
 
     const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(this.network)) : []
     const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(this.network)) : []
@@ -326,42 +305,37 @@ export class VaultTransactions extends BaseTransactions {
 
   async liquidateVaultBankrupt(
     vaultObject: MoveObjectType,
-    collateralAsset: MoveAsset,
-    borrowToken: MoveToken,
+    collateralSymbol: string,
+    borrowSymbol: string,
     debtAmountToLiquidate: number,
   ): Promise<InputEntryFunctionData> {
-    const collateralFeed = getPriceFeed(collateralAsset, this.network)
-    const borrowFeed = getPriceFeed(borrowToken, this.network)
+    const collateralFeed = this.config.getVaultCollateralPriceFeedId(collateralSymbol, borrowSymbol)
+    const borrowFeed = this.config.getVaultBorrowPriceFeedId(collateralSymbol, borrowSymbol)
 
     const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(this.network)) : []
     const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(this.network)) : []
 
     return {
-      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}, this.config.deployerAddress)}::vault_scripts::liquidate_bankrupt_entry`,
-      functionArguments: [
-        vaultObject,
-        getAssetAmountArgument(borrowToken, debtAmountToLiquidate, this.config),
-        collateralVaas,
-        borrowVaas,
-      ],
+      function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::vault_scripts::liquidate_bankrupt_entry`,
+      functionArguments: [vaultObject, getDecimal8Argument(debtAmountToLiquidate), collateralVaas, borrowVaas],
     }
   }
 
-  async accrueInterest(vaultCollectionObject: MoveObjectType): Promise<InputEntryFunctionData> {
+  async accrueInterest(collateralSymbol: string, borrowSymbol: string): Promise<InputEntryFunctionData> {
     return {
       function: `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::vault::accrue_interest`,
-      functionArguments: [vaultCollectionObject],
+      functionArguments: [this.config.getVaultAddressFromTokens(collateralSymbol, borrowSymbol)],
     }
   }
 
   async mergeVaults(
     dstVaultObject: MoveObjectType,
     srcVaultObject: MoveObjectType,
-    collateralAsset: MoveAsset,
-    borrowToken: MoveToken,
+    collateralSymbol: string,
+    borrowSymbol: string,
   ): Promise<InputEntryFunctionData> {
-    const collateralFeed = getPriceFeed(collateralAsset, this.network)
-    const borrowFeed = getPriceFeed(borrowToken, this.network)
+    const collateralFeed = this.config.getVaultCollateralPriceFeedId(collateralSymbol, borrowSymbol)
+    const borrowFeed = this.config.getVaultBorrowPriceFeedId(collateralSymbol, borrowSymbol)
 
     const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, getNetwork(this.network)) : []
     const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, getNetwork(this.network)) : []

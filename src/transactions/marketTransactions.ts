@@ -1,15 +1,6 @@
 import { InputEntryFunctionData, MoveObjectType } from '@aptos-labs/ts-sdk'
 
-import {
-  getModuleAddress,
-  getNetwork,
-  getPairFromMarketAddress,
-  getPriceFeed,
-  getPriceFeedUpdateData,
-  MoveModules,
-  MoveToken,
-  Perpetual,
-} from '../constants'
+import { getModuleAddress, getNetwork, getPriceFeedUpdateData, MoveModules } from '../constants'
 import { PositionSide } from '../entities'
 import { getDecimal8Argument } from './'
 import { BaseTransactions } from './baseTransactions'
@@ -20,16 +11,15 @@ export class MarketTransactions extends BaseTransactions {
    * @returns script or payload promise for the transaction
    */
   async openPosition(
-    marketObject: MoveObjectType,
+    marketName: string,
     marginAmount: number,
     positionSize: number,
     side: PositionSide,
     desired_price: number,
     maxPriceSlippage: number,
   ): Promise<InputEntryFunctionData> {
-    const { marginToken: marginCoin, perp: perpetual } = getPairFromMarketAddress(marketObject, this.config)
-    const marginFeed = getPriceFeed(marginCoin, this.network)
-    const perpetualFeed = getPriceFeed(perpetual, this.network)
+    const marginFeed = this.config.getMarketMarginPriceFeedId(marketName)
+    const perpetualFeed = this.config.getMarketPerpPriceFeedId(marketName)
 
     const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(this.network)) : []
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
@@ -38,7 +28,7 @@ export class MarketTransactions extends BaseTransactions {
       function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::create_and_open_position_entry`,
 
       functionArguments: [
-        marketObject,
+        this.config.getMarketAddress(marketName),
         perpetualVaas,
         marginVaas,
         getDecimal8Argument(marginAmount), // always 8 decimals
@@ -55,7 +45,7 @@ export class MarketTransactions extends BaseTransactions {
    * @returns script or payload promise for the transaction
    */
   async openPositionWithTpsl(
-    marketObject: MoveObjectType,
+    marketName: string,
     marginAmount: number,
     positionSize: number,
     side: PositionSide,
@@ -64,9 +54,8 @@ export class MarketTransactions extends BaseTransactions {
     takeProfitPrice: number,
     stopLossPrice: number,
   ): Promise<InputEntryFunctionData> {
-    const { marginToken: marginCoin, perp: perpetual } = getPairFromMarketAddress(marketObject, this.config)
-    const marginFeed = getPriceFeed(marginCoin, this.network)
-    const perpetualFeed = getPriceFeed(perpetual, this.network)
+    const marginFeed = this.config.getMarketMarginPriceFeedId(marketName)
+    const perpetualFeed = this.config.getMarketPerpPriceFeedId(marketName)
 
     const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(this.network)) : []
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
@@ -75,7 +64,7 @@ export class MarketTransactions extends BaseTransactions {
       function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::create_and_open_position_with_tpsl_entry`,
 
       functionArguments: [
-        marketObject,
+        this.config.getMarketAddress(marketName),
         perpetualVaas,
         marginVaas,
         getDecimal8Argument(marginAmount), // always 8 decimals
@@ -93,13 +82,9 @@ export class MarketTransactions extends BaseTransactions {
    * Close a position in a market at the current price
    * @returns payload promise for the transaction
    */
-  async closePosition(
-    positionObject: MoveObjectType,
-    marginCoin: MoveToken,
-    perpetual: Perpetual,
-  ): Promise<InputEntryFunctionData> {
-    const marginFeed = getPriceFeed(marginCoin, this.network)
-    const perpetualFeed = getPriceFeed(perpetual, this.network)
+  async closePosition(marketName: string, positionObject: MoveObjectType): Promise<InputEntryFunctionData> {
+    const marginFeed = this.config.getMarketMarginPriceFeedId(marketName)
+    const perpetualFeed = this.config.getMarketPerpPriceFeedId(marketName)
 
     const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(this.network)) : []
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
@@ -118,7 +103,7 @@ export class MarketTransactions extends BaseTransactions {
    * @returns payload promise for the transaction
    */
   async openPositionAndPlaceLimitOrder(
-    marketObject: MoveObjectType,
+    marketName: string,
     marginAmount: number,
     positionSize: number,
     triggerPrice: number,
@@ -127,15 +112,13 @@ export class MarketTransactions extends BaseTransactions {
     expiration: bigint, // in seconds,
     isLong: boolean,
   ): Promise<InputEntryFunctionData> {
-    const { perp: perpetualAsset } = getPairFromMarketAddress(marketObject, this.config)
-
-    const perpetualFeed = getPriceFeed(perpetualAsset, this.network)
+    const perpetualFeed = this.config.getMarketPerpPriceFeedId(marketName)
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
 
     return {
       function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::create_position_and_place_limit_order_entry`,
       functionArguments: [
-        marketObject,
+        this.config.getMarketAddress(marketName),
         perpetualVaas,
         getDecimal8Argument(marginAmount), // always 8 decimals
         getDecimal8Argument(positionSize),
@@ -155,8 +138,8 @@ export class MarketTransactions extends BaseTransactions {
    * @returns payload promise for the transaction
    */
   async placeLimitOrder(
+    marketName: string,
     positionObject: MoveObjectType,
-    perpetualAsset: Perpetual,
     marginAmount: number,
     positionSize: number,
     isLong: boolean,
@@ -166,7 +149,7 @@ export class MarketTransactions extends BaseTransactions {
     triggersAbove: boolean,
     expiration: bigint, // in seconds
   ): Promise<InputEntryFunctionData> {
-    const perpetualFeed = getPriceFeed(perpetualAsset, this.network)
+    const perpetualFeed = this.config.getMarketPerpPriceFeedId(marketName)
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
 
     return {
@@ -187,8 +170,8 @@ export class MarketTransactions extends BaseTransactions {
   }
 
   async updateLimitOrder(
+    marketName: string,
     limitOrderObject: MoveObjectType,
-    perpetualAsset: Perpetual,
     positionSize: number,
     isLong: boolean,
     triggerPrice: number,
@@ -197,7 +180,7 @@ export class MarketTransactions extends BaseTransactions {
     triggersAbove: boolean,
     expiration: bigint, // in seconds
   ): Promise<InputEntryFunctionData> {
-    const perpetualFeed = getPriceFeed(perpetualAsset, this.network)
+    const perpetualFeed = this.config.getMarketPerpPriceFeedId(marketName)
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
 
     return {
@@ -230,12 +213,12 @@ export class MarketTransactions extends BaseTransactions {
   }
 
   async updateTpsl(
+    marketName: string,
     tpslObject: MoveObjectType,
-    perpetualAsset: Perpetual,
     take_profit_price: number,
     stop_loss_price: number,
   ): Promise<InputEntryFunctionData> {
-    const perpetualFeed = getPriceFeed(perpetualAsset, this.network)
+    const perpetualFeed = this.config.getMarketPerpPriceFeedId(marketName)
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
 
     const payload = {
@@ -252,12 +235,12 @@ export class MarketTransactions extends BaseTransactions {
   }
 
   async placeTpsl(
+    marketName: string,
     positionObject: MoveObjectType,
-    perpetualAsset: Perpetual,
     take_profit_price: number,
     stop_loss_price: number,
   ): Promise<InputEntryFunctionData> {
-    const perpetualFeed = getPriceFeed(perpetualAsset, this.network)
+    const perpetualFeed = this.config.getMarketPerpPriceFeedId(marketName)
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
 
     const payload = {
@@ -291,17 +274,17 @@ export class MarketTransactions extends BaseTransactions {
    * @returns payload promise for the transaction
    */
   async updateMargin(
+    marketName: string,
     positionObject: MoveObjectType,
-    marginCoin: MoveToken,
-    perpetualAsset: Perpetual,
     oldMarginAmount: number,
     newMarginAmount: number,
   ): Promise<InputEntryFunctionData> {
-    const marginFeed = getPriceFeed(marginCoin, this.network)
-    const perpetualFeed = getPriceFeed(perpetualAsset, this.network)
+    const marginFeed = this.config.getMarketMarginPriceFeedId(marketName)
+    const perpetualFeed = this.config.getMarketPerpPriceFeedId(marketName)
 
     const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(this.network)) : []
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
+
     const diff =
       newMarginAmount > oldMarginAmount ? newMarginAmount - oldMarginAmount : oldMarginAmount - newMarginAmount
     const functionName = newMarginAmount > oldMarginAmount ? 'increase' : 'decrease'
@@ -318,16 +301,16 @@ export class MarketTransactions extends BaseTransactions {
    * @returns payload promise for the transaction
    */
   async increaseMargin(
+    marketName: string,
     positionObject: MoveObjectType,
-    marginCoin: MoveToken,
-    perpetualAsset: Perpetual,
     increaseMarginAmount: number,
   ): Promise<InputEntryFunctionData> {
-    const marginFeed = getPriceFeed(marginCoin, this.network)
-    const perpetualFeed = getPriceFeed(perpetualAsset, this.network)
+    const marginFeed = this.config.getMarketMarginPriceFeedId(marketName)
+    const perpetualFeed = this.config.getMarketPerpPriceFeedId(marketName)
 
     const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(this.network)) : []
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
+
     const payload = {
       function:
         `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::increase_margin_entry` as `${string}::${string}::${string}`,
@@ -373,17 +356,17 @@ export class MarketTransactions extends BaseTransactions {
    * @returns payload promise for the transaction
    */
   async increaseSizeAndIncreaseMargin(
+    marketName: string,
     positionObject: MoveObjectType,
-    marginCoin: MoveToken,
-    perpetualAsset: Perpetual,
     increasePositionSize: number,
     increaseMarginAmount: number,
   ): Promise<InputEntryFunctionData> {
-    const marginFeed = getPriceFeed(marginCoin, this.network)
-    const perpetualFeed = getPriceFeed(perpetualAsset, this.network)
+    const marginFeed = this.config.getMarketMarginPriceFeedId(marketName)
+    const perpetualFeed = this.config.getMarketPerpPriceFeedId(marketName)
 
     const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(this.network)) : []
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
+
     const payload = {
       function:
         `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::increase_position_size_and_increase_margin_entry` as `${string}::${string}::${string}`,
@@ -403,17 +386,17 @@ export class MarketTransactions extends BaseTransactions {
    * @returns payload promise for the transaction
    */
   async increaseSizeAndDecreaseMargin(
+    marketName: string,
     positionObject: MoveObjectType,
-    marginCoin: MoveToken,
-    perpetualAsset: Perpetual,
     increasePositionSize: number,
     decreaseMarginAmount: number,
   ): Promise<InputEntryFunctionData> {
-    const marginFeed = getPriceFeed(marginCoin, this.network)
-    const perpetualFeed = getPriceFeed(perpetualAsset, this.network)
+    const marginFeed = this.config.getMarketMarginPriceFeedId(marketName)
+    const perpetualFeed = this.config.getMarketPerpPriceFeedId(marketName)
 
     const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(this.network)) : []
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
+
     const payload = {
       function:
         `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::increase_position_size_and_decrease_margin_entry` as `${string}::${string}::${string}`,
@@ -433,17 +416,17 @@ export class MarketTransactions extends BaseTransactions {
    * @returns payload promise for the transaction
    */
   async decreaseSizeAndDecreaseMargin(
+    marketName: string,
     positionObject: MoveObjectType,
-    marginCoin: MoveToken,
-    perpetualAsset: Perpetual,
     decreasePositionSize: number,
     decreaseMarginAmount: number,
   ): Promise<InputEntryFunctionData> {
-    const marginFeed = getPriceFeed(marginCoin, this.network)
-    const perpetualFeed = getPriceFeed(perpetualAsset, this.network)
+    const marginFeed = this.config.getMarketMarginPriceFeedId(marketName)
+    const perpetualFeed = this.config.getMarketPerpPriceFeedId(marketName)
 
     const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(this.network)) : []
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
+
     const payload = {
       function:
         `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::decrease_position_size_and_decrease_margin_entry` as `${string}::${string}::${string}`,
@@ -463,17 +446,17 @@ export class MarketTransactions extends BaseTransactions {
    * @returns payload promise for the transaction
    */
   async decreaseSizeAndIncreaseMargin(
+    marketName: string,
     positionObject: MoveObjectType,
-    marginCoin: MoveToken,
-    perpetualAsset: Perpetual,
     decreasePositionSize: number,
     increaseMarginAmount: number,
   ): Promise<InputEntryFunctionData> {
-    const marginFeed = getPriceFeed(marginCoin, this.network)
-    const perpetualFeed = getPriceFeed(perpetualAsset, this.network)
+    const marginFeed = this.config.getMarketMarginPriceFeedId(marketName)
+    const perpetualFeed = this.config.getMarketPerpPriceFeedId(marketName)
 
     const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(this.network)) : []
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
+
     const payload = {
       function:
         `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::decrease_position_size_and_increase_margin_entry` as `${string}::${string}::${string}`,
@@ -493,16 +476,16 @@ export class MarketTransactions extends BaseTransactions {
    * @returns payload promise for the transaction
    */
   async decreaseMargin(
+    marketName: string,
     positionObject: MoveObjectType,
-    marginCoin: MoveToken,
-    perpetualAsset: Perpetual,
     decreaseMarginAmount: number,
   ): Promise<InputEntryFunctionData> {
-    const marginFeed = getPriceFeed(marginCoin, this.network)
-    const perpetualFeed = getPriceFeed(perpetualAsset, this.network)
+    const marginFeed = this.config.getMarketMarginPriceFeedId(marketName)
+    const perpetualFeed = this.config.getMarketPerpPriceFeedId(marketName)
 
     const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(this.network)) : []
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
+
     const payload = {
       function:
         `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::decrease_margin_entry` as `${string}::${string}::${string}`,
@@ -516,17 +499,17 @@ export class MarketTransactions extends BaseTransactions {
    * @returns payload promise for the transaction
    */
   async updatePositionSize(
+    marketName: string,
     positionObject: MoveObjectType,
-    marginCoin: MoveToken,
-    perpetualAsset: Perpetual,
     oldPositionSize: number,
     newPositionSize: number,
   ): Promise<InputEntryFunctionData> {
-    const marginFeed = getPriceFeed(marginCoin, this.network)
-    const perpetualFeed = getPriceFeed(perpetualAsset, this.network)
+    const marginFeed = this.config.getMarketMarginPriceFeedId(marketName)
+    const perpetualFeed = this.config.getMarketPerpPriceFeedId(marketName)
 
     const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(this.network)) : []
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
+
     const isIncrease = newPositionSize > oldPositionSize
     const diff = isIncrease ? newPositionSize - oldPositionSize : oldPositionSize - newPositionSize
     const functionName = isIncrease ? 'market::increase_position_size' : 'market::decrease_position_size'
@@ -544,13 +527,12 @@ export class MarketTransactions extends BaseTransactions {
    * @returns payload promise for the transaction
    */
   async increasePositionSize(
+    marketName: string,
     positionObject: MoveObjectType,
-    marginCoin: MoveToken,
-    perpetualAsset: Perpetual,
     increasePositionSize: number,
   ): Promise<InputEntryFunctionData> {
-    const marginFeed = getPriceFeed(marginCoin, this.network)
-    const perpetualFeed = getPriceFeed(perpetualAsset, this.network)
+    const marginFeed = this.config.getMarketMarginPriceFeedId(marketName)
+    const perpetualFeed = this.config.getMarketPerpPriceFeedId(marketName)
 
     const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(this.network)) : []
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
@@ -568,13 +550,12 @@ export class MarketTransactions extends BaseTransactions {
    * @returns payload promise for the transaction
    */
   async decreasePositionSize(
+    marketName: string,
     positionObject: MoveObjectType,
-    marginCoin: MoveToken,
-    perpetualAsset: Perpetual,
     decreasePositionSize: number,
   ): Promise<InputEntryFunctionData> {
-    const marginFeed = getPriceFeed(marginCoin, this.network)
-    const perpetualFeed = getPriceFeed(perpetualAsset, this.network)
+    const marginFeed = this.config.getMarketMarginPriceFeedId(marketName)
+    const perpetualFeed = this.config.getMarketPerpPriceFeedId(marketName)
 
     const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(this.network)) : []
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
@@ -592,15 +573,16 @@ export class MarketTransactions extends BaseTransactions {
    * @returns payload promise for the transaction
    */
   async triggerTpsl(
+    marketName: string,
     triggererAddress: string,
     tpslObject: MoveObjectType,
-    marginCoin: MoveToken,
-    perpetualAsset: Perpetual,
   ): Promise<InputEntryFunctionData> {
-    const marginFeed = getPriceFeed(marginCoin, this.network)
-    const perpetualFeed = getPriceFeed(perpetualAsset, this.network)
+    const marginFeed = this.config.getMarketMarginPriceFeedId(marketName)
+    const perpetualFeed = this.config.getMarketPerpPriceFeedId(marketName)
+
     const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(this.network)) : []
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
+
     const payload = {
       function:
         `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::market_scripts::trigger_tpsl_entry` as `${string}::${string}::${string}`,
@@ -627,13 +609,13 @@ export class MarketTransactions extends BaseTransactions {
    * @returns payload promise for the transaction
    */
   async liquidatePosition(
+    marketName: string,
     triggererAddress: string,
     positionObject: MoveObjectType,
-    marginCoin: MoveToken,
-    perpetualAsset: Perpetual,
   ): Promise<InputEntryFunctionData> {
-    const marginFeed = getPriceFeed(marginCoin, this.network)
-    const perpetualFeed = getPriceFeed(perpetualAsset, this.network)
+    const marginFeed = this.config.getMarketMarginPriceFeedId(marketName)
+    const perpetualFeed = this.config.getMarketPerpPriceFeedId(marketName)
+
     const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(this.network)) : []
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
 
@@ -650,13 +632,13 @@ export class MarketTransactions extends BaseTransactions {
    * @returns payload promise for the transaction
    */
   async triggerLimitOrder(
+    marketName: string,
     triggererAddress: string,
     limitOrderObject: MoveObjectType,
-    marginCoin: MoveToken,
-    perpetualAsset: Perpetual,
   ): Promise<InputEntryFunctionData> {
-    const marginFeed = getPriceFeed(marginCoin, this.network)
-    const perpetualFeed = getPriceFeed(perpetualAsset, this.network)
+    const marginFeed = this.config.getMarketMarginPriceFeedId(marketName)
+    const perpetualFeed = this.config.getMarketPerpPriceFeedId(marketName)
+
     const marginVaas = marginFeed ? await getPriceFeedUpdateData(marginFeed, getNetwork(this.network)) : []
     const perpetualVaas = perpetualFeed ? await getPriceFeedUpdateData(perpetualFeed, getNetwork(this.network)) : []
 

@@ -6,21 +6,25 @@ import { cacheExchange, Client, CombinedError, createClient, errorExchange, fetc
 // import mirageConfigMovementTestnet from '../../mirage_config_movement_testnet.json'
 import mirageConfigTestnet from '../../mirage_config_testnet.json'
 
+export type MarketConfig = {
+  address: string
+  marginOracle: string
+  perpOracle: string
+  marginToken: string
+}
+
 export type MarketsConfig = {
-  [market: string]: {
-    address: string
-    marginOracle: string
-    perpOracle: string
-    marginToken: string
-  }
+  [market: string]: MarketConfig
+}
+
+export type OracleConfig = {
+  address: string
+  priceFeedId: string
+  priceMultiplier: string
 }
 
 export type OraclesConfig = {
-  [oracle: string]: {
-    address: string
-    priceFeedId: string
-    priceMultiplier: number
-  }
+  [oracle: string]: OracleConfig
 }
 
 export type VaultsConfig = {
@@ -69,6 +73,48 @@ export class MirageConfig {
 
   public getTokenSymbolFromAddress = (tokenAddress: MoveObjectType): string | undefined => {
     return Object.entries(this.tokens).find(([, tokenConfig]) => tokenConfig.address === tokenAddress)?.[0]
+  }
+
+  public getMarketNameSymbolFromAddress = (marketAddress: MoveObjectType): string | undefined => {
+    return Object.entries(this.markets).find(([, marketConfig]) => marketConfig.address === marketAddress)?.[0]
+  }
+
+  public getMarketFromAddress = (marketAddress: MoveObjectType): MarketConfig | undefined => {
+    const perpSymbol = this.getMarketNameSymbolFromAddress(marketAddress)
+    if (!perpSymbol) return undefined
+    return this.markets[perpSymbol]
+  }
+
+  public getMarketAddress = (marketName: string): string => {
+    return this.markets[marketName].address
+  }
+
+  public getMarketMarginPriceFeedId = (marketName: string): string => {
+    return this.oracles[this.markets[marketName].marginOracle].priceFeedId
+  }
+
+  public getMarketPerpPriceFeedId = (marketName: string): string => {
+    return this.oracles[this.markets[marketName].perpOracle].priceFeedId
+  }
+
+  public static createVaultNameFromTokens = (borrowSymbol: string, collateralSymbol: string): string => {
+    return `${borrowSymbol}/${collateralSymbol}`
+  }
+
+  public getVaultCollateralPriceFeedId = (borrowSymbol: string, collateralSymbol: string): string => {
+    return this.oracles[
+      this.vaults[MirageConfig.createVaultNameFromTokens(borrowSymbol, collateralSymbol)].collateralOracle
+    ].priceFeedId
+  }
+
+  public getVaultBorrowPriceFeedId = (borrowSymbol: string, collateralSymbol: string): string => {
+    return this.oracles[
+      this.vaults[MirageConfig.createVaultNameFromTokens(borrowSymbol, collateralSymbol)].borrowOracle
+    ].priceFeedId
+  }
+
+  public getVaultAddressFromTokens = (borrowSymbol: string, collateralSymbol: string): string => {
+    return this.vaults[MirageConfig.createVaultNameFromTokens(borrowSymbol, collateralSymbol)].address
   }
 }
 
