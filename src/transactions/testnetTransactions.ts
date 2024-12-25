@@ -1,6 +1,6 @@
 import { InputEntryFunctionData } from '@aptos-labs/ts-sdk'
 
-import { getModuleAddress, getPriceFeed, getPriceFeedUpdateData, MoveModules, MoveToken } from '../constants'
+import { getModuleAddress, getPriceFeedUpdateData, MoveModules } from '../constants'
 import { BaseTransactions } from './baseTransactions'
 
 export class TestnetTransactions extends BaseTransactions {
@@ -9,8 +9,8 @@ export class TestnetTransactions extends BaseTransactions {
    * @returns payload for the transaction
    */
   async claimAirdrop(): Promise<InputEntryFunctionData> {
-    const collateralFeed = getPriceFeed(MoveToken.tUSDC, this.network)
-    const borrowFeed = getPriceFeed(MoveToken.mUSD, this.network)
+    const collateralFeed = this.config.getVaultCollateralPriceFeedId('tUSDC', 'mUSD')
+    const borrowFeed = this.config.getVaultBorrowPriceFeedId('tUSDC', 'mUSD')
     const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, this.network) : []
     const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, this.network) : []
     return {

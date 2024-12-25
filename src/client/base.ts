@@ -1,4 +1,4 @@
-import { Aptos, Network } from '@aptos-labs/ts-sdk'
+import { AccountAddress, Aptos as AptosClient, Network } from '@aptos-labs/ts-sdk'
 import { Client } from 'urql'
 
 import {
@@ -13,13 +13,13 @@ export class MirageClientBase {
   protected network: Network
   protected aptosGraphqlClient: Client
   protected mirageGraphqlClient: Client
-  protected aptosClient: Aptos
+  protected aptosClient: AptosClient
   protected config: MirageConfig
 
   constructor(
     network: Network,
     config?: MirageConfig,
-    aptosClient?: Aptos,
+    aptosClient?: AptosClient,
     aptosGraphqlApiKey?: string,
     aptosGraphqlClient?: Client,
     mirageGraphqlClient?: Client,
@@ -29,5 +29,9 @@ export class MirageClientBase {
     this.aptosGraphqlClient = aptosGraphqlClient || defaultAptosGraphqlClient(network, aptosGraphqlApiKey)
     this.mirageGraphqlClient = mirageGraphqlClient || defaultMirageGraphqlClient(network)
     this.aptosClient = aptosClient || defaultAptosClient(network)
+  }
+
+  public getDeployerAddress = (): AccountAddress => {
+    return this.config.deployerAddress
   }
 }

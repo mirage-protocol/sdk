@@ -16,9 +16,9 @@ export class VaultTransactions extends BaseTransactions {
     borrowSymbol: string,
     amount: number,
   ): Promise<InputEntryFunctionData> {
-    const collateralType = this.config.tokens[collateralSymbol].coinType
+    const collateralType = this.config.getTokenCoinType(collateralSymbol)
     const collateralDecimals = this.config.tokens[collateralSymbol].decimals
-    const collectionObject = this.config.getVaultAddressFromTokens(collateralSymbol, borrowSymbol)
+    const collectionObject = this.config.getVaultAddress(collateralSymbol, borrowSymbol)
     return {
       function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, this.config.deployerAddress)}::vault_scripts::create_vault_${getFunctionSuffix(collateralType)}`,
       functionArguments: [collectionObject, getAssetAmountArgument(amount, collateralDecimals)],
@@ -32,9 +32,9 @@ export class VaultTransactions extends BaseTransactions {
     collateralAmount: number,
     borrowAmount: number,
   ): Promise<InputEntryFunctionData> {
-    const collateralType = this.config.tokens[collateralSymbol].coinType
+    const collateralType = this.config.getTokenCoinType(collateralSymbol)
     const collateralDecimals = this.config.tokens[collateralSymbol].decimals
-    const collectionObject = this.config.getVaultAddressFromTokens(collateralSymbol, borrowSymbol)
+    const collectionObject = this.config.getVaultAddress(collateralSymbol, borrowSymbol)
 
     const collateralFeed = this.config.getVaultCollateralPriceFeedId(collateralSymbol, borrowSymbol)
     const borrowFeed = this.config.getVaultBorrowPriceFeedId(collateralSymbol, borrowSymbol)
@@ -66,7 +66,7 @@ export class VaultTransactions extends BaseTransactions {
     collateralSymbol: string,
     amount: number,
   ): Promise<InputEntryFunctionData> {
-    const collateralType = this.config.tokens[collateralSymbol].coinType
+    const collateralType = this.config.getTokenCoinType(collateralSymbol)
     const collateralDecimals = this.config.tokens[collateralSymbol].decimals
 
     return {
@@ -165,7 +165,7 @@ export class VaultTransactions extends BaseTransactions {
     addAmount: number,
     borrowAmount: number,
   ): Promise<InputEntryFunctionData> {
-    const collateralType = this.config.tokens[collateralSymbol].coinType
+    const collateralType = this.config.getTokenCoinType(collateralSymbol)
     const collateralDecimals = this.config.tokens[collateralSymbol].decimals
 
     const collateralFeed = this.config.getVaultCollateralPriceFeedId(collateralSymbol, borrowSymbol)
@@ -238,7 +238,7 @@ export class VaultTransactions extends BaseTransactions {
     addAmount: number,
     repayPartAmount: number,
   ): Promise<InputEntryFunctionData> {
-    const collateralType = this.config.tokens[collateralSymbol].coinType
+    const collateralType = this.config.getTokenCoinType(collateralSymbol)
     const collateralDecimals = this.config.tokens[collateralSymbol].decimals
 
     return {
@@ -265,7 +265,7 @@ export class VaultTransactions extends BaseTransactions {
     removeAmount: number,
     borrowAmount: number,
   ): Promise<InputEntryFunctionData> {
-    const collateralDecimals = this.config.tokens[collateralSymbol].decimals
+    const collateralDecimals = this.config.getTokenDecimals(collateralSymbol)
 
     const collateralFeed = this.config.getVaultCollateralPriceFeedId(collateralSymbol, borrowSymbol)
     const borrowFeed = this.config.getVaultBorrowPriceFeedId(collateralSymbol, borrowSymbol)
@@ -324,7 +324,7 @@ export class VaultTransactions extends BaseTransactions {
   async accrueInterest(collateralSymbol: string, borrowSymbol: string): Promise<InputEntryFunctionData> {
     return {
       function: `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::vault::accrue_interest`,
-      functionArguments: [this.config.getVaultAddressFromTokens(collateralSymbol, borrowSymbol)],
+      functionArguments: [this.config.getVaultAddress(collateralSymbol, borrowSymbol)],
     }
   }
 

@@ -1,11 +1,7 @@
 {
   "deployerAddress": "0xcfd55d1a7b60b99e5a5ce4e3eec63c298b6472fc9d29d8c5cf176838199df922",
-  "markets": {
-  },
-  "vaults": {
-  },
-  "tokens": {
- },
-  "oracles": {
- }
+  "markets": [],
+  "vaults": [],
+  "tokens": [],
+  "oracles": []
 }

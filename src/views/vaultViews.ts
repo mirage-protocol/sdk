@@ -1,15 +1,7 @@
-import { AccountAddress, Aptos, InputViewFunctionData, MoveObjectType, MoveUint64Type } from '@aptos-labs/ts-sdk'
+import { AccountAddress, Aptos, MoveObjectType, MoveUint64Type } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import {
-  getAllVaultCollectionObjectAddresses,
-  getCollectionIdForVaultPair,
-  getModuleAddress,
-  MoveAsset,
-  MoveModules,
-  MoveToken,
-  PRECISION_8,
-} from '../constants'
+import { getModuleAddress, MoveModules, PRECISION_8 } from '../constants'
 import { Rebase } from '../entities'
 import {
   GetTokenIdsFromCollectionByOwnerDocument,
@@ -21,7 +13,7 @@ import { GetVaultCollectionAprDocument, GetVaultCollectionAprQueryVariables } fr
 import { BaseViews } from './baseViews'
 
 export class VaultViews extends BaseViews {
-  async getAllVaultCollections(): Promise<MoveObjectType[]> {
+  async getAllVaultCollectionsView(): Promise<MoveObjectType[]> {
     const payload = {
       function:
         `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::vault::all_vault_collections` as `${string}::${string}::${string}`,
@@ -31,7 +23,7 @@ export class VaultViews extends BaseViews {
     return result.map((value) => value.inner)
   }
 
-  async getCollateralToken(vaultObj: MoveObjectType): Promise<MoveObjectType> {
+  async getCollateralTokenView(vaultObj: MoveObjectType): Promise<MoveObjectType> {
     const payload = {
       function:
         `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::vault::collateral_token` as `${string}::${string}::${string}`,
@@ -41,7 +33,7 @@ export class VaultViews extends BaseViews {
     return result.inner
   }
 
-  async getBorrowToken(vaultObj: MoveObjectType): Promise<MoveObjectType> {
+  async getBorrowTokenView(vaultObj: MoveObjectType): Promise<MoveObjectType> {
     const payload = {
       function:
         `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::vault::borrow_token` as `${string}::${string}::${string}`,
@@ -51,7 +43,7 @@ export class VaultViews extends BaseViews {
     return result.inner
   }
 
-  async getCollateralOracle(vaultObj: MoveObjectType): Promise<MoveObjectType> {
+  async getCollateralOracleView(vaultObj: MoveObjectType): Promise<MoveObjectType> {
     const payload = {
       function:
         `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::vault::collateral_oracle` as `${string}::${string}::${string}`,
@@ -61,7 +53,7 @@ export class VaultViews extends BaseViews {
     return result.inner
   }
 
-  async getBorrowOracle(vaultObj: MoveObjectType): Promise<MoveObjectType> {
+  async getBorrowOracleView(vaultObj: MoveObjectType): Promise<MoveObjectType> {
     const payload = {
       function:
         `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::vault::borrow_oracle` as `${string}::${string}::${string}`,
@@ -71,7 +63,7 @@ export class VaultViews extends BaseViews {
     return result.inner
   }
 
-  async getVaultCollectionName(collectionObj: MoveObjectType): Promise<MoveObjectType> {
+  async getVaultCollectionNameView(collectionObj: MoveObjectType): Promise<MoveObjectType> {
     const payload = {
       function: `0x4::collection::name` as `${string}::${string}::${string}`,
       functionArguments: [collectionObj],
@@ -82,7 +74,7 @@ export class VaultViews extends BaseViews {
 
   async getAllVaultIdsByOwner(owner: string): Promise<string[]> {
     const variables: GetTokenIdsFromCollectionsByOwnerQueryVariables = {
-      COLLECTIONS: getAllVaultCollectionObjectAddresses(this.config),
+      COLLECTIONS: this.config.getAllVaultCollectionAddresses(),
       OWNER: owner,
     }
     try {
@@ -107,12 +99,12 @@ export class VaultViews extends BaseViews {
   }
 
   async getVaultTokenIdsByCollectionAndOwner(
-    collateralAsset: MoveAsset,
-    borrowToken: MoveToken,
+    collateralSymbol: string,
+    borrowSymbol: string,
     owner: string,
   ): Promise<string[]> {
     const variables: GetTokenIdsFromCollectionByOwnerQueryVariables = {
-      COLLECTION: getCollectionIdForVaultPair(collateralAsset, borrowToken, this.config),
+      COLLECTION: this.config.getVaultAddress(collateralSymbol, borrowSymbol),
       OWNER: owner,
     }
     try {
@@ -133,20 +125,6 @@ export class VaultViews extends BaseViews {
       return tokenIds
     } catch (error) {
       return []
-    }
-  }
-
-  async getBorrowTokenFromCollection(collectionObject: MoveObjectType): Promise<InputViewFunctionData> {
-    return {
-      function: `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::vault::borrow_token`,
-      functionArguments: [collectionObject],
-    }
-  }
-
-  async getCollateralTokenFromCollection(collectionObject: MoveObjectType): Promise<InputViewFunctionData> {
-    return {
-      function: `${getModuleAddress(MoveModules.MIRAGE, this.config.deployerAddress)}::vault::collateral_token`,
-      functionArguments: [collectionObject],
     }
   }
 

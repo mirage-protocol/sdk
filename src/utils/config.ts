@@ -1,4 +1,4 @@
-import { AccountAddress, Aptos, AptosConfig, MoveObjectType, Network } from '@aptos-labs/ts-sdk'
+import { AccountAddress, Aptos, AptosConfig, Network } from '@aptos-labs/ts-sdk'
 import { AuthConfig, authExchange, AuthUtilities } from '@urql/exchange-auth'
 import { cacheExchange, Client, CombinedError, createClient, errorExchange, fetchExchange, Operation } from 'urql'
 
@@ -8,42 +8,55 @@ import mirageConfigTestnet from '../../mirage_config_testnet.json'
 
 export type MarketConfig = {
   address: string
+  name: string
+  perpSymbol: string
+  marginSymbol: string
   marginOracle: string
   perpOracle: string
   marginToken: string
 }
-
-export type MarketsConfig = {
-  [market: string]: MarketConfig
-}
+export type MarketsConfig = Map<[string, string], MarketConfig>
 
 export type OracleConfig = {
+  name: string
   address: string
   priceFeedId: string
-  priceMultiplier: string
+  priceMultiplier: number
 }
 
 export type OraclesConfig = {
   [oracle: string]: OracleConfig
 }
 
-export type VaultsConfig = {
-  [vault: string]: {
-    address: string
-    collateralToken: string
-    borrowToken: string
-    collateralOracle: string
-    borrowOracle: string
-  }
+export type VaultConfig = {
+  address: string
+  name: string
+  collateralSymbol: string
+  marginSymbol: string
+  collateralOracle: string
+  borrowOracle: string
+}
+
+export type VaultsConfig = Map<[string, string], VaultConfig>
+
+export type TokenConfig = {
+  symbol: string
+  address: string
+  name: string
+  coinType: string
+  decimals: number
 }
 
 export type TokensConfig = {
-  [token: string]: {
-    address: string
-    name: string
-    coinType: string
-    decimals: number
-  }
+  [token: string]: TokenConfig
+}
+
+export type MirageJsonConfig = {
+  deployerAddress: string
+  markets: MarketConfig[]
+  vaults: VaultConfig[]
+  tokens: TokenConfig[]
+  oracles: OracleConfig[]
 }
 
 export class MirageConfig {
@@ -53,68 +66,167 @@ export class MirageConfig {
   tokens: TokensConfig
   oracles: OraclesConfig
 
-  constructor(config: {
-    deployerAddress: string
-    markets: MarketsConfig
-    vaults: VaultsConfig
-    tokens: TokensConfig
-    oracles: OraclesConfig
-  }) {
-    this.deployerAddress = AccountAddress.fromString(config.deployerAddress)
-    this.markets = config.markets
-    this.vaults = config.vaults
-    this.tokens = config.tokens
-    this.oracles = config.oracles
+  constructor(deployerAddress: string) {
+    this.deployerAddress = AccountAddress.fromString(deployerAddress)
+    this.markets = new Map()
+    this.vaults = new Map()
+    this.tokens = {}
+    this.oracles = {}
   }
 
-  public getOracleNameFromAddress = (oracleAddress: MoveObjectType): string | undefined => {
-    return Object.entries(this.oracles).find(([, oracleConfig]) => oracleConfig.address === oracleAddress)?.[0]
+  public static fromJsonConfig(jsonConfig: MirageJsonConfig): MirageConfig {
+    const config = new MirageConfig(jsonConfig.deployerAddress)
+    jsonConfig.markets.forEach((market) => config.markets.set([market.perpSymbol, market.marginSymbol], market))
+    jsonConfig.vaults.forEach((vault) => config.vaults.set([vault.collateralSymbol, vault.marginSymbol], vault))
+    jsonConfig.tokens.forEach((token) => (config.tokens[token.symbol] = token))
+    jsonConfig.oracles.forEach((oracle) => (config.oracles[oracle.name] = oracle))
+    return config
   }
 
-  public getTokenSymbolFromAddress = (tokenAddress: MoveObjectType): string | undefined => {
-    return Object.entries(this.tokens).find(([, tokenConfig]) => tokenConfig.address === tokenAddress)?.[0]
+  // oracle
+  public getAllOracles = (): string[] => {
+    return Object.keys(this.oracles)
   }
 
-  public getMarketNameSymbolFromAddress = (marketAddress: MoveObjectType): string | undefined => {
-    return Object.entries(this.markets).find(([, marketConfig]) => marketConfig.address === marketAddress)?.[0]
+  public getOracleNameFromAddress = (oracleAddress: string): string => {
+    const oracleName = Object.entries(this.oracles).find(
+      ([, oracleConfig]) => oracleConfig.address === oracleAddress,
+    )?.[0]
+    if (!oracleName) {
+      throw new Error(`oracle not found' ${oracleAddress}`)
+    }
+    return oracleName
   }
 
-  public getMarketFromAddress = (marketAddress: MoveObjectType): MarketConfig | undefined => {
-    const perpSymbol = this.getMarketNameSymbolFromAddress(marketAddress)
-    if (!perpSymbol) return undefined
-    return this.markets[perpSymbol]
+  public getOraclePriceFeedId = (oracleName: string): string => {
+    if (!this.oracles[oracleName]) {
+      throw new Error(`oracle not found' ${oracleName}`)
+    }
+    return this.oracles[oracleName].priceFeedId
   }
 
-  public getMarketAddress = (marketName: string): string => {
-    return this.markets[marketName].address
+  // token
+  public getAllTokens = (): string[] => {
+    return Object.keys(this.tokens)
   }
 
-  public getMarketMarginPriceFeedId = (marketName: string): string => {
-    return this.oracles[this.markets[marketName].marginOracle].priceFeedId
+  public getTokenSymbolFromAddress = (tokenAddress: string): string => {
+    const tokenSymbol = Object.entries(this.tokens).find(([, tokenConfig]) => tokenConfig.address === tokenAddress)?.[0]
+    if (!tokenSymbol) {
+      throw new Error(`token not found' ${tokenAddress}`)
+    }
+    return tokenSymbol
   }
 
-  public getMarketPerpPriceFeedId = (marketName: string): string => {
-    return this.oracles[this.markets[marketName].perpOracle].priceFeedId
+  public getTokenCoinType = (tokenSymbol: string): string => {
+    if (!this.tokens[tokenSymbol]) {
+      throw new Error(`token not found' ${tokenSymbol}`)
+    }
+    return this.tokens[tokenSymbol].coinType
   }
 
-  public static createVaultNameFromTokens = (borrowSymbol: string, collateralSymbol: string): string => {
-    return `${borrowSymbol}/${collateralSymbol}`
+  public getTokenAddress = (tokenSymbol: string): string => {
+    if (!this.tokens[tokenSymbol]) {
+      throw new Error(`token not found' ${tokenSymbol}`)
+    }
+    return this.tokens[tokenSymbol].address
+  }
+
+  public getTokenDecimals = (tokenSymbol: string): number => {
+    if (!this.tokens[tokenSymbol]) {
+      throw new Error(`token not found' ${tokenSymbol}`)
+    }
+    return this.tokens[tokenSymbol].decimals
+  }
+
+  public getTokenName = (tokenSymbol: string): string => {
+    if (!this.tokens[tokenSymbol]) {
+      throw new Error(`token not found' ${tokenSymbol}`)
+    }
+    return this.tokens[tokenSymbol].name
+  }
+
+  // vaults
+  public getAllVaultCollections = (): string[] => {
+    return Object.keys(this.markets)
+  }
+
+  public getAllVaultCollectionAddresses = (): string[] => {
+    return Object.values(this.vaults).map((vault) => vault.address)
+  }
+
+  public getVaultTokensFromAddress = (vaultAddress: string): { collateralSymbol: string; borrowSymbol: string } => {
+    for (const [[collateralSymbol, borrowSymbol], vaultConfig] of Object.entries(this.vaults)) {
+      if (vaultConfig.address === vaultAddress) return { collateralSymbol, borrowSymbol }
+    }
+    throw new Error(`vault not found' ${vaultAddress}`)
   }
 
   public getVaultCollateralPriceFeedId = (borrowSymbol: string, collateralSymbol: string): string => {
-    return this.oracles[
-      this.vaults[MirageConfig.createVaultNameFromTokens(borrowSymbol, collateralSymbol)].collateralOracle
-    ].priceFeedId
+    if (!this.vaults.has([borrowSymbol, collateralSymbol])) {
+      throw new Error(`vault not found' ${collateralSymbol}/${borrowSymbol}`)
+    }
+    const oracleName = this.vaults.get([borrowSymbol, collateralSymbol])!.collateralOracle
+    return this.getOraclePriceFeedId(oracleName)
   }
 
   public getVaultBorrowPriceFeedId = (borrowSymbol: string, collateralSymbol: string): string => {
-    return this.oracles[
-      this.vaults[MirageConfig.createVaultNameFromTokens(borrowSymbol, collateralSymbol)].borrowOracle
-    ].priceFeedId
+    if (!this.vaults.has([borrowSymbol, collateralSymbol])) {
+      throw new Error(`vault not found' ${collateralSymbol}/${borrowSymbol}`)
+    }
+    const oracleName = this.vaults.get([borrowSymbol, collateralSymbol])!.borrowOracle
+    return this.getOraclePriceFeedId(oracleName)
   }
 
-  public getVaultAddressFromTokens = (borrowSymbol: string, collateralSymbol: string): string => {
-    return this.vaults[MirageConfig.createVaultNameFromTokens(borrowSymbol, collateralSymbol)].address
+  public getVaultAddress = (borrowSymbol: string, collateralSymbol: string): string => {
+    if (!this.vaults.has([borrowSymbol, collateralSymbol])) {
+      throw new Error(`vault not found' ${collateralSymbol}/${borrowSymbol}`)
+    }
+    return this.vaults.get([borrowSymbol, collateralSymbol])!.address
+  }
+
+  // market
+  public getAllMarkets = (): string[] => {
+    return Object.keys(this.markets)
+  }
+
+  public marketExists = (perpSymbol: string, collateralSymbol: string): boolean => {
+    return this.markets.has([perpSymbol, collateralSymbol])
+  }
+
+  public getAllMarketAddresses = (): string[] => {
+    return Object.values(this.markets).map((market) => market.address)
+  }
+
+  public getMarketIdFromAddress = (marketAddress: string): { perpSymbol: string; marginSymbol: string } => {
+    for (const [[perpSymbol, marginSymbol], marketConfig] of Object.entries(this.markets)) {
+      if (marketConfig.address == marketAddress) return { perpSymbol, marginSymbol }
+    }
+    throw new Error(`market not found' ${marketAddress}`)
+  }
+
+  public getMarketAddress = (perpSymbol: string, marginSymbol: string): string => {
+    const market = this.markets.get([perpSymbol, marginSymbol])
+    if (!market) {
+      throw new Error(`market not found' ${perpSymbol}/${marginSymbol}`)
+    }
+    return market.address
+  }
+
+  public getMarketPerpPriceFeedId = (perpSymbol: string, marginSymbol: string): string => {
+    const market = this.markets.get([perpSymbol, marginSymbol])
+    if (!market) {
+      throw new Error(`market not found' ${perpSymbol}/${marginSymbol}`)
+    }
+    return this.getOraclePriceFeedId(market.perpOracle)
+  }
+
+  public getMarketMarginPriceFeedId = (perpSymbol: string, marginSymbol: string): string => {
+    const market = this.markets.get([perpSymbol, marginSymbol])
+    if (!market) {
+      throw new Error(`market not found' ${perpSymbol}/${marginSymbol}`)
+    }
+    return this.getOraclePriceFeedId(market.marginOracle)
   }
 }
 
@@ -126,7 +238,7 @@ export const mirageConfigFromNetwork = (network: Network | string): MirageConfig
     // case Network.CUSTOM:
     //   return new MirageConfig({ ...mirageConfigMovementTestnet })
     default:
-      return new MirageConfig({ ...mirageConfigTestnet })
+      return MirageConfig.fromJsonConfig(mirageConfigTestnet)
   }
 }
 

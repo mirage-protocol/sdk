@@ -4,7 +4,6 @@ import BigNumber from 'bignumber.js'
 import {
   EXCHANGE_RATE_PRECISION,
   getModuleAddress,
-  getPriceFeed,
   INTEREST_PRECISION,
   MoveModules,
   PERCENT_PRECISION,
@@ -12,9 +11,9 @@ import {
   SECONDS_PER_YEAR,
   ZERO,
 } from '../../constants'
-import { assetBalanceToDecimal, MoveAsset, MoveToken } from '../../constants/assetList'
+import { integerToDecimal } from '../../utils'
 import { MirageConfig } from '../../utils/config'
-import { MirageAsset } from '../mirage_asset'
+import { MirageAsset } from '../mirageAsset'
 import { Rebase } from '../rebase'
 
 /**
@@ -25,11 +24,11 @@ export class VaultCollection {
   /**
    * The collateral asset of the vault
    */
-  public readonly collateral: MoveAsset
+  public readonly collateralSymbol: string
   /**
    * The borrow asset of the vault (a mirage asset e.g. mUSD)
    */
-  public readonly borrow: MoveToken
+  public readonly borrowSymbol: string
   /**
    * The rebase representing the total borrow in the vault
    */
@@ -71,38 +70,41 @@ export class VaultCollection {
    * The percent taken as a protocol/liquidator cut during a liquidation
    */
   public readonly liquidationPercent: number
-
   /**
-   * A representation of the global mirage module
+   * The global debt
    */
   public readonly mirage: MirageAsset
-
-  public readonly priceFeeds: {
-    readonly collateral: string | undefined
-    readonly borrow: string | undefined
-  }
-
+  /**
+   * The collateral pyth price feed id
+   */
+  public readonly collateralPriceFeedId: string
+  /**
+   * The borrow pyth price feed id
+   */
+  public readonly borrowPriceFeedId: string
+  /**
+   * The vault collection object address
+   */
   public readonly objectAddress: string
 
   /**
    * Construct an instance of VaultCollection
    * @param collectionObjectResources resources from the VaultCollection account
    * @param borrowTokenObjectResources resources from the borrow token and its debt store
-   * @param collateral the collateral asset of the VaultCollection
-   * @param borrow the borrow asset of the VaultCollection
    * @param objectAddress the address of the vault collection object
+   * @param config mirage configuration
    */
   constructor(
     collectionObjectResources: MoveResource[],
     borrowTokenObjectResources: MoveResource[],
-    collateral: MoveToken | string,
-    borrow: MoveToken | string,
     objectAddress: string,
     config: MirageConfig,
   ) {
-    this.collateral = collateral as MoveToken
-    this.borrow = borrow as MoveToken
-    this.mirage = new MirageAsset(borrowTokenObjectResources, this.borrow, config)
+    const { collateralSymbol, borrowSymbol } = config.getVaultTokensFromAddress(objectAddress)
+    this.collateralSymbol = collateralSymbol
+    this.borrowSymbol = borrowSymbol
+
+    this.mirage = new MirageAsset(borrowTokenObjectResources, this.borrowSymbol, config)
     this.objectAddress = objectAddress
 
     const vaultCollectionType = `${getModuleAddress(MoveModules.MIRAGE, config.deployerAddress)}::vault::VaultCollection`
@@ -154,16 +156,15 @@ export class VaultCollection {
           )
           .div(PRECISION_8)
       : ZERO
+    const collateralDecimals = config.getTokenDecimals(this.collateralSymbol)
     this.totalCollateral = !!vaultCollection
-      ? assetBalanceToDecimal(BigNumber((vaultCollection.data as any).total_collateral), this.collateral, config)
+      ? integerToDecimal(BigNumber((vaultCollection.data as any).total_collateral), collateralDecimals)
       : ZERO
 
     this.isEmergency = !!vaultCollection ? (vaultCollection.data as any).is_emergency : false
 
-    this.priceFeeds = {
-      collateral: getPriceFeed(this.collateral),
-      borrow: getPriceFeed(this.borrow),
-    }
+    this.collateralPriceFeedId = config.getVaultCollateralPriceFeedId(this.collateralSymbol, this.borrowSymbol)
+    this.borrowPriceFeedId = config.getVaultCollateralPriceFeedId(this.collateralSymbol, this.borrowSymbol)
   }
 
   /**

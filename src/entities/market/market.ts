@@ -1,10 +1,8 @@
-import { Network } from '@aptos-labs/ts-sdk'
 import { MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import { FEE_PRECISION, getModuleAddress, MoveModules, PRECISION_8 } from '../../constants'
 import { PERCENT_PRECISION, ZERO } from '../../constants'
-import { MoveToken, Perpetual } from '../../constants/assetList'
 import { MirageConfig } from '../../utils/config'
 import { PositionSide } from './position'
 /**
@@ -14,11 +12,11 @@ export class Market {
   /**
    * The base asset of the market
    */
-  public readonly marginToken: MoveToken
+  public readonly marginSymbol: string
   /**
    * The underlying asset of the market
    */
-  public readonly perpetualAsset: Perpetual
+  public readonly perpetualSymbol: string
   /**
    * The total long margin of a market
    */
@@ -129,10 +127,6 @@ export class Market {
    * The market collection address
    */
   public readonly objectAddress: string
-  /**
-   * The current network being used
-   */
-  public readonly network: Network
 
   /**
    * Construct an instance of Market
@@ -140,59 +134,40 @@ export class Market {
    * @param marginCoin the margin asset of the market
    * @param perpetualAsset the asset being traded
    */
-  constructor(
-    marketObjectResources: MoveResource[],
-    marginCoin: MoveToken | string,
-    perpetualAsset: Perpetual | string,
-    objectAddress: string,
-    config: MirageConfig,
-    network: Network,
-  ) {
-    this.marginToken = marginCoin as MoveToken
-    this.perpetualAsset = perpetualAsset as Perpetual
+  constructor(marketObjectResources: MoveResource[], objectAddress: string, config: MirageConfig) {
+    const { marginSymbol, perpSymbol } = config.getMarketIdFromAddress(objectAddress)
+    this.marginSymbol = marginSymbol
+    this.perpetualSymbol = perpSymbol
+
     this.objectAddress = objectAddress
-    this.network = network
 
     const marketType = `${getModuleAddress(MoveModules.MIRAGE, config.deployerAddress)}::market::Market`
 
     const market = marketObjectResources.find((resource) => resource.type === marketType)
+    if (market == undefined) throw new Error('Market object not found')
 
-    this.totalLongMargin = !!market ? new BigNumber((market.data as any).totalLongMargin).div(PRECISION_8) : ZERO
-    this.totalShortMargin = !!market ? new BigNumber((market.data as any).totalShortMargin).div(PRECISION_8) : ZERO
-    this.longOpenInterest = !!market ? new BigNumber((market.data as any).long_oi).div(PRECISION_8) : ZERO
-    this.shortOpenInterest = !!market ? new BigNumber((market.data as any).short_oi).div(PRECISION_8) : ZERO
-    this.longFundingAccumulated = !!market
-      ? new BigNumber((market.data as any).long_funding_accumulated_per_unit.magnitude)
-          .times((market.data as any).long_funding_accumulated_per_unit.negative ? -1 : 1)
-          .div(FEE_PRECISION)
-          .div(PRECISION_8)
-      : ZERO
-    this.shortFundingAccumulated = !!market
-      ? new BigNumber((market.data as any).short_funding_accumulated_per_unit.magnitude)
-          .times((market.data as any).short_funding_accumulated_per_unit.negative ? -1 : 1)
-          .div(FEE_PRECISION)
-          .div(PRECISION_8)
-      : ZERO
-    this.nextFundingRate = !!market
-      ? new BigNumber((market.data as any).next_funding_rate.magnitude)
-          .times((market.data as any).next_funding_rate.negative ? -1 : 1)
-          .div(FEE_PRECISION)
-      : ZERO
-    this.lastFundingRound = !!market
-      ? new Date(new BigNumber((market.data as any).last_funding_round).times(1000).toNumber())
-      : new Date(0)
-    this.longCloseOnly = !!market ? Boolean((market.data as any).is_long_close_only) : false
-    this.shortCloseOnly = !!market ? Boolean((market.data as any).is_short_close_only) : false
+    this.totalLongMargin = new BigNumber((market.data as any).totalLongMargin).div(PRECISION_8)
+    this.totalShortMargin = new BigNumber((market.data as any).totalShortMargin).div(PRECISION_8)
+    this.longOpenInterest = new BigNumber((market.data as any).long_oi).div(PRECISION_8)
+    this.shortOpenInterest = new BigNumber((market.data as any).short_oi).div(PRECISION_8)
+    this.longFundingAccumulated = new BigNumber((market.data as any).long_funding_accumulated_per_unit.magnitude)
+      .times((market.data as any).long_funding_accumulated_per_unit.negative ? -1 : 1)
+      .div(FEE_PRECISION)
+      .div(PRECISION_8)
+    this.shortFundingAccumulated = new BigNumber((market.data as any).short_funding_accumulated_per_unit.magnitude)
+      .times((market.data as any).short_funding_accumulated_per_unit.negative ? -1 : 1)
+      .div(FEE_PRECISION)
+      .div(PRECISION_8)
+    this.nextFundingRate = new BigNumber((market.data as any).next_funding_rate.magnitude)
+      .times((market.data as any).next_funding_rate.negative ? -1 : 1)
+      .div(FEE_PRECISION)
+    this.lastFundingRound = new Date(new BigNumber((market.data as any).last_funding_round).times(1000).toNumber())
+    this.longCloseOnly = Boolean((market.data as any).is_long_close_only)
+    this.shortCloseOnly = Boolean((market.data as any).is_short_close_only)
     // fees
-    this.minTakerFee = !!market
-      ? new BigNumber((market.data as any).config.fees.min_taker_fee).div(FEE_PRECISION).toNumber()
-      : 0
-    this.maxTakerFee = !!market
-      ? new BigNumber((market.data as any).config.fees.max_taker_fee).div(FEE_PRECISION).toNumber()
-      : 0
-    this.minMakerFee = !!market
-      ? new BigNumber((market.data as any).config.fees.min_maker_fee).div(FEE_PRECISION).toNumber()
-      : 0
+    this.minTakerFee = new BigNumber((market.data as any).config.fees.min_taker_fee).div(FEE_PRECISION).toNumber()
+    this.maxTakerFee = new BigNumber((market.data as any).config.fees.max_taker_fee).div(FEE_PRECISION).toNumber()
+    this.minMakerFee = new BigNumber((market.data as any).config.fees.min_maker_fee).div(FEE_PRECISION).toNumber()
     this.maxMakerFee = !!market
       ? new BigNumber((market.data as any).config.fees.max_maker_fee).div(FEE_PRECISION).toNumber()
       : 0

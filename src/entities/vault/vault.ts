@@ -2,8 +2,7 @@ import { MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import { getModuleAddress, MoveModules, PRECISION_8, ZERO } from '../../constants'
-import { assetBalanceToDecimal, MoveAsset, MoveToken } from '../../constants/assetList'
-import { getPropertyMapSigned64, getPropertyMapU64 } from '../../utils'
+import { getPropertyMapSigned64, getPropertyMapU64, integerToDecimal } from '../../utils'
 import { MirageConfig } from '../../utils/config'
 import { VaultCollection } from './vaultCollection'
 
@@ -15,11 +14,11 @@ export class Vault {
   /**
    * The collateral asset of the vault
    */
-  public readonly collateralAsset: MoveAsset
+  public readonly collateralSymbol: string
   /**
    * The borrow token of the vault (a mirage asset e.g. mUSD)
    */
-  public readonly borrowToken: MoveToken
+  public readonly borrowSymbol: string
   /**
    * The amount of collateral deposited
    */
@@ -47,21 +46,17 @@ export class Vault {
   /**
    * Construct an instance of Vault
    * @param vaultObjectResources resources from vault token account
-   * @param collectionObjectResources resources from the VaultCollection account
-   * @param borrowTokenObjectResources resources from the borrow token and its debt store
-   * @param collateral the collateral asset of the vault
-   * @param borrow the borrow asset of the vault
+   * @param vaultCollection a vault collection entity
+   * @param objectAddress the vault object address
    */
   constructor(
     vaultObjectResources: MoveResource[],
     vaultCollection: VaultCollection,
-    collateral: MoveToken | string,
-    borrow: MoveToken | string,
     objectAddress: string,
     config: MirageConfig,
   ) {
-    this.collateralAsset = collateral as MoveToken
-    this.borrowToken = borrow as MoveToken
+    this.collateralSymbol = vaultCollection.collateralSymbol
+    this.borrowSymbol = vaultCollection.borrowSymbol
     this.vaultCollection = vaultCollection
     this.objectAddress = objectAddress
 
@@ -71,8 +66,9 @@ export class Vault {
     const vault = vaultObjectResources.find((resource) => resource.type === vaultType)
     const propertyMap = vaultObjectResources.find((resource) => resource.type === propertyMapType)
 
+    const collateralDecimals = config.getTokenDecimals(this.collateralSymbol)
     this.collateralAmount = !!vault
-      ? assetBalanceToDecimal(BigNumber((vault.data as any).collateral_amount), this.collateralAsset, config)
+      ? integerToDecimal(BigNumber((vault.data as any).collateral_amount), collateralDecimals)
       : ZERO
 
     // need to use global debt rebase
@@ -95,25 +91,6 @@ export class Vault {
       : ZERO
     this.feesPaid = !!propertyMap ? getPropertyMapU64('fees_paid', propertyMap.data as any).div(PRECISION_8) : ZERO
     this.pnl = realizedPnl.plus(lastBorrowAmount).minus(this.borrowAmount)
-
-    // const maxBorrow =
-    //   !!vault && !!this.vaultCollection
-    //     ? this.collateralAmount
-    //         .times(this.vaultCollection.exchangeRate)
-    //         .times(this.vaultCollection.initialCollateralizationPercent)
-    //         .div(100)
-    //     : ZERO
-
-    // const minCollateral =
-    //   !!vault && !!this.vaultCollection
-    //     ? this.borrowAmount
-    //         .div(this.vaultCollection.exchangeRate)
-    //         .div(this.vaultCollection.initialCollateralizationPercent)
-    //         .div(100)
-    //     : ZERO
-
-    // this.remainingBorrowable = !!vault ? maxBorrow.minus(this.borrowAmount) : ZERO
-    // this.withdrawableAmount = !!vault ? this.collateralAmount.minus(minCollateral) : ZERO
   }
 
   public getHealth(collateralPrice: BigNumber, borrowPrice: BigNumber): number {
