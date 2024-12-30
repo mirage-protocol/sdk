@@ -28,35 +28,35 @@ export class MarketViewsClient {
   }
 
   public getAllMarketAddresses = async (): Promise<MoveObjectType[]> => {
-    return allMarketAddressesView(this.base.getDeployerAddress(), this.aptosClient)
+    return allMarketAddressesView(this.aptosClient, this.base.getDeployerAddress())
   }
 
   public getMarketPerpSymbol = async (marketObjectAddress: MoveObjectType): Promise<string> => {
-    return await marketPerpSymbolView(marketObjectAddress, this.base.getDeployerAddress(), this.aptosClient)
+    return await marketPerpSymbolView(marketObjectAddress, this.aptosClient, this.base.getDeployerAddress())
   }
 
   public getMarketMarginTokenAddress = async (marketObjectAddress: MoveObjectType): Promise<string> => {
-    return await marketMarginTokenAddressView(marketObjectAddress, this.base.getDeployerAddress(), this.aptosClient)
+    return await marketMarginTokenAddressView(marketObjectAddress, this.aptosClient, this.base.getDeployerAddress())
   }
 
   public getMarketMarginSymbol = async (marketObjectAddress: MoveObjectType): Promise<string> => {
-    return await marketMarginSymbolView(marketObjectAddress, this.base.getDeployerAddress(), this.aptosClient)
+    return await marketMarginSymbolView(marketObjectAddress, this.aptosClient, this.base.getDeployerAddress())
   }
 
   public getMarketMarginOracle = async (marketObjectAddress: MoveObjectType): Promise<string> => {
-    return await marketMarginOracleView(marketObjectAddress, this.base.getDeployerAddress(), this.aptosClient)
+    return await marketMarginOracleView(marketObjectAddress, this.aptosClient, this.base.getDeployerAddress())
   }
 
   public getMarketPerpOracle = async (marketObjectAddress: MoveObjectType): Promise<string> => {
-    return await marketPerpOracleView(marketObjectAddress, this.base.getDeployerAddress(), this.aptosClient)
+    return await marketPerpOracleView(marketObjectAddress, this.aptosClient, this.base.getDeployerAddress())
   }
 
   public getIsLimitOrderTriggerable = async (limitOrderObject: MoveObjectType, perpPrice: number): Promise<boolean> => {
     return await isLimitOrderTriggerableView(
       limitOrderObject,
       perpPrice,
-      this.base.getDeployerAddress(),
       this.aptosClient,
+      this.base.getDeployerAddress(),
     )
   }
 
@@ -67,8 +67,8 @@ export class MarketViewsClient {
     return await isLimitOrderTriggerableBulkView(
       limitOrderObjectAddresses,
       perpPrice,
-      this.base.getDeployerAddress(),
       this.aptosClient,
+      this.base.getDeployerAddress(),
     )
   }
 
@@ -81,8 +81,8 @@ export class MarketViewsClient {
       positionObjectAddress,
       perpPrice,
       marginPrice,
-      this.base.getDeployerAddress(),
       this.aptosClient,
+      this.base.getDeployerAddress(),
     )
   }
 
@@ -95,8 +95,8 @@ export class MarketViewsClient {
       positionObjectAddresses,
       perpPrice,
       marginPrice,
-      this.base.getDeployerAddress(),
       this.aptosClient,
+      this.base.getDeployerAddress(),
     )
   }
 
@@ -115,8 +115,8 @@ export class MarketViewsClient {
       isLong,
       perpPrice,
       marginPrice,
-      this.base.getDeployerAddress(),
       this.aptosClient,
+      this.base.getDeployerAddress(),
     )
   }
 
@@ -129,8 +129,8 @@ export class MarketViewsClient {
       positionObjectAddress,
       perpPrice,
       marginPrice,
-      this.base.getDeployerAddress(),
       this.aptosClient,
+      this.base.getDeployerAddress(),
     )
   }
 
@@ -143,8 +143,8 @@ export class MarketViewsClient {
       positionObjectAddress,
       perpPrice,
       marginPrice,
-      this.base.getDeployerAddress(),
       this.aptosClient,
+      this.base.getDeployerAddress(),
     )
   }
 }

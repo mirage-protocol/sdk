@@ -3,6 +3,7 @@ import { HexString } from 'aptos'
 import BigNumber from 'bignumber.js'
 
 export * from './config'
+export * from './configBuilder'
 export * from './constants'
 export * from './modules'
 export * from './network'

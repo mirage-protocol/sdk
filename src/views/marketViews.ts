@@ -23,8 +23,8 @@ export type AllPositionInfo = {
 }
 
 export const allMarketAddressesView = async (
-  deployerAddress: AccountAddress,
   aptosClient: AptosClient,
+  deployerAddress: AccountAddress,
 ): Promise<MoveObjectType[]> => {
   const payload = {
     function:
@@ -37,8 +37,8 @@ export const allMarketAddressesView = async (
 
 export const marketPerpSymbolView = async (
   marketObjectAddress: MoveObjectType,
-  deployerAddress: AccountAddress,
   aptosClient: AptosClient,
+  deployerAddress: AccountAddress,
 ): Promise<string> => {
   const payload = {
     function:
@@ -50,8 +50,8 @@ export const marketPerpSymbolView = async (
 
 export const marketMarginOracleView = async (
   marketObjectAddress: MoveObjectType,
-  deployerAddress: AccountAddress,
   aptosClient: AptosClient,
+  deployerAddress: AccountAddress,
 ): Promise<string> => {
   const payload = {
     function:
@@ -64,8 +64,8 @@ export const marketMarginOracleView = async (
 
 export const marketPerpOracleView = async (
   marketObjectAddress: MoveObjectType,
-  deployerAddress: AccountAddress,
   aptosClient: AptosClient,
+  deployerAddress: AccountAddress,
 ): Promise<string> => {
   const payload = {
     function:
@@ -78,8 +78,8 @@ export const marketPerpOracleView = async (
 
 export const marketMarginTokenAddressView = async (
   marketObjectAddress: MoveObjectType,
-  deployerAddress: AccountAddress,
   aptosClient: AptosClient,
+  deployerAddress: AccountAddress,
 ): Promise<string> => {
   const payload = {
     function:
@@ -92,10 +92,10 @@ export const marketMarginTokenAddressView = async (
 
 export const marketMarginSymbolView = async (
   marketObjectAddress: MoveObjectType,
-  deployerAddress: AccountAddress,
   aptosClient: AptosClient,
+  deployerAddress: AccountAddress,
 ): Promise<string> => {
-  const metadataAddress = await marketMarginTokenAddressView(marketObjectAddress, deployerAddress, aptosClient)
+  const metadataAddress = await marketMarginTokenAddressView(marketObjectAddress, aptosClient, deployerAddress)
   const payload = {
     function: `0x1::fungible_asset::symbol` as `${string}::${string}::${string}`,
     functionArguments: [metadataAddress],
@@ -108,8 +108,8 @@ export const marketMarginSymbolView = async (
 export const isLimitOrderTriggerableView = async (
   limitOrderObject: MoveObjectType,
   perpPrice: number,
-  deployerAddress: AccountAddress,
   aptosClient: AptosClient,
+  deployerAddress: AccountAddress,
 ): Promise<boolean> => {
   const payload = {
     function:
@@ -123,8 +123,8 @@ export const isLimitOrderTriggerableView = async (
 export const isLimitOrderTriggerableBulkView = async (
   limitOrderObjectAddresses: MoveObjectType[],
   perpPrice: number,
-  deployerAddress: AccountAddress,
   aptosClient: AptosClient,
+  deployerAddress: AccountAddress,
 ): Promise<boolean[]> => {
   const payload = {
     function:
@@ -139,8 +139,8 @@ export const liquidationPriceView = async (
   positionObjectAddress: MoveObjectType,
   perpPrice: number,
   marginPrice: number,
-  deployerAddress: AccountAddress,
   aptosClient: AptosClient,
+  deployerAddress: AccountAddress,
 ): Promise<number> => {
   const payload = {
     function:
@@ -157,8 +157,8 @@ export const liquidationPriceBulkView = async (
   positionObjectAddresses: MoveObjectType[],
   perpPrice: number,
   marginPrice: number,
-  deployerAddress: AccountAddress,
   aptosClient: AptosClient,
+  deployerAddress: AccountAddress,
 ): Promise<number[]> => {
   const payload = {
     function:
@@ -186,8 +186,8 @@ export const estimateFeeView = async (
   isLong: boolean,
   perpPrice: number,
   marginPrice: number,
-  deployerAddress: AccountAddress,
   aptosClient: AptosClient,
+  deployerAddress: AccountAddress,
 ): Promise<number> => {
   const payload = {
     function:
@@ -210,8 +210,8 @@ export const positionMaintenanceMarginMusdView = async (
   positionObjectAddress: MoveObjectType,
   perpPrice: number,
   marginPrice: number,
-  deployerAddress: AccountAddress,
   aptosClient: AptosClient,
+  deployerAddress: AccountAddress,
 ): Promise<number> => {
   const payload = {
     function:
@@ -228,8 +228,8 @@ export const allPositionInfoView = async (
   positionObjectAddress: MoveObjectType,
   perpPrice: number,
   marginPrice: number,
-  deployerAddress: AccountAddress,
   aptosClient: AptosClient,
+  deployerAddress: AccountAddress,
 ): Promise<AllPositionInfo> => {
   const payload = {
     function:

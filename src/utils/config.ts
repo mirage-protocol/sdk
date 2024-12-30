@@ -58,7 +58,7 @@ export type VaultConfig = {
   address: string
   name: string
   collateralSymbol: string
-  marginSymbol: string
+  borrowSymbol: string
   collateralOracle: string
   borrowOracle: string
 }
@@ -106,7 +106,7 @@ export class MirageConfig {
   public static fromJsonConfig(jsonConfig: MirageJsonConfig): MirageConfig {
     const config = new MirageConfig(jsonConfig.chainId, jsonConfig.deployerAddress)
     jsonConfig.markets.forEach((market) => config.markets.set([market.perpSymbol, market.marginSymbol], market))
-    jsonConfig.vaults.forEach((vault) => config.vaults.set([vault.collateralSymbol, vault.marginSymbol], vault))
+    jsonConfig.vaults.forEach((vault) => config.vaults.set([vault.collateralSymbol, vault.borrowSymbol], vault))
     jsonConfig.tokens.forEach((token) => (config.fungibleAssets[token.symbol] = token))
     jsonConfig.oracles.forEach((oracle) => (config.oracles[oracle.name] = oracle))
     return config
