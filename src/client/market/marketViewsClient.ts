@@ -51,10 +51,7 @@ export class MarketViewsClient {
     return await marketPerpOracleView(marketObjectAddress, this.base.getDeployerAddress(), this.aptosClient)
   }
 
-  public getIsLimitOrderTriggerable = async (
-    limitOrderObject: MoveObjectType,
-    perpPrice: number,
-  ): Promise<boolean> => {
+  public getIsLimitOrderTriggerable = async (limitOrderObject: MoveObjectType, perpPrice: number): Promise<boolean> => {
     return await isLimitOrderTriggerableView(
       limitOrderObject,
       perpPrice,

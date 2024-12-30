@@ -1,9 +1,8 @@
-import { MoveResource } from '@aptos-labs/ts-sdk'
+import { AccountAddress, MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { getModuleAddress, MoveModules, PRECISION_8, ZERO } from '../../constants'
-import { getPropertyMapSigned64, getPropertyMapU64, integerToDecimal } from '../../utils'
-import { MirageConfig } from '../../utils/config'
+import { getModuleAddress, integerToDecimal, MoveModules, PRECISION_8 } from '../../utils'
+import { getPropertyMapSigned64, getPropertyMapU64 } from '../../utils'
 import { VaultCollection } from './vaultCollection'
 
 /**
@@ -11,14 +10,6 @@ import { VaultCollection } from './vaultCollection'
  * Stores info about a vault's deposits and borrows
  */
 export class Vault {
-  /**
-   * The collateral asset of the vault
-   */
-  public readonly collateralSymbol: string
-  /**
-   * The borrow token of the vault (a mirage asset e.g. mUSD)
-   */
-  public readonly borrowSymbol: string
   /**
    * The amount of collateral deposited
    */
@@ -53,43 +44,37 @@ export class Vault {
     vaultObjectResources: MoveResource[],
     vaultCollection: VaultCollection,
     objectAddress: string,
-    config: MirageConfig,
+    deployerAddress: AccountAddress,
   ) {
-    this.collateralSymbol = vaultCollection.collateralSymbol
-    this.borrowSymbol = vaultCollection.borrowSymbol
     this.vaultCollection = vaultCollection
     this.objectAddress = objectAddress
 
-    const vaultType = `${getModuleAddress(MoveModules.MIRAGE, config.deployerAddress)}::vault::Vault`
+    const vaultType = `${getModuleAddress(MoveModules.MIRAGE, deployerAddress)}::vault::Vault`
     const propertyMapType = `0x4::property_map::PropertyMap`
 
     const vault = vaultObjectResources.find((resource) => resource.type === vaultType)
-    const propertyMap = vaultObjectResources.find((resource) => resource.type === propertyMapType)
+    if (vault == undefined) throw new Error('Vault object not found')
 
-    const collateralDecimals = config.getTokenDecimals(this.collateralSymbol)
-    this.collateralAmount = !!vault
-      ? integerToDecimal(BigNumber((vault.data as any).collateral_amount), collateralDecimals)
-      : ZERO
+    const propertyMap = vaultObjectResources.find((resource) => resource.type === propertyMapType)
+    if (propertyMap == undefined) throw new Error('PropertyMap object not found')
+
+    this.collateralAmount = integerToDecimal(
+      BigNumber((vault.data as any).collateral_amount),
+      this.vaultCollection.collateralDecimals,
+    )
 
     // need to use global debt rebase
-    this.borrowAmount =
-      !!vault && !!this.vaultCollection
-        ? this.vaultCollection.mirage.debtRebase.toElastic(
-            this.vaultCollection.borrowRebase.toElastic(
-              new BigNumber((vault.data as any).borrow_part.amount).div(PRECISION_8),
-              true,
-            ),
-            false,
-          )
-        : ZERO
+    this.borrowAmount = this.vaultCollection.mirage.debtRebase.toElastic(
+      this.vaultCollection.borrowRebase.toElastic(
+        new BigNumber((vault.data as any).borrow_part.amount).div(PRECISION_8),
+        true,
+      ),
+      false,
+    )
 
-    const realizedPnl = !!propertyMap
-      ? getPropertyMapSigned64('realized_pnl', propertyMap.data as any).div(PRECISION_8)
-      : ZERO
-    const lastBorrowAmount = !!propertyMap
-      ? getPropertyMapU64('last_borrow_amount', propertyMap.data as any).div(PRECISION_8)
-      : ZERO
-    this.feesPaid = !!propertyMap ? getPropertyMapU64('fees_paid', propertyMap.data as any).div(PRECISION_8) : ZERO
+    const realizedPnl = getPropertyMapSigned64('realized_pnl', propertyMap.data as any).div(PRECISION_8)
+    const lastBorrowAmount = getPropertyMapU64('last_borrow_amount', propertyMap.data as any).div(PRECISION_8)
+    this.feesPaid = getPropertyMapU64('fees_paid', propertyMap.data as any).div(PRECISION_8)
     this.pnl = realizedPnl.plus(lastBorrowAmount).minus(this.borrowAmount)
   }
 

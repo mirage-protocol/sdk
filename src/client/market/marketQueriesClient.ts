@@ -12,12 +12,12 @@ export class MarketQueriesClient {
     this.aptosGqlClient = aptosGqlClient
   }
 
-  public queryOwnedPositionAddresses = async (owner: string): Promise<string[]> => {
+  public getOwnedPositionAddresses = async (owner: string): Promise<string[]> => {
     const allMarketAddresses = this.base.getAllMarketAddresses()
     return await allPositionByOwnerQuery(owner, allMarketAddresses, this.aptosGqlClient)
   }
 
-  public queryOwnedPositionAddressesByMarket = async (
+  public getOwnedPositionAddressesByMarket = async (
     perpSymbol: string,
     marginSymbol: string,
     owner: string,

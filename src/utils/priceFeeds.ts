@@ -1,8 +1,6 @@
-import { Network } from '@aptos-labs/ts-sdk'
 import { Price } from '@pythnetwork/pyth-aptos-js'
+import { AptosPriceServiceConnection as PythClient } from '@pythnetwork/pyth-aptos-js'
 import BigNumber from 'bignumber.js'
-
-import { getNetwork, pythClient } from '../constants/network'
 
 /**
  * Gets a priceFeed update data promise from Pyth
@@ -10,23 +8,20 @@ import { getNetwork, pythClient } from '../constants/network'
  * @param network the network, default mainnet
  * @returns the update data promise
  */
-export const getPriceFeedUpdateData = async (
-  priceFeedId: string,
-  network: Network | string = Network.MAINNET,
-): Promise<number[]> => {
+export const getPriceFeedUpdateData = async (priceFeedId: string, pythClient: PythClient): Promise<number[]> => {
   if (!priceFeedId) return []
   try {
     console.debug('Attempting to get pyth vaas')
-    const updateData = await pythClient(getNetwork(network)).getPriceFeedsUpdateData([priceFeedId])
+    const updateData = await pythClient.getPriceFeedsUpdateData([priceFeedId])
     return updateData ? updateData[0] : []
   } catch (e) {
     return []
   }
 }
 
-export const getPrice = async (priceFeedId: string, network: Network | string = Network.MAINNET): Promise<number> => {
+export const getPrice = async (priceFeedId: string, pythClient: PythClient): Promise<number> => {
   if (!priceFeedId) return 0
-  const response = await pythClient(getNetwork(network)).getLatestPriceFeeds([priceFeedId])
+  const response = await pythClient.getLatestPriceFeeds([priceFeedId])
   if (response == undefined || response?.length == 0) return 0
   return getContractPrice(response[0].getPriceUnchecked())
 }

@@ -2,7 +2,6 @@ import { AccountAddress, Aptos as AptosClient, MoveObjectType, MoveUint64Type } 
 import BigNumber from 'bignumber.js'
 import { Client as GqlClient } from 'urql'
 
-import { getModuleAddress, MoveModules, PRECISION_8 } from '../constants'
 import {
   GetTokenIdsFromCollectionByOwnerDocument,
   GetTokenIdsFromCollectionByOwnerQueryVariables,
@@ -10,6 +9,7 @@ import {
   GetTokenIdsFromCollectionsByOwnerQueryVariables,
 } from '../generated/aptos/graphql'
 import { getDecimal8Argument } from '../transactions'
+import { getModuleAddress, MoveModules, PRECISION_8 } from '../utils'
 
 export type AllPositionInfo = {
   marketObjectAddress: string

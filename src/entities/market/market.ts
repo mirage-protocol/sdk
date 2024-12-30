@@ -1,22 +1,12 @@
-import { MoveResource } from '@aptos-labs/ts-sdk'
+import { AccountAddress, MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { FEE_PRECISION, getModuleAddress, MoveModules, PRECISION_8 } from '../../constants'
-import { PERCENT_PRECISION, ZERO } from '../../constants'
-import { MirageConfig } from '../../utils/config'
+import { FEE_PRECISION, getModuleAddress, MoveModules, PERCENT_PRECISION, PRECISION_8, ZERO } from '../../utils'
 import { PositionSide } from './position'
 /**
  * Represents a mirage-protocol perpetuals market.
  */
 export class Market {
-  /**
-   * The base asset of the market
-   */
-  public readonly marginSymbol: string
-  /**
-   * The underlying asset of the market
-   */
-  public readonly perpetualSymbol: string
   /**
    * The total long margin of a market
    */
@@ -134,14 +124,10 @@ export class Market {
    * @param marginCoin the margin asset of the market
    * @param perpetualAsset the asset being traded
    */
-  constructor(marketObjectResources: MoveResource[], objectAddress: string, config: MirageConfig) {
-    const { marginSymbol, perpSymbol } = config.getMarketIdFromAddress(objectAddress)
-    this.marginSymbol = marginSymbol
-    this.perpetualSymbol = perpSymbol
-
+  constructor(marketObjectResources: MoveResource[], objectAddress: string, deployerAddress: AccountAddress) {
     this.objectAddress = objectAddress
 
-    const marketType = `${getModuleAddress(MoveModules.MIRAGE, config.deployerAddress)}::market::Market`
+    const marketType = `${getModuleAddress(MoveModules.MIRAGE, deployerAddress)}::market::Market`
 
     const market = marketObjectResources.find((resource) => resource.type === marketType)
     if (market == undefined) throw new Error('Market object not found')

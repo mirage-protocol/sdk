@@ -1,6 +1,5 @@
 import { InputEntryFunctionData, MoveObjectType } from '@aptos-labs/ts-sdk'
 
-import { U64_MAX } from '../../constants'
 import { OrderType, PositionSide } from '../../entities'
 import {
   createAndOpenPositionPayload,
@@ -26,6 +25,7 @@ import {
   createTriggerTpslPayload,
   createUpdateTpslPayload,
 } from '../../transactions'
+import { U64_MAX } from '../../utils'
 import { MarketClientBase } from './marketClientBase'
 
 export class MarketTransactionClient {
@@ -47,14 +47,14 @@ export class MarketTransactionClient {
     maxPriceSlippage: number,
     expiration = BigInt(U64_MAX),
   ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getMarketPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
     switch (orderType) {
       case OrderType.MARKET: {
         if (expiration != BigInt(U64_MAX)) {
           throw new Error(`Market orders don't support expiration`)
         }
 
-        const marginVaas = await this.base.getMarketMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+        const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
         return createOpenPositionPayload(
           positionObjectAddress,
           perpVaas,
@@ -115,13 +115,13 @@ export class MarketTransactionClient {
     expiration = BigInt(U64_MAX),
   ): Promise<InputEntryFunctionData> => {
     const marketAddress = this.base.getMarketAddress(perpSymbol, marginSymbol)
-    const perpVaas = await this.base.getMarketPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
     switch (orderType) {
       case OrderType.MARKET: {
         if (expiration != BigInt(U64_MAX)) {
           throw new Error(`Market orders don't support expiration`)
         }
-        const marginVaas = await this.base.getMarketMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+        const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
         return createAndOpenPositionPayload(
           marketAddress,
           perpVaas,
@@ -182,8 +182,8 @@ export class MarketTransactionClient {
     stopLossPrice: number,
   ): Promise<InputEntryFunctionData> => {
     const marketAddress = this.base.getMarketAddress(perpSymbol, marginSymbol)
-    const perpVaas = await this.base.getMarketPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarketMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
     return createOpenPositionWithTpslPayload(
       marketAddress,
       perpVaas,
@@ -205,8 +205,8 @@ export class MarketTransactionClient {
     positionObjectAddress: MoveObjectType,
     increaseMarginAmount: number,
   ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getMarketPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarketMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
     return createIncreaseMarginPayload(
       positionObjectAddress,
       perpVaas,
@@ -222,8 +222,8 @@ export class MarketTransactionClient {
     positionObjectAddress: MoveObjectType,
     decreaseMarginAmount: number,
   ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getMarketPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarketMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
     return createIncreaseMarginPayload(
       positionObjectAddress,
       perpVaas,
@@ -239,8 +239,8 @@ export class MarketTransactionClient {
     positionObjectAddress: MoveObjectType,
     positionSizeIncrease: number,
   ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getMarketPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarketMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
     return createIncreasePositionSizePayload(
       positionObjectAddress,
       perpVaas,
@@ -256,8 +256,8 @@ export class MarketTransactionClient {
     positionObjectAddress: MoveObjectType,
     decreasePositionSize: number,
   ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getMarketPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarketMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
     return createDecreasePositionSizePayload(
       positionObjectAddress,
       perpVaas,
@@ -272,8 +272,8 @@ export class MarketTransactionClient {
     marginSymbol: string,
     positionObjectAddress: MoveObjectType,
   ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getMarketPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarketMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
     return createClosePositionPayload(positionObjectAddress, perpVaas, marginVaas, this.base.getDeployerAddress())
   }
 
@@ -292,7 +292,7 @@ export class MarketTransactionClient {
     takeProfitPrice: number,
     stopLossPrice: number,
   ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getMarketPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
     return createPlaceTpslPayload(
       positionObjectAddress,
       perpVaas,
@@ -313,7 +313,7 @@ export class MarketTransactionClient {
     takeProfitPrice: number,
     stopLossPrice: number,
   ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getMarketPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
     return createUpdateTpslPayload(
       tpslObjectAddress,
       perpVaas,
@@ -347,8 +347,8 @@ export class MarketTransactionClient {
     positionObjectAddress: MoveObjectType,
     positionSizeIncrease: number,
   ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getMarketPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarketMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
     return createIncreaseMarginPayload(
       positionObjectAddress,
       perpVaas,
@@ -364,8 +364,8 @@ export class MarketTransactionClient {
     positionObjectAddress: MoveObjectType,
     decreasePositionSize: number,
   ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getMarketPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarketMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
     return createDecreasePositionSizePayload(
       positionObjectAddress,
       perpVaas,
@@ -381,8 +381,8 @@ export class MarketTransactionClient {
     limitOrderObjectAddress: MoveObjectType,
     triggererAddress: string,
   ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getMarketPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarketMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
     return createTriggerLimitOrderPayload(
       limitOrderObjectAddress,
       perpVaas,
@@ -398,8 +398,8 @@ export class MarketTransactionClient {
     tpslObjectAddress: MoveObjectType,
     triggererAddress: string,
   ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getMarketPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarketMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
     return createTriggerTpslPayload(
       tpslObjectAddress,
       perpVaas,
@@ -415,9 +415,9 @@ export class MarketTransactionClient {
     positionObjectAddress: MoveObjectType,
     triggererAddress: string,
   ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getMarketPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
 
-    const marginVaas = await this.base.getMarketMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
     return createLiquidatePositionPayload(
       positionObjectAddress,
       perpVaas,
@@ -433,8 +433,8 @@ export class MarketTransactionClient {
     positionSizeIncrease: number,
     marginAmountIncrease: number,
   ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getMarketPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarketMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
     return createIncreaseSizeAndIncreaseMarginPayload(
       positionObjectAddress,
       perpVaas,
@@ -456,8 +456,8 @@ export class MarketTransactionClient {
     positionSizeIncrease: number,
     marginAmountDecrease: number,
   ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getMarketPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarketMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
     return createIncreaseSizeAndDecreaseMarginPayload(
       positionObjectAddress,
       perpVaas,
@@ -479,8 +479,8 @@ export class MarketTransactionClient {
     positionSizeDecrease: number,
     marginAmountDecrease: number,
   ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getMarketPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarketMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
     return createDecreaseSizeAndDecreaseMarginPayload(
       positionObjectAddress,
       perpVaas,
@@ -502,8 +502,8 @@ export class MarketTransactionClient {
     positionSizeDecrease: number,
     marginAmountIncrease: number,
   ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getMarketPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarketMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
     return createDecreaseSizeAndIncreaseMarginPayload(
       positionObjectAddress,
       perpVaas,

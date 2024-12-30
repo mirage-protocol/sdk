@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-import { PRECISION_8 } from '../constants'
+import { PRECISION_8 } from '../utils'
 
 // Get the proper payload amount
 export const getAssetAmountArgument = (amount: number, decimals: number): string => {
@@ -13,8 +13,7 @@ export const getDecimal8Argument = (amount: number): string => {
   return BigNumber(PRECISION_8).times(amount).toFixed(0)
 }
 
-export * from './baseTransactions'
 export * from './marketTransactions'
-export * from './referralTransactions'
 export * from './testnetTransactions'
+export * from './userProfileTransactions'
 export * from './vaultTransactions'

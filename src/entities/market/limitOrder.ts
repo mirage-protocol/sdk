@@ -1,36 +1,26 @@
-import { MoveResource } from '@aptos-labs/ts-sdk'
+import { AccountAddress, MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { getModuleAddress, MoveModules, PRECISION_8, U64_MAX } from '../../constants'
-import { MirageConfig } from '../../utils'
+import { getModuleAddress, MoveModules, PRECISION_8, U64_MAX } from '../../utils'
 import { PositionSide } from './position'
 
 /**
  * LimitOrder struct data
  */
 export type LimitOrderData = {
-  is_long: boolean
   is_decrease_only: boolean
-  position_size: BigNumber
-  margin_amount: BigNumber
+  position_size: string
+  is_long: boolean
   trigger_price: BigNumber
   triggers_above: boolean
-  max_price_slippage: BigNumber
-  expiration: number
+  max_price_slippage: string
+  expiration: string
 }
 
 /**
  * Represents a LimitOrder struct
  */
 export class LimitOrder {
-  /**
-   * The base asset of the market
-   */
-  public readonly marginSymbol: string
-  /**
-   * The underlying asset of the market
-   */
-  public readonly perpSymbol: string
   /**
    * The side of the order
    */
@@ -67,41 +57,36 @@ export class LimitOrder {
    */
   public readonly expiration: bigint
 
+  public readonly marketObjectAddress: string
+  public readonly positionObjectAddress: string
   public readonly objectAddress: string
 
   /**
    * Construct a LimitOrder instance
    * @param limitOrderData the data to parse
    */
-  constructor(
-    limitOrderResources: MoveResource[],
-    marginSymbol: string,
-    perpSymbol: string,
-    objectAddress: string,
-    config: MirageConfig,
-  ) {
-    this.marginSymbol = marginSymbol
-    this.perpSymbol = perpSymbol
-
+  constructor(limitOrderResources: MoveResource[], objectAddress: string, deployerAddress: AccountAddress) {
     this.objectAddress = objectAddress
 
-    const limitOrderType = `${getModuleAddress(MoveModules.MARKET, config.deployerAddress)}::limit_order::LimitOrder`
-    const limitOrder = limitOrderResources.find((resource) => resource.type === limitOrderType)
-    if (limitOrder == undefined) throw new Error('LimitOrder object not found')
-    const strategyType = `${getModuleAddress(MoveModules.MARKET, config.deployerAddress)}::market::Strategy`
+    const limitOrderType = `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::limit_order::LimitOrder`
+    const findLimitOrder = limitOrderResources.find((resource) => resource.type === limitOrderType)
+    if (findLimitOrder == undefined) throw new Error('LimitOrder object not found')
+    const limitOrder = findLimitOrder.data as LimitOrderData
+    const strategyType = `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::market::Strategy`
     const strategy = limitOrderResources.find((resource) => resource.type === strategyType)
     if (strategy == undefined) throw new Error('Strategy object not found')
 
-    this.side = Boolean((limitOrder.data as any).is_long).valueOf() ? PositionSide.LONG : PositionSide.SHORT
-    this.isDecreaseOnly = Boolean((limitOrder.data as any).is_decrease_only)
-    this.positionSize = BigNumber((limitOrder.data as any).position_size).div(PRECISION_8)
-    this.positionSize = BigNumber((limitOrder.data as any).trigger_price).div(PRECISION_8)
-    this.triggersAbove = Boolean((limitOrder.data as any).triggers_above)
-    this.triggerPrice = BigNumber((limitOrder.data as any).trigger_price).div(PRECISION_8)
-    this.maxPriceSlippage = BigNumber((limitOrder.data as any).maxPriceSlippage).div(PRECISION_8)
-    this.expiration = BigInt((limitOrder.data as any).expiration)
+    this.side = Boolean(limitOrder.is_long).valueOf() ? PositionSide.LONG : PositionSide.SHORT
+    this.isDecreaseOnly = limitOrder.is_decrease_only
+    this.positionSize = BigNumber(limitOrder.position_size).div(PRECISION_8)
+    this.triggersAbove = Boolean(limitOrder.triggers_above)
+    this.triggerPrice = BigNumber(limitOrder.trigger_price).div(PRECISION_8)
+    this.maxPriceSlippage = BigNumber(limitOrder.max_price_slippage).div(PRECISION_8)
+    this.expiration = BigInt(limitOrder.expiration)
 
     this.margin = BigNumber((strategy.data as any).strategy_margin_amount).div(PRECISION_8)
+    this.positionObjectAddress = (strategy.data as any).position.inner as string
+    this.marketObjectAddress = (strategy.data as any).market.inner as string
   }
 
   // Good-til-cancelled expiration (U64_MAX)

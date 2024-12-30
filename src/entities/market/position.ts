@@ -1,17 +1,17 @@
-import { MoveResource } from '@aptos-labs/ts-sdk'
+import { AccountAddress, MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import {
   FEE_PRECISION,
   getModuleAddress,
+  getPropertyMapSigned64,
+  getPropertyMapU64,
   MoveModules,
   PERCENT_PRECISION,
   PRECISION_8,
   U64_MAX,
   ZERO,
-} from '../../constants'
-import { getPropertyMapSigned64, getPropertyMapU64 } from '../../utils'
-import { MirageConfig } from '../../utils/config'
+} from '../../utils'
 import { Market } from './market'
 
 /**
@@ -99,11 +99,16 @@ export class Position {
    * @param objectAddress the address of the vault collection object
    * @param config the mirage config
    */
-  constructor(positionObjectResources: MoveResource[], market: Market, objectAddress: string, config: MirageConfig) {
+  constructor(
+    positionObjectResources: MoveResource[],
+    market: Market,
+    objectAddress: string,
+    deployerAddress: AccountAddress,
+  ) {
     this.objectAddress = objectAddress
     this.market = market
 
-    const positionType = `${getModuleAddress(MoveModules.MIRAGE, config.deployerAddress)}::market::Position`
+    const positionType = `${getModuleAddress(MoveModules.MIRAGE, deployerAddress)}::market::Position`
     const tokenIdsType = '0x4::token::TokenIdentifiers'
     const propertyMapType = `0x4::property_map::PropertyMap`
 

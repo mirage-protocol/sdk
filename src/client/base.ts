@@ -1,34 +1,57 @@
-import { AccountAddress, Aptos as AptosClient, Network } from '@aptos-labs/ts-sdk'
-import { Client } from 'urql'
+import { AccountAddress, Aptos as AptosClient, AptosConfig } from '@aptos-labs/ts-sdk'
+import { AptosPriceServiceConnection as PythClient } from '@pythnetwork/pyth-aptos-js'
+import { Client as GqlClient } from 'urql'
 
+import { createGraphqlClient, createGraphqlClientWithUri, createPythClient } from '../utils'
 import {
-  defaultAptosClient,
-  defaultAptosGraphqlClient,
-  defaultMirageGraphqlClient,
+  getDefaultFullnodeUrl,
+  getDefaultIndexerUrl,
+  getDefaultMirageIndexerUrl,
+  getDefaultPythUrl,
+  getDeploymentByChainId,
+  MirageClientOptions,
   MirageConfig,
-  mirageConfigFromNetwork,
 } from '../utils/config'
 
 export class MirageClientBase {
-  protected network: Network
-  protected aptosGraphqlClient: Client
-  protected mirageGraphqlClient: Client
-  protected aptosClient: AptosClient
   protected config: MirageConfig
+  protected aptosClient: AptosClient
+  protected aptosGqlClient: GqlClient
+  protected mirageGqlClient: GqlClient
+  protected pythClient: PythClient
 
-  constructor(
-    network: Network,
-    config?: MirageConfig,
-    aptosClient?: AptosClient,
-    aptosGraphqlApiKey?: string,
-    aptosGraphqlClient?: Client,
-    mirageGraphqlClient?: Client,
-  ) {
-    this.network = network
-    this.config = config || mirageConfigFromNetwork(network)
-    this.aptosGraphqlClient = aptosGraphqlClient || defaultAptosGraphqlClient(network, aptosGraphqlApiKey)
-    this.mirageGraphqlClient = mirageGraphqlClient || defaultMirageGraphqlClient(network)
-    this.aptosClient = aptosClient || defaultAptosClient(network)
+  constructor(config: MirageConfig, options?: MirageClientOptions) {
+    if (!options) {
+      options = {}
+    }
+    if (!options.fullnodeUrl) {
+      const deployment = getDeploymentByChainId(config.chainId)
+      options.fullnodeUrl = getDefaultFullnodeUrl(deployment)
+    }
+    if (!options.indexerUrl) {
+      const deployment = getDeploymentByChainId(config.chainId)
+      options.indexerUrl = getDefaultIndexerUrl(deployment)
+    }
+    if (!options.mirageIndexerUrl) {
+      const deployment = getDeploymentByChainId(config.chainId)
+      options.mirageIndexerUrl = getDefaultMirageIndexerUrl(deployment)
+    }
+    if (!options.pythUrl) {
+      const deployment = getDeploymentByChainId(config.chainId)
+      options.pythUrl = getDefaultPythUrl(deployment)
+    }
+
+    this.config = config
+    this.aptosClient = new AptosClient(
+      new AptosConfig({
+        fullnode: options.fullnodeUrl,
+        indexer: options.indexerUrl,
+        clientConfig: { API_KEY: options.aptosApiKey },
+      }),
+    )
+    this.aptosGqlClient = createGraphqlClientWithUri(options.indexerUrl, options.aptosApiKey)
+    this.mirageGqlClient = createGraphqlClient(options.mirageIndexerUrl)
+    this.pythClient = createPythClient(options.pythUrl!)
   }
 
   public getDeployerAddress = (): AccountAddress => {

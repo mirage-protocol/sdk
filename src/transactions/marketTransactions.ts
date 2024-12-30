@@ -1,7 +1,7 @@
 import { AccountAddress, InputEntryFunctionData, MoveObjectType } from '@aptos-labs/ts-sdk'
 
-import { getModuleAddress, MoveModules } from '../constants'
 import { PositionSide } from '../entities'
+import { getModuleAddress, MoveModules } from '../utils'
 import { getDecimal8Argument } from './'
 
 /**

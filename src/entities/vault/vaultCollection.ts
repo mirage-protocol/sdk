@@ -1,4 +1,4 @@
-import { MoveResource } from '@aptos-labs/ts-sdk'
+import { AccountAddress, MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import {
@@ -9,10 +9,8 @@ import {
   PERCENT_PRECISION,
   PRECISION_8,
   SECONDS_PER_YEAR,
-  ZERO,
-} from '../../constants'
+} from '../../utils'
 import { integerToDecimal } from '../../utils'
-import { MirageConfig } from '../../utils/config'
 import { MirageAsset } from '../mirageAsset'
 import { Rebase } from '../rebase'
 
@@ -24,11 +22,19 @@ export class VaultCollection {
   /**
    * The collateral asset of the vault
    */
-  public readonly collateralSymbol: string
+  public readonly collateralAddress: string
+  /**
+   * The borrow asset of the vault (a mirage asset e.g. mUSD)
+   */
+  public readonly borrowAddress: string
   /**
    * The borrow asset of the vault (a mirage asset e.g. mUSD)
    */
   public readonly borrowSymbol: string
+  /**
+   * The collateral asset of the vault (a mirage asset e.g. mUSD)
+   */
+  public readonly collateralSymbol: string
   /**
    * The rebase representing the total borrow in the vault
    */
@@ -77,11 +83,12 @@ export class VaultCollection {
   /**
    * The collateral pyth price feed id
    */
-  public readonly collateralPriceFeedId: string
+  public readonly collateralOracleAddress: string
   /**
    * The borrow pyth price feed id
    */
-  public readonly borrowPriceFeedId: string
+  public readonly borrowOracleAddress: string
+  public readonly collateralDecimals: number
   /**
    * The vault collection object address
    */
@@ -98,73 +105,65 @@ export class VaultCollection {
     collectionObjectResources: MoveResource[],
     borrowTokenObjectResources: MoveResource[],
     objectAddress: string,
-    config: MirageConfig,
+    collateralSymbol: string,
+    collateralDecimals: number,
+    deployerAddress: AccountAddress,
   ) {
-    const { collateralSymbol, borrowSymbol } = config.getVaultTokensFromAddress(objectAddress)
-    this.collateralSymbol = collateralSymbol
-    this.borrowSymbol = borrowSymbol
-
-    this.mirage = new MirageAsset(borrowTokenObjectResources, this.borrowSymbol, config)
+    this.mirage = new MirageAsset(borrowTokenObjectResources, deployerAddress)
     this.objectAddress = objectAddress
 
-    const vaultCollectionType = `${getModuleAddress(MoveModules.MIRAGE, config.deployerAddress)}::vault::VaultCollection`
+    const vaultCollectionType = `${getModuleAddress(MoveModules.MIRAGE, deployerAddress)}::vault::VaultCollection`
     const vaultCollection = collectionObjectResources.find((resource) => resource.type === vaultCollectionType)
+    if (vaultCollection == undefined) throw new Error('Vault object not found')
 
-    this.borrowFeePercent = !!vaultCollection
-      ? BigNumber((vaultCollection.data as any).config.borrow_fee)
-          .div(PERCENT_PRECISION)
-          .times(100)
-          .toNumber()
-      : 0
-    this.interestPerSecond = !!vaultCollection
-      ? BigNumber((vaultCollection.data as any).config.interest_per_second).div(INTEREST_PRECISION)
-      : ZERO
-    this.initialCollateralizationPercent = !!vaultCollection
-      ? BigNumber((vaultCollection.data as any).config.initial_collateralization_rate)
-          .div(PERCENT_PRECISION)
-          .times(100)
-          .toNumber()
-      : 0
-    this.maintenanceCollateralizationPercent = !!vaultCollection
-      ? BigNumber((vaultCollection.data as any).config.maintenance_collateralization_rate)
-          .div(PERCENT_PRECISION)
-          .times(100)
-          .toNumber()
-      : 0
-    this.liquidationPercent = !!vaultCollection
-      ? BigNumber((vaultCollection.data as any).config.liquidation_multiplier)
-          .div(PERCENT_PRECISION)
-          .times(100)
-          .toNumber()
-      : 0
+    this.collateralAddress = (vaultCollection.data as any).collateral.inner as string
+    this.borrowAddress = (vaultCollection.data as any).borrow.inner as string
+    this.borrowSymbol = this.mirage.symbol
+    this.collateralSymbol = collateralSymbol
+    this.collateralDecimals = collateralDecimals
 
-    this.exchangeRate = !!vaultCollection
-      ? BigNumber((vaultCollection.data as any).cached_exchange_rate).div(EXCHANGE_RATE_PRECISION)
-      : ZERO
+    this.borrowFeePercent = BigNumber((vaultCollection.data as any).config.borrow_fee)
+      .div(PERCENT_PRECISION)
+      .times(100)
+      .toNumber()
+    this.interestPerSecond = BigNumber((vaultCollection.data as any).config.interest_per_second).div(INTEREST_PRECISION)
+    this.initialCollateralizationPercent = BigNumber(
+      (vaultCollection.data as any).config.initial_collateralization_rate,
+    )
+      .div(PERCENT_PRECISION)
+      .times(100)
+      .toNumber()
+    this.maintenanceCollateralizationPercent = BigNumber(
+      (vaultCollection.data as any).config.maintenance_collateralization_rate,
+    )
+      .div(PERCENT_PRECISION)
+      .times(100)
+      .toNumber()
+    this.liquidationPercent = BigNumber((vaultCollection.data as any).config.liquidation_multiplier)
+      .div(PERCENT_PRECISION)
+      .times(100)
+      .toNumber()
 
-    this.borrowRebase = !!vaultCollection
-      ? new Rebase(
-          BigNumber((vaultCollection.data as any).borrow.elastic).div(PRECISION_8),
-          BigNumber((vaultCollection.data as any).borrow.base).div(PRECISION_8),
-        )
-      : new Rebase(ZERO, ZERO)
-    this.totalBorrow = !!vaultCollection
-      ? this.borrowRebase
-          .toElastic(
-            this.mirage.debtRebase.toElastic(BigNumber((vaultCollection.data as any).global_debt_part.amount), false),
-            true,
-          )
-          .div(PRECISION_8)
-      : ZERO
-    const collateralDecimals = config.getTokenDecimals(this.collateralSymbol)
-    this.totalCollateral = !!vaultCollection
-      ? integerToDecimal(BigNumber((vaultCollection.data as any).total_collateral), collateralDecimals)
-      : ZERO
+    this.exchangeRate = BigNumber((vaultCollection.data as any).cached_exchange_rate).div(EXCHANGE_RATE_PRECISION)
 
-    this.isEmergency = !!vaultCollection ? (vaultCollection.data as any).is_emergency : false
+    this.borrowRebase = new Rebase(
+      BigNumber((vaultCollection.data as any).borrow.elastic).div(PRECISION_8),
+      BigNumber((vaultCollection.data as any).borrow.base).div(PRECISION_8),
+    )
+    this.totalBorrow = this.borrowRebase
+      .toElastic(
+        this.mirage.debtRebase.toElastic(BigNumber((vaultCollection.data as any).global_debt_part.amount), false),
+        true,
+      )
+      .div(PRECISION_8)
 
-    this.collateralPriceFeedId = config.getVaultCollateralPriceFeedId(this.collateralSymbol, this.borrowSymbol)
-    this.borrowPriceFeedId = config.getVaultCollateralPriceFeedId(this.collateralSymbol, this.borrowSymbol)
+    this.totalCollateral = integerToDecimal(
+      BigNumber((vaultCollection.data as any).total_collateral),
+      this.collateralDecimals,
+    )
+    this.isEmergency = (vaultCollection.data as any).is_emergency
+    this.collateralOracleAddress = (vaultCollection.data as any).collateralOracle.inner.address
+    this.borrowOracleAddress = (vaultCollection.data as any).borrowOracle.inner.address
   }
 
   /**

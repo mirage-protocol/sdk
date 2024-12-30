@@ -8,5 +8,5 @@ export class MarketClient extends MarketClientBase {
   public readonly transactions = new MarketTransactionClient(this)
   public readonly views = new MarketViewsClient(this, this.aptosClient)
   public readonly entities = new MarketEntitiesClient(this.config)
-  public readonly queries = new MarketQueriesClient(this, this.aptosGraphqlClient)
+  public readonly queries = new MarketQueriesClient(this, this.aptosGqlClient)
 }
