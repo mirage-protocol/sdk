@@ -23,6 +23,29 @@ export const createVaultPayload = (
   }
 }
 
+export const createVaultAndBorrowPayload = (
+  collectionObjectAddress: MoveObjectType,
+  collateralAmount: number,
+  borrowAmount: number,
+  collateralCoinType: string,
+  collateralDecimals: number,
+  collateralVaas: number[],
+  borrowVaas: number[],
+  deployerAddress: AccountAddress,
+): InputEntryFunctionData => {
+  return {
+    function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::vault_scripts::create_vault_and_borrow${getFunctionSuffix(collateralCoinType)}`,
+    functionArguments: [
+      collectionObjectAddress,
+      getAssetAmountArgument(collateralAmount, collateralDecimals),
+      getDecimal8Argument(borrowAmount),
+      collateralVaas,
+      borrowVaas,
+    ],
+    typeArguments: collateralCoinType ? [collateralCoinType] : [],
+  }
+}
+
 /**
  * Build a payload to add collateral to a vault
  * @param vaultObject the address of the vault to interact with

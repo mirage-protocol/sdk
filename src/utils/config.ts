@@ -121,6 +121,7 @@ export class MirageConfig {
     if (options.deployment) {
       this.deployment = options.deployment
     } else {
+      // default to aptos testnet
       this.deployment = Deployment.APTOS_TESTNET
     }
 

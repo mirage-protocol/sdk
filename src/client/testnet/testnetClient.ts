@@ -3,13 +3,16 @@ import { InputEntryFunctionData } from '@aptos-labs/ts-sdk'
 import { createClaimAirdropPayload } from '../../transactions'
 import { MirageClientBase } from '../base'
 import { VaultClient } from '../vaults/vaultClient'
+import { TestnetViewsClient } from './testnetViewsClient'
 
 export class TestnetClient extends MirageClientBase {
-  vaults: VaultClient
+  private readonly vaults: VaultClient
+  public readonly views: TestnetViewsClient
 
   constructor(vaults: VaultClient, ...params: ConstructorParameters<typeof MirageClientBase>) {
     super(...params)
     this.vaults = vaults
+    this.views = new TestnetViewsClient(this, this.aptosClient)
   }
 
   getClaimAirdropPayload = async (): Promise<InputEntryFunctionData> => {

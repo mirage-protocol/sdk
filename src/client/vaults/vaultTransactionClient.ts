@@ -9,7 +9,9 @@ import {
   createLiquidateVaultWithPartPayload,
   createMergeVaultsPaylaod,
   createRemoveCollateralAndBorrow,
+  createRemoveCollateralPayload,
   createRepayDebtPartPayload,
+  createVaultAndBorrowPayload,
   createVaultPayload,
 } from '../../transactions'
 import { VaultClientBase } from './vaultClientBase'
@@ -34,6 +36,31 @@ export class VaultTransactionClient {
       collateralAmount,
       collateralCoinType,
       collateralDecimals,
+      this.base.getDeployerAddress(),
+    )
+  }
+
+  public getCreateVaultAndBorrowPayload = async (
+    collateralSymbol: string,
+    borrowSymbol: string,
+    collateralAmount: number,
+    borrowAmount: number,
+  ): Promise<InputEntryFunctionData> => {
+    const collectionAddress = this.base.getVaultCollectionAddress(collateralSymbol, borrowSymbol)
+    const collateralCoinType = this.base.getCollateralCoinType(collateralSymbol)
+    const collateralDecimals = this.base.getCollateralCoinDecimals(collateralSymbol)
+
+    const collateralVaas = await this.base.getCollateralPriceFeedUpdate(collateralSymbol, borrowSymbol)
+    const borrowVaas = await this.base.getBorrowPriceFeedUpdate(collateralSymbol, borrowSymbol)
+
+    return createVaultAndBorrowPayload(
+      collectionAddress,
+      collateralAmount,
+      borrowAmount,
+      collateralCoinType,
+      collateralDecimals,
+      collateralVaas,
+      borrowVaas,
       this.base.getDeployerAddress(),
     )
   }
@@ -80,7 +107,7 @@ export class VaultTransactionClient {
     const collateralVaas = await this.base.getCollateralPriceFeedUpdate(collateralSymbol, borrowSymbol)
     const borrowVaas = await this.base.getBorrowPriceFeedUpdate(collateralSymbol, borrowSymbol)
     const collateralDecimals = this.base.getCollateralCoinDecimals(collateralSymbol)
-    return createBorrowPayload(
+    return createRemoveCollateralPayload(
       vaultObjectAddress,
       removeAmount,
       collateralVaas,

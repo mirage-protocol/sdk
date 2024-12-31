@@ -1847,7 +1847,6 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:^7.12.0"
     "@typescript-eslint/parser": "npm:^7.12.0"
     "@urql/exchange-auth": "npm:^2.2.0"
-    aptos: "npm:^1.21.0"
     axios: "npm:^1.6.8"
     bignumber.js: "npm:9.1.2"
     eslint: "npm:^8.57.0"
@@ -2562,7 +2561,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aptos@npm:^1.21.0, aptos@npm:^1.3.14":
+"aptos@npm:^1.3.14":
   version: 1.21.0
   resolution: "aptos@npm:1.21.0"
   dependencies:

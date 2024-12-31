@@ -3,7 +3,7 @@ import { Aptos as AptosClient } from '@aptos-labs/ts-sdk'
 import { numberOfClaimsAvailableView, timeUntilNextClaimView } from '../../views'
 import { MirageClientBase } from '../base'
 
-export class MarketViewsClient {
+export class TestnetViewsClient {
   private readonly base: MirageClientBase
   private readonly aptosClient: AptosClient
 
