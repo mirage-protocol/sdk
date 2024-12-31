@@ -39,7 +39,7 @@ export const buildMirageConfig = async (
     deployerAddress: deployerAddress.toString(),
     vaults: [],
     oracles: [],
-    tokens: [],
+    fungibleAssets: [],
     markets: [],
   }
 
@@ -111,7 +111,7 @@ export const buildMirageConfig = async (
   }
 
   const addTokenConfig = async (tokenObj: MoveObjectType): Promise<void> => {
-    const [coinTypeResult, tokenSymbol, tokenNameResult, decimalsResult] = await Promise.all([
+    const [coinTypeResult, faSymbol, faNameResult, faDecimalsResult] = await Promise.all([
       aptosClient.view({ payload: getPairedCoinPayload(tokenObj) }),
       aptosClient.view({ payload: getFaSymbolPayload(tokenObj) }),
       aptosClient.view({ payload: getFaNamePayload(tokenObj) }),
@@ -122,10 +122,10 @@ export const buildMirageConfig = async (
     ).vec
     const coinType = coinTypeParsed.length > 0 ? parseEncodedStruct(coinTypeParsed[0]) : ''
 
-    const tokenSymbolParsed = tokenSymbol[0] as string
-    const tokenNameParsed = tokenNameResult[0] as string
-    const decimalsParsed = BigNumber(decimalsResult[0] as string).toNumber()
-    config.tokens[tokenSymbolParsed] = {
+    const tokenSymbolParsed = faSymbol[0] as string
+    const tokenNameParsed = faNameResult[0] as string
+    const decimalsParsed = BigNumber(faDecimalsResult[0] as string).toNumber()
+    config.fungibleAssets[tokenSymbolParsed] = {
       coinType,
       address: tokenObj,
       decimals: decimalsParsed,
@@ -143,8 +143,8 @@ export const buildMirageConfig = async (
       borrowOracleView(vaultObj, aptosClient, deployerAddress),
     ])
 
-    const hasBorrowSymbol = !!config.tokens.find((token) => token.address == borrowTokenObj)
-    const hasCollateralSymbol = !!config.tokens.find((token) => token.address == collateralTokenObj)
+    const hasBorrowSymbol = !!config.fungibleAssets.find((fa) => fa.address == borrowTokenObj)
+    const hasCollateralSymbol = !!config.fungibleAssets.find((fa) => fa.address == collateralTokenObj)
 
     if (!hasBorrowSymbol) {
       await addTokenConfig(borrowTokenObj)
@@ -153,8 +153,8 @@ export const buildMirageConfig = async (
       await addTokenConfig(collateralTokenObj)
     }
 
-    const borrow = config.tokens.find((token) => token.address == borrowTokenObj)!
-    const collateral = config.tokens.find((token) => token.address == collateralTokenObj)!
+    const borrow = config.fungibleAssets.find((fa) => fa.address == borrowTokenObj)!
+    const collateral = config.fungibleAssets.find((fa) => fa.address == collateralTokenObj)!
 
     const borrowOracle = config.oracles.find((oracle) => oracle.address == borrowOracleObj)!
     const collateralOracle = config.oracles.find((oracle) => oracle.address == collateralOracleObj)!

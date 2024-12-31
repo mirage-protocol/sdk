@@ -1,4 +1,4 @@
-import { MirageClientOptions, MirageConfig } from '../utils/config'
+import { MirageConfig } from '../utils/config'
 import { FungibleAssetClient } from './fungibleAsset/fungibleAssetClient'
 import { MarketClient } from './market/marketClient'
 import { OracleClient } from './oracle/oracleClient'
@@ -15,8 +15,8 @@ export class MirageClient {
   testnet: TestnetClient
   userProfile: UserProfileClient
 
-  constructor(config: MirageConfig, options?: MirageClientOptions) {
-    const params = [config, options] as const
+  constructor(config: MirageConfig) {
+    const params = [config] as const
 
     this.fungibleAsset = new FungibleAssetClient(...params)
     this.oracles = new OracleClient(...params)

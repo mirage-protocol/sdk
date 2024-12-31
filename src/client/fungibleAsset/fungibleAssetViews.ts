@@ -12,6 +12,7 @@ export class FungibleAssetViewsClient {
     this.base = base
     this.aptosClient = aptosClient
   }
+
   public getUserAssetBalance = async (tokenSymbol: string, userAddress: string): Promise<BigNumber> => {
     const tokenMetadataAddress = this.base.getFAMetadataAddress(tokenSymbol)
     const coinType = this.base.getFACoinType(tokenSymbol)

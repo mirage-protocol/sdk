@@ -1,39 +1,8 @@
 {
+  "chainId": 177,
   "deployerAddress": "0xcfd55d1a7b60b99e5a5ce4e3eec63c298b6472fc9d29d8c5cf176838199df922",
-  "markets": {
-    "mUSD": {
-      "PEPE1000PERP": "0xde89b23e866a1c71f07b765adb5362371e5ea2f7b13bca89b9e4ba2b4e37c6e",
-      "APTPERP": "0xe879a2697b7713d7ba07b7b9d9a6c1ccfd92afca04ee7bd6edbd98004d902130",
-      "ARBPERP": "0x724ea5853e66a448ed949d25aa8ff20fede3eee696644588de99c03779ef80b9",
-      "AVAXPERP": "0x64d397e72fa13f512109a81b81fd4ec66f56ab096828ebfafa611df61c9fa628",
-      "BTCPERP": "0x9171b5cfbe8f8c5aa415b4e1de85f0c61621f5ca1ee37ab804ea49718ce51216",
-      "DOGEPERP": "0x3ba6407edafdb735de8aeada3a01386df856f40f0ced14f81812b73d2141357b",
-      "ETHPERP": "0x1c587a3f91d50a652a9f67d98dfe993a92a509b7ddb17434e24175da05f82bc5",
-      "EURPERP": "0xfbd4b9591b368cab26233ac3cd5746d92457807f9acf843020e22472dae410fe",
-      "GBPPERP": "0xd44efba148e9f4b34a8b392f7c6de33db3acffbaba8a204c63149f9f6856a9d0",
-      "MKRPERP": "0xc6fb286f90167e3d0f6afec847bdb2375ed957bc158b1fef9b24a1e41d21aef",
-      "MNTPERP": "0x7e2c485735ba138261f84b288168a653c057cfb39e769c33658069b03bb17e5",
-      "OPPERP": "0xecb295015d19a562eb02ca4b972a371e9e9f6e4062e5e7ad6e16357a2b9cf35a",
-      "PYTHPERP": "0x55b9a2edbc1f71e26d86bf526638eee3007a75cc06d12b1bda6cc34ae578a706",
-      "SOLPERP": "0xa642f10bfbf2a7a29cb0a62f86988dfe2861a3ed6c9504b3c3e88686ced73431",
-      "STXPERP": "0xa873088bdd227174c421c5a632acfd0526784208177d1046e2282514da862717",
-      "SUIPERP": "0xf8dee0382735c0140cb7637705399996517643088f213b41882d32b8c4e56061",
-      "WIFPERP": "0x98f83587b585c143e4c6394294483376c794f2d9d8bc75416fd00fb49bb92a94",
-      "XAGPERP": "0xd36858fcf4eeb074d7c7ec2279ffd4c9e4e54581aaa746163cc29c0c3f0ca630",
-      "XAUPERP": "0xcb2bda775bb4045b9772077a64219de6b1fe8fbbab3cf72b9a512d6011f5d98"
-    }
-  },
-  "vaults": {
-    "APT": {
-      "mUSD": "0x3d5f4e753e116a85eb1c9b0af6a9a4afb6d87770df3c9ff793406d08dfc10463"
-    },
-    "tUSDC": {
-      "mUSD": "0x8e5e101dbfbf7851967458bc28f130f8ba47a922cfce0dd6eb50a43905a1439e"
-    }
-  },
-  "tokens": {
-    "mUSD": "0x1b26862db1cef089a3acdd5c5edde68ca988417889a5728bb22e8299b44f5dce",
-    "APT": "0xd2445af16dae8a537b04015300de7cb91c4ca7c6e3c3154b8ba39cc59978d2a3",
-    "tUSDC": "0xd239b34857fa31d041e5c207f9ed52a66015eafb2296c7bfffce77c9da800db7"
-  }
+  "markets": [],
+  "vaults": [],
+  "fungibleAssets": [],
+  "oracles": []
 }
