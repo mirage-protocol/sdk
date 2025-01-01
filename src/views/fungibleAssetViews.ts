@@ -7,17 +7,18 @@ import { getModuleAddress, MoveModules } from '../utils'
 export const userAssetBalanceView = async (
   userAddress: string,
   tokenMetadataAddress: string,
-  coinType: `${string}::${string}::${string}`,
+  coinType: `${string}::${string}::${string}` | undefined,
   tokenDecimals: number,
   aptosClient: AptosClient,
 ): Promise<BigNumber> => {
-  const balance = BigNumber(
-    await aptosClient.getAccountCoinAmount({
-      accountAddress: userAddress,
-      coinType,
-      faMetadataAddress: tokenMetadataAddress,
-    }),
-  )
+  const result =
+      await aptosClient.getAccountCoinAmount({
+        accountAddress: userAddress,
+        coinType,
+        faMetadataAddress: tokenMetadataAddress,
+      })!
+
+  const balance = BigNumber(result)
   return integerToDecimal(balance, tokenDecimals)
 }
 

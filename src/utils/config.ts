@@ -48,7 +48,6 @@ export type NetworkConfig = {
 }
 
 export type MarketConfig = {
-  chainId: number
   address: string
   name: string
   perpSymbol: string
@@ -85,7 +84,7 @@ export type FungibleAssetConfig = {
   symbol: string
   address: string
   name: string
-  coinType: `${string}::${string}::${string}`
+  coinType?: string
   decimals: number
 }
 

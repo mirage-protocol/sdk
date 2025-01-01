@@ -1,6 +1,8 @@
 {
-  "deployerAddress": "0xcfd55d1a7b60b99e5a5ce4e3eec63c298b6472fc9d29d8c5cf176838199df922",
-  "markets": {},
-  "vaults": {},
-  "tokens": {}
+  "chainId": 177,
+  "deployerAddress": "0x0",
+  "markets": [],
+  "vaults": [],
+  "fungibleAssets": [],
+  "oracles": []
 }

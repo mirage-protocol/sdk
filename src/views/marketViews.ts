@@ -48,6 +48,18 @@ export const marketPerpSymbolView = async (
   return (await aptosClient.view({ payload }))[0] as MoveObjectType
 }
 
+export const marketNameView = async (
+  marketObjectAddress: MoveObjectType,
+  aptosClient: AptosClient,
+): Promise<MoveObjectType> => {
+  const payload = {
+    function: `0x4::collection::name` as `${string}::${string}::${string}`,
+    functionArguments: [marketObjectAddress],
+    typeArguments: ['0x4::collection::Collection'],
+  }
+  return (await aptosClient.view({ payload }))[0] as string
+}
+
 export const marketMarginOracleView = async (
   marketObjectAddress: MoveObjectType,
   aptosClient: AptosClient,

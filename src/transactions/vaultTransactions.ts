@@ -5,14 +5,14 @@ import { getAssetAmountArgument, getDecimal8Argument } from './'
 
 // const type = 'entry_function_payload'
 
-const getFunctionSuffix = (coinType: string): string => {
+const getFunctionSuffix = (coinType: string | undefined): string => {
   return coinType ? 'entry' : 'coin_entry'
 }
 
 export const createVaultPayload = (
   collectionObjectAddress: MoveObjectType,
   collateralAmount: number,
-  collateralCoinType: string,
+  collateralCoinType: string | undefined,
   collateralDecimals: number,
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {
@@ -27,7 +27,7 @@ export const createVaultAndBorrowPayload = (
   collectionObjectAddress: MoveObjectType,
   collateralAmount: number,
   borrowAmount: number,
-  collateralCoinType: string,
+  collateralCoinType: string | undefined,
   collateralDecimals: number,
   collateralVaas: number[],
   borrowVaas: number[],
@@ -56,7 +56,7 @@ export const createVaultAndBorrowPayload = (
 export const createAddCollateralPayload = (
   vaultObjectAddress: MoveObjectType,
   collateralAmount: number,
-  collateralCoinType: string,
+  collateralCoinType: string | undefined,
   collateralDecimals: number,
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {
@@ -150,7 +150,7 @@ export const createAddCollateralAndBorrowPayload = (
   borrowAmount: number,
   collateralVaas: number[],
   borrowVaas: number[],
-  collateralCoinType: string,
+  collateralCoinType: string | undefined,
   collateralDecimals: number,
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {
@@ -210,7 +210,7 @@ export const createAddCollateralAndRepayDebt = (
   vaultObjectAddress: MoveObjectType,
   addAmount: number,
   repayPartAmount: number,
-  collateralCoinType: string,
+  collateralCoinType: string | undefined,
   collateralDecimals: number,
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {

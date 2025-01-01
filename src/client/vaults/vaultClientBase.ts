@@ -68,7 +68,7 @@ export class VaultClientBase extends MirageClientBase {
     return await this.oracles.getPriceFeedUpdateData(borrowOracle)
   }
 
-  public getCollateralCoinType = (collateralSymbol: string): string => {
+  public getCollateralCoinType = (collateralSymbol: string): string | undefined => {
     return this.fungibleAssets.getFACoinType(collateralSymbol)
   }
 

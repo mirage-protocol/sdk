@@ -18,6 +18,7 @@ import {
   collateralTokenView,
   marketMarginOracleView,
   marketMarginSymbolView,
+  marketNameView,
   marketPerpOracleView,
   marketPerpSymbolView,
   oracleNameView,
@@ -62,20 +63,23 @@ export const buildMirageConfig = async (
 
   const allMarkets = await allMarketAddressesView(aptosClient, deployerAddress)
   for (const marketObj of allMarkets) {
-    const [perpSymbol, marginOracleObj, perpOracleObj, marginSymbol] = await Promise.all([
+    const [perpSymbol, marginOracleObj, perpOracleObj, marginSymbol, marketName] = await Promise.all([
       marketPerpSymbolView(marketObj, aptosClient, deployerAddress),
       marketMarginOracleView(marketObj, aptosClient, deployerAddress),
       marketPerpOracleView(marketObj, aptosClient, deployerAddress),
       marketMarginSymbolView(marketObj, aptosClient, deployerAddress),
+      marketNameView(marketObj, aptosClient)
     ])
     const marginOracle = config.oracles.find((oracle) => oracle.address == marginOracleObj)!
     const perpOracle = config.oracles.find((oracle) => oracle.address == perpOracleObj)!
-    config.markets[perpSymbol] = {
+    config.markets.push({
       address: marketObj,
-      marginOracle,
-      perpOracle,
-      marginToken: marginSymbol,
-    }
+      marginOracle: marginOracle.name,
+      perpOracle: perpOracle.name,
+      perpSymbol,
+      marginSymbol,
+      name: marketName
+    })
   }
   console.log('market count', Object.keys(config.markets).length)
 
@@ -120,17 +124,18 @@ export const buildMirageConfig = async (
     const coinTypeParsed = (
       coinTypeResult[0] as { vec: { account_address: string; module_name: string; struct_name: string }[] }
     ).vec
-    const coinType = coinTypeParsed.length > 0 ? parseEncodedStruct(coinTypeParsed[0]) : ''
+    const coinType = coinTypeParsed.length > 0 ? parseEncodedStruct(coinTypeParsed[0]) as `${string}::${string}::${string}` : undefined
 
     const tokenSymbolParsed = faSymbol[0] as string
     const tokenNameParsed = faNameResult[0] as string
     const decimalsParsed = BigNumber(faDecimalsResult[0] as string).toNumber()
-    config.fungibleAssets[tokenSymbolParsed] = {
+    config.fungibleAssets.push({
       coinType,
       address: tokenObj,
       decimals: decimalsParsed,
       name: tokenNameParsed,
-    }
+      symbol: tokenSymbolParsed
+    })
   }
 
   const allVaults = await allVaultCollectionsView(aptosClient, deployerAddress)
@@ -152,12 +157,18 @@ export const buildMirageConfig = async (
     if (!hasCollateralSymbol) {
       await addTokenConfig(collateralTokenObj)
     }
+    console.log(config.fungibleAssets)
+    console.log(borrowTokenObj)
+    console.log(collateralTokenObj)
 
     const borrow = config.fungibleAssets.find((fa) => fa.address == borrowTokenObj)!
     const collateral = config.fungibleAssets.find((fa) => fa.address == collateralTokenObj)!
 
     const borrowOracle = config.oracles.find((oracle) => oracle.address == borrowOracleObj)!
     const collateralOracle = config.oracles.find((oracle) => oracle.address == collateralOracleObj)!
+
+    console.log(collateral)
+    console.log(borrow)
 
     config.vaults.push({
       name: vaultName,

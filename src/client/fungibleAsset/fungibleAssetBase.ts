@@ -23,8 +23,9 @@ export class FungibleAssetBase extends MirageClientBase {
     return this.getFA(tokenSymbol).decimals
   }
 
-  getFACoinType(tokenSymbol: string): `${string}::${string}::${string}` {
-    return this.getFA(tokenSymbol).coinType
+  getFACoinType(tokenSymbol: string): `${string}::${string}::${string}` | undefined {
+    const type = this.getFA(tokenSymbol).coinType
+    return type ? (type as `${string}::${string}::${string}`) : undefined
   }
 
   getFAName(tokenSymbol: string): string {
