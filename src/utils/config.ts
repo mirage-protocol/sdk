@@ -56,7 +56,7 @@ export type MarketConfig = {
   perpOracle: string
 }
 
-export type MarketsConfig = Map<[string, string], MarketConfig>
+export type MarketsConfig = Map<string, MarketConfig>
 
 export type OracleConfig = {
   name: string
@@ -78,7 +78,7 @@ export type VaultConfig = {
   borrowOracle: string
 }
 
-export type VaultsConfig = Map<[string, string], VaultConfig>
+export type VaultsConfig = Map<string, VaultConfig>
 
 export type FungibleAssetConfig = {
   symbol: string
@@ -135,8 +135,11 @@ export class MirageConfig {
       config = options.customConfig
     } else if (this.deployment == Deployment.APTOS_TESTNET) {
       config = mirage_config_testnet
-    } else {
+    } else if (this.deployment == Deployment.MOVEMENT_PORTO) {
       config = mirage_config_movement_testnet
+    } else {
+      console.warn(`unrecognized deployment ${this.deployment}, defaulting to mirage testnet config`)
+      config = mirage_config_testnet
     }
 
     this.chainId = config.chainId
@@ -146,8 +149,8 @@ export class MirageConfig {
     this.fungibleAssets = {}
     this.oracles = {}
 
-    config.markets.forEach((market) => this.markets.set([market.perpSymbol, market.marginSymbol], market))
-    config.vaults.forEach((vault) => this.vaults.set([vault.collateralSymbol, vault.borrowSymbol], vault))
+    config.markets.forEach((market) => this.markets.set(market.name, market))
+    config.vaults.forEach((vault) => this.vaults.set(vault.name, vault))
     config.fungibleAssets.forEach((token) => (this.fungibleAssets[token.symbol] = token))
     config.oracles.forEach((oracle) => (this.oracles[oracle.name] = oracle))
   }

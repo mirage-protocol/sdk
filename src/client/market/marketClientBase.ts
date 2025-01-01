@@ -1,21 +1,25 @@
-import { MarketConfig } from '../../utils'
+import { MarketConfig, MirageConfig } from '../../utils'
 import { MirageClientBase } from '../base'
 import { OracleClient } from '../oracle/oracleClient'
 
 export class MarketClientBase extends MirageClientBase {
   private readonly oracles: OracleClient
 
-  constructor(oracleClient: OracleClient, ...params: ConstructorParameters<typeof MirageClientBase>) {
-    super(...params)
+  constructor(oracleClient: OracleClient, config: MirageConfig) {
+    super(config)
     this.oracles = oracleClient
   }
 
+  public static createMarketName = (perpSymbol: string, collateralSymbol: string): string => {
+    return `${perpSymbol}/${collateralSymbol}`
+  }
+
   public marketExists = (perpSymbol: string, collateralSymbol: string): boolean => {
-    return this.config.markets.has([perpSymbol, collateralSymbol])
+    return this.config.markets.has(MarketClientBase.createMarketName(perpSymbol, collateralSymbol))
   }
 
   public getMarket = (perpSymbol: string, marginSymbol: string): MarketConfig => {
-    const market = this.config.markets.get([perpSymbol, marginSymbol])
+    const market = this.config.markets.get(MarketClientBase.createMarketName(perpSymbol, marginSymbol))
     if (!market) {
       throw new Error(`market not found' ${perpSymbol}/${marginSymbol}`)
     }
@@ -31,8 +35,8 @@ export class MarketClientBase extends MirageClientBase {
   }
 
   public getMarketIdFromAddress = (marketAddress: string): { perpSymbol: string; marginSymbol: string } => {
-    for (const [[perpSymbol, marginSymbol], marketConfig] of Object.entries(this.config.markets)) {
-      if (marketConfig.address == marketAddress) return { perpSymbol, marginSymbol }
+    for (const [_, marketConfig] of Object.entries(this.config.markets)) {
+      if (marketConfig.address == marketAddress) return { perpSymbol: marketConfig.perpSymbol, marginSymbol: marketConfig.marginSymbol }
     }
     throw new Error(`market not found' ${marketAddress}`)
   }

@@ -1,4 +1,4 @@
-import { VaultConfig } from '../../utils'
+import { MirageConfig, VaultConfig } from '../../utils'
 import { MirageClientBase } from '../base'
 import { FungibleAssetClient } from '../fungibleAsset/fungibleAssetClient'
 import { OracleClient } from '../oracle/oracleClient'
@@ -10,19 +10,24 @@ export class VaultClientBase extends MirageClientBase {
   constructor(
     fungibleAssetClient: FungibleAssetClient,
     oracleClient: OracleClient,
-    ...params: ConstructorParameters<typeof MirageClientBase>
+    mirageConfig: MirageConfig
   ) {
-    super(...params)
+    super(mirageConfig)
     this.fungibleAssets = fungibleAssetClient
     this.oracles = oracleClient
   }
 
+  public static createVaultCollectionName = (collateralSymbol: string, borrowSymbol: string): string => {
+    return `${collateralSymbol}/${borrowSymbol} CDP`
+  }
+
   public vaultCollectionExists = (collateralSymbol: string, borrowSymbol: string): boolean => {
-    return this.config.vaults.has([collateralSymbol, borrowSymbol])
+    return this.config.vaults.has(VaultClientBase.createVaultCollectionName(collateralSymbol, borrowSymbol))
   }
 
   public getVaultCollection = (collateralSymbol: string, borrowSymbol: string): VaultConfig => {
-    const vault = this.config.vaults.get([collateralSymbol, borrowSymbol])
+    const vault = this.config.vaults.get(VaultClientBase.createVaultCollectionName(collateralSymbol, borrowSymbol))
+    console.log(this.config.vaults)
     if (!vault) {
       throw new Error(`vault not found' ${collateralSymbol}/${borrowSymbol}`)
     }
@@ -42,8 +47,8 @@ export class VaultClientBase extends MirageClientBase {
   }
 
   public getVaultTokensFromAddress = (vaultAddress: string): { collateralSymbol: string; borrowSymbol: string } => {
-    for (const [[collateralSymbol, borrowSymbol], vaultConfig] of Object.entries(this.config.vaults)) {
-      if (vaultConfig.address === vaultAddress) return { collateralSymbol, borrowSymbol }
+    for (const [_, vaultConfig] of Object.entries(this.config.vaults)) {
+      if (vaultConfig.address === vaultAddress) return { collateralSymbol: vaultConfig.collateralSymbol, borrowSymbol: vaultConfig.borrowSymbol }
     }
     throw new Error(`vault not found' ${vaultAddress}`)
   }

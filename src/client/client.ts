@@ -16,14 +16,12 @@ export class MirageClient {
   userProfile: UserProfileClient
 
   constructor(config: MirageConfig) {
-    const params = [config] as const
-
-    this.fungibleAsset = new FungibleAssetClient(...params)
-    this.oracles = new OracleClient(...params)
-    this.vaults = new VaultClient(this.fungibleAsset, this.oracles, ...params)
-    this.market = new MarketClient(this.oracles, ...params)
-    this.testnet = new TestnetClient(this.vaults, ...params)
-    this.userProfile = new UserProfileClient(...params)
+    this.fungibleAsset = new FungibleAssetClient(config)
+    this.oracles = new OracleClient(config)
+    this.vaults = new VaultClient(this.fungibleAsset, this.oracles, config)
+    this.market = new MarketClient(this.oracles, config)
+    this.testnet = new TestnetClient(this.vaults, config)
+    this.userProfile = new UserProfileClient(config)
 
     // Object.getOwnPropertyNames(MarketEntities.prototype).forEach((name) => {
     //   if (name !== 'constructor') {

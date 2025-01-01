@@ -65,9 +65,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aptos-labs/ts-sdk@npm:1.33.0":
-  version: 1.33.0
-  resolution: "@aptos-labs/ts-sdk@npm:1.33.0"
+"@aptos-labs/ts-sdk@npm:^1.33.0":
+  version: 1.33.1
+  resolution: "@aptos-labs/ts-sdk@npm:1.33.1"
   dependencies:
     "@aptos-labs/aptos-cli": "npm:^1.0.2"
     "@aptos-labs/aptos-client": "npm:^0.1.1"
@@ -80,7 +80,7 @@ __metadata:
     js-base64: "npm:^3.7.7"
     jwt-decode: "npm:^4.0.0"
     poseidon-lite: "npm:^0.2.0"
-  checksum: 10c0/4a569fa9bcdedb1e6cfa6e605cf2033eae046ffa6f449b710eaf0762aa0330ac716c766e213863b38117462543a98f05a7dc9db5c8e3691a0701e5f710adf31f
+  checksum: 10c0/e26c20ce8e3487eec2b2a2ea7140e7eb301cb51660141db8b1e851fc70e862fec29d3f0cb1aca0f6de2ee9120ea44878867476b5298140de6bbd6e3c9f9b95c6
   languageName: node
   linkType: hard
 
@@ -1833,7 +1833,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mirage-protocol/sdk@workspace:."
   dependencies:
-    "@aptos-labs/ts-sdk": "npm:1.33.0"
+    "@aptos-labs/ts-sdk": "npm:^1.33.0"
     "@graphql-codegen/cli": "npm:5.0.2"
     "@graphql-codegen/introspection": "npm:4.0.3"
     "@graphql-codegen/typescript": "npm:4.0.7"

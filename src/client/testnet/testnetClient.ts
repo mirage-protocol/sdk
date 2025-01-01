@@ -4,13 +4,14 @@ import { createClaimAirdropPayload } from '../../transactions'
 import { MirageClientBase } from '../base'
 import { VaultClient } from '../vaults/vaultClient'
 import { TestnetViewsClient } from './testnetViewsClient'
+import { MirageConfig } from '../../utils'
 
 export class TestnetClient extends MirageClientBase {
   private readonly vaults: VaultClient
   public readonly views: TestnetViewsClient
 
-  constructor(vaults: VaultClient, ...params: ConstructorParameters<typeof MirageClientBase>) {
-    super(...params)
+  constructor(vaults: VaultClient, config: MirageConfig) {
+    super(config)
     this.vaults = vaults
     this.views = new TestnetViewsClient(this, this.aptosClient)
   }
