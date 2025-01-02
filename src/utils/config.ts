@@ -1,174 +1,216 @@
-import { Aptos, AptosConfig, Network } from '@aptos-labs/ts-sdk'
-import { AuthConfig, authExchange, AuthUtilities } from '@urql/exchange-auth'
-import { cacheExchange, Client, CombinedError, createClient, errorExchange, fetchExchange, Operation } from 'urql'
+import { AccountAddress } from '@aptos-labs/ts-sdk'
 
-import mirageConfigMainnet from '../../mirage_config_mainnet.json'
-import mirageConfigMovementTestnet from '../../mirage_config_movement_testnet.json'
-import mirageConfigTestnet from '../../mirage_config_testnet.json'
+import mirage_config_movement_testnet from '../../mirage_config_movement_testnet.json'
+import mirage_config_testnet from '../../mirage_config_testnet.json'
 
-export type ModulesConfig = {
-  mirage: string
-  mirage_core: string
-  mirage_oracle: string
-  mirage_scripts: string
-  mirage_swap: string
-  keeper_scripts: string
-  market: string
+// import mirageConfigMainnet from '../../mirage_config_mainnet.json'
+export enum Deployment {
+  APTOS_TESTNET = 'testnet',
+  MOVEMENT_PORTO = 'porto',
 }
 
-export type MarketsConfig = {
-  [market: string]: {
-    [pair: string]: string
+export const getDeploymentByChainId = (chainId: number): Deployment => {
+  if (chainId == 2) {
+    return Deployment.APTOS_TESTNET
+  } else if (chainId == 177) {
+    return Deployment.MOVEMENT_PORTO
+  } else {
+    throw new Error('no deployment with chaindId')
   }
 }
 
-export type VaultsConfig = {
-  [token: string]: {
-    [denomination: string]: string
+export const getChainIdByDeployment = (deployment: Deployment): number => {
+  switch (deployment) {
+    case Deployment.APTOS_TESTNET:
+      return 2
+    case Deployment.MOVEMENT_PORTO:
+      return 177
+    default:
+      throw new Error('no deployment with chaindId')
   }
 }
 
-export type TokensConfig = {
-  [token: string]: string
+export type MirageClientOptions = {
+  fullnodeUrl?: string
+  indexerUrl?: string
+  mirageIndexerUrl?: string
+  pythUrl?: string
+  aptosApiKey?: string
+  deployment?: Deployment
+  customConfig?: MirageJsonConfig
 }
 
-export type MirageConfig = {
-  modules: ModulesConfig
+export type NetworkConfig = {
+  fullnodeUrl: string
+  indexerUrl: string
+  mirageIndexerUrl: string
+  pythUrl: string
+}
+
+export type MarketConfig = {
+  address: string
+  name: string
+  perpSymbol: string
+  marginSymbol: string
+  marginOracle: string
+  perpOracle: string
+}
+
+export type MarketsConfig = Map<string, MarketConfig>
+
+export type OracleConfig = {
+  name: string
+  address: string
+  priceFeedId: string
+  priceMultiplier: number
+}
+
+export type OraclesConfig = {
+  [oracle: string]: OracleConfig
+}
+
+export type VaultConfig = {
+  address: string
+  name: string
+  collateralSymbol: string
+  borrowSymbol: string
+  collateralOracle: string
+  borrowOracle: string
+}
+
+export type VaultsConfig = Map<string, VaultConfig>
+
+export type FungibleAssetConfig = {
+  symbol: string
+  address: string
+  name: string
+  coinType?: string
+  decimals: number
+}
+
+export type FungibleAssetConfigs = {
+  [token: string]: FungibleAssetConfig
+}
+
+export type MirageJsonConfig = {
+  chainId: number
+  deployerAddress: string
+  markets: MarketConfig[]
+  vaults: VaultConfig[]
+  fungibleAssets: FungibleAssetConfig[]
+  oracles: OracleConfig[]
+}
+
+export class MirageConfig {
+  chainId: number
+  deployerAddress: AccountAddress
   markets: MarketsConfig
   vaults: VaultsConfig
-  tokens: TokensConfig
-}
+  fungibleAssets: FungibleAssetConfigs
+  oracles: OraclesConfig
 
-export const mirageConfigFromNetwork = (network: Network | string): MirageConfig => {
-  const n = getNetwork(network)
-  switch (n) {
-    case Network.MAINNET:
-      return mirageConfigMainnet
-    case Network.CUSTOM:
-      return mirageConfigMovementTestnet
-    default:
-      return mirageConfigTestnet
-  }
-}
+  fullnodeUrl: string
+  indexerUrl: string
+  mirageIndexerUrl: string
+  pythUrl: string
+  aptosApiKey?: string
+  deployment: Deployment
 
-// dupe to avoid circular imports in client base
-const getNetwork = (network: Network | string): Network => {
-  if (typeof network === 'string') {
-    switch (network) {
-      case 'mainnet':
-        return Network.MAINNET
-      case 'movement-testnet':
-        return Network.CUSTOM
-      case 'custom':
-        return Network.CUSTOM
-      default:
-        return Network.TESTNET
+  constructor(options: MirageClientOptions) {
+    if (options.deployment) {
+      this.deployment = options.deployment
+    } else {
+      // default to aptos testnet
+      this.deployment = Deployment.APTOS_TESTNET
     }
+
+    this.aptosApiKey = options.aptosApiKey
+    this.pythUrl = options.pythUrl || getDefaultPythUrl(this.deployment)
+    this.mirageIndexerUrl = options.mirageIndexerUrl || getDefaultMirageIndexerUrl(this.deployment)
+    this.fullnodeUrl = options.fullnodeUrl || getDefaultFullnodeUrl(this.deployment)
+    this.indexerUrl = options.indexerUrl || getDefaultIndexerUrl(this.deployment)
+
+    let config: MirageJsonConfig
+    if (options.customConfig) {
+      config = options.customConfig
+    } else if (this.deployment == Deployment.APTOS_TESTNET) {
+      config = mirage_config_testnet
+    } else if (this.deployment == Deployment.MOVEMENT_PORTO) {
+      config = mirage_config_movement_testnet
+    } else {
+      console.warn(`unrecognized deployment ${this.deployment}, defaulting to mirage testnet config`)
+      config = mirage_config_testnet
+    }
+
+    this.chainId = config.chainId
+    this.deployerAddress = AccountAddress.fromString(config.deployerAddress)
+    this.markets = new Map()
+    this.vaults = new Map()
+    this.fungibleAssets = {}
+    this.oracles = {}
+
+    config.markets.forEach((market) => this.markets.set(market.name, market))
+    config.vaults.forEach((vault) => this.vaults.set(vault.name, vault))
+    config.fungibleAssets.forEach((token) => (this.fungibleAssets[token.symbol] = token))
+    config.oracles.forEach((oracle) => (this.oracles[oracle.name] = oracle))
   }
-  return network
 }
 
-// store copies of the client so they don't need to be rebuilt when fetched
-const defaultMainnetClient = new Aptos(new AptosConfig({ network: Network.MAINNET }))
-const defaultTestnetClient = new Aptos(new AptosConfig({ network: Network.TESTNET }))
-// https://aptos.testnet.suzuka.movementlabs.xyz/v1
-const defaultMovementTestnetClient = new Aptos(
-  new AptosConfig({
-    network: Network.CUSTOM,
-    fullnode: 'https://aptos.testnet.suzuka.movementlabs.xyz/v1',
-    indexer: 'https://indexer.testnet.suzuka.movementlabs.xyz/v1/graphql',
-  }),
-)
+export const defaultMirageNetworks: { [deployment in Deployment]: NetworkConfig } = {
+  testnet: {
+    fullnodeUrl: 'https://fullnode.testnet.aptoslabs.com/v1',
+    indexerUrl: 'https://api.testnet.aptoslabs.com/v1/graphql',
+    mirageIndexerUrl: 'https://testnet.mirage.money/v1/graphql',
+    pythUrl: 'https://hermes-beta.pyth.network',
+  },
+  porto: {
+    fullnodeUrl: 'https://aptos.testnet.porto.movementlabs.xyz/v1',
+    indexerUrl: 'https://indexer.testnet.porto.movementnetwork.xyz/v1/graphql',
+    mirageIndexerUrl: 'https://porto.mirage.money/v1/graphql',
+    pythUrl: 'https://hermes-beta.pyth.network',
+  },
+}
 
-/**
- * Get an Aptos client for a network
- * @param network the network to use, if not specific = "mainnet"
- * @returns a useable aptos client
- */
-export const defaultAptosClient = (network: Network | string | string = Network.MAINNET, nodeURI?: string): Aptos => {
-  if (nodeURI !== undefined) {
-    return new Aptos(new AptosConfig({ network: getNetwork(network), fullnode: nodeURI }))
-  }
-  switch (network) {
-    case Network.MAINNET:
-      return defaultMainnetClient
-    // TODO make it work for movement-mainnet (network custom needs a seperate switch somehow)
-    case Network.CUSTOM:
-      return defaultMovementTestnetClient
-    case 'movement-testnet':
-      return defaultMovementTestnetClient
+export const getDefaultFullnodeUrl = (deployment: Deployment | string): string => {
+  switch (deployment as Deployment) {
+    case Deployment.APTOS_TESTNET:
+      return defaultMirageNetworks[Deployment.APTOS_TESTNET].fullnodeUrl
+    case Deployment.MOVEMENT_PORTO:
+      return defaultMirageNetworks[Deployment.MOVEMENT_PORTO].fullnodeUrl
     default:
-      return defaultTestnetClient
+      throw new Error(`cannot find deployment ${deployment}`)
   }
 }
 
-export const graphqlClientWithUri = (gqlURI: string, API_KEY?: string): Client => {
-  const exchanges = [
-    fetchExchange,
-    cacheExchange,
-    errorExchange({
-      onError: (error) => {
-        console.error('GraphQL Error:', error)
-      },
-    }),
-  ]
-
-  if (API_KEY) {
-    exchanges.push(
-      authExchange(async (utils: AuthUtilities): Promise<AuthConfig> => {
-        return {
-          addAuthToOperation(operation: Operation): Operation {
-            return utils.appendHeaders(operation, {
-              Authorization: `Bearer ${API_KEY}`,
-            })
-          },
-          didAuthError: (error: CombinedError): boolean => {
-            return error.response.status === 401
-          },
-          refreshAuth: async (): Promise<void> => {},
-        }
-      }),
-    )
+export const getDefaultIndexerUrl = (deployment: Deployment): string => {
+  switch (deployment) {
+    case Deployment.APTOS_TESTNET:
+      return defaultMirageNetworks[Deployment.APTOS_TESTNET].indexerUrl
+    case Deployment.MOVEMENT_PORTO:
+      return defaultMirageNetworks[Deployment.MOVEMENT_PORTO].indexerUrl
+    default:
+      throw new Error(`cannot find deployment ${deployment}`)
   }
-
-  return createClient({
-    url: gqlURI,
-    exchanges,
-  })
 }
 
-// TODO: make this not fixed to aptos testnet
-export const defaultAptosGraphqlClient = (network: string, API_KEY?: string): Client => {
-  // TODO: UPDATE WITH NEW API ENDPOINTS
-  let uriStr = 'https://api.testnet.aptoslabs.com/v1/graphql'
-  if (network == 'testnet') {
-    uriStr = 'https://api.testnet.aptoslabs.com/v1/graphql'
-  } else if (network == 'mainnet') {
-    uriStr = 'https://api.mainnet.aptoslabs.com/v1/graphql'
-  } else if (network == 'movement-testnet') {
-    uriStr = 'https://indexer.testnet.porto.movementnetwork.xyz/v1/graphql'
+export const getDefaultMirageIndexerUrl = (deployment: Deployment): string => {
+  switch (deployment) {
+    case Deployment.APTOS_TESTNET:
+      return defaultMirageNetworks[Deployment.APTOS_TESTNET].mirageIndexerUrl
+    case Deployment.MOVEMENT_PORTO:
+      return defaultMirageNetworks[Deployment.MOVEMENT_PORTO].mirageIndexerUrl
+    default:
+      throw new Error(`cannot find deployment ${deployment}`)
   }
-  return graphqlClientWithUri(uriStr, API_KEY)
 }
 
-export const defaultMirageGraphqlClient = (network: string): Client => {
-  // TODO: UPDATE WITH NEW API ENDPOINTS
-  let uriStr = ''
-  if (network == 'testnet') {
-    uriStr = 'https://api-movement-testnet.mirage.money/v1/graphql'
-  } else {
-    uriStr = 'https://api-movement-testnet.mirage.money/v1/graphql'
+export const getDefaultPythUrl = (deployment: Deployment): string => {
+  switch (deployment) {
+    case Deployment.APTOS_TESTNET:
+      return defaultMirageNetworks[Deployment.APTOS_TESTNET].pythUrl
+    case Deployment.MOVEMENT_PORTO:
+      return defaultMirageNetworks[Deployment.MOVEMENT_PORTO].pythUrl
+    default:
+      throw new Error(`cannot find deployment ${deployment}`)
   }
-  return createClient({
-    url: uriStr,
-    exchanges: [
-      fetchExchange,
-      cacheExchange,
-      errorExchange({
-        onError: (error) => {
-          console.error('GraphQL Error:', error)
-        },
-      }),
-    ],
-  })
 }

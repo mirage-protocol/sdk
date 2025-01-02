@@ -1,11 +1,8 @@
-import { MoveResource } from '@aptos-labs/ts-sdk'
+import { AccountAddress, MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
-import { PRECISION_8, ZERO } from '../../constants'
-import { mirageAddress } from '../../constants/accounts'
-import { assetBalanceToDecimal, MoveAsset, MoveToken } from '../../constants/assetList'
+import { getModuleAddress, integerToDecimal, MoveModules, PRECISION_8 } from '../../utils'
 import { getPropertyMapSigned64, getPropertyMapU64 } from '../../utils'
-import { MirageConfig } from '../../utils/config'
 import { VaultCollection } from './vaultCollection'
 
 /**
@@ -13,14 +10,6 @@ import { VaultCollection } from './vaultCollection'
  * Stores info about a vault's deposits and borrows
  */
 export class Vault {
-  /**
-   * The collateral asset of the vault
-   */
-  public readonly collateralAsset: MoveAsset
-  /**
-   * The borrow token of the vault (a mirage asset e.g. mUSD)
-   */
-  public readonly borrowToken: MoveToken
   /**
    * The amount of collateral deposited
    */
@@ -48,73 +37,45 @@ export class Vault {
   /**
    * Construct an instance of Vault
    * @param vaultObjectResources resources from vault token account
-   * @param collectionObjectResources resources from the VaultCollection account
-   * @param borrowTokenObjectResources resources from the borrow token and its debt store
-   * @param collateral the collateral asset of the vault
-   * @param borrow the borrow asset of the vault
+   * @param vaultCollection a vault collection entity
+   * @param objectAddress the vault object address
    */
   constructor(
     vaultObjectResources: MoveResource[],
     vaultCollection: VaultCollection,
-    collateral: MoveToken | string,
-    borrow: MoveToken | string,
     objectAddress: string,
-    config: MirageConfig,
+    deployerAddress: AccountAddress,
   ) {
-    this.collateralAsset = collateral as MoveToken
-    this.borrowToken = borrow as MoveToken
     this.vaultCollection = vaultCollection
     this.objectAddress = objectAddress
 
-    const vaultType = `${mirageAddress(config)}::vault::Vault`
+    const vaultType = `${getModuleAddress(MoveModules.MIRAGE, deployerAddress)}::vault::Vault`
     const propertyMapType = `0x4::property_map::PropertyMap`
 
     const vault = vaultObjectResources.find((resource) => resource.type === vaultType)
-    const propertyMap = vaultObjectResources.find((resource) => resource.type === propertyMapType)
+    if (vault == undefined) throw new Error('Vault object not found')
 
-    this.collateralAmount = !!vault
-      ? assetBalanceToDecimal(BigNumber((vault.data as any).collateral_amount), this.collateralAsset, config)
-      : ZERO
+    const propertyMap = vaultObjectResources.find((resource) => resource.type === propertyMapType)
+    if (propertyMap == undefined) throw new Error('PropertyMap object not found')
+
+    this.collateralAmount = integerToDecimal(
+      BigNumber((vault.data as any).collateral_amount),
+      this.vaultCollection.collateralDecimals,
+    )
 
     // need to use global debt rebase
-    this.borrowAmount =
-      !!vault && !!this.vaultCollection
-        ? this.vaultCollection.mirage.debtRebase.toElastic(
-            this.vaultCollection.borrowRebase.toElastic(
-              new BigNumber((vault.data as any).borrow_part.amount).div(PRECISION_8),
-              true,
-            ),
-            false,
-          )
-        : ZERO
+    this.borrowAmount = this.vaultCollection.mirage.debtRebase.toElastic(
+      this.vaultCollection.borrowRebase.toElastic(
+        new BigNumber((vault.data as any).borrow_part.amount).div(PRECISION_8),
+        true,
+      ),
+      false,
+    )
 
-    const realizedPnl = !!propertyMap
-      ? getPropertyMapSigned64('realized_pnl', propertyMap.data as any).div(PRECISION_8)
-      : ZERO
-    const lastBorrowAmount = !!propertyMap
-      ? getPropertyMapU64('last_borrow_amount', propertyMap.data as any).div(PRECISION_8)
-      : ZERO
-    this.feesPaid = !!propertyMap ? getPropertyMapU64('fees_paid', propertyMap.data as any).div(PRECISION_8) : ZERO
+    const realizedPnl = getPropertyMapSigned64('realized_pnl', propertyMap.data as any).div(PRECISION_8)
+    const lastBorrowAmount = getPropertyMapU64('last_borrow_amount', propertyMap.data as any).div(PRECISION_8)
+    this.feesPaid = getPropertyMapU64('fees_paid', propertyMap.data as any).div(PRECISION_8)
     this.pnl = realizedPnl.plus(lastBorrowAmount).minus(this.borrowAmount)
-
-    // const maxBorrow =
-    //   !!vault && !!this.vaultCollection
-    //     ? this.collateralAmount
-    //         .times(this.vaultCollection.exchangeRate)
-    //         .times(this.vaultCollection.initialCollateralizationPercent)
-    //         .div(100)
-    //     : ZERO
-
-    // const minCollateral =
-    //   !!vault && !!this.vaultCollection
-    //     ? this.borrowAmount
-    //         .div(this.vaultCollection.exchangeRate)
-    //         .div(this.vaultCollection.initialCollateralizationPercent)
-    //         .div(100)
-    //     : ZERO
-
-    // this.remainingBorrowable = !!vault ? maxBorrow.minus(this.borrowAmount) : ZERO
-    // this.withdrawableAmount = !!vault ? this.collateralAmount.minus(minCollateral) : ZERO
   }
 
   public getHealth(collateralPrice: BigNumber, borrowPrice: BigNumber): number {

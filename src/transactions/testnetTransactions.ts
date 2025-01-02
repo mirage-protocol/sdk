@@ -1,22 +1,23 @@
-import { InputEntryFunctionData } from '@aptos-labs/ts-sdk'
+import { AccountAddress, InputEntryFunctionData } from '@aptos-labs/ts-sdk'
 
-import { getPriceFeed, getPriceFeedUpdateData, MODULES, MoveToken } from '../constants'
-import { BaseTransactions } from './baseTransactions'
+import { getModuleAddress, MoveModules } from '../utils'
 
-export class TestnetTransactions extends BaseTransactions {
-  /**
-   * Claims testnet airdrop (creates vault if first claim, always deposits tusdc and borrows musd)
-   * @returns payload for the transaction
-   */
-  async claimAirdrop(): Promise<InputEntryFunctionData> {
-    const collateralFeed = getPriceFeed(MoveToken.tUSDC, this.network)
-    const borrowFeed = getPriceFeed(MoveToken.mUSD, this.network)
-    const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, this.network) : []
-    const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, this.network) : []
-    return {
-      function: `${MODULES(this.config).mirage_scripts.address}::testnet_airdropper::claim_airdrop`,
-      functionArguments: [collateralVaas, borrowVaas],
-      typeArguments: [],
-    }
+/**
+ * Claims testnet airdrop (creates vault if first claim, always deposits tusdc and borrows musd)
+ * @returns payload for the transaction
+ */
+export const createClaimAirdropPayload = (
+  tUSDCVaas: number[],
+  mUSDVaas: number[],
+  deployerAddress: AccountAddress,
+): InputEntryFunctionData => {
+  // const collateralFeed = this.config.getVaultCollateralPriceFeedId('tUSDC', 'mUSD')
+  // const borrowFeed = this.config.getVaultBorrowPriceFeedId('tUSDC', 'mUSD')
+  // const collateralVaas = collateralFeed ? await getPriceFeedUpdateData(collateralFeed, this.network) : []
+  // const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, this.network) : []
+  return {
+    function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::testnet_airdropper::claim_airdrop`,
+    functionArguments: [tUSDCVaas, mUSDVaas],
+    typeArguments: [],
   }
 }

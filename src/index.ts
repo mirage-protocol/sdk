@@ -1,6 +1,6 @@
 export * from './client'
-export * from './constants'
 export * from './entities'
 export * from './transactions'
 export * from './utils'
+export * from './utils/constants'
 export * from './views'
