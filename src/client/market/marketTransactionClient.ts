@@ -8,9 +8,12 @@ import {
   createCleanupLimitOrderPayload,
   createCleanupTpslPayload,
   createClosePositionPayload,
+  createDecreaseLimitOrderMarginPayload,
+  createDecreaseMarginPayload,
   createDecreasePositionSizePayload,
   createDecreaseSizeAndDecreaseMarginPayload,
   createDecreaseSizeAndIncreaseMarginPayload,
+  createIncreaseLimitOrderMarginPayload,
   createIncreaseMarginPayload,
   createIncreasePositionSizePayload,
   createIncreaseSizeAndDecreaseMarginPayload,
@@ -216,7 +219,7 @@ export class MarketTransactionClient {
   ): Promise<InputEntryFunctionData> => {
     const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
     const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
-    return createIncreaseMarginPayload(
+    return createDecreaseMarginPayload(
       positionObjectAddress,
       perpVaas,
       marginVaas,
@@ -334,34 +337,22 @@ export class MarketTransactionClient {
   }
 
   public getIncreaseLimitOrderMarginPayload = async (
-    perpSymbol: string,
-    marginSymbol: string,
-    positionObjectAddress: MoveObjectType,
+    limitOrderObjectAddress: MoveObjectType,
     positionSizeIncrease: number,
   ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
-    return createIncreaseMarginPayload(
-      positionObjectAddress,
-      perpVaas,
-      marginVaas,
+    return createIncreaseLimitOrderMarginPayload(
+      limitOrderObjectAddress,
       positionSizeIncrease,
       this.base.getDeployerAddress(),
     )
   }
 
   public getDecreaseLimitOrderMarginPayload = async (
-    perpSymbol: string,
-    marginSymbol: string,
-    positionObjectAddress: MoveObjectType,
+    limitOrderObjectAddress: MoveObjectType,
     decreasePositionSize: number,
   ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
-    return createDecreasePositionSizePayload(
-      positionObjectAddress,
-      perpVaas,
-      marginVaas,
+    return createDecreaseLimitOrderMarginPayload(
+      limitOrderObjectAddress,
       decreasePositionSize,
       this.base.getDeployerAddress(),
     )
