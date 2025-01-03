@@ -13,7 +13,6 @@ import {
   ZERO,
 } from '../../utils'
 import { Market } from './market'
-import { MarketClientBase } from '../../client/market/marketClientBase'
 
 /**
  * Direction of a position
@@ -57,7 +56,7 @@ export class Position {
   /**
    * The market of the position
    */
-  public readonly market: MarketClientBase
+  public readonly market: Market
   /**
    * The positions side
    */
