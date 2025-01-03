@@ -13,6 +13,7 @@ import {
   ZERO,
 } from '../../utils'
 import { Market } from './market'
+import { MarketClientBase } from '../../client/market/marketClientBase'
 
 /**
  * Direction of a position
@@ -52,18 +53,18 @@ export class Position {
   /**
    * The token id
    */
-  public readonly id: bigint
+  public readonly tokenId: bigint
   /**
-   * The token id
+   * The market of the position
    */
-  public readonly market: Market
+  public readonly market: MarketClientBase
   /**
    * The positions side
    */
+  public readonly side: PositionSide
   /**
    * The position data if open
    */
-  public readonly side: PositionSide
   public readonly openingPrice: BigNumber
   public readonly margin: BigNumber
   public readonly positionSize: BigNumber
@@ -116,7 +117,7 @@ export class Position {
     if (position == undefined) throw new Error('Position object not found')
     const tokenIdentifiers = positionObjectResources.find((resource) => resource.type === tokenIdsType)
     if (tokenIdentifiers == undefined) throw new Error('TokenIdentifiers object not found')
-    this.id = BigInt((tokenIdentifiers.data as any).index.value)
+    this.tokenId = BigInt((tokenIdentifiers.data as any).index.value)
     const propertyMap = positionObjectResources.find((resource) => resource.type === propertyMapType)
     if (propertyMap == undefined) throw new Error('PropertyMap object not found')
 
