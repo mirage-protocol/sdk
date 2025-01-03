@@ -28,6 +28,12 @@ import {
 import { U64_MAX } from '../../utils'
 import { MarketClientBase } from './marketClientBase'
 
+export type CreatePositionOptionals = {
+  takeProfit?: number
+  stopLoss?: number
+  expiration?: bigint
+}
+
 export class MarketTransactionClient {
   private readonly base: MarketClientBase
 
@@ -35,7 +41,7 @@ export class MarketTransactionClient {
     this.base = base
   }
 
-  public getOpenPositionPayload = async (
+  public getPlaceOrderPayload = async (
     perpSymbol: string,
     marginSymbol: string,
     positionObjectAddress: MoveObjectType,
@@ -103,7 +109,7 @@ export class MarketTransactionClient {
     }
   }
 
-  public getCreateAndOpenPositionPayload = async (
+  public getCreatePositionWithOrderPayload = async (
     perpSymbol: string,
     marginSymbol: string,
     orderType: OrderType,
@@ -112,16 +118,31 @@ export class MarketTransactionClient {
     side: PositionSide,
     desiredPrice: number,
     maxPriceSlippage: number,
-    expiration = BigInt(U64_MAX),
+    createPositionOptionals: CreatePositionOptionals = {}
   ): Promise<InputEntryFunctionData> => {
     const marketAddress = this.base.getMarketAddress(perpSymbol, marginSymbol)
     const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
     switch (orderType) {
       case OrderType.MARKET: {
-        if (expiration != BigInt(U64_MAX)) {
+        if (createPositionOptionals.expiration) {
           throw new Error(`Market orders don't support expiration`)
         }
         const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+        if (createPositionOptionals.takeProfit || createPositionOptionals.stopLoss) {
+          return createOpenPositionWithTpslPayload(
+            marketAddress,
+            perpVaas,
+            marginVaas,
+            marginAmount,
+            positionSize,
+            side,
+            desiredPrice,
+            maxPriceSlippage,
+            createPositionOptionals.takeProfit ?? 0,
+            createPositionOptionals.stopLoss ?? 0,
+            this.base.getDeployerAddress(),
+          )
+        }
         return createAndOpenPositionPayload(
           marketAddress,
           perpVaas,
@@ -144,7 +165,7 @@ export class MarketTransactionClient {
           maxPriceSlippage,
           false,
           side != PositionSide.LONG,
-          expiration,
+          createPositionOptionals.expiration ?? BigInt(U64_MAX),
           side,
           this.base.getDeployerAddress(),
         )
@@ -159,7 +180,7 @@ export class MarketTransactionClient {
           maxPriceSlippage,
           false,
           side == PositionSide.LONG,
-          expiration,
+          createPositionOptionals.expiration ?? BigInt(U64_MAX),
           side,
           this.base.getDeployerAddress(),
         )
@@ -168,35 +189,6 @@ export class MarketTransactionClient {
         throw new Error(`unknown order type`)
       }
     }
-  }
-
-  public getOpenPositionWithTpslPayload = async (
-    perpSymbol: string,
-    marginSymbol: string,
-    marginAmount: number,
-    positionSize: number,
-    side: PositionSide,
-    desiredPrice: number,
-    maxPriceSlippage: number,
-    takeProfitPrice: number,
-    stopLossPrice: number,
-  ): Promise<InputEntryFunctionData> => {
-    const marketAddress = this.base.getMarketAddress(perpSymbol, marginSymbol)
-    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
-    return createOpenPositionWithTpslPayload(
-      marketAddress,
-      perpVaas,
-      marginVaas,
-      marginAmount,
-      positionSize,
-      side,
-      desiredPrice,
-      maxPriceSlippage,
-      takeProfitPrice,
-      stopLossPrice,
-      this.base.getDeployerAddress(),
-    )
   }
 
   public getIncreaseMarginPayload = async (
