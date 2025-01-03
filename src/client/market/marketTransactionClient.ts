@@ -26,6 +26,7 @@ import {
   createPositionAndPlaceLimitOrderPayload,
   createTriggerLimitOrderPayload,
   createTriggerTpslPayload,
+  createUpdateLimitOrderPayload,
   createUpdateTpslPayload,
 } from '../../transactions'
 import { U64_MAX } from '../../utils'
@@ -338,22 +339,49 @@ export class MarketTransactionClient {
 
   public getIncreaseLimitOrderMarginPayload = async (
     limitOrderObjectAddress: MoveObjectType,
-    positionSizeIncrease: number,
+    marginIncrease: number,
   ): Promise<InputEntryFunctionData> => {
     return createIncreaseLimitOrderMarginPayload(
       limitOrderObjectAddress,
-      positionSizeIncrease,
+      marginIncrease,
       this.base.getDeployerAddress(),
     )
   }
 
   public getDecreaseLimitOrderMarginPayload = async (
     limitOrderObjectAddress: MoveObjectType,
-    decreasePositionSize: number,
+    marginDecrease: number,
   ): Promise<InputEntryFunctionData> => {
     return createDecreaseLimitOrderMarginPayload(
       limitOrderObjectAddress,
-      decreasePositionSize,
+      marginDecrease,
+      this.base.getDeployerAddress(),
+    )
+  }
+
+  public getUpdateLimitOrderPayload = async (
+    perpSymbol: string,
+    marginSymbol: string,
+    limitOrderObjectAddress: MoveObjectType,
+    newPositionSize: number,
+    newSide: PositionSide,
+    newTriggerPrice: number,
+    newMaxPriceSlippage: number,
+    newIsDecreaseOnly: boolean,
+    newTriggersAbove: boolean,
+    newExpiration: bigint,
+  ): Promise<InputEntryFunctionData> => {
+    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    return createUpdateLimitOrderPayload(
+      limitOrderObjectAddress,
+      perpVaas,
+      newPositionSize,
+      newSide,
+      newTriggerPrice,
+      newMaxPriceSlippage,
+      newIsDecreaseOnly,
+      newTriggersAbove,
+      newExpiration,
       this.base.getDeployerAddress(),
     )
   }
