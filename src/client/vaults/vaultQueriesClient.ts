@@ -26,8 +26,8 @@ export class VaultQueriesClient {
     return await ownedVaultAddressesByCollectionQuery(vaultCollectionAddresses, ownerAddress, this.aptosGqlClient)
   }
 
-  public getVaultCollectionAPR = async (perpSymbol: string, marginSymbol: string, beginDate: Date): Promise<number> => {
-    const vaultObjectAddresses = this.base.getVaultCollectionAddress(perpSymbol, marginSymbol)
+  public getVaultCollectionAPR = async (collateralSymbol: string, borrowSymbol: string, beginDate: Date): Promise<number> => {
+    const vaultObjectAddresses = this.base.getVaultCollectionAddress(collateralSymbol, borrowSymbol)
     return await vaultCollectionAPRQuery(beginDate, vaultObjectAddresses, this.aptosGqlClient)
   }
 }
