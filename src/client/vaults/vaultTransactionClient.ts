@@ -70,7 +70,7 @@ export class VaultTransactionClient {
     collateralSymbol: string,
     vaultObjectAddress: MoveObjectType,
     collateralAmount: number,
-  ): InputEntryFunctionData => {
+  ): Promise<InputEntryFunctionData> => {
     const collateralCoinType = this.base.getCollateralCoinType(collateralSymbol)
     const collateralDecimals = this.base.getCollateralCoinDecimals(collateralSymbol)
     return createVaultPayload(
@@ -121,7 +121,7 @@ export class VaultTransactionClient {
   public getRepayDebtPartPayload = (
     vaultObjectAddress: MoveObjectType,
     repayPartAmount: number,
-  ): InputEntryFunctionData => {
+  ): Promise<InputEntryFunctionData> => {
     return createRepayDebtPartPayload(vaultObjectAddress, repayPartAmount, this.base.getDeployerAddress())
   }
 
