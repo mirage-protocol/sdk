@@ -15,11 +15,11 @@ export class MarketClientBase extends MirageClientBase {
   }
 
   public marketExists = (perpSymbol: string, collateralSymbol: string): boolean => {
-    return this.config.markets.has(MarketClientBase.createMarketName(perpSymbol, collateralSymbol))
+    return !!this.config.markets[MarketClientBase.createMarketName(perpSymbol, collateralSymbol)]
   }
 
   public getMarket = (perpSymbol: string, marginSymbol: string): MarketConfig => {
-    const market = this.config.markets.get(MarketClientBase.createMarketName(perpSymbol, marginSymbol))
+    const market = this.config.markets[MarketClientBase.createMarketName(perpSymbol, marginSymbol)]
     if (!market) {
       throw new Error(`market not found ${perpSymbol}/${marginSymbol}`)
     }

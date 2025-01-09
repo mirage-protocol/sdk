@@ -56,7 +56,7 @@ export type MarketConfig = {
   perpOracle: string
 }
 
-export type MarketsConfig = Map<string, MarketConfig>
+export type MarketsConfig = {[market: string]: MarketConfig}
 
 export type OracleConfig = {
   name: string
@@ -78,7 +78,7 @@ export type VaultConfig = {
   borrowOracle: string
 }
 
-export type VaultsConfig = Map<string, VaultConfig>
+export type VaultsConfig = {[vault: string]: VaultConfig}
 
 export type FungibleAssetConfig = {
   symbol: string
@@ -144,13 +144,13 @@ export class MirageConfig {
 
     this.chainId = config.chainId
     this.deployerAddress = AccountAddress.fromString(config.deployerAddress)
-    this.markets = new Map()
-    this.vaults = new Map()
+    this.markets = {}
+    this.vaults = {}
     this.fungibleAssets = {}
     this.oracles = {}
 
-    config.markets.forEach((market) => this.markets.set(market.name, market))
-    config.vaults.forEach((vault) => this.vaults.set(vault.name, vault))
+    config.markets.forEach((market) => this.markets[market.name] = market)
+    config.vaults.forEach((vault) => this.vaults[vault.name] = vault)
     config.fungibleAssets.forEach((token) => (this.fungibleAssets[token.symbol] = token))
     config.oracles.forEach((oracle) => (this.oracles[oracle.name] = oracle))
   }

@@ -22,11 +22,11 @@ export class VaultClientBase extends MirageClientBase {
   }
 
   public vaultCollectionExists = (collateralSymbol: string, borrowSymbol: string): boolean => {
-    return this.config.vaults.has(VaultClientBase.createVaultCollectionName(collateralSymbol, borrowSymbol))
+    return !!this.config.vaults[VaultClientBase.createVaultCollectionName(collateralSymbol, borrowSymbol)]
   }
 
   public getVaultCollection = (collateralSymbol: string, borrowSymbol: string): VaultConfig => {
-    const vault = this.config.vaults.get(VaultClientBase.createVaultCollectionName(collateralSymbol, borrowSymbol))
+    const vault = this.config.vaults[VaultClientBase.createVaultCollectionName(collateralSymbol, borrowSymbol)]
     if (!vault) {
       throw new Error(`vault not found ${collateralSymbol}/${borrowSymbol}`)
     }
