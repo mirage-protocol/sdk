@@ -10,7 +10,7 @@ export class FungibleAssetBase extends MirageClientBase {
 
   public getFA = (faSymbol: string): FungibleAssetConfig => {
     if (!this.config.fungibleAssets[faSymbol]) {
-      throw new Error(`fungible asset not found' ${faSymbol}`)
+      throw new Error(`fungible asset not found ${faSymbol}`)
     }
     return this.config.fungibleAssets[faSymbol]
   }
@@ -41,7 +41,7 @@ export class FungibleAssetBase extends MirageClientBase {
       ([, tokenConfig]) => tokenConfig.address === tokenMetadataAddress,
     )?.[0]
     if (!tokenSymbol) {
-      throw new Error(`fungible asset not found' ${tokenMetadataAddress}`)
+      throw new Error(`fungible asset not found ${tokenMetadataAddress}`)
     }
     return tokenSymbol
   }
