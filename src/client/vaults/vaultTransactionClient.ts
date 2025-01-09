@@ -4,6 +4,7 @@ import {
   createAccrueInterestPayload,
   createAddCollateralAndBorrowPayload,
   createAddCollateralAndRepayDebt,
+  createAddCollateralPayload,
   createBorrowPayload,
   createLiquidateVaultBankruptPayload,
   createLiquidateVaultWithPartPayload,
@@ -73,7 +74,7 @@ export class VaultTransactionClient {
   ): Promise<InputEntryFunctionData> => {
     const collateralCoinType = this.base.getCollateralCoinType(collateralSymbol)
     const collateralDecimals = this.base.getCollateralCoinDecimals(collateralSymbol)
-    return await createVaultPayload(
+    return await createAddCollateralPayload(
       vaultObjectAddress,
       collateralAmount,
       collateralCoinType,

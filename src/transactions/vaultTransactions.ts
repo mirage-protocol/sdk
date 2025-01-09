@@ -6,7 +6,7 @@ import { getAssetAmountArgument, getDecimal8Argument } from './'
 // const type = 'entry_function_payload'
 
 const getFunctionSuffix = (coinType: string | undefined): string => {
-  return coinType ? 'entry' : 'coin_entry'
+  return coinType ? 'coin_entry': 'entry'
 }
 
 export const createVaultPayload = (
