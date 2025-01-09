@@ -27,7 +27,6 @@ export class VaultClientBase extends MirageClientBase {
 
   public getVaultCollection = (collateralSymbol: string, borrowSymbol: string): VaultConfig => {
     const vault = this.config.vaults.get(VaultClientBase.createVaultCollectionName(collateralSymbol, borrowSymbol))
-    console.log(this.config.vaults)
     if (!vault) {
       throw new Error(`vault not found' ${collateralSymbol}/${borrowSymbol}`)
     }
