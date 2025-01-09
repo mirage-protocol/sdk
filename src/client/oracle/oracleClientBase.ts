@@ -11,7 +11,7 @@ export class OracleClientBase extends MirageClientBase {
       ([, oracleConfig]) => oracleConfig.address === oracleObjectAddress,
     )?.[0]
     if (!oracleName) {
-      throw new Error(`oracle not found ${oracleObjectAddress}`)
+      throw new Error(`oracle not found' ${oracleObjectAddress}`)
     }
     return oracleName
   }
@@ -19,7 +19,7 @@ export class OracleClientBase extends MirageClientBase {
   public getPriceFeedId = (oracleName: string): string => {
     const oracle = this.config.oracles[oracleName]
     if (!oracle) {
-      throw new Error(`oracle not found ${oracleName}`)
+      throw new Error(`oracle not found' ${oracleName}`)
     }
     return oracle.priceFeedId
   }

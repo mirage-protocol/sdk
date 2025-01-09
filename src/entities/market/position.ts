@@ -113,12 +113,12 @@ export class Position {
     const propertyMapType = `0x4::property_map::PropertyMap`
 
     const position = positionObjectResources.find((resource) => resource.type === positionType)
-    if (position == undefined) throw new Error('Position object not found)
+    if (position == undefined) throw new Error('Position object not found')
     const tokenIdentifiers = positionObjectResources.find((resource) => resource.type === tokenIdsType)
-    if (tokenIdentifiers == undefined) throw new Error('TokenIdentifiers object not found)
+    if (tokenIdentifiers == undefined) throw new Error('TokenIdentifiers object not found')
     this.tokenId = BigInt((tokenIdentifiers.data as any).index.value)
     const propertyMap = positionObjectResources.find((resource) => resource.type === propertyMapType)
-    if (propertyMap == undefined) throw new Error('PropertyMap object not found)
+    if (propertyMap == undefined) throw new Error('PropertyMap object not found')
 
     this.feesPaid = getPropertyMapU64('fees_paid', propertyMap.data as any).div(PRECISION_8)
     this.fundingPaid = getPropertyMapSigned64('funding_paid', propertyMap.data as any).div(PRECISION_8)
