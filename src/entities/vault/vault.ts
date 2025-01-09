@@ -53,10 +53,10 @@ export class Vault {
     const propertyMapType = `0x4::property_map::PropertyMap`
 
     const vault = vaultObjectResources.find((resource) => resource.type === vaultType)
-    if (vault == undefined) throw new Error('Vault object not found')
+    if (vault == undefined) throw new Error('Vault object not found)
 
     const propertyMap = vaultObjectResources.find((resource) => resource.type === propertyMapType)
-    if (propertyMap == undefined) throw new Error('PropertyMap object not found')
+    if (propertyMap == undefined) throw new Error('PropertyMap object not found)
 
     this.collateralAmount = integerToDecimal(
       BigNumber((vault.data as any).collateral_amount),

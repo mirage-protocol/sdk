@@ -70,11 +70,11 @@ export class LimitOrder {
 
     const limitOrderType = `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::limit_order::LimitOrder`
     const findLimitOrder = limitOrderResources.find((resource) => resource.type === limitOrderType)
-    if (findLimitOrder == undefined) throw new Error('LimitOrder object not found')
+    if (findLimitOrder == undefined) throw new Error('LimitOrder object not found)
     const limitOrder = findLimitOrder.data as LimitOrderData
     const strategyType = `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::market::Strategy`
     const strategy = limitOrderResources.find((resource) => resource.type === strategyType)
-    if (strategy == undefined) throw new Error('Strategy object not found')
+    if (strategy == undefined) throw new Error('Strategy object not found)
 
     this.side = Boolean(limitOrder.is_long).valueOf() ? PositionSide.LONG : PositionSide.SHORT
     this.isDecreaseOnly = limitOrder.is_decrease_only

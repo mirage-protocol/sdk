@@ -130,7 +130,7 @@ export class Market {
     const marketType = `${getModuleAddress(MoveModules.MIRAGE, deployerAddress)}::market::Market`
 
     const market = marketObjectResources.find((resource) => resource.type === marketType)
-    if (market == undefined) throw new Error('Market object not found')
+    if (market == undefined) throw new Error('Market object not found)
 
     this.totalLongMargin = new BigNumber((market.data as any).totalLongMargin).div(PRECISION_8)
     this.totalShortMargin = new BigNumber((market.data as any).totalShortMargin).div(PRECISION_8)
