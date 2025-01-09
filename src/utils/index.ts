@@ -17,7 +17,7 @@ export const getPropertyMapU64 = (key: string, data: any): BigNumber => {
 }
 
 export const integerToDecimal = (value: BigNumber, decimal: number): BigNumber => {
-  return value.times(BigNumber(10).pow(decimal))
+  return value.div(BigNumber(10).pow(decimal))
 }
 
 export const getPropertyMapSigned64 = (key: string, data: any): BigNumber => {
