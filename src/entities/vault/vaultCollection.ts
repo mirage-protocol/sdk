@@ -113,6 +113,7 @@ export class VaultCollection {
     this.objectAddress = objectAddress
 
     const vaultCollectionType = `${getModuleAddress(MoveModules.MIRAGE, deployerAddress)}::vault::VaultCollection`
+
     const vaultCollection = collectionObjectResources.find((resource) => resource.type === vaultCollectionType)
     if (vaultCollection == undefined) throw new Error('Vault object not found')
 

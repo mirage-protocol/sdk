@@ -14,7 +14,7 @@ const config: CodegenConfig = {
     },
     'src/generated/mirage/graphql.ts': {
       documents: 'src/graphql/mirage_queries/*.{graphql,gql}',
-      schema: 'https://api-movement-testnet.mirage.money/v1/graphql',
+      schema: 'https://api-aptos-testnet.mirage.money/v1/graphql',
       plugins: [
         'typescript', // for TypeScript types
         'typescript-operations', // for operation types like queries and mutations

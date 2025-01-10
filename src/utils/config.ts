@@ -160,7 +160,7 @@ export const defaultMirageNetworks: { [deployment in Deployment]: NetworkConfig 
   testnet: {
     fullnodeUrl: 'https://fullnode.testnet.aptoslabs.com/v1',
     indexerUrl: 'https://api.testnet.aptoslabs.com/v1/graphql',
-    mirageIndexerUrl: 'https://testnet.mirage.money/v1/graphql',
+    mirageIndexerUrl: 'https://api-aptos-testnet.mirage.money/v1/graphql',
     pythUrl: 'https://hermes-beta.pyth.network',
   },
   porto: {
