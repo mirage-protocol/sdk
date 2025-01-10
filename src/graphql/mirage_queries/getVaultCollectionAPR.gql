@@ -11,7 +11,7 @@ query GetVaultCollectionAPR($prevDebtTimestamp: timestamp!, $collectionId: Strin
     globalDebt: vault_collection_debt_store_datas {
       debtBase: debt_base
       debtElastic: debt_elastic
-      assetType: asset_type
+      objectAddress: object_address
     }
   }
   currentDebt: vault_collection_datas(
@@ -26,7 +26,7 @@ query GetVaultCollectionAPR($prevDebtTimestamp: timestamp!, $collectionId: Strin
     globalDebt: vault_collection_debt_store_datas {
       debtBase: debt_base
       debtElastic: debt_elastic
-      assetType: asset_type
+      objectAddress: object_address
   	}
   }
 }
