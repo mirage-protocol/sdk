@@ -116,8 +116,8 @@ export class VaultCollection {
     const vaultCollection = collectionObjectResources.find((resource) => resource.type === vaultCollectionType)
     if (vaultCollection == undefined) throw new Error('Vault object not found')
 
-    this.collateralAddress = (vaultCollection.data as any).collateral.inner as string
-    this.borrowAddress = (vaultCollection.data as any).borrow.inner as string
+    this.collateralAddress = (vaultCollection.data as any).collateral_token.inner as string
+    this.borrowAddress = (vaultCollection.data as any).borrow_token.inner as string
     this.borrowSymbol = this.mirage.symbol
     this.collateralSymbol = collateralSymbol
     this.collateralDecimals = collateralDecimals
