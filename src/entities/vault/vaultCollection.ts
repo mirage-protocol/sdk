@@ -162,8 +162,8 @@ export class VaultCollection {
       this.collateralDecimals,
     )
     this.isEmergency = (vaultCollection.data as any).is_emergency
-    this.collateralOracleAddress = (vaultCollection.data as any).collateral_oracle.inner.address
-    this.borrowOracleAddress = (vaultCollection.data as any).borrow_oracle.inner.address
+    this.collateralOracleAddress = (vaultCollection.data as any).collateral_oracle.inner
+    this.borrowOracleAddress = (vaultCollection.data as any).borrow_oracle.inner
   }
 
   /**
