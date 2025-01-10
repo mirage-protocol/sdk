@@ -19,7 +19,7 @@ export class MirageAsset {
       BigNumber((debtStore.data as any).debt.elastic),
       BigNumber((debtStore.data as any).debt.base),
     )
-    const faMetadataType = `0x1::fungible_asset::FungibleAsset`
+    const faMetadataType = `0x1::fungible_asset::Metadata`
     const faMetadata = tokenObjectResources.find((resource) => resource.type === faMetadataType)
     if (faMetadata == undefined) throw new Error('Metadata object not found')
     this.symbol = (faMetadata.data as any).symbol
