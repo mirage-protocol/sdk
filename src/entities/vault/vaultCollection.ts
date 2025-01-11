@@ -175,9 +175,15 @@ export class VaultCollection {
     return this.interestPerSecond.times(SECONDS_PER_YEAR).times(100).toNumber()
   }
 
+  /**
+   * Gets debt part for borrow token amount
+   * @param borrowAmount amount of tokens
+   * @returns debt part in global rebase
+   */
   public borrowTokensToDebtPart(borrowAmount: number): number {
-      return this.mirage.debtRebase
-      .toBase(this.borrowRebase.toBase(new BigNumber(borrowAmount), false), false)
-      .toNumber()
+    const scaledVal = new BigNumber(borrowAmount).times(PRECISION_8)
+    return this.mirage.debtRebase
+    .toBase(this.borrowRebase.toBase(scaledVal, false), false)
+    .toNumber()
   }
 }

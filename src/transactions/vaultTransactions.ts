@@ -241,7 +241,7 @@ export const createRemoveCollateralAndBorrow = (
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {
   return {
-    function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}, this.config.deployerAddress)}::vault_scripts::remove_and_borrow_entry`,
+    function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::vault_scripts::remove_and_borrow_entry`,
     functionArguments: [
       vaultObjectAddress,
       getAssetAmountArgument(removeAmount, collateralDecimals),
