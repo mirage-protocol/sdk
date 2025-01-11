@@ -34,7 +34,7 @@ export const createVaultAndBorrowPayload = (
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {
   return {
-    function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::vault_scripts::create_vault_and_borrow${getFunctionSuffix(collateralCoinType)}`,
+    function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::vault_scripts::create_vault_and_borrow_${getFunctionSuffix(collateralCoinType)}`,
     functionArguments: [
       collectionObjectAddress,
       getAssetAmountArgument(collateralAmount, collateralDecimals),
