@@ -4,7 +4,7 @@
   "vaults": [
     {
       "name": "tUSDC/mUSD CDP",
-      "address": "0xc0949dd6689c3d2c5e42466e0c682e56d49cd6601bcb29bb616a93bf8b4e074",
+      "address": "0x0c0949dd6689c3d2c5e42466e0c682e56d49cd6601bcb29bb616a93bf8b4e074",
       "collateralSymbol": "tUSDC",
       "borrowSymbol": "mUSD",
       "collateralOracle": "USDC_PYTH",
@@ -88,7 +88,7 @@
     },
     {
       "name": "AVAX_PYTH",
-      "address": "0xa8bb300dfe7b2882cf572002e155b0bb9bfc63102c653c5de9f4246270c4034",
+      "address": "0x0a8bb300dfe7b2882cf572002e155b0bb9bfc63102c653c5de9f4246270c4034",
       "priceFeedId": "0xd7566a3ba7f7286ed54f4ae7e983f4420ae0b1e0f3892e11f9c4ab107bbad7b9",
       "priceMultiplier": 1
     },
@@ -178,7 +178,7 @@
       "name": "APTPERP/mUSD"
     },
     {
-      "address": "0x1a1d03031bd252b032dce2819037a0014b9f71d84772e3e4ebb96dd82f34eab",
+      "address": "0x01a1d03031bd252b032dce2819037a0014b9f71d84772e3e4ebb96dd82f34eab",
       "marginOracle": "STABLE_ORACLE",
       "perpOracle": "ARB_PYTH",
       "perpSymbol": "ARBPERP",
@@ -226,7 +226,7 @@
       "name": "SOLPERP/mUSD"
     },
     {
-      "address": "0xc3f55de18098bf0aae113bd6c97dd345e0064bc464c161affda44b652b7eac",
+      "address": "0x00c3f55de18098bf0aae113bd6c97dd345e0064bc464c161affda44b652b7eac",
       "marginOracle": "STABLE_ORACLE",
       "perpOracle": "SUI_PYTH",
       "perpSymbol": "SUIPERP",
@@ -282,7 +282,7 @@
       "name": "MKRPERP/mUSD"
     },
     {
-      "address": "0x8acf3f08d8eba6e51c3d278ac23fa7aac9f487ff601f518406a7d44ed4afc39",
+      "address": "0x08acf3f08d8eba6e51c3d278ac23fa7aac9f487ff601f518406a7d44ed4afc39",
       "marginOracle": "STABLE_ORACLE",
       "perpOracle": "MNT_PYTH",
       "perpSymbol": "MNTPERP",
@@ -314,7 +314,7 @@
       "name": "EURPERP/mUSD"
     },
     {
-      "address": "0xb29c6dcfc459fd9f8a594dab778358a0225cc463ef0d1be045d029213db8fc5",
+      "address": "0x0b29c6dcfc459fd9f8a594dab778358a0225cc463ef0d1be045d029213db8fc5",
       "marginOracle": "STABLE_ORACLE",
       "perpOracle": "GBP_PYTH",
       "perpSymbol": "GBPPERP",
