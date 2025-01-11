@@ -26,6 +26,7 @@ import {
   priceFeedIdView,
   vaultCollectionNameView,
 } from '../views'
+import { normalizeAddress } from '.'
 import { MirageJsonConfig } from './config'
 
 export const buildMirageConfig = async (
@@ -54,7 +55,7 @@ export const buildMirageConfig = async (
 
     config.oracles.push({
       name: oracleName,
-      address: oracleObj,
+      address: normalizeAddress(oracleObj),
       priceFeedId,
       priceMultiplier,
     })
@@ -70,10 +71,13 @@ export const buildMirageConfig = async (
       marketMarginSymbolView(marketObj, aptosClient, deployerAddress),
       marketNameView(marketObj, aptosClient),
     ])
-    const marginOracle = config.oracles.find((oracle) => oracle.address == marginOracleObj)!
-    const perpOracle = config.oracles.find((oracle) => oracle.address == perpOracleObj)!
+    const marginOracleAddr = normalizeAddress(marginOracleObj)
+    const perpOracleAddr = normalizeAddress(perpOracleObj)
+
+    const marginOracle = config.oracles.find((oracle) => oracle.address == marginOracleAddr)!
+    const perpOracle = config.oracles.find((oracle) => oracle.address == perpOracleAddr)!
     config.markets.push({
-      address: marketObj,
+      address: normalizeAddress(marketObj),
       marginOracle: marginOracle.name,
       perpOracle: perpOracle.name,
       perpSymbol,
@@ -134,7 +138,7 @@ export const buildMirageConfig = async (
     const decimalsParsed = BigNumber(faDecimalsResult[0] as string).toNumber()
     config.fungibleAssets.push({
       coinType,
-      address: tokenObj,
+      address: normalizeAddress(tokenObj),
       decimals: decimalsParsed,
       name: tokenNameParsed,
       symbol: tokenSymbolParsed,
@@ -150,37 +154,41 @@ export const buildMirageConfig = async (
       collateralOracleView(vaultObj, aptosClient, deployerAddress),
       borrowOracleView(vaultObj, aptosClient, deployerAddress),
     ])
+    const collateralTokenAddr = normalizeAddress(collateralTokenObj)
+    const borrowTokenAddr = normalizeAddress(borrowTokenObj)
+    const collateralOracleAddr = normalizeAddress(collateralOracleObj)
+    const borrowOracleAddr = normalizeAddress(borrowOracleObj)
 
-    const hasBorrowSymbol = !!config.fungibleAssets.find((fa) => fa.address == borrowTokenObj)
-    const hasCollateralSymbol = !!config.fungibleAssets.find((fa) => fa.address == collateralTokenObj)
+    const hasCollateralSymbol = !!config.fungibleAssets.find((fa) => fa.address == collateralTokenAddr)
+    const hasBorrowSymbol = !!config.fungibleAssets.find((fa) => fa.address == borrowTokenAddr)
 
-    if (!hasBorrowSymbol) {
-      await addTokenConfig(borrowTokenObj)
-    }
     if (!hasCollateralSymbol) {
       await addTokenConfig(collateralTokenObj)
     }
-    console.log(config.fungibleAssets)
-    console.log(borrowTokenObj)
-    console.log(collateralTokenObj)
+    if (!hasBorrowSymbol) {
+      await addTokenConfig(borrowTokenObj)
+    }
+    const borrow = config.fungibleAssets.find((fa) => fa.address == borrowTokenAddr)!
+    const collateral = config.fungibleAssets.find((fa) => fa.address == collateralTokenAddr)!
 
-    const borrow = config.fungibleAssets.find((fa) => fa.address == borrowTokenObj)!
-    const collateral = config.fungibleAssets.find((fa) => fa.address == collateralTokenObj)!
-
-    const borrowOracle = config.oracles.find((oracle) => oracle.address == borrowOracleObj)!
-    const collateralOracle = config.oracles.find((oracle) => oracle.address == collateralOracleObj)!
+    const borrowOracle = config.oracles.find((oracle) => oracle.address == borrowOracleAddr)!
+    const collateralOracle = config.oracles.find((oracle) => oracle.address == collateralOracleAddr)!
 
     console.log(collateral)
     console.log(borrow)
 
     config.vaults.push({
       name: vaultName,
-      address: vaultObj,
+      address: normalizeAddress(vaultObj),
       collateralSymbol: collateral.symbol,
       borrowSymbol: borrow.symbol,
       collateralOracle: collateralOracle.name,
       borrowOracle: borrowOracle.name,
     })
   }
+
+  console.log('vault count', Object.keys(config.markets).length)
+  console.log('fungible asset count', Object.keys(config.fungibleAssets).length)
+
   return config
 }

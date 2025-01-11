@@ -13,6 +13,14 @@ export const getDecimal8Argument = (amount: number): string => {
   return BigNumber(PRECISION_8).times(amount).toFixed(0)
 }
 
+export const getTpSlArgument = (stopLoss: number | undefined): string => {
+  if (stopLoss == undefined) {
+    return '0'
+  } else {
+    return getDecimal8Argument(stopLoss)
+  }
+}
+
 export * from './marketTransactions'
 export * from './testnetTransactions'
 export * from './userProfileTransactions'

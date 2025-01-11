@@ -35,9 +35,8 @@ export class MarketClientBase extends MirageClientBase {
   }
 
   public getMarketIdFromAddress = (marketAddress: string): { perpSymbol: string; marginSymbol: string } => {
-    for (const [_, marketConfig] of Object.entries(this.config.markets)) {
-      if (marketConfig.address == marketAddress)
-        return { perpSymbol: marketConfig.perpSymbol, marginSymbol: marketConfig.marginSymbol }
+    for (const market of Object.values(this.config.markets)) {
+      if (market.address == marketAddress) return { perpSymbol: market.perpSymbol, marginSymbol: market.marginSymbol }
     }
     throw new Error(`market not found ${marketAddress}`)
   }

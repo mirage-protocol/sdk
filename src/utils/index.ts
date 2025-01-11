@@ -1,4 +1,4 @@
-import { Deserializer } from '@aptos-labs/ts-sdk'
+import { AccountAddress, Deserializer } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 export * from './config'
@@ -34,4 +34,8 @@ export const getPropertyMapSigned64 = (key: string, data: any): BigNumber => {
   const negative = de.deserializeBool()
 
   return magnitude.times(negative ? -1 : 1)
+}
+
+export const normalizeAddress = (address: string): string => {
+  return AccountAddress.from(address).toStringLong()
 }

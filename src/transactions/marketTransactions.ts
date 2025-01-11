@@ -2,7 +2,7 @@ import { AccountAddress, InputEntryFunctionData, MoveObjectType } from '@aptos-l
 
 import { PositionSide } from '../entities'
 import { getModuleAddress, MoveModules } from '../utils'
-import { getDecimal8Argument } from './'
+import { getDecimal8Argument, getTpSlArgument } from './'
 
 /**
  * Open a position in a market at the current price
@@ -39,6 +39,42 @@ export const createOpenPositionPayload = (
  * Open a position in a market at the current price
  * @returns payload promise for the transaction
  */
+export const createOpenPositionWithTpslPayload = (
+  positionObjectAddress: MoveObjectType,
+  perpVaas: number[],
+  marginVaas: number[],
+  marginAmount: number,
+  positionSize: number,
+  side: PositionSide,
+  desiredPrice: number,
+  maxPriceSlippage: number,
+  takeProfitPrice: number | undefined,
+  stopLossPrice: number | undefined,
+  deployerAddress: AccountAddress,
+): InputEntryFunctionData => {
+  return {
+    function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::open_position_entry_with_tpsl_entry`,
+
+    functionArguments: [
+      positionObjectAddress,
+      perpVaas,
+      marginVaas,
+      getDecimal8Argument(marginAmount), // always 8 decimals
+      getDecimal8Argument(positionSize),
+      side == PositionSide.LONG,
+      getDecimal8Argument(desiredPrice),
+      getDecimal8Argument(maxPriceSlippage),
+      getTpSlArgument(takeProfitPrice),
+      getTpSlArgument(stopLossPrice),
+    ],
+  }
+}
+
+/**
+/**
+ * Open a position in a market at the current price
+ * @returns payload promise for the transaction
+ */
 export const createAndOpenPositionPayload = (
   marketAddress: MoveObjectType,
   perpVaas: number[],
@@ -71,7 +107,7 @@ export const createAndOpenPositionPayload = (
  * @returns payload promise for the transaction
  */
 
-export const createOpenPositionWithTpslPayload = (
+export const createAndOpenPositionWithTpslPayload = (
   marketAddress: MoveObjectType,
   perpVaas: number[],
   marginVaas: number[],
@@ -80,8 +116,8 @@ export const createOpenPositionWithTpslPayload = (
   side: PositionSide,
   desired_price: number,
   maxPriceSlippage: number,
-  takeProfitPrice: number,
-  stopLossPrice: number,
+  takeProfitPrice: number | undefined,
+  stopLossPrice: number | undefined,
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {
   return {
@@ -96,8 +132,8 @@ export const createOpenPositionWithTpslPayload = (
       side == PositionSide.LONG,
       getDecimal8Argument(desired_price),
       getDecimal8Argument(maxPriceSlippage),
-      getDecimal8Argument(takeProfitPrice),
-      getDecimal8Argument(stopLossPrice),
+      getTpSlArgument(takeProfitPrice),
+      getTpSlArgument(stopLossPrice),
     ],
   }
 }
@@ -236,19 +272,14 @@ export const createCancelLimitOrderPayload = (
 export const createUpdateTpslPayload = (
   tpslObjectAddress: MoveObjectType,
   perpVaas: number[],
-  takeProfitPrice: number,
-  stopLossPrice: number,
+  takeProfitPrice: number | undefined,
+  stopLossPrice: number | undefined,
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {
   return {
     function:
       `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::tpsl::update_tpsl` as `${string}::${string}::${string}`,
-    functionArguments: [
-      tpslObjectAddress,
-      perpVaas,
-      getDecimal8Argument(takeProfitPrice),
-      getDecimal8Argument(stopLossPrice),
-    ],
+    functionArguments: [tpslObjectAddress, perpVaas, getTpSlArgument(takeProfitPrice), getTpSlArgument(stopLossPrice)],
   }
 }
 

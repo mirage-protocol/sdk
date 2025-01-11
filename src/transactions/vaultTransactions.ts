@@ -130,7 +130,7 @@ export const createRepayDebtPartPayload = (
 ): InputEntryFunctionData => {
   return {
     function: `${getModuleAddress(MoveModules.MIRAGE, deployerAddress)}::vault::repay_part_entry`,
-    functionArguments: [vaultObjectAddress, repayPartAmount],
+    functionArguments: [vaultObjectAddress, getDecimal8Argument(repayPartAmount)],
   }
 }
 
@@ -191,7 +191,7 @@ export const createRepayDebtAndRemoveCollateralPayload = (
     functionArguments: [
       vaultObjectAddress,
       getAssetAmountArgument(removeAmount, collateralDecimals),
-      repayPartAmount,
+      getDecimal8Argument(repayPartAmount),
       collateralVaas,
       borrowVaas,
     ],
@@ -216,7 +216,11 @@ export const createAddCollateralAndRepayDebt = (
 ): InputEntryFunctionData => {
   return {
     function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::vault_scripts::add_and_repay_${getFunctionSuffix(collateralCoinType)}`,
-    functionArguments: [vaultObjectAddress, getAssetAmountArgument(addAmount, collateralDecimals), repayPartAmount],
+    functionArguments: [
+      vaultObjectAddress,
+      getAssetAmountArgument(addAmount, collateralDecimals),
+      getDecimal8Argument(repayPartAmount),
+    ],
     typeArguments: collateralCoinType ? [collateralCoinType] : [],
   }
 }

@@ -42,7 +42,7 @@ export class VaultClientBase extends MirageClientBase {
   }
 
   public getVaultTokensFromAddress = (vaultAddress: string): { collateralSymbol: string; borrowSymbol: string } => {
-    for (const [_, vaultConfig] of Object.entries(this.config.vaults)) {
+    for (const vaultConfig of Object.values(this.config.vaults)) {
       if (vaultConfig.address === vaultAddress)
         return { collateralSymbol: vaultConfig.collateralSymbol, borrowSymbol: vaultConfig.borrowSymbol }
     }

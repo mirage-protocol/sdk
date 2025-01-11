@@ -1,5 +1,7 @@
 import BigNumber from 'bignumber.js'
 
+import { PRECISION_8 } from '../utils'
+
 /**
  * Represents an elastic rebase number
  * See: https://github.com/mirage-protocol/rebase
@@ -32,15 +34,16 @@ export class Rebase {
    */
   public toElastic(base: BigNumber, roundUp: boolean): BigNumber {
     if (this.base.isZero()) {
-      return this.base
-    } else {
-      const elastic = base.times(this.elastic).div(this.base)
-      if (!elastic.isZero() && roundUp && elastic.times(this.base).div(this.elastic).isLessThan(base)) {
-        return elastic.plus(1)
-      } else {
-        return elastic
-      }
+      return BigNumber(0)
     }
+    const scaledBase = base.times(PRECISION_8)
+    let elastic = scaledBase.times(this.elastic).div(this.base)
+    if (roundUp) {
+      elastic = elastic.integerValue(BigNumber.ROUND_CEIL)
+    } else {
+      elastic = elastic.integerValue(BigNumber.ROUND_FLOOR)
+    }
+    return elastic.div(1e8) // Convert back to normal scale by dividing by E8
   }
 
   /**
@@ -50,15 +53,17 @@ export class Rebase {
    * @returns the converted base part
    */
   toBase(elastic: BigNumber, roundUp: boolean): BigNumber {
-    let base = new BigNumber(0)
-    if (this.base.isZero() || this.elastic.isZero()) {
-      base = elastic
-    } else {
-      base = elastic.times(this.base).div(this.elastic)
-      if (roundUp && base.times(this.elastic).div(this.base).lt(elastic)) {
-        base = base.plus(1)
-      }
+    if (this.elastic.isZero()) {
+      return BigNumber(0)
     }
-    return base
+    const scaledElastic = elastic.multipliedBy(PRECISION_8)
+    let base = scaledElastic.times(this.base).div(this.elastic)
+    if (roundUp) {
+      base = base.integerValue(BigNumber.ROUND_CEIL)
+    } else {
+      base = base.integerValue(BigNumber.ROUND_FLOOR)
+    }
+
+    return base.div(PRECISION_8)
   }
 }

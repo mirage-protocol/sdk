@@ -55,9 +55,12 @@ export class MarketTransactionClient {
     side: PositionSide,
     desiredPrice: number,
     maxPriceSlippage: number,
-    expiration = BigInt(U64_MAX),
+    options: CreatePositionOptionals = {},
   ): Promise<InputEntryFunctionData> => {
     const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const hasTpSl = !options.takeProfit || options.takeProfit != 0 || options.stopLoss || options.stopLoss != 0
+    const expiration = options.expiration || BigInt(U64_MAX)
+
     switch (orderType) {
       case OrderType.MARKET: {
         if (expiration != BigInt(U64_MAX)) {
@@ -65,6 +68,21 @@ export class MarketTransactionClient {
         }
 
         const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+        if (hasTpSl) {
+          return createOpenPositionWithTpslPayload(
+            positionObjectAddress,
+            perpVaas,
+            marginVaas,
+            marginAmount,
+            positionSize,
+            side,
+            desiredPrice,
+            maxPriceSlippage,
+            options.takeProfit,
+            options.stopLoss,
+            this.base.getDeployerAddress(),
+          )
+        }
         return createOpenPositionPayload(
           positionObjectAddress,
           perpVaas,
@@ -78,6 +96,10 @@ export class MarketTransactionClient {
         )
       }
       case OrderType.LIMIT: {
+        if (hasTpSl) {
+          throw new Error(`Limit orders don't support tpsl`)
+        }
+
         return createPlaceLimitOrderPayload(
           positionObjectAddress,
           perpVaas,
@@ -113,7 +135,7 @@ export class MarketTransactionClient {
     }
   }
 
-  public getCreatePositionWithOrderPayload = async (
+  public getCreatePositionAndPlaceOrderPayload = async (
     perpSymbol: string,
     marginSymbol: string,
     orderType: OrderType,
