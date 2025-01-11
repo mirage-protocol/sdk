@@ -6,10 +6,12 @@ import { VaultClientBase } from './vaultClientBase'
 export class VaultQueriesClient {
   private readonly base: VaultClientBase
   private readonly aptosGqlClient: GqlClient
+  private readonly mirageGqlClient: GqlClient
 
-  constructor(base: VaultClientBase, aptosGqlClient: GqlClient) {
+  constructor(base: VaultClientBase, aptosGqlClient: GqlClient, mirageGqlClient: GqlClient) {
     this.base = base
     this.aptosGqlClient = aptosGqlClient
+    this.mirageGqlClient = mirageGqlClient
   }
 
   public getAllOwnedVaultAddresses = async (ownerAddress: string): Promise<string[]> => {
@@ -28,6 +30,6 @@ export class VaultQueriesClient {
 
   public getVaultCollectionAPR = async (collateralSymbol: string, borrowSymbol: string, beginDate: Date): Promise<number> => {
     const vaultObjectAddresses = this.base.getVaultCollectionAddress(collateralSymbol, borrowSymbol)
-    return await vaultCollectionAPRQuery(beginDate, vaultObjectAddresses, this.aptosGqlClient)
+    return await vaultCollectionAPRQuery(beginDate, vaultObjectAddresses, this.mirageGqlClient)
   }
 }

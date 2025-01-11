@@ -7,6 +7,6 @@ import { VaultViewsClient } from './vaultViewsClient'
 export class VaultClient extends VaultClientBase {
   public readonly entities = new VaultEntitiesClient(this, this.config)
   public readonly views = new VaultViewsClient(this, this.aptosClient)
-  public readonly queries = new VaultQueriesClient(this, this.aptosGqlClient)
+  public readonly queries = new VaultQueriesClient(this, this.aptosGqlClient, this.mirageGqlClient)
   public readonly transaction = new VaultTransactionClient(this)
 }
