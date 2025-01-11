@@ -182,8 +182,6 @@ export class VaultCollection {
    */
   public borrowTokensToDebtPart(borrowAmount: number): number {
     const scaledVal = new BigNumber(borrowAmount).times(PRECISION_8)
-    return this.mirage.debtRebase
-    .toBase(this.borrowRebase.toBase(scaledVal, false), false)
-    .toNumber()
+    return this.mirage.debtRebase.toBase(this.borrowRebase.toBase(scaledVal, false), false).toNumber()
   }
 }

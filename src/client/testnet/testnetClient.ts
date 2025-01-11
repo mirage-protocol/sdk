@@ -1,10 +1,10 @@
 import { InputEntryFunctionData } from '@aptos-labs/ts-sdk'
 
 import { createClaimAirdropPayload } from '../../transactions'
+import { MirageConfig } from '../../utils'
 import { MirageClientBase } from '../base'
 import { VaultClient } from '../vaults/vaultClient'
 import { TestnetViewsClient } from './testnetViewsClient'
-import { MirageConfig } from '../../utils'
 
 export class TestnetClient extends MirageClientBase {
   private readonly vaults: VaultClient

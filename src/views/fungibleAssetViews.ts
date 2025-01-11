@@ -11,12 +11,11 @@ export const userAssetBalanceView = async (
   tokenDecimals: number,
   aptosClient: AptosClient,
 ): Promise<BigNumber> => {
-  const result =
-      await aptosClient.getAccountCoinAmount({
-        accountAddress: userAddress,
-        coinType,
-        faMetadataAddress: tokenMetadataAddress,
-      })!
+  const result = await aptosClient.getAccountCoinAmount({
+    accountAddress: userAddress,
+    coinType,
+    faMetadataAddress: tokenMetadataAddress,
+  })!
 
   const balance = BigNumber(result)
   return integerToDecimal(balance, tokenDecimals)

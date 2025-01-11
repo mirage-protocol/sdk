@@ -68,7 +68,7 @@ export const buildMirageConfig = async (
       marketMarginOracleView(marketObj, aptosClient, deployerAddress),
       marketPerpOracleView(marketObj, aptosClient, deployerAddress),
       marketMarginSymbolView(marketObj, aptosClient, deployerAddress),
-      marketNameView(marketObj, aptosClient)
+      marketNameView(marketObj, aptosClient),
     ])
     const marginOracle = config.oracles.find((oracle) => oracle.address == marginOracleObj)!
     const perpOracle = config.oracles.find((oracle) => oracle.address == perpOracleObj)!
@@ -78,7 +78,7 @@ export const buildMirageConfig = async (
       perpOracle: perpOracle.name,
       perpSymbol,
       marginSymbol,
-      name: marketName
+      name: marketName,
     })
   }
   console.log('market count', Object.keys(config.markets).length)
@@ -124,7 +124,10 @@ export const buildMirageConfig = async (
     const coinTypeParsed = (
       coinTypeResult[0] as { vec: { account_address: string; module_name: string; struct_name: string }[] }
     ).vec
-    const coinType = coinTypeParsed.length > 0 ? parseEncodedStruct(coinTypeParsed[0]) as `${string}::${string}::${string}` : undefined
+    const coinType =
+      coinTypeParsed.length > 0
+        ? (parseEncodedStruct(coinTypeParsed[0]) as `${string}::${string}::${string}`)
+        : undefined
 
     const tokenSymbolParsed = faSymbol[0] as string
     const tokenNameParsed = faNameResult[0] as string
@@ -134,7 +137,7 @@ export const buildMirageConfig = async (
       address: tokenObj,
       decimals: decimalsParsed,
       name: tokenNameParsed,
-      symbol: tokenSymbolParsed
+      symbol: tokenSymbolParsed,
     })
   }
 

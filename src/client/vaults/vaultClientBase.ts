@@ -7,11 +7,7 @@ export class VaultClientBase extends MirageClientBase {
   private readonly fungibleAssets: FungibleAssetClient
   private readonly oracles: OracleClient
 
-  constructor(
-    fungibleAssetClient: FungibleAssetClient,
-    oracleClient: OracleClient,
-    mirageConfig: MirageConfig
-  ) {
+  constructor(fungibleAssetClient: FungibleAssetClient, oracleClient: OracleClient, mirageConfig: MirageConfig) {
     super(mirageConfig)
     this.fungibleAssets = fungibleAssetClient
     this.oracles = oracleClient
@@ -47,7 +43,8 @@ export class VaultClientBase extends MirageClientBase {
 
   public getVaultTokensFromAddress = (vaultAddress: string): { collateralSymbol: string; borrowSymbol: string } => {
     for (const [_, vaultConfig] of Object.entries(this.config.vaults)) {
-      if (vaultConfig.address === vaultAddress) return { collateralSymbol: vaultConfig.collateralSymbol, borrowSymbol: vaultConfig.borrowSymbol }
+      if (vaultConfig.address === vaultAddress)
+        return { collateralSymbol: vaultConfig.collateralSymbol, borrowSymbol: vaultConfig.borrowSymbol }
     }
     throw new Error(`vault not found ${vaultAddress}`)
   }

@@ -122,7 +122,7 @@ export class MarketTransactionClient {
     side: PositionSide,
     desiredPrice: number,
     maxPriceSlippage: number,
-    createPositionOptionals: CreatePositionOptionals = {}
+    createPositionOptionals: CreatePositionOptionals = {},
   ): Promise<InputEntryFunctionData> => {
     const marketAddress = this.base.getMarketAddress(perpSymbol, marginSymbol)
     const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
