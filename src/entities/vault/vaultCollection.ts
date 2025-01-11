@@ -174,4 +174,10 @@ export class VaultCollection {
   public getInterestRatePercent(): number {
     return this.interestPerSecond.times(SECONDS_PER_YEAR).times(100).toNumber()
   }
+
+  public borrowTokensToDebtPart(borrowAmount: number): number {
+      return this.mirage.debtRebase
+      .toBase(this.borrowRebase.toBase(new BigNumber(borrowAmount), false), false)
+      .toNumber()
+  }
 }
