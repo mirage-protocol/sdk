@@ -1,7 +1,7 @@
 {
   "name": "@mirage-protocol/sdk",
   "license": "MIT",
-  "version": "0.3.13",
+  "version": "0.3.15",
   "publishConfig": {
     "access": "public"
   },
