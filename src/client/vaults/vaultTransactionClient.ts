@@ -25,15 +25,15 @@ export class VaultTransactionClient {
     this.base = base
   }
 
-  public getCreateVaultPayload = async (
+  public getCreateVaultPayload = (
     collateralSymbol: string,
     borrowSymbol: string,
     collateralAmount: number,
-  ): Promise<InputEntryFunctionData> => {
+  ): InputEntryFunctionData => {
     const collectionAddress = this.base.getVaultCollectionAddress(collateralSymbol, borrowSymbol)
     const collateralCoinType = this.base.getCollateralCoinType(collateralSymbol)
     const collateralDecimals = this.base.getCollateralCoinDecimals(collateralSymbol)
-    return await createVaultPayload(
+    return createVaultPayload(
       collectionAddress,
       collateralAmount,
       collateralCoinType,
@@ -67,14 +67,14 @@ export class VaultTransactionClient {
     )
   }
 
-  public getAddCollateralPayload = async (
+  public getAddCollateralPayload = (
     collateralSymbol: string,
     vaultObjectAddress: MoveObjectType,
     collateralAmount: number,
-  ): Promise<InputEntryFunctionData> => {
+  ): InputEntryFunctionData => {
     const collateralCoinType = this.base.getCollateralCoinType(collateralSymbol)
     const collateralDecimals = this.base.getCollateralCoinDecimals(collateralSymbol)
-    return await createAddCollateralPayload(
+    return createAddCollateralPayload(
       vaultObjectAddress,
       collateralAmount,
       collateralCoinType,
@@ -119,11 +119,11 @@ export class VaultTransactionClient {
     )
   }
 
-  public getRepayDebtPartPayload = async (
+  public getRepayDebtPartPayload = (
     vaultObjectAddress: MoveObjectType,
     repayPartAmount: number,
-  ): Promise<InputEntryFunctionData> => {
-    return await createRepayDebtPartPayload(vaultObjectAddress, repayPartAmount, this.base.getDeployerAddress())
+  ): InputEntryFunctionData => {
+    return createRepayDebtPartPayload(vaultObjectAddress, repayPartAmount, this.base.getDeployerAddress())
   }
 
   public getAddCollateralAndBorrowPayload = async (
