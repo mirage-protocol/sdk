@@ -21,6 +21,7 @@ export const getPriceFeedUpdateData = async (priceFeedId: string, pythClient: Py
 
 export const getPrice = async (priceFeedId: string, pythClient: PythClient): Promise<number> => {
   if (!priceFeedId) return 0
+  if (priceFeedId == '0x') return 1 // stable oracle
   const response = await pythClient.getLatestPriceFeeds([priceFeedId])
   if (response == undefined || response?.length == 0) return 0
   return getContractPrice(response[0].getPriceUnchecked())
