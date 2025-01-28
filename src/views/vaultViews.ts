@@ -97,11 +97,12 @@ export const liquidatableAmountsBulkView = async (
   vaultObjectAddresses: MoveObjectType[],
   client: AptosClient,
   deployerAddress: AccountAddress,
+  exchangeRate: number
 ): Promise<number[]> => {
   const payload = {
     function:
-      `${getModuleAddress(MoveModules.KEEPER_SCRIPTS, deployerAddress)}::vault_scripts::get_liquidatable_amounts_bulk` as `${string}::${string}::${string}`,
-    functionArguments: [vaultObjectAddresses],
+      `${getModuleAddress(MoveModules.KEEPER_SCRIPTS, deployerAddress)}::vault_scripts::get_borrow_amount_of_vault_liquidatable_same_collection` as `${string}::${string}::${string}`,
+    functionArguments: [vaultObjectAddresses, exchangeRate],
   }
   const ret = await client.view({ payload })
   return (ret as any)[0].map((r) =>
