@@ -108,7 +108,7 @@ export class Position {
     this.objectAddress = objectAddress
     this.market = market
 
-    const positionType = `${getModuleAddress(MoveModules.MIRAGE, deployerAddress)}::market::Position`
+    const positionType = `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::market::Position`
     const tokenIdsType = '0x4::token::TokenIdentifiers'
     const propertyMapType = `0x4::property_map::PropertyMap`
 

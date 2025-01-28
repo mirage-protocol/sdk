@@ -127,7 +127,7 @@ export class Market {
   constructor(marketObjectResources: MoveResource[], objectAddress: string, deployerAddress: AccountAddress) {
     this.objectAddress = objectAddress
 
-    const marketType = `${getModuleAddress(MoveModules.MIRAGE, deployerAddress)}::market::Market`
+    const marketType = `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::market::Market`
 
     const market = marketObjectResources.find((resource) => resource.type === marketType)
     if (market == undefined) throw new Error('Market object not found')
