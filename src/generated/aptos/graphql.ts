@@ -10653,7 +10653,10 @@ export type Tokens_Stream_Cursor_Value_Input = {
 export type User_Transactions = {
   __typename?: 'user_transactions';
   block_height: Scalars['bigint']['output'];
+  entry_function_contract_address?: Maybe<Scalars['String']['output']>;
+  entry_function_function_name?: Maybe<Scalars['String']['output']>;
   entry_function_id_str: Scalars['String']['output'];
+  entry_function_module_name?: Maybe<Scalars['String']['output']>;
   epoch: Scalars['bigint']['output'];
   expiration_timestamp_secs: Scalars['timestamp']['output'];
   gas_unit_price: Scalars['numeric']['output'];
@@ -10671,7 +10674,10 @@ export type User_Transactions_Bool_Exp = {
   _not?: InputMaybe<User_Transactions_Bool_Exp>;
   _or?: InputMaybe<Array<User_Transactions_Bool_Exp>>;
   block_height?: InputMaybe<Bigint_Comparison_Exp>;
+  entry_function_contract_address?: InputMaybe<String_Comparison_Exp>;
+  entry_function_function_name?: InputMaybe<String_Comparison_Exp>;
   entry_function_id_str?: InputMaybe<String_Comparison_Exp>;
+  entry_function_module_name?: InputMaybe<String_Comparison_Exp>;
   epoch?: InputMaybe<Bigint_Comparison_Exp>;
   expiration_timestamp_secs?: InputMaybe<Timestamp_Comparison_Exp>;
   gas_unit_price?: InputMaybe<Numeric_Comparison_Exp>;
@@ -10686,7 +10692,10 @@ export type User_Transactions_Bool_Exp = {
 /** Ordering options when selecting data from "user_transactions". */
 export type User_Transactions_Order_By = {
   block_height?: InputMaybe<Order_By>;
+  entry_function_contract_address?: InputMaybe<Order_By>;
+  entry_function_function_name?: InputMaybe<Order_By>;
   entry_function_id_str?: InputMaybe<Order_By>;
+  entry_function_module_name?: InputMaybe<Order_By>;
   epoch?: InputMaybe<Order_By>;
   expiration_timestamp_secs?: InputMaybe<Order_By>;
   gas_unit_price?: InputMaybe<Order_By>;
@@ -10703,7 +10712,13 @@ export enum User_Transactions_Select_Column {
   /** column name */
   BlockHeight = 'block_height',
   /** column name */
+  EntryFunctionContractAddress = 'entry_function_contract_address',
+  /** column name */
+  EntryFunctionFunctionName = 'entry_function_function_name',
+  /** column name */
   EntryFunctionIdStr = 'entry_function_id_str',
+  /** column name */
+  EntryFunctionModuleName = 'entry_function_module_name',
   /** column name */
   Epoch = 'epoch',
   /** column name */
@@ -10735,7 +10750,10 @@ export type User_Transactions_Stream_Cursor_Input = {
 /** Initial value of the column from where the streaming should start */
 export type User_Transactions_Stream_Cursor_Value_Input = {
   block_height?: InputMaybe<Scalars['bigint']['input']>;
+  entry_function_contract_address?: InputMaybe<Scalars['String']['input']>;
+  entry_function_function_name?: InputMaybe<Scalars['String']['input']>;
   entry_function_id_str?: InputMaybe<Scalars['String']['input']>;
+  entry_function_module_name?: InputMaybe<Scalars['String']['input']>;
   epoch?: InputMaybe<Scalars['bigint']['input']>;
   expiration_timestamp_secs?: InputMaybe<Scalars['timestamp']['input']>;
   gas_unit_price?: InputMaybe<Scalars['numeric']['input']>;
