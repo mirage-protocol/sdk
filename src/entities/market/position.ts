@@ -158,7 +158,7 @@ export class Position {
    */
   public isOpen(): boolean {
     // Inactive trades have an id of u64 max
-    return this.side == PositionSide.UNKNOWN
+    return this.side != PositionSide.UNKNOWN
   }
 
   /**
