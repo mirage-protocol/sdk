@@ -297,10 +297,19 @@ export class MarketTransactionClient {
     perpSymbol: string,
     marginSymbol: string,
     positionObjectAddress: MoveObjectType,
+    desired_price: number,
+    maxPriceSlippage: number,
   ): Promise<InputEntryFunctionData> => {
     const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
     const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
-    return createClosePositionPayload(positionObjectAddress, perpVaas, marginVaas, this.base.getDeployerAddress())
+    return createClosePositionPayload(
+      positionObjectAddress,
+      perpVaas,
+      marginVaas,
+      desired_price,
+      maxPriceSlippage,
+      this.base.getDeployerAddress(),
+    )
   }
 
   public getCancelLimitOrderPayload = (limitOrderObjectAddress: MoveObjectType): InputEntryFunctionData => {

@@ -146,12 +146,20 @@ export const createClosePositionPayload = (
   positionObjectAddress: MoveObjectType,
   perpVaas: number[],
   marginVaas: number[],
+  desired_price: number,
+  maxPriceSlippage: number,
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {
   return {
     function:
       `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::close_position_entry` as `${string}::${string}::${string}`,
-    functionArguments: [positionObjectAddress, perpVaas, marginVaas],
+    functionArguments: [
+      positionObjectAddress,
+      perpVaas,
+      marginVaas,
+      getDecimal8Argument(desired_price),
+      getDecimal8Argument(maxPriceSlippage),
+    ],
   }
 }
 
