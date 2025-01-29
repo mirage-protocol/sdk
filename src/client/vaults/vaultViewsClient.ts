@@ -43,7 +43,15 @@ export class VaultViewsClient {
     return await vaultCollectionNameView(collectionObjectAddress, this.aptosClient)
   }
 
-  public getLiquidatableAmountsBulk = async (vaultObjectAddresses: MoveObjectType[], exchangeRate: number): Promise<number[]> => {
-    return await liquidatableAmountsBulkView(vaultObjectAddresses, this.aptosClient, this.base.getDeployerAddress(), exchangeRate)
+  public getLiquidatableAmountsBulk = async (
+    vaultObjectAddresses: MoveObjectType[],
+    exchangeRate: number,
+  ): Promise<number[]> => {
+    return await liquidatableAmountsBulkView(
+      vaultObjectAddresses,
+      this.aptosClient,
+      this.base.getDeployerAddress(),
+      exchangeRate,
+    )
   }
 }

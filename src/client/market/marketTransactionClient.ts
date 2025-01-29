@@ -256,6 +256,8 @@ export class MarketTransactionClient {
     marginSymbol: string,
     positionObjectAddress: MoveObjectType,
     positionSizeIncrease: number,
+    desiredPrice: number,
+    maxPriceSlippage: number,
   ): Promise<InputEntryFunctionData> => {
     const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
     const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
@@ -264,6 +266,8 @@ export class MarketTransactionClient {
       perpVaas,
       marginVaas,
       positionSizeIncrease,
+      desiredPrice,
+      maxPriceSlippage,
       this.base.getDeployerAddress(),
     )
   }
@@ -273,6 +277,8 @@ export class MarketTransactionClient {
     marginSymbol: string,
     positionObjectAddress: MoveObjectType,
     decreasePositionSize: number,
+    desiredPrice: number,
+    maxPriceSlippage: number,
   ): Promise<InputEntryFunctionData> => {
     const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
     const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
@@ -281,6 +287,8 @@ export class MarketTransactionClient {
       perpVaas,
       marginVaas,
       decreasePositionSize,
+      desiredPrice,
+      maxPriceSlippage,
       this.base.getDeployerAddress(),
     )
   }
@@ -465,6 +473,8 @@ export class MarketTransactionClient {
     positionObjectAddress: MoveObjectType,
     positionSizeIncrease: number,
     marginAmountIncrease: number,
+    desiredPrice: number,
+    maxPriceSlippage: number,
   ): Promise<InputEntryFunctionData> => {
     const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
     const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
@@ -474,6 +484,8 @@ export class MarketTransactionClient {
       marginVaas,
       positionSizeIncrease,
       marginAmountIncrease,
+      desiredPrice,
+      maxPriceSlippage,
       this.base.getDeployerAddress(),
     )
   }
@@ -488,6 +500,8 @@ export class MarketTransactionClient {
     positionObjectAddress: MoveObjectType,
     positionSizeIncrease: number,
     marginAmountDecrease: number,
+    desiredPrice: number,
+    maxPriceSlippage: number,
   ): Promise<InputEntryFunctionData> => {
     const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
     const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
@@ -497,6 +511,8 @@ export class MarketTransactionClient {
       marginVaas,
       positionSizeIncrease,
       marginAmountDecrease,
+      desiredPrice,
+      maxPriceSlippage,
       this.base.getDeployerAddress(),
     )
   }
@@ -511,6 +527,8 @@ export class MarketTransactionClient {
     positionObjectAddress: MoveObjectType,
     positionSizeDecrease: number,
     marginAmountDecrease: number,
+    desiredPrice: number,
+    maxPriceSlippage: number,
   ): Promise<InputEntryFunctionData> => {
     const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
     const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
@@ -520,6 +538,8 @@ export class MarketTransactionClient {
       marginVaas,
       positionSizeDecrease,
       marginAmountDecrease,
+      desiredPrice,
+      maxPriceSlippage,
       this.base.getDeployerAddress(),
     )
   }
@@ -534,6 +554,8 @@ export class MarketTransactionClient {
     positionObjectAddress: MoveObjectType,
     positionSizeDecrease: number,
     marginAmountIncrease: number,
+    desiredPrice: number,
+    maxPriceSlippage: number,
   ): Promise<InputEntryFunctionData> => {
     const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
     const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
@@ -543,6 +565,8 @@ export class MarketTransactionClient {
       marginVaas,
       positionSizeDecrease,
       marginAmountIncrease,
+      desiredPrice,
+      maxPriceSlippage,
       this.base.getDeployerAddress(),
     )
   }

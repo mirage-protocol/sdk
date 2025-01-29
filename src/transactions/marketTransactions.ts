@@ -395,12 +395,21 @@ export const createIncreasePositionSizePayload = (
   perpVaas: number[],
   marginVaas: number[],
   positionSizeIncrease: number,
+  desiredPrice: number,
+  maxPriceSlippage: number,
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {
   return {
     function:
       `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::market::increase_position_size` as `${string}::${string}::${string}`,
-    functionArguments: [positionObjectAddress, perpVaas, marginVaas, getDecimal8Argument(positionSizeIncrease)],
+    functionArguments: [
+      positionObjectAddress,
+      perpVaas,
+      marginVaas,
+      getDecimal8Argument(positionSizeIncrease),
+      getDecimal8Argument(desiredPrice),
+      getDecimal8Argument(maxPriceSlippage),
+    ],
   }
 }
 
@@ -413,12 +422,21 @@ export const createDecreasePositionSizePayload = (
   perpVaas: number[],
   marginVaas: number[],
   decreasePositionSize: number,
+  desiredPrice: number,
+  maxPriceSlippage: number,
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {
   const payload = {
     function:
       `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::decrease_position_size_entry` as `${string}::${string}::${string}`,
-    functionArguments: [positionObjectAddress, perpVaas, marginVaas, getDecimal8Argument(decreasePositionSize)],
+    functionArguments: [
+      positionObjectAddress,
+      perpVaas,
+      marginVaas,
+      getDecimal8Argument(decreasePositionSize),
+      getDecimal8Argument(desiredPrice),
+      getDecimal8Argument(maxPriceSlippage),
+    ],
   }
   return payload
 }
@@ -517,6 +535,8 @@ export const createIncreaseSizeAndIncreaseMarginPayload = (
   marginVaas: number[],
   positionSizeIncrease: number,
   marginAmountIncrease: number,
+  desiredPrice: number,
+  maxPriceSlippage: number,
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {
   return {
@@ -528,6 +548,8 @@ export const createIncreaseSizeAndIncreaseMarginPayload = (
       marginVaas,
       getDecimal8Argument(positionSizeIncrease),
       getDecimal8Argument(marginAmountIncrease),
+      getDecimal8Argument(desiredPrice),
+      getDecimal8Argument(maxPriceSlippage),
     ],
   }
 }
@@ -542,6 +564,8 @@ export const createIncreaseSizeAndDecreaseMarginPayload = (
   marginVaas: number[],
   positionSizeIncrease: number,
   marginAmountDecrease: number,
+  desiredPrice: number,
+  maxPriceSlippage: number,
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {
   const payload = {
@@ -553,6 +577,8 @@ export const createIncreaseSizeAndDecreaseMarginPayload = (
       marginVaas,
       getDecimal8Argument(positionSizeIncrease),
       getDecimal8Argument(marginAmountDecrease),
+      getDecimal8Argument(desiredPrice),
+      getDecimal8Argument(maxPriceSlippage),
     ],
   }
   return payload
@@ -568,6 +594,8 @@ export const createDecreaseSizeAndDecreaseMarginPayload = (
   marginVaas: number[],
   positionSizeDecrease: number,
   marginAmountDecrease: number,
+  desiredPrice: number,
+  maxPriceSlippage: number,
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {
   return {
@@ -579,6 +607,8 @@ export const createDecreaseSizeAndDecreaseMarginPayload = (
       marginVaas,
       getDecimal8Argument(positionSizeDecrease),
       getDecimal8Argument(marginAmountDecrease),
+      getDecimal8Argument(desiredPrice),
+      getDecimal8Argument(maxPriceSlippage),
     ],
   }
 }
@@ -593,6 +623,8 @@ export const createDecreaseSizeAndIncreaseMarginPayload = (
   marginVaas: number[],
   positionSizeDecrease: number,
   marginAmountIncrease: number,
+  desiredPrice: number,
+  maxPriceSlippage: number,
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {
   return {
@@ -604,6 +636,8 @@ export const createDecreaseSizeAndIncreaseMarginPayload = (
       marginVaas,
       getDecimal8Argument(positionSizeDecrease),
       getDecimal8Argument(marginAmountIncrease),
+      getDecimal8Argument(desiredPrice),
+      getDecimal8Argument(maxPriceSlippage),
     ],
   }
 }

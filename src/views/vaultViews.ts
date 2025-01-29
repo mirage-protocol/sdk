@@ -97,7 +97,7 @@ export const liquidatableAmountsBulkView = async (
   vaultObjectAddresses: MoveObjectType[],
   client: AptosClient,
   deployerAddress: AccountAddress,
-  exchangeRate: number
+  exchangeRate: number,
 ): Promise<number[]> => {
   const payload = {
     function:
