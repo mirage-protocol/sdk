@@ -170,7 +170,6 @@ export const createPositionAndPlaceLimitOrderPayload = (
   positionSize: number,
   triggerPrice: number,
   maxPriceSlippage: number,
-  isDecreaseOnly: boolean,
   triggersAbove: boolean,
   expiration: bigint, // in seconds,
   side: PositionSide,
@@ -185,8 +184,6 @@ export const createPositionAndPlaceLimitOrderPayload = (
       getDecimal8Argument(positionSize),
       getDecimal8Argument(triggerPrice),
       getDecimal8Argument(maxPriceSlippage),
-      false, // is_decrease only is always false when creating a new position
-      isDecreaseOnly,
       triggersAbove,
       expiration.toString(), // sdk breaks for large non-string integers
       side == PositionSide.LONG,
