@@ -110,7 +110,7 @@ export class Position {
 
     const positionType = `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::market::Position`
     const tokenIdsType = '0x4::token::TokenIdentifiers'
-    const propertyMapType = `0x4::property_map::PropertyMap`
+    const propertyMapType = '0x4::property_map::PropertyMap'
 
     const position = positionObjectResources.find((resource) => resource.type === positionType)
     if (position == undefined) throw new Error('Position object not found')
@@ -126,7 +126,7 @@ export class Position {
     this.realizedPnl = this.tradePnl.minus(this.feesPaid).minus(this.fundingPaid)
     this.leverage = getPropertyMapU64('leverage', propertyMap.data as any).div(PERCENT_PRECISION)
 
-    this.openingPrice = BigNumber((position.data as any).opening_price).div(PRECISION_8)
+    this.openingPrice = BigNumber((position.data as any).last_settled_price).div(PRECISION_8)
     const side = (position.data as any).side.__variant__ as string
     if (side == 'LONG') {
       this.side = PositionSide.LONG

@@ -11,8 +11,8 @@ export * from './priceFeeds'
 export const getPropertyMapU64 = (key: string, data: any): BigNumber => {
   const property = data.inner.data.find((property: { key: string; value: any }) => {
     return property.key == key
-  })
-  const de = new Deserializer(property.value.value)
+  }) 
+  const de = (Deserializer as any).fromHex(property.value.value)
   return BigNumber(de.deserializeU64().toString())
 }
 
@@ -27,10 +27,10 @@ export const getPropertyMapSigned64 = (key: string, data: any): BigNumber => {
   const negative_property = data.inner.data.find((property: { key: string; value: any }) => {
     return property.key == `${key}_negative`
   })
-  let de = new Deserializer(magnitude_property.value.value)
+  let de = (Deserializer as any).fromHex(magnitude_property.value.value)
   const magnitude = BigNumber(de.deserializeU64().toString())
 
-  de = new Deserializer(negative_property.value.value)
+  de = (Deserializer as any).fromHex(negative_property.value.value)
   const negative = de.deserializeBool()
 
   return magnitude.times(negative ? -1 : 1)
