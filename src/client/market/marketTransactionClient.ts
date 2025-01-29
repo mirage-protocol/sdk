@@ -3,6 +3,7 @@ import { InputEntryFunctionData, MoveObjectType } from '@aptos-labs/ts-sdk'
 import { OrderType, PositionSide } from '../../entities'
 import {
   createAndOpenPositionPayload,
+  createAndOpenPositionWithTpslPayload,
   createCancelLimitOrderPayload,
   createCancelTpslPayload,
   createCleanupLimitOrderPayload,
@@ -58,7 +59,7 @@ export class MarketTransactionClient {
     options: CreatePositionOptionals = {},
   ): Promise<InputEntryFunctionData> => {
     const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const hasTpSl = !options.takeProfit || options.takeProfit != 0 || options.stopLoss || options.stopLoss != 0
+    const hasTpSl = options.takeProfit || options.takeProfit != 0 || options.stopLoss || options.stopLoss != 0
     const expiration = options.expiration || BigInt(U64_MAX)
 
     switch (orderType) {
@@ -155,7 +156,7 @@ export class MarketTransactionClient {
         }
         const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
         if (createPositionOptionals.takeProfit || createPositionOptionals.stopLoss) {
-          return createOpenPositionWithTpslPayload(
+          return createAndOpenPositionWithTpslPayload(
             marketAddress,
             perpVaas,
             marginVaas,
