@@ -217,20 +217,10 @@ export class MarketTransactionClient {
   }
 
   public getIncreaseMarginPayload = async (
-    perpSymbol: string,
-    marginSymbol: string,
     positionObjectAddress: MoveObjectType,
     increaseMarginAmount: number,
   ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
-    return createIncreaseMarginPayload(
-      positionObjectAddress,
-      perpVaas,
-      marginVaas,
-      increaseMarginAmount,
-      this.base.getDeployerAddress(),
-    )
+    return createIncreaseMarginPayload(positionObjectAddress, increaseMarginAmount, this.base.getDeployerAddress())
   }
 
   public getDecreaseMarginPayload = async (
@@ -371,7 +361,7 @@ export class MarketTransactionClient {
     const isIncrease = newMarginAmount > oldMarginAmount
     const diff = isIncrease ? newMarginAmount - oldMarginAmount : oldMarginAmount - newMarginAmount
     return isIncrease
-      ? await this.getIncreaseMarginPayload(perpSymbol, marginSymbol, positionObjectAddress, diff)
+      ? await this.getIncreaseMarginPayload(positionObjectAddress, diff)
       : this.getDecreaseMarginPayload(perpSymbol, marginSymbol, positionObjectAddress, diff)
   }
 

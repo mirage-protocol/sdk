@@ -329,15 +329,13 @@ export const createCancelTpslPayload = (
 
 export const createIncreaseMarginPayload = (
   positionObject: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
   increaseMarginAmount: number,
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {
   return {
     function:
       `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::increase_margin_entry` as `${string}::${string}::${string}`,
-    functionArguments: [positionObject, perpVaas, marginVaas, getDecimal8Argument(increaseMarginAmount)],
+    functionArguments: [positionObject, getDecimal8Argument(increaseMarginAmount)],
   }
 }
 
