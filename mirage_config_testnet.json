@@ -1,10 +1,10 @@
 {
   "chainId": 2,
-  "deployerAddress": "0xd5b50fe1ff94ee33333d46b4dff6c548e9c65063620a2052893f0ab9253fde28",
+  "deployerAddress": "0x86d2ae026e602dbe39040457a6196ecdfc6308ab5b276d4379e10327b7204666",
   "vaults": [
     {
       "name": "tUSDC/mUSD CDP",
-      "address": "0xd871a068bffffcd053d108955f499596ce0fa3171f1f9d11158216073b92a36e",
+      "address": "0x8f3699188140d9d7acd406c9c3890f52569770178dfdfe26018f8818b547957f",
       "collateralSymbol": "tUSDC",
       "borrowSymbol": "mUSD",
       "collateralOracle": "USDC_PYTH",
@@ -12,7 +12,7 @@
     },
     {
       "name": "APT/mUSD CDP",
-      "address": "0xa79b86e90078c5fcb39719823ab1e87d8025fd138287617195fc706b0d320351",
+      "address": "0xe1e13aa968df88dff6ac5227eaa6220c90a0e40e60ce274695a134f43966e2c0",
       "collateralSymbol": "APT",
       "borrowSymbol": "mUSD",
       "collateralOracle": "APT_PYTH",
@@ -22,140 +22,86 @@
   "oracles": [
     {
       "name": "STABLE_ORACLE",
-      "address": "0x8309b00c16bd88b6be1b5d14b067acf798c6ec01bff093bcf5df4ec23283a5c5",
+      "address": "0xea497f66440058b553a3bfbc9eb8a7608fa58e0ab6d7c3a20042e07b9cb8b24d",
       "priceFeedId": "0x",
       "priceMultiplier": 1
     },
     {
       "name": "USDC_PYTH",
-      "address": "0x223c015f6dbee2bb7e61ca7ee4e2e99b40039b24bda7aa2b00e8d17031b15efd",
+      "address": "0x1681450aa712554c31321d23a5dfdc7c4ea4d3e04d2375cdda3a48e89dbce0f7",
       "priceFeedId": "0x41f3625971ca2ed2263e78573fe5ce23e13d2558ed3f2e47ab0f84fb9e7ae722",
       "priceMultiplier": 1
     },
     {
       "name": "APT_PYTH",
-      "address": "0x2a02071c9d300af40afd49c2d9ffc71d706b25a7a226eb9e36b86266a45a47af",
+      "address": "0xc21bdf1a4c16a5a7aad7c4a4feefde7ddf3122a149a92369c0044664b195f9cd",
       "priceFeedId": "0x44a93dddd8effa54ea51076c4e851b6cbbfd938e82eb90197de38fe8876bb66e",
       "priceMultiplier": 1
     },
     {
-      "name": "ARB_PYTH",
-      "address": "0xdc754a2cae47b4d2cc32f59dad863e6653e19a7bc3af1aae0e70e824f7afd51c",
-      "priceFeedId": "0x37f40d2898159e8f2e52b93cb78f47cc3829a31e525ab975c49cc5c5d9176378",
-      "priceMultiplier": 1
-    },
-    {
       "name": "BTC_PYTH",
-      "address": "0x75061e8abb2071a1542ee698f16e7f7c276f08988bccd48c325dde45264f95cf",
+      "address": "0x910baf8c8e45b7ba6729849e41ae2372b5ef127686893baddb913b772ab30356",
       "priceFeedId": "0xf9c0172ba10dfa4d19088d94f5bf61d3b54d5bd7483a322a982e1373ee8ea31b",
       "priceMultiplier": 1
     },
     {
       "name": "ETH_PYTH",
-      "address": "0x74f52e673311f6edb4e1cf4e2ee16c73b809bcd321fd8a70d450134a2229e111",
+      "address": "0x4ceeb1b954e75cece12d4a9241b1ee1f06bf79519379aaa58d8e7dfb32479c3b",
       "priceFeedId": "0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6",
       "priceMultiplier": 1
     },
     {
-      "name": "OP_PYTH",
-      "address": "0xc4891d4e9cd795f43a364953eac2a57c7776eb42395dc3e14a1e329769251bb0",
-      "priceFeedId": "0x71334dcd37620ce3c33e3bafef04cc80dec083042e49b734315b36d1aad7991f",
-      "priceMultiplier": 1
-    },
-    {
-      "name": "1000PEPE_PYTH",
-      "address": "0x4e8d444dc690959bfddb195bcbd57f2c8c7605c27e92b9f6e2609d3f1e37c29d",
-      "priceFeedId": "0xed82efbfade01083ffa8f64664c86af39282c9f084877066ae72b635e77718f0",
-      "priceMultiplier": 1000
-    },
-    {
       "name": "SOL_PYTH",
-      "address": "0x2dbd5f5558e9c744685fde8ebc7aa4d8c0bef915e91e359cf2986ad7302c75d3",
+      "address": "0x4ab336dc2801e3a05ff23918c789eda5df33b5fbf16add4c0457bad0e322707f",
       "priceFeedId": "0xfe650f0367d4a7ef9815a593ea15d36593f0643aaaf0149bb04be67ab851decd",
       "priceMultiplier": 1
     },
     {
       "name": "SUI_PYTH",
-      "address": "0x55781312e8e0bdb64940d9e676117d5cd45016beb021ac9d96aee7e0f1f61923",
+      "address": "0xb8f097a769793a979325953ff4705a7f781ba06f0fc0b426570545c8d652e7d5",
       "priceFeedId": "0x50c67b3fd225db8912a424dd4baed60ffdde625ed2feaaf283724f9608fea266",
       "priceMultiplier": 1
     },
     {
-      "name": "DOGE_PYTH",
-      "address": "0xaeee5e9ff3df9c6c15c938337da37b988786dc1443a30c51763fe9963d0c6cab",
-      "priceFeedId": "0x31775e1d6897129e8a84eeba975778fb50015b88039e9bc140bbd839694ac0ae",
-      "priceMultiplier": 1
-    },
-    {
-      "name": "AVAX_PYTH",
-      "address": "0xf9528d6d43835c3ec25eb78ea908aa8cb5a75238dfe0048117ff3739e30cf3b2",
-      "priceFeedId": "0xd7566a3ba7f7286ed54f4ae7e983f4420ae0b1e0f3892e11f9c4ab107bbad7b9",
-      "priceMultiplier": 1
-    },
-    {
-      "name": "PYTH_PYTH",
-      "address": "0x71671bbc9238d5068a8341f327e5f5811acded87e822d5ef34d0718f82b7f77f",
-      "priceFeedId": "0xc615ea2ed57c4e0c70ab5cb6fd29ada8350f039e67c019159204bc22c46da3f3",
-      "priceMultiplier": 1
-    },
-    {
-      "name": "STX_PYTH",
-      "address": "0xc82d019784d1b760878c400ad89e5c70b967411bf39e478b7415183708e875fc",
-      "priceFeedId": "0xc2703fcc925ad32b6256afc3ebad634970d1b1ffb3f4143e36b2d055b1dcd29b",
-      "priceMultiplier": 1
-    },
-    {
-      "name": "WIF_PYTH",
-      "address": "0x3fc75cf0d770a37a6b880ee964257021b85e422b5b8f4426804b828f88b222b9",
-      "priceFeedId": "0x45f08e06a4d78c7a46c70b324f62fe89080fa8f20da4abc5c0c6d262069b7edc",
-      "priceMultiplier": 1
-    },
-    {
-      "name": "MKR_PYTH",
-      "address": "0xd96d5aa5516aed0cc2ceeb1d46f242e8ebb297105f6c04ae620ede38feb43c77",
-      "priceFeedId": "0xc4d994230a6db7909135e4673287fb672f45ea92fb40b1bc9adf101ecf877ab7",
-      "priceMultiplier": 1
-    },
-    {
-      "name": "MNT_PYTH",
-      "address": "0x38d209f1290bdaf7877416ed0aaea29dfeb61c509ab13ec638248efce42d24a4",
-      "priceFeedId": "0xd45b6d47bf43faa700e6f6fec4f8989fcc80eabb2f2eff862d7258d60026d1b5",
+      "name": "MOVE_PYTH",
+      "address": "0x91faa0e4ffcbf9131e1e217d954aeb0fa8ed46585e6be33a6650df75b0856f0d",
+      "priceFeedId": "0x6bf748c908767baa762a1563d454ebec2d5108f8ee36d806aadacc8f0a075b6d",
       "priceMultiplier": 1
     },
     {
       "name": "XAG_PYTH",
-      "address": "0x83760c5c8747fca8b15ecd9a820c0b17d31926527f384fcf7071eaddc3d3167d",
+      "address": "0x9570dec57b6e651ae5efdc130520326ddbfeaecfcce024d3bcca077ffc331ccd",
       "priceFeedId": "0x321ba4d608fa75ba76d6d73daa715abcbdeb9dba02257f05a1b59178b49f599b",
       "priceMultiplier": 1
     },
     {
       "name": "XAU_PYTH",
-      "address": "0xc43675e639482676b535464a09bf2dafddc6f6aca59443eb4db7082691fc0fde",
+      "address": "0x7151fde0d67b70c66b366fbc7b04aa8bc0a2b10fd206eee0309286aa5de1f8a5",
       "priceFeedId": "0x30a19158f5a54c0adf8fb7560627343f22a1bc852b89d56be1accdc5dbf96d0e",
       "priceMultiplier": 1
     },
     {
       "name": "EUR_PYTH",
-      "address": "0xbc81a0d2b8a7e24fed9bdfcc1f90c22b8b4f3f325df93b5680c5ec2363fbc78d",
+      "address": "0xb4a587bf47a5013fa5d92d57fd617f61e795f34676d0e69a7bca408d9230e9f9",
       "priceFeedId": "0x30a19158f5a54c0adf8fb7560627343f22a1bc852b89d56be1accdc5dbf96d0e",
       "priceMultiplier": 1
     },
     {
       "name": "GBP_PYTH",
-      "address": "0x1dd659e35e994156713d91609e9a622e66eadf08e50115f33531062174ce26e1",
+      "address": "0xee9753655840b2c873bc100133de3298cf807f407d7ad31811c18058e3f0e014",
       "priceFeedId": "0xbcbdc2755bd74a2065f9d3283c2b8acbd898e473bdb90a6764b3dbd467c56ecd",
       "priceMultiplier": 1
     }
   ],
   "fungibleAssets": [
     {
-      "address": "0xecfb08754dc2b770e526291df6dbeb3958971733d633e0eab2e3fe6f1b930eca",
+      "address": "0x7409091bec340a49aa0b5f4b32bc4b1f6aec05607622ff868bf8b1720e11aa40",
       "decimals": 8,
       "name": "testnet usdc",
       "symbol": "tUSDC"
     },
     {
-      "address": "0x2f6e9a4a8f1bd9cb7773ced66af2fe0049ddcfb1b7577ff5d25b46d92b5cdc1f",
+      "address": "0xdd84125d1ebac8f1ecb2819801417fc392325e672be111ec03830c34d6ff82dd",
       "decimals": 8,
       "name": "mirage dollar",
       "symbol": "mUSD"
@@ -170,7 +116,7 @@
   ],
   "markets": [
     {
-      "address": "0x1e34873c9535f510bd306d18c7d554ccbfe01e257f7633afb49b704587d5266c",
+      "address": "0xce54f046a632ce7a1ae5a53fc4ce85241b1b2c68e064b74a5e2d0d47c65f065e",
       "marginOracle": "STABLE_ORACLE",
       "perpOracle": "APT_PYTH",
       "perpSymbol": "APTPERP",
@@ -178,15 +124,7 @@
       "name": "APTPERP/mUSD"
     },
     {
-      "address": "0x87478f0e2e3f319c9adc3061bc624dca76c562b4d61b6e4b7923d1e6e5bbf3ec",
-      "marginOracle": "STABLE_ORACLE",
-      "perpOracle": "ARB_PYTH",
-      "perpSymbol": "ARBPERP",
-      "marginSymbol": "mUSD",
-      "name": "ARBPERP/mUSD"
-    },
-    {
-      "address": "0x347fd82b4c6c463b4d5330b8b3f32ceb4476fd584736b16cf54905e44c0ab03e",
+      "address": "0x611ce4102776d7dbeafbaace9b8a3ebe536ebcb616ceb94bee19e7b0c7949e2c",
       "marginOracle": "STABLE_ORACLE",
       "perpOracle": "BTC_PYTH",
       "perpSymbol": "BTCPERP",
@@ -194,7 +132,7 @@
       "name": "BTCPERP/mUSD"
     },
     {
-      "address": "0x3d912700558104f236dd757917a313730aa8cf0f4965976362923eaa5fd8d54b",
+      "address": "0xe763c8309768c997a468bc8f263603d04a13487e0313c529cc85dc50ad2e95ff",
       "marginOracle": "STABLE_ORACLE",
       "perpOracle": "ETH_PYTH",
       "perpSymbol": "ETHPERP",
@@ -202,23 +140,15 @@
       "name": "ETHPERP/mUSD"
     },
     {
-      "address": "0x37aa865075be2184c35c3bededc6172cf3d50de991d741a2515e89bdd5ecd264",
+      "address": "0xc3337a2be5d9e37fd79b075d6f4ad3d3bd4c76835fe3c2a879fac5b3e61c6e48",
       "marginOracle": "STABLE_ORACLE",
-      "perpOracle": "OP_PYTH",
-      "perpSymbol": "OPPERP",
+      "perpOracle": "MOVE_PYTH",
+      "perpSymbol": "MOVEPERP",
       "marginSymbol": "mUSD",
-      "name": "OPPERP/mUSD"
+      "name": "MOVEPERP/mUSD"
     },
     {
-      "address": "0x78b764da2dba0629f53defb51800372ffe0f181547026ff4fe65cf4ae1e20958",
-      "marginOracle": "STABLE_ORACLE",
-      "perpOracle": "1000PEPE_PYTH",
-      "perpSymbol": "1000PEPEPERP",
-      "marginSymbol": "mUSD",
-      "name": "1000PEPEPERP/mUSD"
-    },
-    {
-      "address": "0xe6c15ce23f84b89e660289962968eca87952e01fecbec9a1d04d0bd5537ebf62",
+      "address": "0xa833f96e42925f8277e4f2f23497bb36d01b1b3d9dd75c44dbbe7f351ef4e621",
       "marginOracle": "STABLE_ORACLE",
       "perpOracle": "SOL_PYTH",
       "perpSymbol": "SOLPERP",
@@ -226,7 +156,7 @@
       "name": "SOLPERP/mUSD"
     },
     {
-      "address": "0x89f689066081aa6ec348e1f6282c2c7a31bd261c65cc71d3ff789ed1c09a3a42",
+      "address": "0xb47405b6da07670ffccdf2139ae2b04e99d0bf537277b69ada59780ee656c9ce",
       "marginOracle": "STABLE_ORACLE",
       "perpOracle": "SUI_PYTH",
       "perpSymbol": "SUIPERP",
@@ -234,63 +164,7 @@
       "name": "SUIPERP/mUSD"
     },
     {
-      "address": "0xccefdba0bf6624ae926e87493e2134c079ae0c36583cd3462a2f9a701484e9f7",
-      "marginOracle": "STABLE_ORACLE",
-      "perpOracle": "DOGE_PYTH",
-      "perpSymbol": "DOGEPERP",
-      "marginSymbol": "mUSD",
-      "name": "DOGEPERP/mUSD"
-    },
-    {
-      "address": "0xcbf39f5ba37b5ee860b99143a6874eca3def24fc35c696fb3bd27d6a33b5aad6",
-      "marginOracle": "STABLE_ORACLE",
-      "perpOracle": "AVAX_PYTH",
-      "perpSymbol": "AVAXPERP",
-      "marginSymbol": "mUSD",
-      "name": "AVAXPERP/mUSD"
-    },
-    {
-      "address": "0xb55ac73af01094ce6b99dca743ae8d9bc8d34225693fda43d920d0d5a34fdcf4",
-      "marginOracle": "STABLE_ORACLE",
-      "perpOracle": "PYTH_PYTH",
-      "perpSymbol": "PYTHPERP",
-      "marginSymbol": "mUSD",
-      "name": "PYTHPERP/mUSD"
-    },
-    {
-      "address": "0x892e9b92ce831f88821eb316e61e7f132d9c856388bf5854f7983a36bb64cb99",
-      "marginOracle": "STABLE_ORACLE",
-      "perpOracle": "STX_PYTH",
-      "perpSymbol": "STXPERP",
-      "marginSymbol": "mUSD",
-      "name": "STXPERP/mUSD"
-    },
-    {
-      "address": "0x543dcfcb494546512649c3b7989082fbc8454e38824c90b6983e1ac4e0eda83b",
-      "marginOracle": "STABLE_ORACLE",
-      "perpOracle": "WIF_PYTH",
-      "perpSymbol": "WIFPERP",
-      "marginSymbol": "mUSD",
-      "name": "WIFPERP/mUSD"
-    },
-    {
-      "address": "0x64073c0e94ae003b082642b2fbb292ae14bbec00145c1b9573c3dbaaf3d39171",
-      "marginOracle": "STABLE_ORACLE",
-      "perpOracle": "MKR_PYTH",
-      "perpSymbol": "MKRPERP",
-      "marginSymbol": "mUSD",
-      "name": "MKRPERP/mUSD"
-    },
-    {
-      "address": "0x1e6a0c98c0d9f26573e8dcc1952bbc8763c607eca7e18c303d6b750d36f70cf3",
-      "marginOracle": "STABLE_ORACLE",
-      "perpOracle": "MNT_PYTH",
-      "perpSymbol": "MNTPERP",
-      "marginSymbol": "mUSD",
-      "name": "MNTPERP/mUSD"
-    },
-    {
-      "address": "0xf6b2e4e3aed98655e4b8b8654711586992e4b617274eba043e4456ddefe5c7d7",
+      "address": "0x0517831dfa7e68715fbd0ff19306e95abfd31bf6a5d2e6bc6b6b47a8ea6c77bf",
       "marginOracle": "STABLE_ORACLE",
       "perpOracle": "XAG_PYTH",
       "perpSymbol": "XAGPERP",
@@ -298,7 +172,7 @@
       "name": "XAGPERP/mUSD"
     },
     {
-      "address": "0x59dc011b24fb6c69ab35e593ee435fc22f95d2191639ba7bd907d66bbe3ada80",
+      "address": "0x866a8c0812e3f42cfae8baac28451d8e73ab766e2890b1ddc2826a2daa98cb3e",
       "marginOracle": "STABLE_ORACLE",
       "perpOracle": "XAU_PYTH",
       "perpSymbol": "XAUPERP",
@@ -306,7 +180,7 @@
       "name": "XAUPERP/mUSD"
     },
     {
-      "address": "0x9aca067b4674dd0fe4b8ef0593875b5e763497da90c608b4a52d5ac0713b54b2",
+      "address": "0x5fb3c167f41e209ffd1e0f7e488aada6149cc503724d42799bc16932a9bac676",
       "marginOracle": "STABLE_ORACLE",
       "perpOracle": "EUR_PYTH",
       "perpSymbol": "EURPERP",
@@ -314,7 +188,7 @@
       "name": "EURPERP/mUSD"
     },
     {
-      "address": "0x54bf1555659635ca93e53db36243a7363c046429deaec3c29de94a94fc8415d5",
+      "address": "0xe961a196130e73b2cb80d25ce4d76b3d6372e9db7c41263fee177fc7c8ef30bd",
       "marginOracle": "STABLE_ORACLE",
       "perpOracle": "GBP_PYTH",
       "perpSymbol": "GBPPERP",
