@@ -1,0 +1,53 @@
+{
+  "chainId": 126,
+  "deployerAddress": "0x86d2ae026e602dbe39040457a6196ecdfc6308ab5b276d4379e10327b7204666",
+  "vaults": [
+    {
+      "name": "MOVE/mUSD CDP",
+      "address": "0x81821b61b14a7899e6417c9f9b6a2a8871d6d27a2fc66fee97942425185d546f",
+      "collateralSymbol": "MOVE",
+      "borrowSymbol": "mUSD",
+      "collateralOracle": "MOVE_PYTH",
+      "borrowOracle": "STABLE_ORACLE"
+    }
+  ],
+  "oracles": [
+    {
+      "name": "STABLE_ORACLE",
+      "address": "0xea497f66440058b553a3bfbc9eb8a7608fa58e0ab6d7c3a20042e07b9cb8b24d",
+      "priceFeedId": "0x",
+      "priceMultiplier": 1
+    },
+    {
+      "name": "MOVE_PYTH",
+      "address": "0x91faa0e4ffcbf9131e1e217d954aeb0fa8ed46585e6be33a6650df75b0856f0d",
+      "priceFeedId": "0x6bf748c908767baa762a1563d454ebec2d5108f8ee36d806aadacc8f0a075b6d",
+      "priceMultiplier": 1
+    }
+  ],
+  "fungibleAssets": [
+    {
+      "coinType": "0x1::aptos_coin::AptosCoin",
+      "address": "0x000000000000000000000000000000000000000000000000000000000000000a",
+      "decimals": 8,
+      "name": "Move Coin",
+      "symbol": "MOVE"
+    },
+    {
+      "address": "0xdd84125d1ebac8f1ecb2819801417fc392325e672be111ec03830c34d6ff82dd",
+      "decimals": 8,
+      "name": "mirage dollar",
+      "symbol": "mUSD"
+    }
+  ],
+  "markets": [
+    {
+      "address": "0xc3337a2be5d9e37fd79b075d6f4ad3d3bd4c76835fe3c2a879fac5b3e61c6e48",
+      "marginOracle": "STABLE_ORACLE",
+      "perpOracle": "MOVE_PYTH",
+      "perpSymbol": "MOVEPERP",
+      "marginSymbol": "mUSD",
+      "name": "MOVEPERP/mUSD"
+    }
+  ]
+}

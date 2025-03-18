@@ -1,21 +1,18 @@
 import { AccountAddress } from '@aptos-labs/ts-sdk'
 
-import mirage_config_movement_testnet from '../../mirage_config_movement_testnet.json'
+import mirage_config_movement from '../../mirage_config_movement.json'
 import mirage_config_testnet from '../../mirage_config_testnet.json'
 import mirage_config_movement_mainnet from '../../mirage_config_movement_mainnet.json'
 
 // import mirageConfigMainnet from '../../mirage_config_mainnet.json'
 export enum Deployment {
   APTOS_TESTNET = 'testnet',
-  MOVEMENT_PORTO = 'porto',
-  MOVEMENT_MAINNET = 'movement_mainnet'
+  MOVEMENT_MAINNET = 'movement',
 }
 
 export const getDeploymentByChainId = (chainId: number): Deployment => {
   if (chainId == 2) {
     return Deployment.APTOS_TESTNET
-  } else if (chainId == 177) {
-    return Deployment.MOVEMENT_PORTO
   } else if (chainId == 126) {
     return Deployment.MOVEMENT_MAINNET
   } else {
@@ -27,7 +24,7 @@ export const getChainIdByDeployment = (deployment: Deployment): number => {
   switch (deployment) {
     case Deployment.APTOS_TESTNET:
       return 2
-    case Deployment.MOVEMENT_PORTO:
+    case Deployment.MOVEMENT_MAINNET:
       return 177
     case Deployment.MOVEMENT_MAINNET:
       return 126
@@ -141,10 +138,15 @@ export class MirageConfig {
       config = options.customConfig
     } else if (this.deployment == Deployment.APTOS_TESTNET) {
       config = mirage_config_testnet
+<<<<<<< HEAD
     } else if (this.deployment == Deployment.MOVEMENT_PORTO) {
       config = mirage_config_movement_testnet
     } else if (this.deployment == Deployment.MOVEMENT_MAINNET) {
       config = mirage_config_movement_mainnet
+=======
+    } else if (this.deployment == Deployment.MOVEMENT_MAINNET) {
+      config = mirage_config_movement
+>>>>>>> aa4a0d7 (movement config)
     } else {
       console.warn(`unrecognized deployment ${this.deployment}, defaulting to mirage testnet config`)
       config = mirage_config_testnet
@@ -171,10 +173,10 @@ export const defaultMirageNetworks: { [deployment in Deployment]: NetworkConfig 
     mirageIndexerUrl: 'https://api-aptos-testnet.mirage.money/v1/graphql',
     pythUrl: 'https://hermes-beta.pyth.network',
   },
-  porto: {
-    fullnodeUrl: 'https://aptos.testnet.porto.movementlabs.xyz/v1',
-    indexerUrl: 'https://indexer.testnet.porto.movementnetwork.xyz/v1/graphql',
-    mirageIndexerUrl: 'https://porto.mirage.money/v1/graphql',
+  movement: {
+    fullnodeUrl: 'https://mainnet.movementnetwork.xyz/v1',
+    indexerUrl: 'https://indexer.mainnet.movementnetwork.xyz/v1/graphql',
+    mirageIndexerUrl: 'https://movement.mirage.money/v1/graphql',
     pythUrl: 'https://hermes-beta.pyth.network',
   },
   movement_mainnet: {
@@ -189,8 +191,6 @@ export const getDefaultFullnodeUrl = (deployment: Deployment | string): string =
   switch (deployment as Deployment) {
     case Deployment.APTOS_TESTNET:
       return defaultMirageNetworks[Deployment.APTOS_TESTNET].fullnodeUrl
-    case Deployment.MOVEMENT_PORTO:
-      return defaultMirageNetworks[Deployment.MOVEMENT_PORTO].fullnodeUrl
     case Deployment.MOVEMENT_MAINNET:
       return defaultMirageNetworks[Deployment.MOVEMENT_MAINNET].fullnodeUrl
     default:
@@ -202,8 +202,6 @@ export const getDefaultIndexerUrl = (deployment: Deployment): string => {
   switch (deployment) {
     case Deployment.APTOS_TESTNET:
       return defaultMirageNetworks[Deployment.APTOS_TESTNET].indexerUrl
-    case Deployment.MOVEMENT_PORTO:
-      return defaultMirageNetworks[Deployment.MOVEMENT_PORTO].indexerUrl
     case Deployment.MOVEMENT_MAINNET:
       return defaultMirageNetworks[Deployment.MOVEMENT_MAINNET].indexerUrl
     default:
@@ -215,8 +213,6 @@ export const getDefaultMirageIndexerUrl = (deployment: Deployment): string => {
   switch (deployment) {
     case Deployment.APTOS_TESTNET:
       return defaultMirageNetworks[Deployment.APTOS_TESTNET].mirageIndexerUrl
-    case Deployment.MOVEMENT_PORTO:
-      return defaultMirageNetworks[Deployment.MOVEMENT_PORTO].mirageIndexerUrl
     case Deployment.MOVEMENT_MAINNET:
       return defaultMirageNetworks[Deployment.MOVEMENT_MAINNET].mirageIndexerUrl
     default:
@@ -228,8 +224,6 @@ export const getDefaultPythUrl = (deployment: Deployment): string => {
   switch (deployment) {
     case Deployment.APTOS_TESTNET:
       return defaultMirageNetworks[Deployment.APTOS_TESTNET].pythUrl
-    case Deployment.MOVEMENT_PORTO:
-      return defaultMirageNetworks[Deployment.MOVEMENT_PORTO].pythUrl
     case Deployment.MOVEMENT_MAINNET:
       return defaultMirageNetworks[Deployment.MOVEMENT_MAINNET].pythUrl
     default:
