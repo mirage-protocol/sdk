@@ -166,7 +166,7 @@ export const defaultMirageNetworks: { [deployment in Deployment]: NetworkConfig 
   movement: {
     fullnodeUrl: 'https://mainnet.movementnetwork.xyz/v1',
     indexerUrl: 'https://indexer.mainnet.movementnetwork.xyz/v1/graphql',
-    mirageIndexerUrl: 'https://movement.mirage.money/v1/graphql',
+    mirageIndexerUrl: 'https://api-movement-mainnet.mirage.money/v1/graphql',
     pythUrl: 'https://hermes.pyth.network',
   },
 }
