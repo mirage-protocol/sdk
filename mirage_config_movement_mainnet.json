@@ -3,14 +3,6 @@
   "deployerAddress": "0x86d2ae026e602dbe39040457a6196ecdfc6308ab5b276d4379e10327b7204666",
   "vaults": [
     {
-      "name": "tUSDC/mUSD CDP",
-      "address": "0x8f3699188140d9d7acd406c9c3890f52569770178dfdfe26018f8818b547957f",
-      "collateralSymbol": "tUSDC",
-      "borrowSymbol": "mUSD",
-      "collateralOracle": "USDC_PYTH",
-      "borrowOracle": "STABLE_ORACLE"
-    },
-    {
       "name": "APT/mUSD CDP",
       "address": "0xe1e13aa968df88dff6ac5227eaa6220c90a0e40e60ce274695a134f43966e2c0",
       "collateralSymbol": "APT",
@@ -94,12 +86,6 @@
     }
   ],
   "fungibleAssets": [
-    {
-      "address": "0x7409091bec340a49aa0b5f4b32bc4b1f6aec05607622ff868bf8b1720e11aa40",
-      "decimals": 8,
-      "name": "testnet usdc",
-      "symbol": "tUSDC"
-    },
     {
       "address": "0xdd84125d1ebac8f1ecb2819801417fc392325e672be111ec03830c34d6ff82dd",
       "decimals": 8,
