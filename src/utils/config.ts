@@ -2,11 +2,13 @@ import { AccountAddress } from '@aptos-labs/ts-sdk'
 
 import mirage_config_movement_testnet from '../../mirage_config_movement_testnet.json'
 import mirage_config_testnet from '../../mirage_config_testnet.json'
+import mirage_config_movement_mainnet from '../../mirage_config_movement_mainnet.json'
 
 // import mirageConfigMainnet from '../../mirage_config_mainnet.json'
 export enum Deployment {
   APTOS_TESTNET = 'testnet',
   MOVEMENT_PORTO = 'porto',
+  MOVEMENT_MAINNET = 'movement_mainnet'
 }
 
 export const getDeploymentByChainId = (chainId: number): Deployment => {
@@ -14,6 +16,8 @@ export const getDeploymentByChainId = (chainId: number): Deployment => {
     return Deployment.APTOS_TESTNET
   } else if (chainId == 177) {
     return Deployment.MOVEMENT_PORTO
+  } else if (chainId == 126) {
+    return Deployment.MOVEMENT_MAINNET
   } else {
     throw new Error('no deployment with chaindId')
   }
@@ -25,6 +29,8 @@ export const getChainIdByDeployment = (deployment: Deployment): number => {
       return 2
     case Deployment.MOVEMENT_PORTO:
       return 177
+    case Deployment.MOVEMENT_MAINNET:
+      return 126
     default:
       throw new Error('no deployment with chaindId')
   }
@@ -137,6 +143,8 @@ export class MirageConfig {
       config = mirage_config_testnet
     } else if (this.deployment == Deployment.MOVEMENT_PORTO) {
       config = mirage_config_movement_testnet
+    } else if (this.deployment == Deployment.MOVEMENT_MAINNET) {
+      config = mirage_config_movement_mainnet
     } else {
       console.warn(`unrecognized deployment ${this.deployment}, defaulting to mirage testnet config`)
       config = mirage_config_testnet
@@ -169,6 +177,12 @@ export const defaultMirageNetworks: { [deployment in Deployment]: NetworkConfig 
     mirageIndexerUrl: 'https://porto.mirage.money/v1/graphql',
     pythUrl: 'https://hermes-beta.pyth.network',
   },
+  movement_mainnet: {
+    fullnodeUrl: 'https://mainnet.movementnetwork.xyz/v1',
+    indexerUrl: 'https://indexer.mainnet.movementnetwork.xyz/v1/graphql',
+    mirageIndexerUrl: 'https://api-movement-mainnet.mirage.money/v1/graphql',
+    pythUrl: 'https://hermes.pyth.network',
+  }
 }
 
 export const getDefaultFullnodeUrl = (deployment: Deployment | string): string => {
@@ -177,6 +191,8 @@ export const getDefaultFullnodeUrl = (deployment: Deployment | string): string =
       return defaultMirageNetworks[Deployment.APTOS_TESTNET].fullnodeUrl
     case Deployment.MOVEMENT_PORTO:
       return defaultMirageNetworks[Deployment.MOVEMENT_PORTO].fullnodeUrl
+    case Deployment.MOVEMENT_MAINNET:
+      return defaultMirageNetworks[Deployment.MOVEMENT_MAINNET].fullnodeUrl
     default:
       throw new Error(`cannot find deployment ${deployment}`)
   }
@@ -188,6 +204,8 @@ export const getDefaultIndexerUrl = (deployment: Deployment): string => {
       return defaultMirageNetworks[Deployment.APTOS_TESTNET].indexerUrl
     case Deployment.MOVEMENT_PORTO:
       return defaultMirageNetworks[Deployment.MOVEMENT_PORTO].indexerUrl
+    case Deployment.MOVEMENT_MAINNET:
+      return defaultMirageNetworks[Deployment.MOVEMENT_MAINNET].indexerUrl
     default:
       throw new Error(`cannot find deployment ${deployment}`)
   }
@@ -199,6 +217,8 @@ export const getDefaultMirageIndexerUrl = (deployment: Deployment): string => {
       return defaultMirageNetworks[Deployment.APTOS_TESTNET].mirageIndexerUrl
     case Deployment.MOVEMENT_PORTO:
       return defaultMirageNetworks[Deployment.MOVEMENT_PORTO].mirageIndexerUrl
+    case Deployment.MOVEMENT_MAINNET:
+      return defaultMirageNetworks[Deployment.MOVEMENT_MAINNET].mirageIndexerUrl
     default:
       throw new Error(`cannot find deployment ${deployment}`)
   }
@@ -210,6 +230,8 @@ export const getDefaultPythUrl = (deployment: Deployment): string => {
       return defaultMirageNetworks[Deployment.APTOS_TESTNET].pythUrl
     case Deployment.MOVEMENT_PORTO:
       return defaultMirageNetworks[Deployment.MOVEMENT_PORTO].pythUrl
+    case Deployment.MOVEMENT_MAINNET:
+      return defaultMirageNetworks[Deployment.MOVEMENT_MAINNET].pythUrl
     default:
       throw new Error(`cannot find deployment ${deployment}`)
   }

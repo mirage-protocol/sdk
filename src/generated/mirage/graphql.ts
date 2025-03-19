@@ -303,68 +303,6 @@ export enum Cursor_Ordering {
   Desc = 'DESC'
 }
 
-/** columns and relationships of "fee_store_datas" */
-export type Fee_Store_Datas = {
-  __typename?: 'fee_store_datas';
-  net_accumulated_fees: Scalars['numeric']['output'];
-  object_address: Scalars['String']['output'];
-  transaction_timestamp: Scalars['timestamp']['output'];
-  transaction_version: Scalars['bigint']['output'];
-  write_set_change_index: Scalars['bigint']['output'];
-};
-
-/** Boolean expression to filter rows from the table "fee_store_datas". All fields are combined with a logical 'AND'. */
-export type Fee_Store_Datas_Bool_Exp = {
-  _and?: InputMaybe<Array<Fee_Store_Datas_Bool_Exp>>;
-  _not?: InputMaybe<Fee_Store_Datas_Bool_Exp>;
-  _or?: InputMaybe<Array<Fee_Store_Datas_Bool_Exp>>;
-  net_accumulated_fees?: InputMaybe<Numeric_Comparison_Exp>;
-  object_address?: InputMaybe<String_Comparison_Exp>;
-  transaction_timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
-  transaction_version?: InputMaybe<Bigint_Comparison_Exp>;
-  write_set_change_index?: InputMaybe<Bigint_Comparison_Exp>;
-};
-
-/** Ordering options when selecting data from "fee_store_datas". */
-export type Fee_Store_Datas_Order_By = {
-  net_accumulated_fees?: InputMaybe<Order_By>;
-  object_address?: InputMaybe<Order_By>;
-  transaction_timestamp?: InputMaybe<Order_By>;
-  transaction_version?: InputMaybe<Order_By>;
-  write_set_change_index?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "fee_store_datas" */
-export enum Fee_Store_Datas_Select_Column {
-  /** column name */
-  NetAccumulatedFees = 'net_accumulated_fees',
-  /** column name */
-  ObjectAddress = 'object_address',
-  /** column name */
-  TransactionTimestamp = 'transaction_timestamp',
-  /** column name */
-  TransactionVersion = 'transaction_version',
-  /** column name */
-  WriteSetChangeIndex = 'write_set_change_index'
-}
-
-/** Streaming cursor of the table "fee_store_datas" */
-export type Fee_Store_Datas_Stream_Cursor_Input = {
-  /** Stream column input with initial value */
-  initial_value: Fee_Store_Datas_Stream_Cursor_Value_Input;
-  /** cursor ordering */
-  ordering?: InputMaybe<Cursor_Ordering>;
-};
-
-/** Initial value of the column from where the streaming should start */
-export type Fee_Store_Datas_Stream_Cursor_Value_Input = {
-  net_accumulated_fees?: InputMaybe<Scalars['numeric']['input']>;
-  object_address?: InputMaybe<Scalars['String']['input']>;
-  transaction_timestamp?: InputMaybe<Scalars['timestamp']['input']>;
-  transaction_version?: InputMaybe<Scalars['bigint']['input']>;
-  write_set_change_index?: InputMaybe<Scalars['bigint']['input']>;
-};
-
 /** columns and relationships of "limit_order_datas" */
 export type Limit_Order_Datas = {
   __typename?: 'limit_order_datas';
@@ -1176,10 +1114,6 @@ export type Query_Root = {
   current_tpsls: Array<Current_Tpsls>;
   /** fetch data from the table: "current_tpsls" using primary key columns */
   current_tpsls_by_pk?: Maybe<Current_Tpsls>;
-  /** fetch data from the table: "fee_store_datas" */
-  fee_store_datas: Array<Fee_Store_Datas>;
-  /** fetch data from the table: "fee_store_datas" using primary key columns */
-  fee_store_datas_by_pk?: Maybe<Fee_Store_Datas>;
   /** fetch data from the table: "limit_order_datas" */
   limit_order_datas: Array<Limit_Order_Datas>;
   /** fetch data from the table: "limit_order_datas" using primary key columns */
@@ -1272,21 +1206,6 @@ export type Query_RootCurrent_TpslsArgs = {
 
 export type Query_RootCurrent_Tpsls_By_PkArgs = {
   strategy_id: Scalars['String']['input'];
-};
-
-
-export type Query_RootFee_Store_DatasArgs = {
-  distinct_on?: InputMaybe<Array<Fee_Store_Datas_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Fee_Store_Datas_Order_By>>;
-  where?: InputMaybe<Fee_Store_Datas_Bool_Exp>;
-};
-
-
-export type Query_RootFee_Store_Datas_By_PkArgs = {
-  transaction_version: Scalars['bigint']['input'];
-  write_set_change_index: Scalars['bigint']['input'];
 };
 
 
@@ -1502,12 +1421,6 @@ export type Subscription_Root = {
   current_tpsls_by_pk?: Maybe<Current_Tpsls>;
   /** fetch data from the table in a streaming manner: "current_tpsls" */
   current_tpsls_stream: Array<Current_Tpsls>;
-  /** fetch data from the table: "fee_store_datas" */
-  fee_store_datas: Array<Fee_Store_Datas>;
-  /** fetch data from the table: "fee_store_datas" using primary key columns */
-  fee_store_datas_by_pk?: Maybe<Fee_Store_Datas>;
-  /** fetch data from the table in a streaming manner: "fee_store_datas" */
-  fee_store_datas_stream: Array<Fee_Store_Datas>;
   /** fetch data from the table: "limit_order_datas" */
   limit_order_datas: Array<Limit_Order_Datas>;
   /** fetch data from the table: "limit_order_datas" using primary key columns */
@@ -1645,28 +1558,6 @@ export type Subscription_RootCurrent_Tpsls_StreamArgs = {
   batch_size: Scalars['Int']['input'];
   cursor: Array<InputMaybe<Current_Tpsls_Stream_Cursor_Input>>;
   where?: InputMaybe<Current_Tpsls_Bool_Exp>;
-};
-
-
-export type Subscription_RootFee_Store_DatasArgs = {
-  distinct_on?: InputMaybe<Array<Fee_Store_Datas_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Fee_Store_Datas_Order_By>>;
-  where?: InputMaybe<Fee_Store_Datas_Bool_Exp>;
-};
-
-
-export type Subscription_RootFee_Store_Datas_By_PkArgs = {
-  transaction_version: Scalars['bigint']['input'];
-  write_set_change_index: Scalars['bigint']['input'];
-};
-
-
-export type Subscription_RootFee_Store_Datas_StreamArgs = {
-  batch_size: Scalars['Int']['input'];
-  cursor: Array<InputMaybe<Fee_Store_Datas_Stream_Cursor_Input>>;
-  where?: InputMaybe<Fee_Store_Datas_Bool_Exp>;
 };
 
 
