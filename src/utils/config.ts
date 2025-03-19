@@ -2,7 +2,6 @@ import { AccountAddress } from '@aptos-labs/ts-sdk'
 
 import mirage_config_movement from '../../mirage_config_movement.json'
 import mirage_config_testnet from '../../mirage_config_testnet.json'
-import mirage_config_movement_mainnet from '../../mirage_config_movement_mainnet.json'
 
 // import mirageConfigMainnet from '../../mirage_config_mainnet.json'
 export enum Deployment {
@@ -24,8 +23,6 @@ export const getChainIdByDeployment = (deployment: Deployment): number => {
   switch (deployment) {
     case Deployment.APTOS_TESTNET:
       return 2
-    case Deployment.MOVEMENT_MAINNET:
-      return 177
     case Deployment.MOVEMENT_MAINNET:
       return 126
     default:
@@ -138,15 +135,8 @@ export class MirageConfig {
       config = options.customConfig
     } else if (this.deployment == Deployment.APTOS_TESTNET) {
       config = mirage_config_testnet
-<<<<<<< HEAD
-    } else if (this.deployment == Deployment.MOVEMENT_PORTO) {
-      config = mirage_config_movement_testnet
-    } else if (this.deployment == Deployment.MOVEMENT_MAINNET) {
-      config = mirage_config_movement_mainnet
-=======
     } else if (this.deployment == Deployment.MOVEMENT_MAINNET) {
       config = mirage_config_movement
->>>>>>> aa4a0d7 (movement config)
     } else {
       console.warn(`unrecognized deployment ${this.deployment}, defaulting to mirage testnet config`)
       config = mirage_config_testnet
@@ -179,12 +169,6 @@ export const defaultMirageNetworks: { [deployment in Deployment]: NetworkConfig 
     mirageIndexerUrl: 'https://movement.mirage.money/v1/graphql',
     pythUrl: 'https://hermes-beta.pyth.network',
   },
-  movement_mainnet: {
-    fullnodeUrl: 'https://mainnet.movementnetwork.xyz/v1',
-    indexerUrl: 'https://indexer.mainnet.movementnetwork.xyz/v1/graphql',
-    mirageIndexerUrl: 'https://api-movement-mainnet.mirage.money/v1/graphql',
-    pythUrl: 'https://hermes.pyth.network',
-  }
 }
 
 export const getDefaultFullnodeUrl = (deployment: Deployment | string): string => {
