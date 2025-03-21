@@ -16,7 +16,7 @@ export class TestnetClient extends MirageClientBase {
     this.views = new TestnetViewsClient(this, this.aptosClient)
   }
 
-  getClaimAirdropPayload = async (): Promise<InputEntryFunctionData> => {
+  public getClaimAirdropPayload = async (): Promise<InputEntryFunctionData> => {
     const collateralPriceFeed = await this.vaults.getCollateralPriceFeedUpdate('tUSDC', 'mUSD')
     const borrowPriceFeed = await this.vaults.getBorrowPriceFeedUpdate('tUSDC', 'mUSD')
 
