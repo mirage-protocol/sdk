@@ -6,8 +6,8 @@ import {
   getModuleAddress,
   INTEREST_PRECISION,
   MoveModules,
-  PERCENT_PRECISION,
   PRECISION_8,
+  RATE_PRECISION,
   SECONDS_PER_YEAR,
 } from '../../utils'
 import { integerToDecimal } from '../../utils'
@@ -124,24 +124,24 @@ export class VaultCollection {
     this.collateralDecimals = collateralDecimals
 
     this.borrowFeePercent = BigNumber((vaultCollection.data as any).config.borrow_fee)
-      .div(PERCENT_PRECISION)
+      .div(RATE_PRECISION)
       .times(100)
       .toNumber()
     this.interestPerSecond = BigNumber((vaultCollection.data as any).config.interest_per_second).div(INTEREST_PRECISION)
     this.initialCollateralizationPercent = BigNumber(
       (vaultCollection.data as any).config.initial_collateralization_rate,
     )
-      .div(PERCENT_PRECISION)
+      .div(RATE_PRECISION)
       .times(100)
       .toNumber()
     this.maintenanceCollateralizationPercent = BigNumber(
       (vaultCollection.data as any).config.maintenance_collateralization_rate,
     )
-      .div(PERCENT_PRECISION)
+      .div(RATE_PRECISION)
       .times(100)
       .toNumber()
     this.liquidationPercent = BigNumber((vaultCollection.data as any).config.liquidation_multiplier)
-      .div(PERCENT_PRECISION)
+      .div(RATE_PRECISION)
       .times(100)
       .toNumber()
 

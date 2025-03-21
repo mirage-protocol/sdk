@@ -30,11 +30,5 @@ export class MirageClient {
     this.userProfile = new UserProfileClient(config)
 
     this.chainId = config.chainId
-
-    // Object.getOwnPropertyNames(MarketEntities.prototype).forEach((name) => {
-    //   if (name !== 'constructor') {
-    //     ;(this as any)[name] = this.marketEntities[name].bind(this.marketEntities)
-    //   }
-    // })
   }
 }
