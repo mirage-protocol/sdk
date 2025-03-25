@@ -37,5 +37,8 @@ export const getPropertyMapSigned64 = (key: string, data: any): BigNumber => {
 }
 
 export const normalizeAddress = (address: string): string => {
+  if (!address) {
+    return ''
+  }
   return AccountAddress.from(address).toStringLong()
 }

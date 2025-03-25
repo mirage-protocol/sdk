@@ -23,7 +23,7 @@
     {
       "name": "STABLE_ORACLE",
       "address": "0xea497f66440058b553a3bfbc9eb8a7608fa58e0ab6d7c3a20042e07b9cb8b24d",
-      "priceFeedId": "0x",
+      "priceFeedId": "",
       "priceMultiplier": 1
     },
     {
