@@ -8,6 +8,14 @@ import { PositionSide } from './position'
  */
 export class Market {
   /**
+   * The markets perp symbol
+   */
+  public readonly perpSymbol: string
+  /**
+   * The markets perp symbol
+   */
+  public readonly marginTokenAddress: string
+  /**
    * The total long margin of a market
    */
   public readonly totalLongMargin: BigNumber
@@ -131,6 +139,8 @@ export class Market {
 
     const market = marketObjectResources.find((resource) => resource.type === marketType)
     if (market == undefined) throw new Error('Market object not found')
+    this.perpSymbol = (market.data as any).perp_symbol as string
+    this.marginTokenAddress = (market.data as any).margin_token.inner as string
 
     this.totalLongMargin = new BigNumber((market.data as any).totalLongMargin).div(PRECISION_8)
     this.totalShortMargin = new BigNumber((market.data as any).totalShortMargin).div(PRECISION_8)

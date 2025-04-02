@@ -11,7 +11,7 @@ import BigNumber from 'bignumber.js'
 export const getPriceFeedUpdateData = async (priceFeedId: string, pythClient: PythClient): Promise<number[]> => {
   if (!priceFeedId) return []
   try {
-    console.debug('Attempting to get pyth vaas')
+    console.debug('Attempting to get pyth vaas', priceFeedId)
     const updateData = await pythClient.getPriceFeedsUpdateData([priceFeedId])
     return updateData ? updateData[0] : []
   } catch (e) {

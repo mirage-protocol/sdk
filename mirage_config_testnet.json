@@ -65,7 +65,7 @@
     {
       "name": "MOVE_PYTH",
       "address": "0x91faa0e4ffcbf9131e1e217d954aeb0fa8ed46585e6be33a6650df75b0856f0d",
-      "priceFeedId": "0x6bf748c908767baa762a1563d454ebec2d5108f8ee36d806aadacc8f0a075b6d",
+      "priceFeedId": "0xee0c08f6b500a5933e95f75169dcd8910d9ff8d4acc6d07c9f577113a2387b9c",
       "priceMultiplier": 1
     },
     {
