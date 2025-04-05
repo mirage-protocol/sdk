@@ -5996,13 +5996,13 @@ export type Jsonb_Comparison_Exp = {
   _nin?: InputMaybe<Array<Scalars['jsonb']['input']>>;
 };
 
-/** columns and relationships of "ledger_infos" */
+/** columns and relationships of "processor_metadata.ledger_infos" */
 export type Ledger_Infos = {
   __typename?: 'ledger_infos';
   chain_id: Scalars['bigint']['output'];
 };
 
-/** Boolean expression to filter rows from the table "ledger_infos". All fields are combined with a logical 'AND'. */
+/** Boolean expression to filter rows from the table "processor_metadata.ledger_infos". All fields are combined with a logical 'AND'. */
 export type Ledger_Infos_Bool_Exp = {
   _and?: InputMaybe<Array<Ledger_Infos_Bool_Exp>>;
   _not?: InputMaybe<Ledger_Infos_Bool_Exp>;
@@ -6010,12 +6010,12 @@ export type Ledger_Infos_Bool_Exp = {
   chain_id?: InputMaybe<Bigint_Comparison_Exp>;
 };
 
-/** Ordering options when selecting data from "ledger_infos". */
+/** Ordering options when selecting data from "processor_metadata.ledger_infos". */
 export type Ledger_Infos_Order_By = {
   chain_id?: InputMaybe<Order_By>;
 };
 
-/** select columns of table "ledger_infos" */
+/** select columns of table "processor_metadata.ledger_infos" */
 export enum Ledger_Infos_Select_Column {
   /** column name */
   ChainId = 'chain_id'
@@ -6329,7 +6329,7 @@ export enum Order_By {
   DescNullsLast = 'desc_nulls_last'
 }
 
-/** columns and relationships of "processor_status" */
+/** columns and relationships of "processor_metadata.processor_status" */
 export type Processor_Status = {
   __typename?: 'processor_status';
   last_success_version: Scalars['bigint']['output'];
@@ -6338,7 +6338,7 @@ export type Processor_Status = {
   processor: Scalars['String']['output'];
 };
 
-/** Boolean expression to filter rows from the table "processor_status". All fields are combined with a logical 'AND'. */
+/** Boolean expression to filter rows from the table "processor_metadata.processor_status". All fields are combined with a logical 'AND'. */
 export type Processor_Status_Bool_Exp = {
   _and?: InputMaybe<Array<Processor_Status_Bool_Exp>>;
   _not?: InputMaybe<Processor_Status_Bool_Exp>;
@@ -6349,7 +6349,7 @@ export type Processor_Status_Bool_Exp = {
   processor?: InputMaybe<String_Comparison_Exp>;
 };
 
-/** Ordering options when selecting data from "processor_status". */
+/** Ordering options when selecting data from "processor_metadata.processor_status". */
 export type Processor_Status_Order_By = {
   last_success_version?: InputMaybe<Order_By>;
   last_transaction_timestamp?: InputMaybe<Order_By>;
@@ -6357,7 +6357,7 @@ export type Processor_Status_Order_By = {
   processor?: InputMaybe<Order_By>;
 };
 
-/** select columns of table "processor_status" */
+/** select columns of table "processor_metadata.processor_status" */
 export enum Processor_Status_Select_Column {
   /** column name */
   LastSuccessVersion = 'last_success_version',
@@ -6721,9 +6721,9 @@ export type Query_Root = {
   indexer_status: Array<Indexer_Status>;
   /** fetch data from the table: "indexer_status" using primary key columns */
   indexer_status_by_pk?: Maybe<Indexer_Status>;
-  /** fetch data from the table: "ledger_infos" */
+  /** fetch data from the table: "processor_metadata.ledger_infos" */
   ledger_infos: Array<Ledger_Infos>;
-  /** fetch data from the table: "ledger_infos" using primary key columns */
+  /** fetch data from the table: "processor_metadata.ledger_infos" using primary key columns */
   ledger_infos_by_pk?: Maybe<Ledger_Infos>;
   /** fetch data from the table: "legacy_migration_v1.move_resources" */
   move_resources: Array<Move_Resources>;
@@ -6735,9 +6735,9 @@ export type Query_Root = {
   nft_metadata_crawler_parsed_asset_uris_by_pk?: Maybe<Nft_Metadata_Crawler_Parsed_Asset_Uris>;
   /** fetch data from the table: "num_active_delegator_per_pool" */
   num_active_delegator_per_pool: Array<Num_Active_Delegator_Per_Pool>;
-  /** fetch data from the table: "processor_status" */
+  /** fetch data from the table: "processor_metadata.processor_status" */
   processor_status: Array<Processor_Status>;
-  /** fetch data from the table: "processor_status" using primary key columns */
+  /** fetch data from the table: "processor_metadata.processor_status" using primary key columns */
   processor_status_by_pk?: Maybe<Processor_Status>;
   /** fetch data from the table: "proposal_votes" */
   proposal_votes: Array<Proposal_Votes>;
@@ -7903,11 +7903,11 @@ export type Subscription_Root = {
   indexer_status_by_pk?: Maybe<Indexer_Status>;
   /** fetch data from the table in a streaming manner: "indexer_status" */
   indexer_status_stream: Array<Indexer_Status>;
-  /** fetch data from the table: "ledger_infos" */
+  /** fetch data from the table: "processor_metadata.ledger_infos" */
   ledger_infos: Array<Ledger_Infos>;
-  /** fetch data from the table: "ledger_infos" using primary key columns */
+  /** fetch data from the table: "processor_metadata.ledger_infos" using primary key columns */
   ledger_infos_by_pk?: Maybe<Ledger_Infos>;
-  /** fetch data from the table in a streaming manner: "ledger_infos" */
+  /** fetch data from the table in a streaming manner: "processor_metadata.ledger_infos" */
   ledger_infos_stream: Array<Ledger_Infos>;
   /** fetch data from the table: "legacy_migration_v1.move_resources" */
   move_resources: Array<Move_Resources>;
@@ -7925,11 +7925,11 @@ export type Subscription_Root = {
   num_active_delegator_per_pool: Array<Num_Active_Delegator_Per_Pool>;
   /** fetch data from the table in a streaming manner: "num_active_delegator_per_pool" */
   num_active_delegator_per_pool_stream: Array<Num_Active_Delegator_Per_Pool>;
-  /** fetch data from the table: "processor_status" */
+  /** fetch data from the table: "processor_metadata.processor_status" */
   processor_status: Array<Processor_Status>;
-  /** fetch data from the table: "processor_status" using primary key columns */
+  /** fetch data from the table: "processor_metadata.processor_status" using primary key columns */
   processor_status_by_pk?: Maybe<Processor_Status>;
-  /** fetch data from the table in a streaming manner: "processor_status" */
+  /** fetch data from the table in a streaming manner: "processor_metadata.processor_status" */
   processor_status_stream: Array<Processor_Status>;
   /** fetch data from the table: "proposal_votes" */
   proposal_votes: Array<Proposal_Votes>;
