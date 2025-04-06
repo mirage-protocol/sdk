@@ -16,6 +16,7 @@ export class VaultQueriesClient {
 
   public getAllOwnedVaultAddresses = async (ownerAddress: string): Promise<string[]> => {
     const allVaultCollectionAddresses = this.base.getAllVaultCollectionAddresses()
+    console.log('allVaultCollectionAddresses', allVaultCollectionAddresses, ownerAddress, this.aptosGqlClient)
     return await allOwnedVaultAddressesQuery(ownerAddress, allVaultCollectionAddresses, this.aptosGqlClient)
   }
 

@@ -127,11 +127,11 @@ export class Position {
     this.leverage = getPropertyMapU64('leverage', propertyMap.data as any).div(PERCENT_PRECISION)
 
     this.openingPrice = BigNumber((position.data as any).last_settled_price).div(PRECISION_8)
-    const side = (position.data as any).side.__variant__ as string
-    if (side == 'LONG') {
-      this.side = PositionSide.LONG
-    } else if (side == 'SHORT') {
+    const side = BigNumber((position.data as any).side)
+    if (side.eq(1)) {
       this.side = PositionSide.SHORT
+    } else if (side.eq(2)) {
+      this.side = PositionSide.LONG
     } else {
       this.side = PositionSide.UNKNOWN
     }

@@ -1,7 +1,7 @@
 {
   "name": "@mirage-protocol/sdk",
   "license": "MIT",
-  "version": "0.3.26",
+  "version": "0.3.28",
   "publishConfig": {
     "access": "public"
   },
@@ -34,13 +34,13 @@
     "@aptos-labs/ts-sdk": "^1.33.0",
     "@pythnetwork/pyth-aptos-js": "^1.4.2",
     "@pythnetwork/pyth-common-js": "^1.4.0",
-    "@urql/exchange-auth": "^2.2.0",
+    "@urql/exchange-auth": "^2.2.1",
     "axios": "^1.6.8",
     "bignumber.js": "9.1.2",
     "graphql": "^16.8.1",
     "graphql-tag": "^2.12.6",
     "react": "^18.3.1",
-    "urql": "^4.1.0"
+    "urql": "^4.2.2"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "5.0.2",
