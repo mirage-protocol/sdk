@@ -24,7 +24,7 @@ export class VaultClientBase extends MirageClientBase {
   public getVaultCollection = (collateralSymbol: string, borrowSymbol: string): VaultConfig => {
     const vault = this.config.vaults[VaultClientBase.createVaultCollectionName(collateralSymbol, borrowSymbol)]
     if (!vault) {
-      throw new Error(`vault not found ${collateralSymbol}/${borrowSymbol}`)
+      throw new Error(`vault collection not found ${collateralSymbol}/${borrowSymbol}`)
     }
     return vault
   }
@@ -46,7 +46,7 @@ export class VaultClientBase extends MirageClientBase {
       if (vaultConfig.address === vaultAddress)
         return { collateralSymbol: vaultConfig.collateralSymbol, borrowSymbol: vaultConfig.borrowSymbol }
     }
-    throw new Error(`vault not found ${vaultAddress}`)
+    throw new Error(`vault collection not found ${vaultAddress}`)
   }
 
   public getCollateralPriceFeedId = (collateralSymbol: string, borrowSymbol: string): string => {
