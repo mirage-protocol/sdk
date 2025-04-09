@@ -44,7 +44,10 @@ export class VaultClientBase extends MirageClientBase {
   public getVaultTokensFromAddress = (vaultAddress: string): { collateralSymbol: string; borrowSymbol: string } => {
     for (const vaultConfig of Object.values(this.config.vaults)) {
       if (vaultConfig.address === vaultAddress)
-        return { collateralSymbol: vaultConfig.collateralSymbol, borrowSymbol: vaultConfig.borrowSymbol }
+        return {
+          collateralSymbol: vaultConfig.collateralSymbol,
+          borrowSymbol: vaultConfig.borrowSymbol,
+        }
     }
     throw new Error(`vault collection not found ${vaultAddress}`)
   }

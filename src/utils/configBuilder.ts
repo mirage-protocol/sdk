@@ -126,7 +126,9 @@ export const buildMirageConfig = async (
       aptosClient.view({ payload: getFaDecimalsPayload(tokenObj) }),
     ])
     const coinTypeParsed = (
-      coinTypeResult[0] as { vec: { account_address: string; module_name: string; struct_name: string }[] }
+      coinTypeResult[0] as {
+        vec: { account_address: string; module_name: string; struct_name: string }[]
+      }
     ).vec
     const coinType =
       coinTypeParsed.length > 0

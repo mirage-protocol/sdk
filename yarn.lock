@@ -1917,6 +1917,7 @@ __metadata:
   resolution: "@mirage-protocol/sdk@workspace:."
   dependencies:
     "@aptos-labs/ts-sdk": "npm:^1.38.0"
+    "@eslint/eslintrc": "npm:^3.3.1"
     "@graphql-codegen/cli": "npm:5.0.2"
     "@graphql-codegen/introspection": "npm:4.0.3"
     "@graphql-codegen/typescript": "npm:4.0.7"
