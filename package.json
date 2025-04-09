@@ -14,6 +14,7 @@
   "keywords": [
     "aptos",
     "move",
+    "movement",
     "mirage"
   ],
   "module": "dist/sdk.esm.js",
@@ -26,7 +27,7 @@
   "scripts": {
     "build": "yarn codegen && npm run clean && tsup src/index.ts --format esm,cjs --dts",
     "clean": "rm -rf dist",
-    "format": "prettier --check ./src",
+    "format": "yarn lint --fix",
     "lint": "eslint . --ext ts --ext tsx --ext js --quiet",
     "codegen": "graphql-codegen --config codegen.ts"
   },
