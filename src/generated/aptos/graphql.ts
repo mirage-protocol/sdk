@@ -10774,12 +10774,11 @@ export type GetCollectionsByOwnerQuery = { __typename?: 'query_root', current_co
 
 export type GetCurrentOwnerBalancesQueryVariables = Exact<{
   OWNER: Scalars['String']['input'];
-  ASSET_TYPES_V1: Array<Scalars['String']['input']> | Scalars['String']['input'];
-  ASSET_TYPES_V2: Array<Scalars['String']['input']> | Scalars['String']['input'];
+  ASSET_TYPES: Array<Scalars['String']['input']> | Scalars['String']['input'];
 }>;
 
 
-export type GetCurrentOwnerBalancesQuery = { __typename?: 'query_root', current_fungible_asset_balances: Array<{ __typename?: 'current_fungible_asset_balances', owner_address: string, amount: any, asset_type_v2?: string | null, asset_type_v1?: string | null, amount_v2?: any | null, amount_v1?: any | null }> };
+export type GetCurrentOwnerBalancesQuery = { __typename?: 'query_root', current_fungible_asset_balances: Array<{ __typename?: 'current_fungible_asset_balances', owner_address: string, amount: any, asset_type: string }> };
 
 export type GetTokenIdsFromCollectionByOwnerQueryVariables = Exact<{
   COLLECTION: Scalars['String']['input'];
@@ -10811,17 +10810,14 @@ export function useGetCollectionsByOwnerQuery(options: Omit<Urql.UseQueryArgs<Ge
   return Urql.useQuery<GetCollectionsByOwnerQuery, GetCollectionsByOwnerQueryVariables>({ query: GetCollectionsByOwnerDocument, ...options });
 };
 export const GetCurrentOwnerBalancesDocument = gql`
-    query getCurrentOwnerBalances($OWNER: String!, $ASSET_TYPES_V1: [String!]!, $ASSET_TYPES_V2: [String!]!) {
+    query getCurrentOwnerBalances($OWNER: String!, $ASSET_TYPES: [String!]!) {
   current_fungible_asset_balances(
-    where: {owner_address: {_eq: $OWNER}, is_primary: {_eq: true}, _or: {asset_type_v1: {_in: $ASSET_TYPES_V1}, asset_type_v2: {_in: $ASSET_TYPES_V2}}}
+    where: {_and: {owner_address: {_eq: $OWNER}, is_primary: {_eq: true}, asset_type: {_in: $ASSET_TYPES}}}
   ) {
     owner_address
     amount
     owner_address
-    asset_type_v2
-    asset_type_v1
-    amount_v2
-    amount_v1
+    asset_type
   }
 }
     `;

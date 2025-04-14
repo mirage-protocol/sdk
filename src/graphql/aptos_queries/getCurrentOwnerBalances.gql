@@ -1,13 +1,12 @@
-query getCurrentOwnerBalances($OWNER: String!, $ASSET_TYPES_V1: [String!]!, $ASSET_TYPES_V2:  [String!]!) {
+query getCurrentOwnerBalances($OWNER: String!, $ASSET_TYPES: [String!]!) {
   current_fungible_asset_balances(
-    where: {owner_address: {_eq: $OWNER}, is_primary: {_eq: true}, _or: { asset_type_v1: {_in: $ASSET_TYPES_V1}, asset_type_v2: {_in: $ASSET_TYPES_V2}}}
+    where: {
+_and: {owner_address: {_eq: $OWNER}, is_primary: {_eq: true},
+          asset_type: {_in: $ASSET_TYPES}}}
   ) {
     owner_address
     amount
     owner_address
-    asset_type_v2
-    asset_type_v1
-    amount_v2
-    amount_v1
+    asset_type
   }
 }
