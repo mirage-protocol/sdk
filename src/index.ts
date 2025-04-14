@@ -10,6 +10,9 @@ export {
   GetTokenIdsFromCollectionsByOwnerDocument,
   GetTokenIdsFromCollectionsByOwnerQuery,
   GetTokenIdsFromCollectionsByOwnerQueryVariables,
+  GetCurrentOwnerBalancesDocument,
+  GetCurrentOwnerBalancesQuery,
+  GetCurrentOwnerBalancesQueryVariables
 } from './generated/aptos/graphql'
 export * from './transactions'
 export * from './utils'

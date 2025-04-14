@@ -1014,6 +1014,222 @@ export enum Order_By {
   DescNullsLast = 'desc_nulls_last'
 }
 
+/** columns and relationships of "owner_trades" */
+export type Owner_Trades = {
+  __typename?: 'owner_trades';
+  owner_addr?: Maybe<Scalars['String']['output']>;
+  profit?: Maybe<Scalars['numeric']['output']>;
+  rank?: Maybe<Scalars['bigint']['output']>;
+  total_fee?: Maybe<Scalars['numeric']['output']>;
+  total_pnl?: Maybe<Scalars['numeric']['output']>;
+  trade_count?: Maybe<Scalars['bigint']['output']>;
+  volume?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** aggregated selection of "owner_trades" */
+export type Owner_Trades_Aggregate = {
+  __typename?: 'owner_trades_aggregate';
+  aggregate?: Maybe<Owner_Trades_Aggregate_Fields>;
+  nodes: Array<Owner_Trades>;
+};
+
+/** aggregate fields of "owner_trades" */
+export type Owner_Trades_Aggregate_Fields = {
+  __typename?: 'owner_trades_aggregate_fields';
+  avg?: Maybe<Owner_Trades_Avg_Fields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<Owner_Trades_Max_Fields>;
+  min?: Maybe<Owner_Trades_Min_Fields>;
+  stddev?: Maybe<Owner_Trades_Stddev_Fields>;
+  stddev_pop?: Maybe<Owner_Trades_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Owner_Trades_Stddev_Samp_Fields>;
+  sum?: Maybe<Owner_Trades_Sum_Fields>;
+  var_pop?: Maybe<Owner_Trades_Var_Pop_Fields>;
+  var_samp?: Maybe<Owner_Trades_Var_Samp_Fields>;
+  variance?: Maybe<Owner_Trades_Variance_Fields>;
+};
+
+
+/** aggregate fields of "owner_trades" */
+export type Owner_Trades_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Owner_Trades_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type Owner_Trades_Avg_Fields = {
+  __typename?: 'owner_trades_avg_fields';
+  profit?: Maybe<Scalars['Float']['output']>;
+  rank?: Maybe<Scalars['Float']['output']>;
+  total_fee?: Maybe<Scalars['Float']['output']>;
+  total_pnl?: Maybe<Scalars['Float']['output']>;
+  trade_count?: Maybe<Scalars['Float']['output']>;
+  volume?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "owner_trades". All fields are combined with a logical 'AND'. */
+export type Owner_Trades_Bool_Exp = {
+  _and?: InputMaybe<Array<Owner_Trades_Bool_Exp>>;
+  _not?: InputMaybe<Owner_Trades_Bool_Exp>;
+  _or?: InputMaybe<Array<Owner_Trades_Bool_Exp>>;
+  owner_addr?: InputMaybe<String_Comparison_Exp>;
+  profit?: InputMaybe<Numeric_Comparison_Exp>;
+  rank?: InputMaybe<Bigint_Comparison_Exp>;
+  total_fee?: InputMaybe<Numeric_Comparison_Exp>;
+  total_pnl?: InputMaybe<Numeric_Comparison_Exp>;
+  trade_count?: InputMaybe<Bigint_Comparison_Exp>;
+  volume?: InputMaybe<Numeric_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Owner_Trades_Max_Fields = {
+  __typename?: 'owner_trades_max_fields';
+  owner_addr?: Maybe<Scalars['String']['output']>;
+  profit?: Maybe<Scalars['numeric']['output']>;
+  rank?: Maybe<Scalars['bigint']['output']>;
+  total_fee?: Maybe<Scalars['numeric']['output']>;
+  total_pnl?: Maybe<Scalars['numeric']['output']>;
+  trade_count?: Maybe<Scalars['bigint']['output']>;
+  volume?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** aggregate min on columns */
+export type Owner_Trades_Min_Fields = {
+  __typename?: 'owner_trades_min_fields';
+  owner_addr?: Maybe<Scalars['String']['output']>;
+  profit?: Maybe<Scalars['numeric']['output']>;
+  rank?: Maybe<Scalars['bigint']['output']>;
+  total_fee?: Maybe<Scalars['numeric']['output']>;
+  total_pnl?: Maybe<Scalars['numeric']['output']>;
+  trade_count?: Maybe<Scalars['bigint']['output']>;
+  volume?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** Ordering options when selecting data from "owner_trades". */
+export type Owner_Trades_Order_By = {
+  owner_addr?: InputMaybe<Order_By>;
+  profit?: InputMaybe<Order_By>;
+  rank?: InputMaybe<Order_By>;
+  total_fee?: InputMaybe<Order_By>;
+  total_pnl?: InputMaybe<Order_By>;
+  trade_count?: InputMaybe<Order_By>;
+  volume?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "owner_trades" */
+export enum Owner_Trades_Select_Column {
+  /** column name */
+  OwnerAddr = 'owner_addr',
+  /** column name */
+  Profit = 'profit',
+  /** column name */
+  Rank = 'rank',
+  /** column name */
+  TotalFee = 'total_fee',
+  /** column name */
+  TotalPnl = 'total_pnl',
+  /** column name */
+  TradeCount = 'trade_count',
+  /** column name */
+  Volume = 'volume'
+}
+
+/** aggregate stddev on columns */
+export type Owner_Trades_Stddev_Fields = {
+  __typename?: 'owner_trades_stddev_fields';
+  profit?: Maybe<Scalars['Float']['output']>;
+  rank?: Maybe<Scalars['Float']['output']>;
+  total_fee?: Maybe<Scalars['Float']['output']>;
+  total_pnl?: Maybe<Scalars['Float']['output']>;
+  trade_count?: Maybe<Scalars['Float']['output']>;
+  volume?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Owner_Trades_Stddev_Pop_Fields = {
+  __typename?: 'owner_trades_stddev_pop_fields';
+  profit?: Maybe<Scalars['Float']['output']>;
+  rank?: Maybe<Scalars['Float']['output']>;
+  total_fee?: Maybe<Scalars['Float']['output']>;
+  total_pnl?: Maybe<Scalars['Float']['output']>;
+  trade_count?: Maybe<Scalars['Float']['output']>;
+  volume?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Owner_Trades_Stddev_Samp_Fields = {
+  __typename?: 'owner_trades_stddev_samp_fields';
+  profit?: Maybe<Scalars['Float']['output']>;
+  rank?: Maybe<Scalars['Float']['output']>;
+  total_fee?: Maybe<Scalars['Float']['output']>;
+  total_pnl?: Maybe<Scalars['Float']['output']>;
+  trade_count?: Maybe<Scalars['Float']['output']>;
+  volume?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "owner_trades" */
+export type Owner_Trades_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Owner_Trades_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Owner_Trades_Stream_Cursor_Value_Input = {
+  owner_addr?: InputMaybe<Scalars['String']['input']>;
+  profit?: InputMaybe<Scalars['numeric']['input']>;
+  rank?: InputMaybe<Scalars['bigint']['input']>;
+  total_fee?: InputMaybe<Scalars['numeric']['input']>;
+  total_pnl?: InputMaybe<Scalars['numeric']['input']>;
+  trade_count?: InputMaybe<Scalars['bigint']['input']>;
+  volume?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** aggregate sum on columns */
+export type Owner_Trades_Sum_Fields = {
+  __typename?: 'owner_trades_sum_fields';
+  profit?: Maybe<Scalars['numeric']['output']>;
+  rank?: Maybe<Scalars['bigint']['output']>;
+  total_fee?: Maybe<Scalars['numeric']['output']>;
+  total_pnl?: Maybe<Scalars['numeric']['output']>;
+  trade_count?: Maybe<Scalars['bigint']['output']>;
+  volume?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** aggregate var_pop on columns */
+export type Owner_Trades_Var_Pop_Fields = {
+  __typename?: 'owner_trades_var_pop_fields';
+  profit?: Maybe<Scalars['Float']['output']>;
+  rank?: Maybe<Scalars['Float']['output']>;
+  total_fee?: Maybe<Scalars['Float']['output']>;
+  total_pnl?: Maybe<Scalars['Float']['output']>;
+  trade_count?: Maybe<Scalars['Float']['output']>;
+  volume?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate var_samp on columns */
+export type Owner_Trades_Var_Samp_Fields = {
+  __typename?: 'owner_trades_var_samp_fields';
+  profit?: Maybe<Scalars['Float']['output']>;
+  rank?: Maybe<Scalars['Float']['output']>;
+  total_fee?: Maybe<Scalars['Float']['output']>;
+  total_pnl?: Maybe<Scalars['Float']['output']>;
+  trade_count?: Maybe<Scalars['Float']['output']>;
+  volume?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type Owner_Trades_Variance_Fields = {
+  __typename?: 'owner_trades_variance_fields';
+  profit?: Maybe<Scalars['Float']['output']>;
+  rank?: Maybe<Scalars['Float']['output']>;
+  total_fee?: Maybe<Scalars['Float']['output']>;
+  total_pnl?: Maybe<Scalars['Float']['output']>;
+  trade_count?: Maybe<Scalars['Float']['output']>;
+  volume?: Maybe<Scalars['Float']['output']>;
+};
+
 /** columns and relationships of "position_datas" */
 export type Position_Datas = {
   __typename?: 'position_datas';
@@ -1158,6 +1374,10 @@ export type Query_Root = {
   mirage_debt_store_datas: Array<Mirage_Debt_Store_Datas>;
   /** fetch data from the table: "mirage_debt_store_datas" using primary key columns */
   mirage_debt_store_datas_by_pk?: Maybe<Mirage_Debt_Store_Datas>;
+  /** fetch data from the table: "owner_trades" */
+  owner_trades: Array<Owner_Trades>;
+  /** fetch aggregated fields from the table: "owner_trades" */
+  owner_trades_aggregate: Owner_Trades_Aggregate;
   /** fetch data from the table: "position_datas" */
   position_datas: Array<Position_Datas>;
   /** fetch data from the table: "position_datas" using primary key columns */
@@ -1307,6 +1527,24 @@ export type Query_RootMirage_Debt_Store_DatasArgs = {
 export type Query_RootMirage_Debt_Store_Datas_By_PkArgs = {
   transaction_version: Scalars['bigint']['input'];
   write_set_change_index: Scalars['bigint']['input'];
+};
+
+
+export type Query_RootOwner_TradesArgs = {
+  distinct_on?: InputMaybe<Array<Owner_Trades_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Owner_Trades_Order_By>>;
+  where?: InputMaybe<Owner_Trades_Bool_Exp>;
+};
+
+
+export type Query_RootOwner_Trades_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Owner_Trades_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Owner_Trades_Order_By>>;
+  where?: InputMaybe<Owner_Trades_Bool_Exp>;
 };
 
 
@@ -1475,6 +1713,12 @@ export type Subscription_Root = {
   mirage_debt_store_datas_by_pk?: Maybe<Mirage_Debt_Store_Datas>;
   /** fetch data from the table in a streaming manner: "mirage_debt_store_datas" */
   mirage_debt_store_datas_stream: Array<Mirage_Debt_Store_Datas>;
+  /** fetch data from the table: "owner_trades" */
+  owner_trades: Array<Owner_Trades>;
+  /** fetch aggregated fields from the table: "owner_trades" */
+  owner_trades_aggregate: Owner_Trades_Aggregate;
+  /** fetch data from the table in a streaming manner: "owner_trades" */
+  owner_trades_stream: Array<Owner_Trades>;
   /** fetch data from the table: "position_datas" */
   position_datas: Array<Position_Datas>;
   /** fetch data from the table: "position_datas" using primary key columns */
@@ -1694,6 +1938,31 @@ export type Subscription_RootMirage_Debt_Store_Datas_StreamArgs = {
   batch_size: Scalars['Int']['input'];
   cursor: Array<InputMaybe<Mirage_Debt_Store_Datas_Stream_Cursor_Input>>;
   where?: InputMaybe<Mirage_Debt_Store_Datas_Bool_Exp>;
+};
+
+
+export type Subscription_RootOwner_TradesArgs = {
+  distinct_on?: InputMaybe<Array<Owner_Trades_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Owner_Trades_Order_By>>;
+  where?: InputMaybe<Owner_Trades_Bool_Exp>;
+};
+
+
+export type Subscription_RootOwner_Trades_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Owner_Trades_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Owner_Trades_Order_By>>;
+  where?: InputMaybe<Owner_Trades_Bool_Exp>;
+};
+
+
+export type Subscription_RootOwner_Trades_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Owner_Trades_Stream_Cursor_Input>>;
+  where?: InputMaybe<Owner_Trades_Bool_Exp>;
 };
 
 

@@ -10772,6 +10772,15 @@ export type GetCollectionsByOwnerQueryVariables = Exact<{
 
 export type GetCollectionsByOwnerQuery = { __typename?: 'query_root', current_collection_ownership_v2_view: Array<{ __typename?: 'current_collection_ownership_v2_view', collection_name?: string | null, collection_id?: string | null }> };
 
+export type GetCurrentOwnerBalancesQueryVariables = Exact<{
+  OWNER: Scalars['String']['input'];
+  ASSET_TYPES_V1: Array<Scalars['String']['input']> | Scalars['String']['input'];
+  ASSET_TYPES_V2: Array<Scalars['String']['input']> | Scalars['String']['input'];
+}>;
+
+
+export type GetCurrentOwnerBalancesQuery = { __typename?: 'query_root', current_fungible_asset_balances: Array<{ __typename?: 'current_fungible_asset_balances', owner_address: string, amount: any, asset_type_v2?: string | null, asset_type_v1?: string | null, amount_v2?: any | null, amount_v1?: any | null }> };
+
 export type GetTokenIdsFromCollectionByOwnerQueryVariables = Exact<{
   COLLECTION: Scalars['String']['input'];
   OWNER: Scalars['String']['input'];
@@ -10800,6 +10809,25 @@ export const GetCollectionsByOwnerDocument = gql`
 
 export function useGetCollectionsByOwnerQuery(options: Omit<Urql.UseQueryArgs<GetCollectionsByOwnerQueryVariables>, 'query'>) {
   return Urql.useQuery<GetCollectionsByOwnerQuery, GetCollectionsByOwnerQueryVariables>({ query: GetCollectionsByOwnerDocument, ...options });
+};
+export const GetCurrentOwnerBalancesDocument = gql`
+    query getCurrentOwnerBalances($OWNER: String!, $ASSET_TYPES_V1: [String!]!, $ASSET_TYPES_V2: [String!]!) {
+  current_fungible_asset_balances(
+    where: {owner_address: {_eq: $OWNER}, is_primary: {_eq: true}, _or: {asset_type_v1: {_in: $ASSET_TYPES_V1}, asset_type_v2: {_in: $ASSET_TYPES_V2}}}
+  ) {
+    owner_address
+    amount
+    owner_address
+    asset_type_v2
+    asset_type_v1
+    amount_v2
+    amount_v1
+  }
+}
+    `;
+
+export function useGetCurrentOwnerBalancesQuery(options: Omit<Urql.UseQueryArgs<GetCurrentOwnerBalancesQueryVariables>, 'query'>) {
+  return Urql.useQuery<GetCurrentOwnerBalancesQuery, GetCurrentOwnerBalancesQueryVariables>({ query: GetCurrentOwnerBalancesDocument, ...options });
 };
 export const GetTokenIdsFromCollectionByOwnerDocument = gql`
     query GetTokenIdsFromCollectionByOwner($COLLECTION: String!, $OWNER: String!) {
