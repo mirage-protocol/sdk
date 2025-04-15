@@ -149,7 +149,7 @@ export class Position {
     this.fundingAccrued = marketFundingAccumulated.minus(lastPositionFunding).times(this.positionSize)
     this.maintenanceMargin = ZERO // TODO
 
-    this.strategyAddresses = (position.data as any).strategyRefs as string[]
+    this.strategyAddresses = (position.data as any).strategy_refs as string[]
   }
 
   /**
