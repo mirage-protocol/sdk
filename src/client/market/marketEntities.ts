@@ -1,6 +1,6 @@
 import { MoveResource } from '@aptos-labs/ts-sdk'
 
-import { LimitOrder, Market, Position } from '../../entities'
+import { LimitOrder, Market, Position, TpSl } from '../../entities'
 import { MirageConfig } from '../../utils'
 
 export class MarketEntitiesClient {
@@ -20,5 +20,9 @@ export class MarketEntitiesClient {
 
   createLimitOrder(limitOrderResources: MoveResource[], objectAddress: string): LimitOrder {
     return new LimitOrder(limitOrderResources, objectAddress, this.config.deployerAddress)
+  }
+
+  createTpsl(tpslResources: MoveResource[], objectAddress: string): TpSl {
+    return new TpSl(tpslResources, objectAddress, this.config.deployerAddress)
   }
 }
