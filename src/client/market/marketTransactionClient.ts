@@ -347,7 +347,7 @@ export class MarketTransactionClient {
     )
   }
 
-  public getCancelTpslPayload = async (tpslObjectAddress: MoveObjectType): Promise<InputEntryFunctionData> => {
+  public getCancelTpslPayload = (tpslObjectAddress: MoveObjectType): InputEntryFunctionData => {
     return createCancelTpslPayload(tpslObjectAddress, this.base.getDeployerAddress())
   }
 
