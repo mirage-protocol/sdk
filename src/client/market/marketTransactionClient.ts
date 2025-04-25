@@ -56,6 +56,7 @@ export class MarketTransactionClient {
     side: PositionSide,
     desiredPrice: number,
     maxPriceSlippage: number,
+    isDecreaseOnly: boolean,
     options: CreatePositionOptionals = {},
   ): Promise<InputEntryFunctionData> => {
     const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
@@ -108,8 +109,8 @@ export class MarketTransactionClient {
           positionSize,
           desiredPrice,
           maxPriceSlippage,
-          false,
           side != PositionSide.LONG,
+          isDecreaseOnly,
           expiration,
           side,
           this.base.getDeployerAddress(),
@@ -123,8 +124,8 @@ export class MarketTransactionClient {
           positionSize,
           desiredPrice,
           maxPriceSlippage,
-          false,
           side == PositionSide.LONG,
+          isDecreaseOnly,
           expiration,
           side,
           this.base.getDeployerAddress(),
