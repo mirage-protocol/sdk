@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "outDir": "./dist",
-    "target": "ES2021",
-    "lib": ["es2021", "esnext.bigint", "dom"],
+    "target": "ES2022",
+    "lib": ["es2022", "esnext.bigint", "dom"],
     "allowJs": true,
     "checkJs": true,
     "module": "esnext",
@@ -25,6 +25,12 @@
     "sourceMap": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "paths": {
+     "@/*": ["./*"] // Maps @/ to project root
+    }
   },
-  "include": ["src/**/*", "artifacts/**/*.json"],
+  "exclude": [
+    "node_modules"
+  ],
+  "include": ["src/**/*"]
 }
