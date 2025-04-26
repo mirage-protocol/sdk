@@ -2931,6 +2931,13 @@ export type Vault_Datas_Stream_Cursor_Value_Input = {
   write_set_change_index?: InputMaybe<Scalars['bigint']['input']>;
 };
 
+export type GetOwnerActivitiesQueryVariables = Exact<{
+  OWNER: Scalars['String']['input'];
+}>;
+
+
+export type GetOwnerActivitiesQuery = { __typename?: 'query_root', vault_activities: Array<{ __typename?: 'vault_activities', collateral_amount?: any | null, borrow_amount?: any | null, collection_id: string, vault_id?: string | null, src_vault_id?: string | null, fee_amount?: any | null, event_type: string, transaction_version: any, transaction_timestamp: any, collateralization_rate_before?: any | null, collateralization_rate_after?: any | null }>, market_activities: Array<{ __typename?: 'market_activities', event_type: string, market_id: string, owner_addr?: string | null, perp_price?: any | null, pnl?: any | null, position_id?: string | null, position_size?: any | null, protocol_fee?: any | null, stop_loss_price?: any | null, strategy_id?: string | null, take_profit_price?: any | null, transaction_timestamp: any, transaction_version: any, trigger_price?: any | null, triggers_above?: boolean | null, max_price_slippage?: any | null, margin_amount?: any | null, is_long?: boolean | null, is_decrease_only?: boolean | null, fee?: any | null, expiration?: any | null }> };
+
 export type GetVaultCollectionAprQueryVariables = Exact<{
   prevDebtTimestamp: Scalars['timestamp']['input'];
   collectionId: Scalars['String']['input'];
@@ -2940,6 +2947,50 @@ export type GetVaultCollectionAprQueryVariables = Exact<{
 export type GetVaultCollectionAprQuery = { __typename?: 'query_root', prevDebt: Array<{ __typename?: 'vault_collection_datas', transactionTimestamp: any, transactionVersion: any, borrowBase: any, borrowElastic: any, globalDebt?: { __typename?: 'mirage_debt_store_datas', debtBase: any, debtElastic: any, objectAddress: string } | null }>, currentDebt: Array<{ __typename?: 'vault_collection_datas', transactionTimestamp: any, transactionVersion: any, borrowBase: any, borrowElastic: any, globalDebt?: { __typename?: 'mirage_debt_store_datas', debtBase: any, debtElastic: any, objectAddress: string } | null }> };
 
 
+export const GetOwnerActivitiesDocument = gql`
+    query GetOwnerActivities($OWNER: String!) {
+  vault_activities(where: {owner_addr: {_eq: $OWNER}}) {
+    collateral_amount
+    borrow_amount
+    collection_id
+    vault_id
+    src_vault_id
+    fee_amount
+    event_type
+    transaction_version
+    transaction_timestamp
+    collateralization_rate_before
+    collateralization_rate_after
+  }
+  market_activities(where: {owner_addr: {_eq: $OWNER}}) {
+    event_type
+    market_id
+    owner_addr
+    perp_price
+    pnl
+    position_id
+    position_size
+    protocol_fee
+    stop_loss_price
+    strategy_id
+    take_profit_price
+    transaction_timestamp
+    transaction_version
+    trigger_price
+    triggers_above
+    max_price_slippage
+    margin_amount
+    is_long
+    is_decrease_only
+    fee
+    expiration
+  }
+}
+    `;
+
+export function useGetOwnerActivitiesQuery(options: Omit<Urql.UseQueryArgs<GetOwnerActivitiesQueryVariables>, 'query'>) {
+  return Urql.useQuery<GetOwnerActivitiesQuery, GetOwnerActivitiesQueryVariables>({ query: GetOwnerActivitiesDocument, ...options });
+};
 export const GetVaultCollectionAprDocument = gql`
     query GetVaultCollectionAPR($prevDebtTimestamp: timestamp!, $collectionId: String!) {
   prevDebt: vault_collection_datas(

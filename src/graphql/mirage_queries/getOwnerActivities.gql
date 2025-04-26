@@ -1,0 +1,38 @@
+query GetOwnerActivities($OWNER: String!) {
+  vault_activities(where: {owner_addr: {_eq: $OWNER}}) {
+    collateral_amount
+    borrow_amount
+    collection_id
+    vault_id
+    src_vault_id
+    fee_amount
+    event_type
+    transaction_version
+    transaction_timestamp
+    collateralization_rate_before
+    collateralization_rate_after
+  }
+  market_activities(where: {owner_addr: {_eq: $OWNER}}) {
+    event_type
+    market_id
+    owner_addr
+    perp_price
+    pnl
+    position_id
+    position_size
+    protocol_fee
+    stop_loss_price
+    strategy_id
+    take_profit_price
+    transaction_timestamp
+    transaction_version
+    trigger_price
+    triggers_above
+    max_price_slippage
+    margin_amount
+    is_long
+    is_decrease_only
+    fee
+    expiration
+  }
+}

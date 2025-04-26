@@ -1,4 +1,4 @@
-import { AccountAddress, InputEntryFunctionData, MoveObjectType } from '@aptos-labs/ts-sdk'
+import { MoveVector, U8, AccountAddress, InputEntryFunctionData, MoveObjectType } from '@aptos-labs/ts-sdk'
 
 import { PositionSide } from '../entities'
 import { getModuleAddress, MoveModules } from '../utils'
@@ -10,8 +10,8 @@ import { getDecimal8Argument, getTpSlArgument } from './'
  */
 export const createOpenPositionPayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8>,
   marginAmount: number,
   positionSize: number,
   side: PositionSide,
@@ -24,8 +24,8 @@ export const createOpenPositionPayload = (
 
     functionArguments: [
       positionObjectAddress,
-      perpVaas,
-      marginVaas,
+      perpVaa,
+      marginVaa,
       getDecimal8Argument(marginAmount), // always 8 decimals
       getDecimal8Argument(positionSize),
       side == PositionSide.LONG,
@@ -41,8 +41,8 @@ export const createOpenPositionPayload = (
  */
 export const createOpenPositionWithTpslPayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8>,
   marginAmount: number,
   positionSize: number,
   side: PositionSide,
@@ -57,8 +57,8 @@ export const createOpenPositionWithTpslPayload = (
 
     functionArguments: [
       positionObjectAddress,
-      perpVaas,
-      marginVaas,
+      perpVaa,
+      marginVaa,
       getDecimal8Argument(marginAmount), // always 8 decimals
       getDecimal8Argument(positionSize),
       side == PositionSide.LONG,
@@ -77,8 +77,8 @@ export const createOpenPositionWithTpslPayload = (
  */
 export const createAndOpenPositionPayload = (
   marketAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8>,
   marginAmount: number,
   positionSize: number,
   side: PositionSide,
@@ -91,8 +91,8 @@ export const createAndOpenPositionPayload = (
 
     functionArguments: [
       marketAddress,
-      perpVaas,
-      marginVaas,
+      perpVaa,
+      marginVaa,
       getDecimal8Argument(marginAmount), // always 8 decimals
       getDecimal8Argument(positionSize),
       side == PositionSide.LONG,
@@ -109,8 +109,8 @@ export const createAndOpenPositionPayload = (
 
 export const createAndOpenPositionWithTpslPayload = (
   marketAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8>,
   marginAmount: number,
   positionSize: number,
   side: PositionSide,
@@ -125,8 +125,8 @@ export const createAndOpenPositionWithTpslPayload = (
 
     functionArguments: [
       marketAddress,
-      perpVaas,
-      marginVaas,
+      perpVaa,
+      marginVaa,
       getDecimal8Argument(marginAmount), // always 8 decimals
       getDecimal8Argument(positionSize),
       side == PositionSide.LONG,
@@ -144,8 +144,8 @@ export const createAndOpenPositionWithTpslPayload = (
  */
 export const createClosePositionPayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8>,
   desired_price: number,
   maxPriceSlippage: number,
   deployerAddress: AccountAddress,
@@ -155,8 +155,8 @@ export const createClosePositionPayload = (
       `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::close_position_entry` as `${string}::${string}::${string}`,
     functionArguments: [
       positionObjectAddress,
-      perpVaas,
-      marginVaas,
+      perpVaa,
+      marginVaa,
       getDecimal8Argument(desired_price),
       getDecimal8Argument(maxPriceSlippage),
     ],
@@ -165,7 +165,7 @@ export const createClosePositionPayload = (
 
 export const createPositionAndPlaceLimitOrderPayload = (
   marketAddress: MoveObjectType,
-  perpVaas: number[],
+  perpVaa: MoveVector<U8>,
   marginAmount: number,
   positionSize: number,
   triggerPrice: number,
@@ -179,7 +179,7 @@ export const createPositionAndPlaceLimitOrderPayload = (
     function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::create_position_and_place_limit_order_entry`,
     functionArguments: [
       marketAddress,
-      perpVaas,
+      perpVaa,
       getDecimal8Argument(marginAmount), // always 8 decimals
       getDecimal8Argument(positionSize),
       getDecimal8Argument(triggerPrice),
@@ -198,7 +198,7 @@ export const createPositionAndPlaceLimitOrderPayload = (
  */
 export const createPlaceLimitOrderPayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
+  perpVaa: MoveVector<U8>,
   marginAmount: number,
   positionSize: number,
   triggerPrice: number,
@@ -213,7 +213,7 @@ export const createPlaceLimitOrderPayload = (
     function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::place_limit_order_entry`,
     functionArguments: [
       positionObjectAddress,
-      perpVaas,
+      perpVaa,
       getDecimal8Argument(marginAmount), // always 8 decimals
       getDecimal8Argument(positionSize),
       side == PositionSide.LONG,
@@ -233,7 +233,7 @@ export const createPlaceLimitOrderPayload = (
  */
 export const createUpdateLimitOrderPayload = (
   limitOrderObjectAddress: MoveObjectType,
-  perpVaas: number[],
+  perpVaa: MoveVector<U8>,
   positionSize: number,
   side: PositionSide,
   triggerPrice: number,
@@ -247,7 +247,7 @@ export const createUpdateLimitOrderPayload = (
     function: `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::limit_order::update_limit_order`,
     functionArguments: [
       limitOrderObjectAddress,
-      perpVaas,
+      perpVaa,
       getDecimal8Argument(positionSize),
       side == PositionSide.LONG,
       getDecimal8Argument(triggerPrice),
@@ -276,7 +276,7 @@ export const createCancelLimitOrderPayload = (
 
 export const createUpdateTpslPayload = (
   tpslObjectAddress: MoveObjectType,
-  perpVaas: number[],
+  perpVaa: MoveVector<U8>,
   takeProfitPrice: number | undefined,
   stopLossPrice: number | undefined,
   deployerAddress: AccountAddress,
@@ -284,13 +284,13 @@ export const createUpdateTpslPayload = (
   return {
     function:
       `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::tpsl::update_tpsl` as `${string}::${string}::${string}`,
-    functionArguments: [tpslObjectAddress, perpVaas, getTpSlArgument(takeProfitPrice), getTpSlArgument(stopLossPrice)],
+    functionArguments: [tpslObjectAddress, perpVaa, getTpSlArgument(takeProfitPrice), getTpSlArgument(stopLossPrice)],
   }
 }
 
 export const createPlaceTpslPayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
+  perpVaa: MoveVector<U8>,
   takeProfitPrice: number,
   stopLossPrice: number,
   deployerAddress: AccountAddress,
@@ -300,7 +300,7 @@ export const createPlaceTpslPayload = (
       `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::place_tpsl_entry` as `${string}::${string}::${string}`,
     functionArguments: [
       positionObjectAddress,
-      perpVaas,
+      perpVaa,
       getDecimal8Argument(takeProfitPrice),
       getDecimal8Argument(stopLossPrice),
     ],
@@ -345,15 +345,15 @@ export const createIncreaseMarginPayload = (
  */
 export const createDecreaseMarginPayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8>,
   decreaseMarginAmount: number,
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {
   return {
     function:
       `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::decrease_margin_entry` as `${string}::${string}::${string}`,
-    functionArguments: [positionObjectAddress, perpVaas, marginVaas, getDecimal8Argument(decreaseMarginAmount)],
+    functionArguments: [positionObjectAddress, perpVaa, marginVaa, getDecimal8Argument(decreaseMarginAmount)],
   }
 }
 
@@ -395,8 +395,8 @@ export const createDecreaseLimitOrderMarginPayload = (
  */
 export const createIncreasePositionSizePayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8>,
   positionSizeIncrease: number,
   desiredPrice: number,
   maxPriceSlippage: number,
@@ -407,8 +407,8 @@ export const createIncreasePositionSizePayload = (
       `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::market::increase_position_size` as `${string}::${string}::${string}`,
     functionArguments: [
       positionObjectAddress,
-      perpVaas,
-      marginVaas,
+      perpVaa,
+      marginVaa,
       getDecimal8Argument(positionSizeIncrease),
       getDecimal8Argument(desiredPrice),
       getDecimal8Argument(maxPriceSlippage),
@@ -422,8 +422,8 @@ export const createIncreasePositionSizePayload = (
  */
 export const createDecreasePositionSizePayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8>,
   decreasePositionSize: number,
   desiredPrice: number,
   maxPriceSlippage: number,
@@ -434,8 +434,8 @@ export const createDecreasePositionSizePayload = (
       `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::decrease_position_size_entry` as `${string}::${string}::${string}`,
     functionArguments: [
       positionObjectAddress,
-      perpVaas,
-      marginVaas,
+      perpVaa,
+      marginVaa,
       getDecimal8Argument(decreasePositionSize),
       getDecimal8Argument(desiredPrice),
       getDecimal8Argument(maxPriceSlippage),
@@ -480,15 +480,15 @@ export const createCleanupLimitOrderPayload = (
  */
 export const createTriggerTpslPayload = (
   tpslObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8>,
   triggererAddress: string,
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {
   return {
     function:
       `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::trigger_tpsl_entry` as `${string}::${string}::${string}`,
-    functionArguments: [triggererAddress, tpslObjectAddress, perpVaas, marginVaas],
+    functionArguments: [triggererAddress, tpslObjectAddress, perpVaa, marginVaa],
   }
 }
 
@@ -498,15 +498,15 @@ export const createTriggerTpslPayload = (
  */
 export const createLiquidatePositionPayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8>,
   triggererAddress: string,
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {
   return {
     function:
       `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::liquidate_position_entry` as `${string}::${string}::${string}`,
-    functionArguments: [triggererAddress, positionObjectAddress, perpVaas, marginVaas],
+    functionArguments: [triggererAddress, positionObjectAddress, perpVaa, marginVaa],
   }
 }
 
@@ -516,15 +516,15 @@ export const createLiquidatePositionPayload = (
  */
 export const createTriggerLimitOrderPayload = (
   limitOrderObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8>,
   triggererAddress: string,
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {
   return {
     function:
       `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::trigger_limit_order_entry` as `${string}::${string}::${string}`,
-    functionArguments: [triggererAddress, limitOrderObjectAddress, perpVaas, marginVaas],
+    functionArguments: [triggererAddress, limitOrderObjectAddress, perpVaa, marginVaa],
   }
 }
 
@@ -534,8 +534,8 @@ export const createTriggerLimitOrderPayload = (
  */
 export const createIncreaseSizeAndIncreaseMarginPayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8>,
   positionSizeIncrease: number,
   marginAmountIncrease: number,
   desiredPrice: number,
@@ -547,8 +547,8 @@ export const createIncreaseSizeAndIncreaseMarginPayload = (
       `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::increase_position_size_and_increase_margin_entry` as `${string}::${string}::${string}`,
     functionArguments: [
       positionObjectAddress,
-      perpVaas,
-      marginVaas,
+      perpVaa,
+      marginVaa,
       getDecimal8Argument(positionSizeIncrease),
       getDecimal8Argument(marginAmountIncrease),
       getDecimal8Argument(desiredPrice),
@@ -563,8 +563,8 @@ export const createIncreaseSizeAndIncreaseMarginPayload = (
  */
 export const createIncreaseSizeAndDecreaseMarginPayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8>,
   positionSizeIncrease: number,
   marginAmountDecrease: number,
   desiredPrice: number,
@@ -576,8 +576,8 @@ export const createIncreaseSizeAndDecreaseMarginPayload = (
       `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::increase_position_size_and_decrease_margin_entry` as `${string}::${string}::${string}`,
     functionArguments: [
       positionObjectAddress,
-      perpVaas,
-      marginVaas,
+      perpVaa,
+      marginVaa,
       getDecimal8Argument(positionSizeIncrease),
       getDecimal8Argument(marginAmountDecrease),
       getDecimal8Argument(desiredPrice),
@@ -593,8 +593,8 @@ export const createIncreaseSizeAndDecreaseMarginPayload = (
  */
 export const createDecreaseSizeAndDecreaseMarginPayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8>,
   positionSizeDecrease: number,
   marginAmountDecrease: number,
   desiredPrice: number,
@@ -606,8 +606,8 @@ export const createDecreaseSizeAndDecreaseMarginPayload = (
       `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::decrease_position_size_and_decrease_margin_entry` as `${string}::${string}::${string}`,
     functionArguments: [
       positionObjectAddress,
-      perpVaas,
-      marginVaas,
+      perpVaa,
+      marginVaa,
       getDecimal8Argument(positionSizeDecrease),
       getDecimal8Argument(marginAmountDecrease),
       getDecimal8Argument(desiredPrice),
@@ -622,8 +622,8 @@ export const createDecreaseSizeAndDecreaseMarginPayload = (
  */
 export const createDecreaseSizeAndIncreaseMarginPayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8>,
   positionSizeDecrease: number,
   marginAmountIncrease: number,
   desiredPrice: number,
@@ -635,8 +635,8 @@ export const createDecreaseSizeAndIncreaseMarginPayload = (
       `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::decrease_position_size_and_increase_margin_entry` as `${string}::${string}::${string}`,
     functionArguments: [
       positionObjectAddress,
-      perpVaas,
-      marginVaas,
+      perpVaa,
+      marginVaa,
       getDecimal8Argument(positionSizeDecrease),
       getDecimal8Argument(marginAmountIncrease),
       getDecimal8Argument(desiredPrice),

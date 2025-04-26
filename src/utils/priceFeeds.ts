@@ -1,6 +1,7 @@
 import { Price } from '@pythnetwork/pyth-aptos-js'
 import { AptosPriceServiceConnection as PythClient } from '@pythnetwork/pyth-aptos-js'
 import BigNumber from 'bignumber.js'
+import { MoveVector, U8, Hex } from '@aptos-labs/ts-sdk'
 
 /**
  * Gets a priceFeed update data promise from Pyth
@@ -8,14 +9,14 @@ import BigNumber from 'bignumber.js'
  * @param network the network, default mainnet
  * @returns the update data promise
  */
-export const getPriceFeedUpdateData = async (priceFeedId: string, pythClient: PythClient): Promise<number[]> => {
-  if (!priceFeedId) return []
+export const getPriceFeedUpdateData = async (priceFeedId: string, pythClient: PythClient): Promise<MoveVector<U8>> => {
+  if (!priceFeedId) return MoveVector.U8([])
   try {
     console.debug('Attempting to get pyth vaas', priceFeedId)
-    const updateData = await pythClient.getPriceFeedsUpdateData([priceFeedId])
-    return updateData ? updateData[0] : []
+    const rawUpdateData = await pythClient.getLatestVaas([priceFeedId])
+    return rawUpdateData[0] ? MoveVector.U8(Hex.fromHexString(rawUpdateData[0]).toUint8Array()) : MoveVector.U8([])
   } catch (e) {
-    return []
+    return MoveVector.U8([])
   }
 }
 

@@ -1,9 +1,10 @@
-query GetVaultCollectionAPR($prevDebtTimestamp: timestamp!, $collectionId: String!) {
+query GetVaultCollectionAPR($prevDebtTimestamp: timestamp!, $collectionIds: [String!]!) {
   prevDebt: vault_collection_datas(
-    order_by: {transaction_version: asc},
-    where: {collection_id: {_eq: $collectionId}, transaction_timestamp: {_gte: $prevDebtTimestamp}, global_debt_part: {_gt: 0}},
-    limit: 1,
+    order_by: [{collection_id: asc}, {transaction_version: asc}],
+    where: {collection_id: {_in: $collectionIds}, transaction_timestamp: {_gte: $prevDebtTimestamp}, global_debt_part: {_gt: 0}},
+    distinct_on: [collection_id]
   ) {
+    collectionId: collection_id
     transactionTimestamp: transaction_timestamp
     transactionVersion: transaction_version
     borrowBase: borrow_base
@@ -15,10 +16,11 @@ query GetVaultCollectionAPR($prevDebtTimestamp: timestamp!, $collectionId: Strin
     }
   }
   currentDebt: vault_collection_datas(
-    order_by: {transaction_version: desc},
-    where: {collection_id: {_eq: $collectionId}, global_debt_part: {_gt: 0}},
-    limit: 1,
+    order_by: [{collection_id: asc}, {transaction_version: desc}],
+    where: {collection_id: {_in: $collectionIds}, global_debt_part: {_gt: 0}},
+    distinct_on: [collection_id]
   ) {
+    collectionId: collection_id
     transactionTimestamp: transaction_timestamp
     transactionVersion: transaction_version
     borrowBase: borrow_base

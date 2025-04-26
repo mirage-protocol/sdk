@@ -1,4 +1,4 @@
-import { AccountAddress, InputEntryFunctionData } from '@aptos-labs/ts-sdk'
+import { MoveVector, U8, AccountAddress, InputEntryFunctionData } from '@aptos-labs/ts-sdk'
 
 import { getModuleAddress, MoveModules } from '../utils'
 
@@ -7,8 +7,8 @@ import { getModuleAddress, MoveModules } from '../utils'
  * @returns payload for the transaction
  */
 export const createClaimAirdropPayload = (
-  tUSDCVaas: number[],
-  mUSDVaas: number[],
+  tUSDCVaa: MoveVector<U8>,
+  mUSDVaa: MoveVector<U8>,
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {
   // const collateralFeed = this.config.getVaultCollateralPriceFeedId('tUSDC', 'mUSD')
@@ -17,7 +17,7 @@ export const createClaimAirdropPayload = (
   // const borrowVaas = borrowFeed ? await getPriceFeedUpdateData(borrowFeed, this.network) : []
   return {
     function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::testnet_airdropper::claim_airdrop`,
-    functionArguments: [tUSDCVaas, mUSDVaas],
+    functionArguments: [tUSDCVaa, mUSDVaa],
     typeArguments: [],
   }
 }

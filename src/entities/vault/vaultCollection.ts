@@ -1,4 +1,4 @@
-import { AccountAddress, MoveResource } from '@aptos-labs/ts-sdk'
+import { AccountAddress, MoveResource, StructTag, Identifier, TypeTagStruct } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import {
@@ -112,7 +112,7 @@ export class VaultCollection {
     this.mirage = new MirageAsset(borrowTokenObjectResources, deployerAddress)
     this.objectAddress = objectAddress
 
-    const vaultCollectionType = `${getModuleAddress(MoveModules.MIRAGE, deployerAddress)}::vault::VaultCollection`
+    const vaultCollectionType = VaultCollection.getVaultCollectionType(deployerAddress).toString()
 
     const vaultCollection = collectionObjectResources.find((resource) => resource.type === vaultCollectionType)
     if (vaultCollection == undefined) throw new Error('Vault object not found')
@@ -165,6 +165,17 @@ export class VaultCollection {
     this.isEmergency = (vaultCollection.data as any).is_emergency
     this.collateralOracleAddress = (vaultCollection.data as any).collateral_oracle.inner
     this.borrowOracleAddress = (vaultCollection.data as any).borrow_oracle.inner
+  }
+
+  public static getVaultCollectionType(deployerAddress: AccountAddress): TypeTagStruct {
+    return new TypeTagStruct(
+      new StructTag(
+        getModuleAddress(MoveModules.MIRAGE, deployerAddress),
+        new Identifier('vault'),
+        new Identifier('VaultCollection'),
+        [],
+      ),
+    )
   }
 
   /**
