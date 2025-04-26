@@ -210,11 +210,22 @@ export const createRepayDebtPartPayload = (
   vaultObjectAddress: MoveObjectType,
   repayPartAmount: number,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function: `${getModuleAddress(MoveModules.MIRAGE, deployerAddress)}::vault::repay_part_entry`,
-    functionArguments: [vaultObjectAddress, getDecimal8Argument(repayPartAmount)],
+): TransactionPayloadEntryFunction => {
+  const vaultType = Vault.getVaultType(deployerAddress)
+
+  const abi: EntryFunctionABI = {
+    typeParameters: [],
+    parameters: [new TypeTagStruct(objectStructTag(vaultType)), new TypeTagU64()],
   }
+  const functionName =
+    `${getModuleAddress(MoveModules.MIRAGE, deployerAddress)}::vault::repay_part_entry` as `${string}::${string}::${string}`
+
+  return generateTransactionPayloadWithABI({
+    abi,
+    function: functionName,
+    functionArguments: [vaultObjectAddress, getDecimal8BCS(repayPartAmount)],
+    typeArguments: [],
+  })
 }
 
 /**
@@ -236,18 +247,34 @@ export const createAddCollateralAndBorrowPayload = (
   collateralCoinType: string | undefined,
   collateralDecimals: number,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::vault_scripts::add_and_borrow_${getFunctionSuffix(collateralCoinType)}`,
+): TransactionPayloadEntryFunction => {
+  const vaultType = Vault.getVaultType(deployerAddress)
+
+  const abi: EntryFunctionABI = {
+    typeParameters: [],
+    parameters: [
+      new TypeTagStruct(objectStructTag(vaultType)),
+      new TypeTagU64(),
+      new TypeTagU64(),
+      TypeTagVector.u8(),
+      TypeTagVector.u8(),
+    ],
+  }
+  const functionName =
+    `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::vault_scripts::add_and_borrow_${getFunctionSuffix(collateralCoinType)}` as `${string}::${string}::${string}`
+
+  return generateTransactionPayloadWithABI({
+    abi,
+    function: functionName,
     functionArguments: [
       vaultObjectAddress,
-      getAssetAmountArgument(addAmount, collateralDecimals),
-      getDecimal8Argument(borrowAmount),
+      getAssetAmountBCS(addAmount, collateralDecimals),
+      getDecimal8BCS(borrowAmount),
       collateralVaa,
       borrowVaa,
     ],
-    typeArguments: collateralCoinType ? [collateralCoinType] : [],
-  }
+    typeArguments: collateralCoinType ? [parseTypeTag(collateralCoinType)] : [],
+  })
 }
 
 /**
@@ -268,17 +295,34 @@ export const createRepayDebtAndRemoveCollateralPayload = (
   borrowVaa: MoveVector<U8>,
   collateralDecimals: number,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::vault_scripts::repay_and_remove`,
+): TransactionPayloadEntryFunction => {
+  const vaultType = Vault.getVaultType(deployerAddress)
+
+  const abi: EntryFunctionABI = {
+    typeParameters: [],
+    parameters: [
+      new TypeTagStruct(objectStructTag(vaultType)),
+      new TypeTagU64(),
+      new TypeTagU64(),
+      TypeTagVector.u8(),
+      TypeTagVector.u8(),
+    ],
+  }
+  const functionName =
+    `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::vault_scripts::repay_and_remove` as `${string}::${string}::${string}`
+
+  return generateTransactionPayloadWithABI({
+    abi,
+    function: functionName,
     functionArguments: [
       vaultObjectAddress,
-      getAssetAmountArgument(removeAmount, collateralDecimals),
-      getDecimal8Argument(repayPartAmount),
+      getAssetAmountBCS(removeAmount, collateralDecimals),
+      getDecimal8BCS(repayPartAmount),
       collateralVaa,
       borrowVaa,
     ],
-  }
+    typeArguments: [],
+  })
 }
 
 /**
@@ -296,16 +340,26 @@ export const createAddCollateralAndRepayDebt = (
   collateralCoinType: string | undefined,
   collateralDecimals: number,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::vault_scripts::add_and_repay_${getFunctionSuffix(collateralCoinType)}`,
+): TransactionPayloadEntryFunction => {
+  const vaultType = Vault.getVaultType(deployerAddress)
+
+  const abi: EntryFunctionABI = {
+    typeParameters: [],
+    parameters: [new TypeTagStruct(objectStructTag(vaultType)), new TypeTagU64(), new TypeTagU64()],
+  }
+  const functionName =
+    `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::vault_scripts::add_and_repay_${getFunctionSuffix(collateralCoinType)}` as `${string}::${string}::${string}`
+
+  return generateTransactionPayloadWithABI({
+    abi,
+    function: functionName,
     functionArguments: [
       vaultObjectAddress,
       getAssetAmountArgument(addAmount, collateralDecimals),
-      getDecimal8Argument(repayPartAmount),
+      getDecimal8BCS(repayPartAmount),
     ],
-    typeArguments: collateralCoinType ? [collateralCoinType] : [],
-  }
+    typeArguments: collateralCoinType ? [parseTypeTag(collateralCoinType)] : [],
+  })
 }
 
 /**
@@ -326,17 +380,34 @@ export const createRemoveCollateralAndBorrow = (
   borrowVaa: MoveVector<U8>,
   collateralDecimals: number,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::vault_scripts::remove_and_borrow_entry`,
+): TransactionPayloadEntryFunction => {
+  const vaultType = Vault.getVaultType(deployerAddress)
+
+  const abi: EntryFunctionABI = {
+    typeParameters: [],
+    parameters: [
+      new TypeTagStruct(objectStructTag(vaultType)),
+      new TypeTagU64(),
+      new TypeTagU64(),
+      TypeTagVector.u8(),
+      TypeTagVector.u8(),
+    ],
+  }
+  const functionName =
+    `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::vault_scripts::remove_and_borrow_entry` as `${string}::${string}::${string}`
+
+  return generateTransactionPayloadWithABI({
+    abi,
+    function: functionName,
     functionArguments: [
       vaultObjectAddress,
-      getAssetAmountArgument(removeAmount, collateralDecimals),
-      getDecimal8Argument(borrowAmount),
+      getAssetAmountBCS(removeAmount, collateralDecimals),
+      getDecimal8BCS(borrowAmount),
       collateralVaa,
       borrowVaa,
     ],
-  }
+    typeArguments: [],
+  })
 }
 
 export const createLiquidateVaultWithPartPayload = (
