@@ -59,7 +59,7 @@
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-simple-import-sort": "^12.1.0",
     "eslint-plugin-unused-imports": "^4.1.4",
-    "lint-staged": "^15.2.5",
+    "lint-staged": "^15.5.1",
     "prettier": "^3.5.0",
     "tsup": "^6.6.3",
     "typescript": "^5.4.3"

@@ -105,13 +105,11 @@ export const createAddCollateralPayload = (
 
   const abi: EntryFunctionABI = {
     typeParameters: collateralCoinType ? [{ constraints: [] }] : [],
-    parameters: [
-      new TypeTagStruct(objectStructTag(vaultType)),
-      new TypeTagU64(),
-    ],
+    parameters: [new TypeTagStruct(objectStructTag(vaultType)), new TypeTagU64()],
   }
 
-  const functionName = `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::vault_scripts::add_collateral_${getFunctionSuffix(collateralCoinType)}` as `${string}::${string}::${string}`
+  const functionName =
+    `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::vault_scripts::add_collateral_${getFunctionSuffix(collateralCoinType)}` as `${string}::${string}::${string}`
   return generateTransactionPayloadWithABI({
     abi,
     function: functionName,
@@ -144,10 +142,11 @@ export const createBorrowPayload = (
       new TypeTagStruct(objectStructTag(vaultType)),
       new TypeTagU64(),
       TypeTagVector.u8(),
-      TypeTagVector.u8()
+      TypeTagVector.u8(),
     ],
   }
-  const functionName = `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::vault_scripts::borrow_entry` as `${string}::${string}::${string}`
+  const functionName =
+    `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::vault_scripts::borrow_entry` as `${string}::${string}::${string}`
 
   return generateTransactionPayloadWithABI({
     abi,
@@ -182,15 +181,21 @@ export const createRemoveCollateralPayload = (
       new TypeTagStruct(objectStructTag(vaultType)),
       new TypeTagU64(),
       TypeTagVector.u8(),
-      TypeTagVector.u8()
+      TypeTagVector.u8(),
     ],
   }
-  const functionName = `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::vault_scripts::remove_collateral_entry` as `${string}::${string}::${string}`
+  const functionName =
+    `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::vault_scripts::remove_collateral_entry` as `${string}::${string}::${string}`
 
   return generateTransactionPayloadWithABI({
     abi,
     function: functionName,
-    functionArguments: [vaultObjectAddress, getAssetAmountBCS(removeAmount, collateralDecimals), collateralVaa, borrowVaa],
+    functionArguments: [
+      vaultObjectAddress,
+      getAssetAmountBCS(removeAmount, collateralDecimals),
+      collateralVaa,
+      borrowVaa,
+    ],
     typeArguments: [],
   })
 }
