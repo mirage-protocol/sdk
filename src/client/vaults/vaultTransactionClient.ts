@@ -72,7 +72,7 @@ export class VaultTransactionClient {
     collateralAmount: number,
     borrowAmount: number,
     collateralVaa: MoveVector<U8>,
-    borrowVaa: MoveVector<U8>,
+    borrowVaa: MoveVector<U8> | undefined,
   ): TransactionPayloadEntryFunction => {
     const collectionAddress = this.base.getVaultCollectionAddress(collateralSymbol, borrowSymbol)
     const collateralCoinType = this.base.getCollateralCoinType(collateralSymbol)
@@ -122,7 +122,7 @@ export class VaultTransactionClient {
     vaultObjectAddress: MoveObjectType,
     borrowAmount: number,
     collateralVaa: MoveVector<U8>,
-    borrowVaa: MoveVector<U8>,
+    borrowVaa: MoveVector<U8> | undefined,
   ): TransactionPayloadEntryFunction => {
     return createBorrowPayload(
       vaultObjectAddress,
@@ -156,7 +156,7 @@ export class VaultTransactionClient {
     vaultObjectAddress: MoveObjectType,
     removeAmount: number,
     collateralVaa: MoveVector<U8>,
-    borrowVaa: MoveVector<U8>,
+    borrowVaa: MoveVector<U8> | undefined,
   ): TransactionPayloadEntryFunction => {
     const collateralDecimals = this.base.getCollateralCoinDecimals(collateralSymbol)
     return createRemoveCollateralPayload(
@@ -202,7 +202,7 @@ export class VaultTransactionClient {
     addAmount: number,
     borrowAmount: number,
     collateralVaa: MoveVector<U8>,
-    borrowVaa: MoveVector<U8>,
+    borrowVaa: MoveVector<U8> | undefined,
   ): TransactionPayloadEntryFunction => {
     const collateralCoinType = this.base.getCollateralCoinType(collateralSymbol)
     const collateralDecimals = this.base.getCollateralCoinDecimals(collateralSymbol)
@@ -245,7 +245,7 @@ export class VaultTransactionClient {
     removeAmount: number,
     repayPartAmount: number,
     collateralVaa: MoveVector<U8>,
-    borrowVaa: MoveVector<U8>,
+    borrowVaa: MoveVector<U8> | undefined,
   ): TransactionPayloadEntryFunction => {
     const collateralDecimals = this.base.getCollateralCoinDecimals(collateralSymbol)
 
@@ -305,7 +305,7 @@ export class VaultTransactionClient {
     removeAmount: number,
     borrowAmount: number,
     collateralVaa: MoveVector<U8>,
-    borrowVaa: MoveVector<U8>,
+    borrowVaa: MoveVector<U8> | undefined,
   ): TransactionPayloadEntryFunction => {
     const collateralDecimals = this.base.getCollateralCoinDecimals(collateralSymbol)
 
@@ -336,7 +336,7 @@ export class VaultTransactionClient {
     vaultObjectAddress: MoveObjectType,
     partToLiquidate: number,
     collateralVaa: MoveVector<U8>,
-    borrowVaa: MoveVector<U8>,
+    borrowVaa: MoveVector<U8> | undefined,
   ): InputEntryFunctionData => {
     return createLiquidateVaultWithPartPayload(
       vaultObjectAddress,
@@ -369,7 +369,7 @@ export class VaultTransactionClient {
     vaultObjectAddress: MoveObjectType,
     debtAmountToLiquidate: number,
     collateralVaa: MoveVector<U8>,
-    borrowVaa: MoveVector<U8>,
+    borrowVaa: MoveVector<U8> | undefined,
   ): InputEntryFunctionData => {
     return createLiquidateVaultBankruptPayload(
       vaultObjectAddress,
@@ -400,7 +400,7 @@ export class VaultTransactionClient {
     dstVaultObjectAddress: MoveObjectType,
     srcVaultObjectAddress: MoveObjectType,
     collateralVaa: MoveVector<U8>,
-    borrowVaa: MoveVector<U8>,
+    borrowVaa: MoveVector<U8> | undefined,
   ): InputEntryFunctionData => {
     return createMergeVaultsPaylaod(
       dstVaultObjectAddress,

@@ -1,7 +1,5 @@
 import {
   TypeTagVector,
-  MoveVector,
-  U8,
   AccountAddress,
   InputEntryFunctionData,
   MoveObjectType,
@@ -12,11 +10,16 @@ import {
   TypeTagStruct,
   TypeTagU64,
   parseTypeTag,
+  EntryFunction,
+  ModuleId,
+  Identifier,
+  MoveVector,
+  U8,
 } from '@aptos-labs/ts-sdk'
 
 import { getModuleAddress, MoveModules } from '../utils'
 import { getAssetAmountArgument, getAssetAmountBCS, getDecimal8Argument, getDecimal8BCS } from './'
-import { Vault, VaultCollection } from '../entities'
+import { Vault } from '../entities'
 
 const getFunctionSuffix = (coinType: string | undefined): string => {
   return coinType ? 'coin_entry' : 'entry'
@@ -29,24 +32,20 @@ export const createVaultPayload = (
   collateralDecimals: number,
   deployerAddress: AccountAddress,
 ): TransactionPayloadEntryFunction => {
-  const functionName =
-    `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::vault_scripts::create_vault_${getFunctionSuffix(collateralCoinType)}` as `${string}::${string}::${string}`
-  const vaultCollectionType = VaultCollection.getVaultCollectionType(deployerAddress)
+  const moduleId = new ModuleId(getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress), new Identifier('vault_scripts'))
+  const functionName = new Identifier(`create_vault_${getFunctionSuffix(collateralCoinType)}`)
+  const typeArguments = collateralCoinType ? [parseTypeTag(collateralCoinType)] : []
+  const functionArguments = [
+    AccountAddress.fromString(collectionObjectAddress),
+    getAssetAmountBCS(collateralAmount, collateralDecimals),
+  ]
 
-  const abi: EntryFunctionABI = {
-    typeParameters: collateralCoinType ? [{ constraints: [] }] : [],
-    parameters: [new TypeTagStruct(objectStructTag(vaultCollectionType)), new TypeTagU64()],
-  }
-
-  return generateTransactionPayloadWithABI({
-    abi,
-    function: functionName,
-    functionArguments: [
-      AccountAddress.fromString(collectionObjectAddress),
-      getAssetAmountBCS(collateralAmount, collateralDecimals),
-    ],
-    typeArguments: collateralCoinType ? [parseTypeTag(collateralCoinType)] : [],
-  })
+  return new TransactionPayloadEntryFunction(new EntryFunction(
+    moduleId,
+    functionName,
+    typeArguments,
+    functionArguments
+  ))
 }
 
 export const createVaultAndBorrowPayload = (
@@ -56,35 +55,26 @@ export const createVaultAndBorrowPayload = (
   collateralCoinType: string | undefined,
   collateralDecimals: number,
   collateralVaa: MoveVector<U8>,
-  borrowVaa: MoveVector<U8>,
+  borrowVaa: MoveVector<U8> | undefined,
   deployerAddress: AccountAddress,
 ): TransactionPayloadEntryFunction => {
-  const functionName =
-    `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::vault_scripts::create_vault_and_borrow_${getFunctionSuffix(collateralCoinType)}` as `${string}::${string}::${string}`
-  const vaultCollectionType = VaultCollection.getVaultCollectionType(deployerAddress)
-  const abi: EntryFunctionABI = {
-    typeParameters: collateralCoinType ? [{ constraints: [] }] : [],
-    parameters: [
-      new TypeTagStruct(objectStructTag(vaultCollectionType)),
-      new TypeTagU64(),
-      new TypeTagU64(),
-      TypeTagVector.u8(),
-      TypeTagVector.u8(),
-    ],
-  }
+  const moduleId = new ModuleId(getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress), new Identifier('vault_scripts'))
+  const functionName = new Identifier(`create_vault_and_borrow_${getFunctionSuffix(collateralCoinType)}`)
+  const typeArguments = collateralCoinType ? [parseTypeTag(collateralCoinType)] : []
+  const functionArguments = [
+    AccountAddress.fromString(collectionObjectAddress),
+    getAssetAmountBCS(collateralAmount, collateralDecimals),
+    getDecimal8BCS(borrowAmount),
+    collateralVaa,
+    borrowVaa ? borrowVaa : MoveVector.U8([])
+  ]
 
-  return generateTransactionPayloadWithABI({
-    abi,
-    function: functionName,
-    functionArguments: [
-      collectionObjectAddress,
-      getAssetAmountBCS(collateralAmount, collateralDecimals),
-      getDecimal8BCS(borrowAmount),
-      collateralVaa,
-      borrowVaa,
-    ],
-    typeArguments: collateralCoinType ? [parseTypeTag(collateralCoinType)] : [],
-  })
+  return new TransactionPayloadEntryFunction(new EntryFunction(
+    moduleId,
+    functionName,
+    typeArguments,
+    functionArguments
+  ))
 }
 
 /**
@@ -131,7 +121,7 @@ export const createBorrowPayload = (
   vaultObjectAddress: MoveObjectType,
   borrowAmount: number,
   collateralVaa: MoveVector<U8>,
-  borrowVaa: MoveVector<U8>,
+  borrowVaa: MoveVector<U8> | undefined,
   deployerAddress: AccountAddress,
 ): TransactionPayloadEntryFunction => {
   const vaultType = Vault.getVaultType(deployerAddress)
@@ -169,7 +159,7 @@ export const createRemoveCollateralPayload = (
   vaultObjectAddress: MoveObjectType,
   removeAmount: number,
   collateralVaa: MoveVector<U8>,
-  borrowVaa: MoveVector<U8>,
+  borrowVaa: MoveVector<U8> | undefined,
   collateralDecimals: number,
   deployerAddress: AccountAddress,
 ): TransactionPayloadEntryFunction => {
@@ -194,7 +184,7 @@ export const createRemoveCollateralPayload = (
       vaultObjectAddress,
       getAssetAmountBCS(removeAmount, collateralDecimals),
       collateralVaa,
-      borrowVaa,
+      borrowVaa ? borrowVaa : []
     ],
     typeArguments: [],
   })
@@ -243,7 +233,7 @@ export const createAddCollateralAndBorrowPayload = (
   addAmount: number,
   borrowAmount: number,
   collateralVaa: MoveVector<U8>,
-  borrowVaa: MoveVector<U8>,
+  borrowVaa: MoveVector<U8> | undefined,
   collateralCoinType: string | undefined,
   collateralDecimals: number,
   deployerAddress: AccountAddress,
@@ -271,7 +261,7 @@ export const createAddCollateralAndBorrowPayload = (
       getAssetAmountBCS(addAmount, collateralDecimals),
       getDecimal8BCS(borrowAmount),
       collateralVaa,
-      borrowVaa,
+      borrowVaa ? borrowVaa : []
     ],
     typeArguments: collateralCoinType ? [parseTypeTag(collateralCoinType)] : [],
   })
@@ -292,7 +282,7 @@ export const createRepayDebtAndRemoveCollateralPayload = (
   removeAmount: number,
   repayPartAmount: number,
   collateralVaa: MoveVector<U8>,
-  borrowVaa: MoveVector<U8>,
+  borrowVaa: MoveVector<U8> | undefined,
   collateralDecimals: number,
   deployerAddress: AccountAddress,
 ): TransactionPayloadEntryFunction => {
@@ -319,7 +309,7 @@ export const createRepayDebtAndRemoveCollateralPayload = (
       getAssetAmountBCS(removeAmount, collateralDecimals),
       getDecimal8BCS(repayPartAmount),
       collateralVaa,
-      borrowVaa,
+      borrowVaa ? borrowVaa : []
     ],
     typeArguments: [],
   })
@@ -377,7 +367,7 @@ export const createRemoveCollateralAndBorrow = (
   removeAmount: number,
   borrowAmount: number,
   collateralVaa: MoveVector<U8>,
-  borrowVaa: MoveVector<U8>,
+  borrowVaa: MoveVector<U8> | undefined,
   collateralDecimals: number,
   deployerAddress: AccountAddress,
 ): TransactionPayloadEntryFunction => {
@@ -404,7 +394,7 @@ export const createRemoveCollateralAndBorrow = (
       getAssetAmountBCS(removeAmount, collateralDecimals),
       getDecimal8BCS(borrowAmount),
       collateralVaa,
-      borrowVaa,
+      borrowVaa ? borrowVaa : []
     ],
     typeArguments: [],
   })
@@ -414,7 +404,7 @@ export const createLiquidateVaultWithPartPayload = (
   vaultObjectAddress: MoveObjectType,
   partToLiquidate: number,
   collateralVaa: MoveVector<U8>,
-  borrowVaa: MoveVector<U8>,
+  borrowVaa: MoveVector<U8> | undefined,
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {
   return {
@@ -427,7 +417,7 @@ export const createLiquidateVaultBankruptPayload = (
   vaultObjectAddress: MoveObjectType,
   debtAmountToLiquidate: number,
   collateralVaa: MoveVector<U8>,
-  borrowVaa: MoveVector<U8>,
+  borrowVaa: MoveVector<U8> | undefined,
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {
   return {
@@ -450,7 +440,7 @@ export const createMergeVaultsPaylaod = (
   dstVaultObjectAddress: MoveObjectType,
   srcVaultObjectAddress: MoveObjectType,
   collateralVaa: MoveVector<U8>,
-  borrowVaa: MoveVector<U8>,
+  borrowVaa: MoveVector<U8> | undefined,
   deployerAddress: AccountAddress,
 ): InputEntryFunctionData => {
   return {
