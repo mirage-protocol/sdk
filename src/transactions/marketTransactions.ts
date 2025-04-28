@@ -91,7 +91,6 @@ export const createFlipPositionPayload = (
   )
 }
 
-
 /**
  * Open a position in a market at the current price
  * @returns payload promise for the transaction
