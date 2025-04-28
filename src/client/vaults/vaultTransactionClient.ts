@@ -1,10 +1,4 @@
-import {
-  InputEntryFunctionData,
-  MoveObjectType,
-  MoveVector,
-  U8,
-  TransactionPayloadEntryFunction,
-} from '@aptos-labs/ts-sdk'
+import { MoveObjectType, MoveVector, U8, TransactionPayloadEntryFunction } from '@aptos-labs/ts-sdk'
 
 import {
   createAccrueInterestPayload,
@@ -325,7 +319,7 @@ export class VaultTransactionClient {
     borrowSymbol: string,
     vaultObjectAddress: MoveObjectType,
     partToLiquidate: number,
-  ): Promise<InputEntryFunctionData> => {
+  ): Promise<TransactionPayloadEntryFunction> => {
     const collateralVaas = await this.base.getCollateralPriceFeedUpdate(collateralSymbol, borrowSymbol)
     const borrowVaas = await this.base.getBorrowPriceFeedUpdate(collateralSymbol, borrowSymbol)
 
@@ -337,7 +331,7 @@ export class VaultTransactionClient {
     partToLiquidate: number,
     collateralVaa: MoveVector<U8>,
     borrowVaa: MoveVector<U8> | undefined,
-  ): InputEntryFunctionData => {
+  ): TransactionPayloadEntryFunction => {
     return createLiquidateVaultWithPartPayload(
       vaultObjectAddress,
       partToLiquidate,
@@ -352,7 +346,7 @@ export class VaultTransactionClient {
     borrowSymbol: string,
     vaultObjectAddress: MoveObjectType,
     debtAmountToLiquidate: number,
-  ): Promise<InputEntryFunctionData> => {
+  ): Promise<TransactionPayloadEntryFunction> => {
     const collateralVaas = await this.base.getCollateralPriceFeedUpdate(collateralSymbol, borrowSymbol)
     const borrowVaas = await this.base.getBorrowPriceFeedUpdate(collateralSymbol, borrowSymbol)
 
@@ -370,7 +364,7 @@ export class VaultTransactionClient {
     debtAmountToLiquidate: number,
     collateralVaa: MoveVector<U8>,
     borrowVaa: MoveVector<U8> | undefined,
-  ): InputEntryFunctionData => {
+  ): TransactionPayloadEntryFunction => {
     return createLiquidateVaultBankruptPayload(
       vaultObjectAddress,
       debtAmountToLiquidate,
@@ -380,7 +374,7 @@ export class VaultTransactionClient {
     )
   }
 
-  public getAccrueInterestPayload = (collectionObjectAddress: MoveObjectType): InputEntryFunctionData => {
+  public getAccrueInterestPayload = (collectionObjectAddress: MoveObjectType): TransactionPayloadEntryFunction => {
     return createAccrueInterestPayload(collectionObjectAddress, this.base.getDeployerAddress())
   }
 
@@ -389,7 +383,7 @@ export class VaultTransactionClient {
     borrowSymbol: string,
     dstVaultObjectAddress: MoveObjectType,
     srcVaultObjectAddress: MoveObjectType,
-  ): Promise<InputEntryFunctionData> => {
+  ): Promise<TransactionPayloadEntryFunction> => {
     const collateralVaas = await this.base.getCollateralPriceFeedUpdate(collateralSymbol, borrowSymbol)
     const borrowVaas = await this.base.getBorrowPriceFeedUpdate(collateralSymbol, borrowSymbol)
 
@@ -401,7 +395,7 @@ export class VaultTransactionClient {
     srcVaultObjectAddress: MoveObjectType,
     collateralVaa: MoveVector<U8>,
     borrowVaa: MoveVector<U8> | undefined,
-  ): InputEntryFunctionData => {
+  ): TransactionPayloadEntryFunction => {
     return createMergeVaultsPaylaod(
       dstVaultObjectAddress,
       srcVaultObjectAddress,
