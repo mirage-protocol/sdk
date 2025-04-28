@@ -59,6 +59,43 @@ export const createOpenPositionPayload = (
  * Open a position in a market at the current price
  * @returns payload promise for the transaction
  */
+export const createFlipPositionPayload = (
+  positionObjectAddress: MoveObjectType,
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8> | undefined,
+  newMarginAmount: number,
+  newPositionSize: number,
+  desiredPrice: number,
+  maxPriceSlippage: number,
+  deployerAddress: AccountAddress,
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('flip_position_entry')
+  const typeArguments = []
+
+  const functionArguments = [
+    AccountAddress.fromString(positionObjectAddress),
+    perpVaa,
+    marginVaa ? marginVaa : emptyVaa,
+    getDecimal8BCS(newMarginAmount), // always 8 decimals
+    getDecimal8BCS(newPositionSize),
+    getDecimal8BCS(desiredPrice),
+    getDecimal8BCS(maxPriceSlippage),
+  ]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
+}
+
+
+/**
+ * Open a position in a market at the current price
+ * @returns payload promise for the transaction
+ */
 export const createOpenPositionWithTpslPayload = (
   positionObjectAddress: MoveObjectType,
   perpVaa: MoveVector<U8>,

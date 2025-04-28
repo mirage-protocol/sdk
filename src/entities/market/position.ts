@@ -27,6 +27,7 @@ export enum OrderType {
   MARKET = 0,
   LIMIT = 1,
   STOP = 2,
+  FLIP = 3,
   UNKNOWN = 3,
 }
 

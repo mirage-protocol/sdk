@@ -14,6 +14,7 @@ import {
   createDecreasePositionSizePayload,
   createDecreaseSizeAndDecreaseMarginPayload,
   createDecreaseSizeAndIncreaseMarginPayload,
+  createFlipPositionPayload,
   createIncreaseLimitOrderMarginPayload,
   createIncreaseMarginPayload,
   createIncreasePositionSizePayload,
@@ -157,6 +158,18 @@ export class MarketTransactionClient {
           isDecreaseOnly,
           expiration,
           side,
+          this.base.getDeployerAddress(),
+        )
+      }
+      case OrderType.STOP: {
+        return createFlipPositionPayload(
+          positionObjectAddress,
+          perpVaa,
+          marginVaa,
+          marginAmount,
+          positionSize,
+          desiredPrice,
+          maxPriceSlippage,
           this.base.getDeployerAddress(),
         )
       }
