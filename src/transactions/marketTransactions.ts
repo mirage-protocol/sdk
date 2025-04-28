@@ -904,13 +904,6 @@ export const createCloseAllPositionsPayload = (
   const functionName = new Identifier('close_all_positions_entry')
   const typeArguments = []
 
-  if (
-    allPositionObjectAddress.length !== allPerpVaas.length ||
-    allPositionObjectAddress.length !== allMarginVaas.length
-  ) {
-    throw new Error('allPositionObjectAddress, allPerpVaas, and allMarginVaas must have the same length')
-  }
-
   const allPositionObjectAddressesBCS = new MoveVector<AccountAddress>(
     allPositionObjectAddress.map((address) => AccountAddress.fromString(address)),
   )
