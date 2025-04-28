@@ -893,7 +893,7 @@ export const createDecreaseSizeAndIncreaseMarginPayload = (
  */
 export const createCloseAllPositionsPayload = (
   allPositionObjectAddress: MoveObjectType[],
-  allPerpVaas: MoveVector<U8>[],
+  allPerpVaas: (MoveVector<U8> | undefined)[],
   allMarginVaas: (MoveVector<U8> | undefined)[],
   deployerAddress: AccountAddress,
 ): TransactionPayloadEntryFunction => {
@@ -915,7 +915,7 @@ export const createCloseAllPositionsPayload = (
     allPositionObjectAddress.map((address) => AccountAddress.fromString(address)),
   )
   const allMarginVaasBCS = new MoveVector<MoveVector<U8>>(allMarginVaas.map((vaa) => (vaa ? vaa : emptyVaa)))
-  const allPerpVaasBCS = new MoveVector<MoveVector<U8>>(allPerpVaas)
+  const allPerpVaasBCS = new MoveVector<MoveVector<U8>>(allPerpVaas.map((vaa) => (vaa ? vaa : emptyVaa)))
 
   const functionArguments = [allPositionObjectAddressesBCS, allPerpVaasBCS, allMarginVaasBCS]
 

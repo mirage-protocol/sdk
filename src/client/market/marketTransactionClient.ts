@@ -872,7 +872,7 @@ export class MarketTransactionClient {
 
   public getCloseAllPositionsPayload = (
     allPositionObjectAddress: MoveObjectType[],
-    allPerpVaas: MoveVector<U8>[],
+    allPerpVaas: (MoveVector<U8> | undefined)[],
     allMarginVaas: (MoveVector<U8> | undefined)[],
   ): TransactionPayloadEntryFunction => {
     return createCloseAllPositionsPayload(
