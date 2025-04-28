@@ -161,7 +161,7 @@ export class MarketTransactionClient {
           this.base.getDeployerAddress(),
         )
       }
-      case OrderType.STOP: {
+      case OrderType.FLIP: {
         return createFlipPositionPayload(
           positionObjectAddress,
           perpVaa,
