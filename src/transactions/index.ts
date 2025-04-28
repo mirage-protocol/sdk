@@ -22,11 +22,11 @@ export const getDecimal8BCS = (amount: number): U64 => {
   return new U64(BigInt(BigNumber(PRECISION_8).times(amount).toFixed(0)))
 }
 
-export const getTpSlArgument = (stopLoss: number | undefined): string => {
+export const getTpSlArgument = (stopLoss: number | undefined): U64 => {
   if (stopLoss == undefined) {
-    return '0'
+    return new U64(0n)
   } else {
-    return getDecimal8Argument(stopLoss)
+    return getDecimal8BCS(stopLoss)
   }
 }
 
