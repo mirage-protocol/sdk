@@ -2,6 +2,7 @@ import { MirageConfig, VaultConfig } from '../../utils'
 import { MirageClientBase } from '../base'
 import { FungibleAssetClient } from '../fungibleAsset/fungibleAssetClient'
 import { OracleClient } from '../oracle/oracleClient'
+import { MoveVector, U8 } from '@aptos-labs/ts-sdk'
 
 export class VaultClientBase extends MirageClientBase {
   private readonly fungibleAssets: FungibleAssetClient
@@ -62,12 +63,15 @@ export class VaultClientBase extends MirageClientBase {
     return this.oracles.getPriceFeedId(borrowOracle)
   }
 
-  public getCollateralPriceFeedUpdate = async (collateralSymbol: string, borrowSymbol: string): Promise<number[]> => {
+  public getCollateralPriceFeedUpdate = async (
+    collateralSymbol: string,
+    borrowSymbol: string,
+  ): Promise<MoveVector<U8>> => {
     const collateralOracle = this.getVaultCollection(collateralSymbol, borrowSymbol).collateralOracle
     return await this.oracles.getPriceFeedUpdateData(collateralOracle)
   }
 
-  public getBorrowPriceFeedUpdate = async (collateralSymbol: string, borrowSymbol: string): Promise<number[]> => {
+  public getBorrowPriceFeedUpdate = async (collateralSymbol: string, borrowSymbol: string): Promise<MoveVector<U8>> => {
     const borrowOracle = this.getVaultCollection(collateralSymbol, borrowSymbol).borrowOracle
     return await this.oracles.getPriceFeedUpdateData(borrowOracle)
   }

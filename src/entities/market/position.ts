@@ -18,16 +18,17 @@ import { Market } from './market'
  * Direction of a position
  */
 export enum PositionSide {
-  LONG = 0,
-  SHORT = 1,
-  UNKNOWN = 2,
+  UNKNOWN = 0,
+  LONG = 1,
+  SHORT = 2,
 }
 
 export enum OrderType {
-  MARKET = 0,
-  LIMIT = 1,
-  STOP = 2,
-  UNKNOWN = 3,
+  UNKNOWN = 0,
+  MARKET = 1,
+  LIMIT = 2,
+  STOP = 3,
+  FLIP = 4,
 }
 
 export const stringToPositionSide = (str: string): PositionSide => {

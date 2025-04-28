@@ -1,5 +1,4 @@
-import { InputEntryFunctionData } from '@aptos-labs/ts-sdk'
-
+import { TransactionPayloadEntryFunction } from '@aptos-labs/ts-sdk'
 import { createClaimAirdropPayload } from '../../transactions'
 import { MirageClientBase } from '../base'
 import { VaultClient } from '../vaults/vaultClient'
@@ -13,7 +12,7 @@ export class MarketTransactionClient {
     this.vaults = vaultClient
   }
 
-  public getClaimAirdropPayload = async (): Promise<InputEntryFunctionData> => {
+  public getClaimAirdropPayload = async (): Promise<TransactionPayloadEntryFunction> => {
     const collateralVaas = await this.vaults.getCollateralPriceFeedUpdate('tUSDC', 'mUSD')
     const borrowVaas = await this.vaults.getBorrowPriceFeedUpdate('tUSDC', 'mUSD')
     return createClaimAirdropPayload(collateralVaas, borrowVaas, this.base.getDeployerAddress())

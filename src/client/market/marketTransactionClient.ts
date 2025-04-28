@@ -1,4 +1,4 @@
-import { InputEntryFunctionData, MoveObjectType } from '@aptos-labs/ts-sdk'
+import { TransactionPayloadEntryFunction, MoveObjectType, MoveVector, U8 } from '@aptos-labs/ts-sdk'
 
 import { OrderType, PositionSide } from '../../entities'
 import {
@@ -8,12 +8,14 @@ import {
   createCancelTpslPayload,
   createCleanupLimitOrderPayload,
   createCleanupTpslPayload,
+  createCloseAllPositionsPayload,
   createClosePositionPayload,
   createDecreaseLimitOrderMarginPayload,
   createDecreaseMarginPayload,
   createDecreasePositionSizePayload,
   createDecreaseSizeAndDecreaseMarginPayload,
   createDecreaseSizeAndIncreaseMarginPayload,
+  createFlipPositionPayload,
   createIncreaseLimitOrderMarginPayload,
   createIncreaseMarginPayload,
   createIncreasePositionSizePayload,
@@ -58,8 +60,38 @@ export class MarketTransactionClient {
     maxPriceSlippage: number,
     isDecreaseOnly: boolean,
     options: CreatePositionOptionals = {},
-  ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+  ): Promise<TransactionPayloadEntryFunction> => {
+    const perpVaa = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaa = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+
+    return this.getPlaceOrderPayloadVaas(
+      positionObjectAddress,
+      orderType,
+      marginAmount,
+      positionSize,
+      side,
+      desiredPrice,
+      maxPriceSlippage,
+      isDecreaseOnly,
+      perpVaa,
+      marginVaa,
+      options,
+    )
+  }
+
+  public getPlaceOrderPayloadVaas = (
+    positionObjectAddress: MoveObjectType,
+    orderType: OrderType,
+    marginAmount: number,
+    positionSize: number,
+    side: PositionSide,
+    desiredPrice: number,
+    maxPriceSlippage: number,
+    isDecreaseOnly: boolean,
+    perpVaa: MoveVector<U8>,
+    marginVaa: MoveVector<U8> | undefined,
+    options: CreatePositionOptionals = {},
+  ): TransactionPayloadEntryFunction => {
     const hasTpSl = (options.takeProfit && options.takeProfit != 0) || (options.stopLoss && options.stopLoss != 0)
     const expiration = options.expiration || BigInt(U64_MAX)
 
@@ -69,12 +101,11 @@ export class MarketTransactionClient {
           throw new Error(`Market orders don't support expiration`)
         }
 
-        const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
         if (hasTpSl) {
           return createOpenPositionWithTpslPayload(
             positionObjectAddress,
-            perpVaas,
-            marginVaas,
+            perpVaa,
+            marginVaa,
             marginAmount,
             positionSize,
             side,
@@ -87,8 +118,8 @@ export class MarketTransactionClient {
         }
         return createOpenPositionPayload(
           positionObjectAddress,
-          perpVaas,
-          marginVaas,
+          perpVaa,
+          marginVaa,
           marginAmount,
           positionSize,
           side,
@@ -104,7 +135,7 @@ export class MarketTransactionClient {
 
         return createPlaceLimitOrderPayload(
           positionObjectAddress,
-          perpVaas,
+          perpVaa,
           marginAmount,
           positionSize,
           desiredPrice,
@@ -119,7 +150,7 @@ export class MarketTransactionClient {
       case OrderType.STOP: {
         return createPlaceLimitOrderPayload(
           positionObjectAddress,
-          perpVaas,
+          perpVaa,
           marginAmount,
           positionSize,
           desiredPrice,
@@ -128,6 +159,18 @@ export class MarketTransactionClient {
           isDecreaseOnly,
           expiration,
           side,
+          this.base.getDeployerAddress(),
+        )
+      }
+      case OrderType.FLIP: {
+        return createFlipPositionPayload(
+          positionObjectAddress,
+          perpVaa,
+          marginVaa,
+          marginAmount,
+          positionSize,
+          desiredPrice,
+          maxPriceSlippage,
           this.base.getDeployerAddress(),
         )
       }
@@ -147,20 +190,51 @@ export class MarketTransactionClient {
     desiredPrice: number,
     maxPriceSlippage: number,
     createPositionOptionals: CreatePositionOptionals = {},
-  ): Promise<InputEntryFunctionData> => {
+  ): Promise<TransactionPayloadEntryFunction> => {
+    const perpVaa = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaa =
+      orderType === OrderType.MARKET ? await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol) : undefined
+
+    return this.getCreatePositionAndPlaceOrderPayloadVaas(
+      perpSymbol,
+      marginSymbol,
+      orderType,
+      marginAmount,
+      positionSize,
+      side,
+      desiredPrice,
+      maxPriceSlippage,
+      perpVaa,
+      marginVaa,
+      createPositionOptionals,
+    )
+  }
+
+  public getCreatePositionAndPlaceOrderPayloadVaas = (
+    perpSymbol: string,
+    marginSymbol: string,
+    orderType: OrderType,
+    marginAmount: number,
+    positionSize: number,
+    side: PositionSide,
+    desiredPrice: number,
+    maxPriceSlippage: number,
+    perpVaa: MoveVector<U8>,
+    marginVaa: MoveVector<U8> | undefined,
+    createPositionOptionals: CreatePositionOptionals = {},
+  ): TransactionPayloadEntryFunction => {
     const marketAddress = this.base.getMarketAddress(perpSymbol, marginSymbol)
-    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+
     switch (orderType) {
       case OrderType.MARKET: {
         if (createPositionOptionals.expiration) {
           throw new Error(`Market orders don't support expiration`)
         }
-        const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
         if (createPositionOptionals.takeProfit || createPositionOptionals.stopLoss) {
           return createAndOpenPositionWithTpslPayload(
             marketAddress,
-            perpVaas,
-            marginVaas,
+            perpVaa,
+            marginVaa,
             marginAmount,
             positionSize,
             side,
@@ -173,8 +247,8 @@ export class MarketTransactionClient {
         }
         return createAndOpenPositionPayload(
           marketAddress,
-          perpVaas,
-          marginVaas,
+          perpVaa,
+          marginVaa,
           marginAmount,
           positionSize,
           side,
@@ -186,7 +260,7 @@ export class MarketTransactionClient {
       case OrderType.LIMIT: {
         return createPositionAndPlaceLimitOrderPayload(
           marketAddress,
-          perpVaas,
+          perpVaa,
           marginAmount,
           positionSize,
           desiredPrice,
@@ -200,7 +274,7 @@ export class MarketTransactionClient {
       case OrderType.STOP: {
         return createPositionAndPlaceLimitOrderPayload(
           marketAddress,
-          perpVaas,
+          perpVaa,
           marginAmount,
           positionSize,
           desiredPrice,
@@ -220,7 +294,7 @@ export class MarketTransactionClient {
   public getIncreaseMarginPayload = async (
     positionObjectAddress: MoveObjectType,
     increaseMarginAmount: number,
-  ): Promise<InputEntryFunctionData> => {
+  ): Promise<TransactionPayloadEntryFunction> => {
     return createIncreaseMarginPayload(positionObjectAddress, increaseMarginAmount, this.base.getDeployerAddress())
   }
 
@@ -229,13 +303,23 @@ export class MarketTransactionClient {
     marginSymbol: string,
     positionObjectAddress: MoveObjectType,
     decreaseMarginAmount: number,
-  ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+  ): Promise<TransactionPayloadEntryFunction> => {
+    const perpVaa = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaa = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+
+    return this.getDecreaseMarginPayloadVaas(positionObjectAddress, decreaseMarginAmount, perpVaa, marginVaa)
+  }
+
+  public getDecreaseMarginPayloadVaas = (
+    positionObjectAddress: MoveObjectType,
+    decreaseMarginAmount: number,
+    perpVaa: MoveVector<U8>,
+    marginVaa: MoveVector<U8> | undefined,
+  ): TransactionPayloadEntryFunction => {
     return createDecreaseMarginPayload(
       positionObjectAddress,
-      perpVaas,
-      marginVaas,
+      perpVaa,
+      marginVaa,
       decreaseMarginAmount,
       this.base.getDeployerAddress(),
     )
@@ -248,13 +332,32 @@ export class MarketTransactionClient {
     positionSizeIncrease: number,
     desiredPrice: number,
     maxPriceSlippage: number,
-  ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+  ): Promise<TransactionPayloadEntryFunction> => {
+    const perpVaa = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaa = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+
+    return this.getIncreasePositionSizePayloadVaas(
+      positionObjectAddress,
+      positionSizeIncrease,
+      desiredPrice,
+      maxPriceSlippage,
+      perpVaa,
+      marginVaa,
+    )
+  }
+
+  public getIncreasePositionSizePayloadVaas = (
+    positionObjectAddress: MoveObjectType,
+    positionSizeIncrease: number,
+    desiredPrice: number,
+    maxPriceSlippage: number,
+    perpVaa: MoveVector<U8>,
+    marginVaa: MoveVector<U8> | undefined,
+  ): TransactionPayloadEntryFunction => {
     return createIncreasePositionSizePayload(
       positionObjectAddress,
-      perpVaas,
-      marginVaas,
+      perpVaa,
+      marginVaa,
       positionSizeIncrease,
       desiredPrice,
       maxPriceSlippage,
@@ -269,13 +372,32 @@ export class MarketTransactionClient {
     decreasePositionSize: number,
     desiredPrice: number,
     maxPriceSlippage: number,
-  ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+  ): Promise<TransactionPayloadEntryFunction> => {
+    const perpVaa = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaa = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+
+    return this.getDecreasePositionSizePayloadVaas(
+      positionObjectAddress,
+      decreasePositionSize,
+      desiredPrice,
+      maxPriceSlippage,
+      perpVaa,
+      marginVaa,
+    )
+  }
+
+  public getDecreasePositionSizePayloadVaas = (
+    positionObjectAddress: MoveObjectType,
+    decreasePositionSize: number,
+    desiredPrice: number,
+    maxPriceSlippage: number,
+    perpVaa: MoveVector<U8>,
+    marginVaa: MoveVector<U8> | undefined,
+  ): TransactionPayloadEntryFunction => {
     return createDecreasePositionSizePayload(
       positionObjectAddress,
-      perpVaas,
-      marginVaas,
+      perpVaa,
+      marginVaa,
       decreasePositionSize,
       desiredPrice,
       maxPriceSlippage,
@@ -289,25 +411,28 @@ export class MarketTransactionClient {
     positionObjectAddress: MoveObjectType,
     desired_price: number,
     maxPriceSlippage: number,
-  ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+  ): Promise<TransactionPayloadEntryFunction> => {
+    const perpVaa = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaa = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+
+    return this.getClosePositionPayloadVaas(positionObjectAddress, desired_price, maxPriceSlippage, perpVaa, marginVaa)
+  }
+
+  public getClosePositionPayloadVaas = (
+    positionObjectAddress: MoveObjectType,
+    desired_price: number,
+    maxPriceSlippage: number,
+    perpVaa: MoveVector<U8>,
+    marginVaa: MoveVector<U8> | undefined,
+  ): TransactionPayloadEntryFunction => {
     return createClosePositionPayload(
       positionObjectAddress,
-      perpVaas,
-      marginVaas,
+      perpVaa,
+      marginVaa,
       desired_price,
       maxPriceSlippage,
       this.base.getDeployerAddress(),
     )
-  }
-
-  public getCancelLimitOrderPayload = (limitOrderObjectAddress: MoveObjectType): InputEntryFunctionData => {
-    return createCancelLimitOrderPayload(limitOrderObjectAddress, this.base.getDeployerAddress())
-  }
-
-  public getCleanupLimitOrderPayload = (limitOrderObjectAddress: MoveObjectType): InputEntryFunctionData => {
-    return createCleanupLimitOrderPayload(limitOrderObjectAddress, this.base.getDeployerAddress())
   }
 
   public getPlaceTpslPayload = async (
@@ -316,19 +441,25 @@ export class MarketTransactionClient {
     positionObjectAddress: MoveObjectType,
     takeProfitPrice: number,
     stopLossPrice: number,
-  ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+  ): Promise<TransactionPayloadEntryFunction> => {
+    const perpVaa = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+
+    return this.getPlaceTpslPayloadVaas(positionObjectAddress, takeProfitPrice, stopLossPrice, perpVaa)
+  }
+
+  public getPlaceTpslPayloadVaas = (
+    positionObjectAddress: MoveObjectType,
+    takeProfitPrice: number,
+    stopLossPrice: number,
+    perpVaa: MoveVector<U8>,
+  ): TransactionPayloadEntryFunction => {
     return createPlaceTpslPayload(
       positionObjectAddress,
-      perpVaas,
+      perpVaa,
       takeProfitPrice,
       stopLossPrice,
       this.base.getDeployerAddress(),
     )
-  }
-
-  public getCleanupTpslPayload = (tpslObjectAddress: MoveObjectType): InputEntryFunctionData => {
-    return createCleanupTpslPayload(tpslObjectAddress, this.base.getDeployerAddress())
   }
 
   public getUpdateTpslPayload = async (
@@ -337,19 +468,25 @@ export class MarketTransactionClient {
     tpslObjectAddress: MoveObjectType,
     takeProfitPrice: number,
     stopLossPrice: number,
-  ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+  ): Promise<TransactionPayloadEntryFunction> => {
+    const perpVaa = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+
+    return this.getUpdateTpslPayloadVaas(tpslObjectAddress, takeProfitPrice, stopLossPrice, perpVaa)
+  }
+
+  public getUpdateTpslPayloadVaas = (
+    tpslObjectAddress: MoveObjectType,
+    takeProfitPrice: number,
+    stopLossPrice: number,
+    perpVaa: MoveVector<U8>,
+  ): TransactionPayloadEntryFunction => {
     return createUpdateTpslPayload(
       tpslObjectAddress,
-      perpVaas,
+      perpVaa,
       takeProfitPrice,
       stopLossPrice,
       this.base.getDeployerAddress(),
     )
-  }
-
-  public getCancelTpslPayload = (tpslObjectAddress: MoveObjectType): InputEntryFunctionData => {
-    return createCancelTpslPayload(tpslObjectAddress, this.base.getDeployerAddress())
   }
 
   public getUpdateMarginPayload = async (
@@ -358,34 +495,32 @@ export class MarketTransactionClient {
     positionObjectAddress: MoveObjectType,
     oldMarginAmount: number,
     newMarginAmount: number,
-  ): Promise<InputEntryFunctionData> => {
+  ): Promise<TransactionPayloadEntryFunction> => {
     const isIncrease = newMarginAmount > oldMarginAmount
     const diff = isIncrease ? newMarginAmount - oldMarginAmount : oldMarginAmount - newMarginAmount
+
+    if (isIncrease) {
+      return await this.getIncreaseMarginPayload(positionObjectAddress, diff)
+    } else {
+      const perpVaa = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+      const marginVaa = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+      return this.getDecreaseMarginPayloadVaas(positionObjectAddress, diff, perpVaa, marginVaa)
+    }
+  }
+
+  public getUpdateMarginPayloadVaas = (
+    positionObjectAddress: MoveObjectType,
+    oldMarginAmount: number,
+    newMarginAmount: number,
+    perpVaa: MoveVector<U8>,
+    marginVaa: MoveVector<U8> | undefined,
+  ): TransactionPayloadEntryFunction => {
+    const isIncrease = newMarginAmount > oldMarginAmount
+    const diff = isIncrease ? newMarginAmount - oldMarginAmount : oldMarginAmount - newMarginAmount
+
     return isIncrease
-      ? await this.getIncreaseMarginPayload(positionObjectAddress, diff)
-      : this.getDecreaseMarginPayload(perpSymbol, marginSymbol, positionObjectAddress, diff)
-  }
-
-  public getIncreaseLimitOrderMarginPayload = async (
-    limitOrderObjectAddress: MoveObjectType,
-    marginIncrease: number,
-  ): Promise<InputEntryFunctionData> => {
-    return createIncreaseLimitOrderMarginPayload(
-      limitOrderObjectAddress,
-      marginIncrease,
-      this.base.getDeployerAddress(),
-    )
-  }
-
-  public getDecreaseLimitOrderMarginPayload = async (
-    limitOrderObjectAddress: MoveObjectType,
-    marginDecrease: number,
-  ): Promise<InputEntryFunctionData> => {
-    return createDecreaseLimitOrderMarginPayload(
-      limitOrderObjectAddress,
-      marginDecrease,
-      this.base.getDeployerAddress(),
-    )
+      ? createIncreaseMarginPayload(positionObjectAddress, diff, this.base.getDeployerAddress())
+      : createDecreaseMarginPayload(positionObjectAddress, perpVaa, marginVaa, diff, this.base.getDeployerAddress())
   }
 
   public getUpdateLimitOrderPayload = async (
@@ -399,11 +534,36 @@ export class MarketTransactionClient {
     newIsDecreaseOnly: boolean,
     newTriggersAbove: boolean,
     newExpiration: bigint,
-  ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+  ): Promise<TransactionPayloadEntryFunction> => {
+    const perpVaa = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+
+    return this.getUpdateLimitOrderPayloadVaas(
+      limitOrderObjectAddress,
+      newPositionSize,
+      newSide,
+      newTriggerPrice,
+      newMaxPriceSlippage,
+      newIsDecreaseOnly,
+      newTriggersAbove,
+      newExpiration,
+      perpVaa,
+    )
+  }
+
+  public getUpdateLimitOrderPayloadVaas = (
+    limitOrderObjectAddress: MoveObjectType,
+    newPositionSize: number,
+    newSide: PositionSide,
+    newTriggerPrice: number,
+    newMaxPriceSlippage: number,
+    newIsDecreaseOnly: boolean,
+    newTriggersAbove: boolean,
+    newExpiration: bigint,
+    perpVaa: MoveVector<U8>,
+  ): TransactionPayloadEntryFunction => {
     return createUpdateLimitOrderPayload(
       limitOrderObjectAddress,
-      perpVaas,
+      perpVaa,
       newPositionSize,
       newSide,
       newTriggerPrice,
@@ -420,13 +580,23 @@ export class MarketTransactionClient {
     marginSymbol: string,
     limitOrderObjectAddress: MoveObjectType,
     triggererAddress: string,
-  ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+  ): Promise<TransactionPayloadEntryFunction> => {
+    const perpVaa = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaa = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+
+    return this.getTriggerLimitOrderPayloadVaas(limitOrderObjectAddress, triggererAddress, perpVaa, marginVaa)
+  }
+
+  public getTriggerLimitOrderPayloadVaas = (
+    limitOrderObjectAddress: MoveObjectType,
+    triggererAddress: string,
+    perpVaa: MoveVector<U8>,
+    marginVaa: MoveVector<U8> | undefined,
+  ): TransactionPayloadEntryFunction => {
     return createTriggerLimitOrderPayload(
       limitOrderObjectAddress,
-      perpVaas,
-      marginVaas,
+      perpVaa,
+      marginVaa,
       triggererAddress,
       this.base.getDeployerAddress(),
     )
@@ -437,13 +607,23 @@ export class MarketTransactionClient {
     marginSymbol: string,
     tpslObjectAddress: MoveObjectType,
     triggererAddress: string,
-  ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+  ): Promise<TransactionPayloadEntryFunction> => {
+    const perpVaa = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaa = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+
+    return this.getTriggerTpslPayloadVaas(tpslObjectAddress, triggererAddress, perpVaa, marginVaa)
+  }
+
+  public getTriggerTpslPayloadVaas = (
+    tpslObjectAddress: MoveObjectType,
+    triggererAddress: string,
+    perpVaa: MoveVector<U8>,
+    marginVaa: MoveVector<U8> | undefined,
+  ): TransactionPayloadEntryFunction => {
     return createTriggerTpslPayload(
       tpslObjectAddress,
-      perpVaas,
-      marginVaas,
+      perpVaa,
+      marginVaa,
       triggererAddress,
       this.base.getDeployerAddress(),
     )
@@ -454,18 +634,28 @@ export class MarketTransactionClient {
     marginSymbol: string,
     positionObjectAddress: MoveObjectType,
     triggererAddress: string,
-  ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+  ): Promise<TransactionPayloadEntryFunction> => {
+    const perpVaa = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaa = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
 
-    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+    return this.getLiquidatePositionPayloadVaas(positionObjectAddress, triggererAddress, perpVaa, marginVaa)
+  }
+
+  public getLiquidatePositionPayloadVaas = (
+    positionObjectAddress: MoveObjectType,
+    triggererAddress: string,
+    perpVaa: MoveVector<U8>,
+    marginVaa: MoveVector<U8> | undefined,
+  ): TransactionPayloadEntryFunction => {
     return createLiquidatePositionPayload(
       positionObjectAddress,
-      perpVaas,
-      marginVaas,
+      perpVaa,
+      marginVaa,
       triggererAddress,
       this.base.getDeployerAddress(),
     )
   }
+
   public getIncreaseSizeAndIncreaseMarginPayload = async (
     perpSymbol: string,
     marginSymbol: string,
@@ -474,13 +664,34 @@ export class MarketTransactionClient {
     marginAmountIncrease: number,
     desiredPrice: number,
     maxPriceSlippage: number,
-  ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+  ): Promise<TransactionPayloadEntryFunction> => {
+    const perpVaa = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaa = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+
+    return this.getIncreaseSizeAndIncreaseMarginPayloadVaas(
+      positionObjectAddress,
+      positionSizeIncrease,
+      marginAmountIncrease,
+      desiredPrice,
+      maxPriceSlippage,
+      perpVaa,
+      marginVaa,
+    )
+  }
+
+  public getIncreaseSizeAndIncreaseMarginPayloadVaas = (
+    positionObjectAddress: MoveObjectType,
+    positionSizeIncrease: number,
+    marginAmountIncrease: number,
+    desiredPrice: number,
+    maxPriceSlippage: number,
+    perpVaa: MoveVector<U8>,
+    marginVaa: MoveVector<U8> | undefined,
+  ): TransactionPayloadEntryFunction => {
     return createIncreaseSizeAndIncreaseMarginPayload(
       positionObjectAddress,
-      perpVaas,
-      marginVaas,
+      perpVaa,
+      marginVaa,
       positionSizeIncrease,
       marginAmountIncrease,
       desiredPrice,
@@ -489,10 +700,6 @@ export class MarketTransactionClient {
     )
   }
 
-  /**
-   * increase the position size and decrease the margin of a position
-   * @returns payload promise for the transaction
-   */
   public getIncreaseSizeAndDecreaseMarginPayload = async (
     perpSymbol: string,
     marginSymbol: string,
@@ -501,13 +708,34 @@ export class MarketTransactionClient {
     marginAmountDecrease: number,
     desiredPrice: number,
     maxPriceSlippage: number,
-  ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+  ): Promise<TransactionPayloadEntryFunction> => {
+    const perpVaa = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaa = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+
+    return this.getIncreaseSizeAndDecreaseMarginPayloadVaas(
+      positionObjectAddress,
+      positionSizeIncrease,
+      marginAmountDecrease,
+      desiredPrice,
+      maxPriceSlippage,
+      perpVaa,
+      marginVaa,
+    )
+  }
+
+  public getIncreaseSizeAndDecreaseMarginPayloadVaas = (
+    positionObjectAddress: MoveObjectType,
+    positionSizeIncrease: number,
+    marginAmountDecrease: number,
+    desiredPrice: number,
+    maxPriceSlippage: number,
+    perpVaa: MoveVector<U8>,
+    marginVaa: MoveVector<U8> | undefined,
+  ): TransactionPayloadEntryFunction => {
     return createIncreaseSizeAndDecreaseMarginPayload(
       positionObjectAddress,
-      perpVaas,
-      marginVaas,
+      perpVaa,
+      marginVaa,
       positionSizeIncrease,
       marginAmountDecrease,
       desiredPrice,
@@ -516,10 +744,6 @@ export class MarketTransactionClient {
     )
   }
 
-  /**
-   * decrease the position size and decrease the margin of a position
-   * @returns payload promise for the transaction
-   */
   public getDecreaseSizeAndDecreaseMarginPayload = async (
     perpSymbol: string,
     marginSymbol: string,
@@ -528,13 +752,34 @@ export class MarketTransactionClient {
     marginAmountDecrease: number,
     desiredPrice: number,
     maxPriceSlippage: number,
-  ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+  ): Promise<TransactionPayloadEntryFunction> => {
+    const perpVaa = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaa = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+
+    return this.getDecreaseSizeAndDecreaseMarginPayloadVaas(
+      positionObjectAddress,
+      positionSizeDecrease,
+      marginAmountDecrease,
+      desiredPrice,
+      maxPriceSlippage,
+      perpVaa,
+      marginVaa,
+    )
+  }
+
+  public getDecreaseSizeAndDecreaseMarginPayloadVaas = (
+    positionObjectAddress: MoveObjectType,
+    positionSizeDecrease: number,
+    marginAmountDecrease: number,
+    desiredPrice: number,
+    maxPriceSlippage: number,
+    perpVaa: MoveVector<U8>,
+    marginVaa: MoveVector<U8> | undefined,
+  ): TransactionPayloadEntryFunction => {
     return createDecreaseSizeAndDecreaseMarginPayload(
       positionObjectAddress,
-      perpVaas,
-      marginVaas,
+      perpVaa,
+      marginVaa,
       positionSizeDecrease,
       marginAmountDecrease,
       desiredPrice,
@@ -543,10 +788,6 @@ export class MarketTransactionClient {
     )
   }
 
-  /**
-   * decrease the position size and decrease the margin of a position
-   * @returns payload promise for the transaction
-   */
   public getDecreaseSizeAndIncreaseMarginPayload = async (
     perpSymbol: string,
     marginSymbol: string,
@@ -555,17 +796,89 @@ export class MarketTransactionClient {
     marginAmountIncrease: number,
     desiredPrice: number,
     maxPriceSlippage: number,
-  ): Promise<InputEntryFunctionData> => {
-    const perpVaas = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
-    const marginVaas = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
-    return createDecreaseSizeAndIncreaseMarginPayload(
+  ): Promise<TransactionPayloadEntryFunction> => {
+    const perpVaa = await this.base.getPerpPriceFeedUpdate(perpSymbol, marginSymbol)
+    const marginVaa = await this.base.getMarginPriceFeedUpdate(perpSymbol, marginSymbol)
+
+    return this.getDecreaseSizeAndIncreaseMarginPayloadVaas(
       positionObjectAddress,
-      perpVaas,
-      marginVaas,
       positionSizeDecrease,
       marginAmountIncrease,
       desiredPrice,
       maxPriceSlippage,
+      perpVaa,
+      marginVaa,
+    )
+  }
+
+  public getDecreaseSizeAndIncreaseMarginPayloadVaas = (
+    positionObjectAddress: MoveObjectType,
+    positionSizeDecrease: number,
+    marginAmountIncrease: number,
+    desiredPrice: number,
+    maxPriceSlippage: number,
+    perpVaa: MoveVector<U8>,
+    marginVaa: MoveVector<U8> | undefined,
+  ): TransactionPayloadEntryFunction => {
+    return createDecreaseSizeAndIncreaseMarginPayload(
+      positionObjectAddress,
+      perpVaa,
+      marginVaa,
+      positionSizeDecrease,
+      marginAmountIncrease,
+      desiredPrice,
+      maxPriceSlippage,
+      this.base.getDeployerAddress(),
+    )
+  }
+
+  public getCancelLimitOrderPayload = (limitOrderObjectAddress: MoveObjectType): TransactionPayloadEntryFunction => {
+    return createCancelLimitOrderPayload(limitOrderObjectAddress, this.base.getDeployerAddress())
+  }
+
+  public getCleanupLimitOrderPayload = (limitOrderObjectAddress: MoveObjectType): TransactionPayloadEntryFunction => {
+    return createCleanupLimitOrderPayload(limitOrderObjectAddress, this.base.getDeployerAddress())
+  }
+
+  public getCleanupTpslPayload = (tpslObjectAddress: MoveObjectType): TransactionPayloadEntryFunction => {
+    return createCleanupTpslPayload(tpslObjectAddress, this.base.getDeployerAddress())
+  }
+
+  public getCancelTpslPayload = (tpslObjectAddress: MoveObjectType): TransactionPayloadEntryFunction => {
+    return createCancelTpslPayload(tpslObjectAddress, this.base.getDeployerAddress())
+  }
+
+  public getIncreaseLimitOrderMarginPayload = (
+    limitOrderObjectAddress: MoveObjectType,
+    marginIncrease: number,
+  ): TransactionPayloadEntryFunction => {
+    return createIncreaseLimitOrderMarginPayload(
+      limitOrderObjectAddress,
+      marginIncrease,
+      this.base.getDeployerAddress(),
+    )
+  }
+
+  public getDecreaseLimitOrderMarginPayload = (
+    limitOrderObjectAddress: MoveObjectType,
+    marginDecrease: number,
+  ): TransactionPayloadEntryFunction => {
+    return createDecreaseLimitOrderMarginPayload(
+      limitOrderObjectAddress,
+      marginDecrease,
+      this.base.getDeployerAddress(),
+    )
+  }
+
+  public getCloseAllPositionsPayload = (
+    allPositionObjectAddress: MoveObjectType[],
+    allPerpVaas: (MoveVector<U8> | undefined)[],
+    allMarginVaas: (MoveVector<U8> | undefined)[],
+  ): TransactionPayloadEntryFunction => {
+    return createCloseAllPositionsPayload(
+      allPositionObjectAddress,
+      allPerpVaas,
+      allMarginVaas,
       this.base.getDeployerAddress(),
     )
   }

@@ -1,8 +1,21 @@
-import { AccountAddress, InputEntryFunctionData, MoveObjectType } from '@aptos-labs/ts-sdk'
+import {
+  Bool,
+  MoveVector,
+  U8,
+  AccountAddress,
+  MoveObjectType,
+  TransactionPayloadEntryFunction,
+  ModuleId,
+  Identifier,
+  EntryFunction,
+  U64,
+} from '@aptos-labs/ts-sdk'
 
 import { PositionSide } from '../entities'
 import { getModuleAddress, MoveModules } from '../utils'
-import { getDecimal8Argument, getTpSlArgument } from './'
+import { getDecimal8BCS, getTpSlArgument } from './'
+
+const emptyVaa = MoveVector.U8([])
 
 /**
  * Open a position in a market at the current price
@@ -10,29 +23,72 @@ import { getDecimal8Argument, getTpSlArgument } from './'
  */
 export const createOpenPositionPayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8> | undefined,
   marginAmount: number,
   positionSize: number,
   side: PositionSide,
   desiredPrice: number,
   maxPriceSlippage: number,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::open_position_entry`,
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('open_position_entry')
+  const typeArguments = []
 
-    functionArguments: [
-      positionObjectAddress,
-      perpVaas,
-      marginVaas,
-      getDecimal8Argument(marginAmount), // always 8 decimals
-      getDecimal8Argument(positionSize),
-      side == PositionSide.LONG,
-      getDecimal8Argument(desiredPrice),
-      getDecimal8Argument(maxPriceSlippage),
-    ],
-  }
+  const functionArguments = [
+    AccountAddress.fromString(positionObjectAddress),
+    perpVaa,
+    marginVaa ? marginVaa : emptyVaa,
+    getDecimal8BCS(marginAmount), // always 8 decimals
+    getDecimal8BCS(positionSize),
+    new Bool(side == PositionSide.LONG),
+    getDecimal8BCS(desiredPrice),
+    getDecimal8BCS(maxPriceSlippage),
+  ]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
+}
+
+/**
+ * Open a position in a market at the current price
+ * @returns payload promise for the transaction
+ */
+export const createFlipPositionPayload = (
+  positionObjectAddress: MoveObjectType,
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8> | undefined,
+  newMarginAmount: number,
+  newPositionSize: number,
+  desiredPrice: number,
+  maxPriceSlippage: number,
+  deployerAddress: AccountAddress,
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('flip_position_entry')
+  const typeArguments = []
+
+  const functionArguments = [
+    AccountAddress.fromString(positionObjectAddress),
+    perpVaa,
+    marginVaa ? marginVaa : emptyVaa,
+    getDecimal8BCS(newMarginAmount), // always 8 decimals
+    getDecimal8BCS(newPositionSize),
+    getDecimal8BCS(desiredPrice),
+    getDecimal8BCS(maxPriceSlippage),
+  ]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -41,8 +97,8 @@ export const createOpenPositionPayload = (
  */
 export const createOpenPositionWithTpslPayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8> | undefined,
   marginAmount: number,
   positionSize: number,
   side: PositionSide,
@@ -51,23 +107,30 @@ export const createOpenPositionWithTpslPayload = (
   takeProfitPrice: number | undefined,
   stopLossPrice: number | undefined,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::open_position_entry_with_tpsl_entry`,
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('open_position_entry_with_tpsl_entry')
+  const typeArguments = []
 
-    functionArguments: [
-      positionObjectAddress,
-      perpVaas,
-      marginVaas,
-      getDecimal8Argument(marginAmount), // always 8 decimals
-      getDecimal8Argument(positionSize),
-      side == PositionSide.LONG,
-      getDecimal8Argument(desiredPrice),
-      getDecimal8Argument(maxPriceSlippage),
-      getTpSlArgument(takeProfitPrice),
-      getTpSlArgument(stopLossPrice),
-    ],
-  }
+  const functionArguments = [
+    AccountAddress.fromString(positionObjectAddress),
+    perpVaa,
+    marginVaa ? marginVaa : emptyVaa,
+    getDecimal8BCS(marginAmount), // always 8 decimals
+    getDecimal8BCS(positionSize),
+    new Bool(side == PositionSide.LONG),
+    getDecimal8BCS(desiredPrice),
+    getDecimal8BCS(maxPriceSlippage),
+    getTpSlArgument(takeProfitPrice),
+    getTpSlArgument(stopLossPrice),
+  ]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -77,29 +140,36 @@ export const createOpenPositionWithTpslPayload = (
  */
 export const createAndOpenPositionPayload = (
   marketAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8> | undefined,
   marginAmount: number,
   positionSize: number,
   side: PositionSide,
   desiredPrice: number,
   maxPriceSlippage: number,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::create_and_open_position_entry`,
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('create_and_open_position_entry')
+  const typeArguments = []
 
-    functionArguments: [
-      marketAddress,
-      perpVaas,
-      marginVaas,
-      getDecimal8Argument(marginAmount), // always 8 decimals
-      getDecimal8Argument(positionSize),
-      side == PositionSide.LONG,
-      getDecimal8Argument(desiredPrice),
-      getDecimal8Argument(maxPriceSlippage),
-    ],
-  }
+  const functionArguments = [
+    AccountAddress.fromString(marketAddress),
+    perpVaa,
+    marginVaa ? marginVaa : emptyVaa,
+    getDecimal8BCS(marginAmount), // always 8 decimals
+    getDecimal8BCS(positionSize),
+    new Bool(side == PositionSide.LONG),
+    getDecimal8BCS(desiredPrice),
+    getDecimal8BCS(maxPriceSlippage),
+  ]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -109,8 +179,8 @@ export const createAndOpenPositionPayload = (
 
 export const createAndOpenPositionWithTpslPayload = (
   marketAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8> | undefined,
   marginAmount: number,
   positionSize: number,
   side: PositionSide,
@@ -119,23 +189,30 @@ export const createAndOpenPositionWithTpslPayload = (
   takeProfitPrice: number | undefined,
   stopLossPrice: number | undefined,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::create_and_open_position_with_tpsl_entry`,
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('create_and_open_position_with_tpsl_entry')
+  const typeArguments = []
 
-    functionArguments: [
-      marketAddress,
-      perpVaas,
-      marginVaas,
-      getDecimal8Argument(marginAmount), // always 8 decimals
-      getDecimal8Argument(positionSize),
-      side == PositionSide.LONG,
-      getDecimal8Argument(desired_price),
-      getDecimal8Argument(maxPriceSlippage),
-      getTpSlArgument(takeProfitPrice),
-      getTpSlArgument(stopLossPrice),
-    ],
-  }
+  const functionArguments = [
+    AccountAddress.fromString(marketAddress),
+    perpVaa,
+    marginVaa ? marginVaa : emptyVaa,
+    getDecimal8BCS(marginAmount), // always 8 decimals
+    getDecimal8BCS(positionSize),
+    new Bool(side == PositionSide.LONG),
+    getDecimal8BCS(desired_price),
+    getDecimal8BCS(maxPriceSlippage),
+    getTpSlArgument(takeProfitPrice),
+    getTpSlArgument(stopLossPrice),
+  ]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -144,28 +221,35 @@ export const createAndOpenPositionWithTpslPayload = (
  */
 export const createClosePositionPayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8> | undefined,
   desired_price: number,
   maxPriceSlippage: number,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function:
-      `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::close_position_entry` as `${string}::${string}::${string}`,
-    functionArguments: [
-      positionObjectAddress,
-      perpVaas,
-      marginVaas,
-      getDecimal8Argument(desired_price),
-      getDecimal8Argument(maxPriceSlippage),
-    ],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('close_position_entry')
+  const typeArguments = []
+
+  const functionArguments = [
+    AccountAddress.fromString(positionObjectAddress),
+    perpVaa,
+    marginVaa ? marginVaa : emptyVaa,
+    getDecimal8BCS(desired_price),
+    getDecimal8BCS(maxPriceSlippage),
+  ]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 export const createPositionAndPlaceLimitOrderPayload = (
   marketAddress: MoveObjectType,
-  perpVaas: number[],
+  perpVaa: MoveVector<U8>,
   marginAmount: number,
   positionSize: number,
   triggerPrice: number,
@@ -174,21 +258,29 @@ export const createPositionAndPlaceLimitOrderPayload = (
   expiration: bigint, // in seconds,
   side: PositionSide,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::create_position_and_place_limit_order_entry`,
-    functionArguments: [
-      marketAddress,
-      perpVaas,
-      getDecimal8Argument(marginAmount), // always 8 decimals
-      getDecimal8Argument(positionSize),
-      getDecimal8Argument(triggerPrice),
-      getDecimal8Argument(maxPriceSlippage),
-      triggersAbove,
-      expiration.toString(), // sdk breaks for large non-string integers
-      side == PositionSide.LONG,
-    ],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('create_position_and_place_limit_order_entry')
+  const typeArguments = []
+
+  const functionArguments = [
+    AccountAddress.fromString(marketAddress),
+    perpVaa,
+    getDecimal8BCS(marginAmount), // always 8 decimals
+    getDecimal8BCS(positionSize),
+    getDecimal8BCS(triggerPrice),
+    getDecimal8BCS(maxPriceSlippage),
+    new Bool(triggersAbove),
+    new U64(expiration), // sdk breaks for large non-string integers
+    new Bool(side == PositionSide.LONG),
+  ]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -198,7 +290,7 @@ export const createPositionAndPlaceLimitOrderPayload = (
  */
 export const createPlaceLimitOrderPayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
+  perpVaa: MoveVector<U8>,
   marginAmount: number,
   positionSize: number,
   triggerPrice: number,
@@ -208,22 +300,30 @@ export const createPlaceLimitOrderPayload = (
   expiration: bigint, // in seconds
   side: PositionSide,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function: `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::place_limit_order_entry`,
-    functionArguments: [
-      positionObjectAddress,
-      perpVaas,
-      getDecimal8Argument(marginAmount), // always 8 decimals
-      getDecimal8Argument(positionSize),
-      side == PositionSide.LONG,
-      getDecimal8Argument(triggerPrice),
-      getDecimal8Argument(maxPriceSlippage),
-      triggersAbove,
-      isDecreaseOnly,
-      expiration.toString(), // sdk breaks for large non-string integers
-    ],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('place_limit_order_entry')
+  const typeArguments = []
+
+  const functionArguments = [
+    AccountAddress.fromString(positionObjectAddress),
+    perpVaa,
+    getDecimal8BCS(marginAmount), // always 8 decimals
+    getDecimal8BCS(positionSize),
+    new Bool(side == PositionSide.LONG),
+    getDecimal8BCS(triggerPrice),
+    getDecimal8BCS(maxPriceSlippage),
+    new Bool(triggersAbove),
+    new Bool(isDecreaseOnly),
+    new U64(expiration), // sdk breaks for large non-string integers
+  ]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -233,7 +333,7 @@ export const createPlaceLimitOrderPayload = (
  */
 export const createUpdateLimitOrderPayload = (
   limitOrderObjectAddress: MoveObjectType,
-  perpVaas: number[],
+  perpVaa: MoveVector<U8>,
   positionSize: number,
   side: PositionSide,
   triggerPrice: number,
@@ -242,21 +342,26 @@ export const createUpdateLimitOrderPayload = (
   triggersAbove: boolean,
   expiration: bigint, // in seconds
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function: `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::limit_order::update_limit_order`,
-    functionArguments: [
-      limitOrderObjectAddress,
-      perpVaas,
-      getDecimal8Argument(positionSize),
-      side == PositionSide.LONG,
-      getDecimal8Argument(triggerPrice),
-      getDecimal8Argument(maxPriceSlippage),
-      isDecreaseOnly,
-      triggersAbove,
-      expiration.toString(), // sdk breaks for large non-string integers
-    ],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(getModuleAddress(MoveModules.MARKET, deployerAddress), new Identifier('limit_order'))
+  const functionName = new Identifier('update_limit_order')
+  const typeArguments = []
+
+  const functionArguments = [
+    AccountAddress.fromString(limitOrderObjectAddress),
+    perpVaa,
+    getDecimal8BCS(positionSize),
+    new Bool(side == PositionSide.LONG),
+    getDecimal8BCS(triggerPrice),
+    getDecimal8BCS(maxPriceSlippage),
+    new Bool(isDecreaseOnly),
+    new Bool(triggersAbove),
+    new U64(expiration), // sdk breaks for large non-string integers
+  ]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -266,45 +371,65 @@ export const createUpdateLimitOrderPayload = (
 export const createCancelLimitOrderPayload = (
   limitOrderObjectAddress: MoveObjectType,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function:
-      `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::limit_order::cancel_limit_order` as `${string}::${string}::${string}`,
-    functionArguments: [limitOrderObjectAddress],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(getModuleAddress(MoveModules.MARKET, deployerAddress), new Identifier('limit_order'))
+  const functionName = new Identifier('cancel_limit_order')
+  const typeArguments = []
+
+  const functionArguments = [AccountAddress.fromString(limitOrderObjectAddress)]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 export const createUpdateTpslPayload = (
   tpslObjectAddress: MoveObjectType,
-  perpVaas: number[],
+  perpVaa: MoveVector<U8>,
   takeProfitPrice: number | undefined,
   stopLossPrice: number | undefined,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function:
-      `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::tpsl::update_tpsl` as `${string}::${string}::${string}`,
-    functionArguments: [tpslObjectAddress, perpVaas, getTpSlArgument(takeProfitPrice), getTpSlArgument(stopLossPrice)],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(getModuleAddress(MoveModules.MARKET, deployerAddress), new Identifier('tpsl'))
+  const functionName = new Identifier('update_tpsl')
+  const typeArguments = []
+
+  const functionArguments = [
+    AccountAddress.fromString(tpslObjectAddress),
+    perpVaa,
+    getTpSlArgument(takeProfitPrice),
+    getTpSlArgument(stopLossPrice),
+  ]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 export const createPlaceTpslPayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
+  perpVaa: MoveVector<U8>,
   takeProfitPrice: number,
   stopLossPrice: number,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function:
-      `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::place_tpsl_entry` as `${string}::${string}::${string}`,
-    functionArguments: [
-      positionObjectAddress,
-      perpVaas,
-      getDecimal8Argument(takeProfitPrice),
-      getDecimal8Argument(stopLossPrice),
-    ],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('place_tpsl_entry')
+  const typeArguments = []
+
+  const functionArguments = [
+    AccountAddress.fromString(positionObjectAddress),
+    perpVaa,
+    getDecimal8BCS(takeProfitPrice),
+    getDecimal8BCS(stopLossPrice),
+  ]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -314,29 +439,39 @@ export const createPlaceTpslPayload = (
 export const createCancelTpslPayload = (
   tpslObjectAddress: MoveObjectType,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function:
-      `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::tpsl::cancel_tpsl` as `${string}::${string}::${string}`,
-    functionArguments: [tpslObjectAddress],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(getModuleAddress(MoveModules.MARKET, deployerAddress), new Identifier('tpsl'))
+  const functionName = new Identifier('cancel_tpsl')
+  const typeArguments = []
+
+  const functionArguments = [AccountAddress.fromString(tpslObjectAddress)]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
  * increase the margin of a position
  * @returns payload promise for the transaction
  */
-
 export const createIncreaseMarginPayload = (
   positionObject: MoveObjectType,
   increaseMarginAmount: number,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function:
-      `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::increase_margin_entry` as `${string}::${string}::${string}`,
-    functionArguments: [positionObject, getDecimal8Argument(increaseMarginAmount)],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('increase_margin_entry')
+  const typeArguments = []
+
+  const functionArguments = [AccountAddress.fromString(positionObject), getDecimal8BCS(increaseMarginAmount)]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -345,16 +480,28 @@ export const createIncreaseMarginPayload = (
  */
 export const createDecreaseMarginPayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8> | undefined,
   decreaseMarginAmount: number,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function:
-      `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::decrease_margin_entry` as `${string}::${string}::${string}`,
-    functionArguments: [positionObjectAddress, perpVaas, marginVaas, getDecimal8Argument(decreaseMarginAmount)],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('decrease_margin_entry')
+  const typeArguments = []
+
+  const functionArguments = [
+    AccountAddress.fromString(positionObjectAddress),
+    perpVaa,
+    marginVaa ? marginVaa : emptyVaa,
+    getDecimal8BCS(decreaseMarginAmount),
+  ]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -365,12 +512,19 @@ export const createIncreaseLimitOrderMarginPayload = (
   limitOrderObjectAddress: MoveObjectType,
   marginIncreaseAmount: number,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function:
-      `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::increase_limit_order_margin_entry` as `${string}::${string}::${string}`,
-    functionArguments: [limitOrderObjectAddress, getDecimal8Argument(marginIncreaseAmount)],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('increase_limit_order_margin_entry')
+  const typeArguments = []
+
+  const functionArguments = [AccountAddress.fromString(limitOrderObjectAddress), getDecimal8BCS(marginIncreaseAmount)]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -381,12 +535,19 @@ export const createDecreaseLimitOrderMarginPayload = (
   limitOrderObjectAddress: MoveObjectType,
   marginDecreaseAmount: number,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function:
-      `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::decrease_limit_order_margin_entry` as `${string}::${string}::${string}`,
-    functionArguments: [limitOrderObjectAddress, getDecimal8Argument(marginDecreaseAmount)],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('decrease_limit_order_margin_entry')
+  const typeArguments = []
+
+  const functionArguments = [AccountAddress.fromString(limitOrderObjectAddress), getDecimal8BCS(marginDecreaseAmount)]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -395,25 +556,29 @@ export const createDecreaseLimitOrderMarginPayload = (
  */
 export const createIncreasePositionSizePayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8> | undefined,
   positionSizeIncrease: number,
   desiredPrice: number,
   maxPriceSlippage: number,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function:
-      `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::market::increase_position_size` as `${string}::${string}::${string}`,
-    functionArguments: [
-      positionObjectAddress,
-      perpVaas,
-      marginVaas,
-      getDecimal8Argument(positionSizeIncrease),
-      getDecimal8Argument(desiredPrice),
-      getDecimal8Argument(maxPriceSlippage),
-    ],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(getModuleAddress(MoveModules.MARKET, deployerAddress), new Identifier('market'))
+  const functionName = new Identifier('increase_position_size')
+  const typeArguments = []
+
+  const functionArguments = [
+    AccountAddress.fromString(positionObjectAddress),
+    perpVaa,
+    marginVaa ? marginVaa : emptyVaa,
+    getDecimal8BCS(positionSizeIncrease),
+    getDecimal8BCS(desiredPrice),
+    getDecimal8BCS(maxPriceSlippage),
+  ]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -422,26 +587,32 @@ export const createIncreasePositionSizePayload = (
  */
 export const createDecreasePositionSizePayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8> | undefined,
   decreasePositionSize: number,
   desiredPrice: number,
   maxPriceSlippage: number,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  const payload = {
-    function:
-      `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::decrease_position_size_entry` as `${string}::${string}::${string}`,
-    functionArguments: [
-      positionObjectAddress,
-      perpVaas,
-      marginVaas,
-      getDecimal8Argument(decreasePositionSize),
-      getDecimal8Argument(desiredPrice),
-      getDecimal8Argument(maxPriceSlippage),
-    ],
-  }
-  return payload
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('decrease_position_size_entry')
+  const typeArguments = []
+
+  const functionArguments = [
+    AccountAddress.fromString(positionObjectAddress),
+    perpVaa,
+    marginVaa ? marginVaa : emptyVaa,
+    getDecimal8BCS(decreasePositionSize),
+    getDecimal8BCS(desiredPrice),
+    getDecimal8BCS(maxPriceSlippage),
+  ]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -451,12 +622,16 @@ export const createDecreasePositionSizePayload = (
 export const createCleanupTpslPayload = (
   tpslObjectAddress: MoveObjectType,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function:
-      `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::tpsl::cleanup_tpsl` as `${string}::${string}::${string}`,
-    functionArguments: [tpslObjectAddress],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(getModuleAddress(MoveModules.MARKET, deployerAddress), new Identifier('tpsl'))
+  const functionName = new Identifier('cleanup_tpsl')
+  const typeArguments = []
+
+  const functionArguments = [AccountAddress.fromString(tpslObjectAddress)]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -466,12 +641,16 @@ export const createCleanupTpslPayload = (
 export const createCleanupLimitOrderPayload = (
   limitOrderObjectAddress: MoveObjectType,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function:
-      `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::limit_order::cleanup_limit_order` as `${string}::${string}::${string}`,
-    functionArguments: [limitOrderObjectAddress],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(getModuleAddress(MoveModules.MARKET, deployerAddress), new Identifier('limit_order'))
+  const functionName = new Identifier('cleanup_limit_order')
+  const typeArguments = []
+
+  const functionArguments = [AccountAddress.fromString(limitOrderObjectAddress)]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -480,16 +659,28 @@ export const createCleanupLimitOrderPayload = (
  */
 export const createTriggerTpslPayload = (
   tpslObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8> | undefined,
   triggererAddress: string,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function:
-      `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::trigger_tpsl_entry` as `${string}::${string}::${string}`,
-    functionArguments: [triggererAddress, tpslObjectAddress, perpVaas, marginVaas],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('trigger_tpsl_entry')
+  const typeArguments = []
+
+  const functionArguments = [
+    AccountAddress.fromString(triggererAddress),
+    AccountAddress.fromString(tpslObjectAddress),
+    perpVaa,
+    marginVaa ? marginVaa : emptyVaa,
+  ]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -498,16 +689,28 @@ export const createTriggerTpslPayload = (
  */
 export const createLiquidatePositionPayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8> | undefined,
   triggererAddress: string,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function:
-      `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::liquidate_position_entry` as `${string}::${string}::${string}`,
-    functionArguments: [triggererAddress, positionObjectAddress, perpVaas, marginVaas],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('liquidate_position_entry')
+  const typeArguments = []
+
+  const functionArguments = [
+    AccountAddress.fromString(triggererAddress),
+    AccountAddress.fromString(positionObjectAddress),
+    perpVaa,
+    marginVaa ? marginVaa : emptyVaa,
+  ]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -516,16 +719,28 @@ export const createLiquidatePositionPayload = (
  */
 export const createTriggerLimitOrderPayload = (
   limitOrderObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8> | undefined,
   triggererAddress: string,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function:
-      `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::trigger_limit_order_entry` as `${string}::${string}::${string}`,
-    functionArguments: [triggererAddress, limitOrderObjectAddress, perpVaas, marginVaas],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('trigger_limit_order_entry')
+  const typeArguments = []
+
+  const functionArguments = [
+    AccountAddress.fromString(triggererAddress),
+    AccountAddress.fromString(limitOrderObjectAddress),
+    perpVaa,
+    marginVaa ? marginVaa : emptyVaa,
+  ]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -534,27 +749,34 @@ export const createTriggerLimitOrderPayload = (
  */
 export const createIncreaseSizeAndIncreaseMarginPayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8> | undefined,
   positionSizeIncrease: number,
   marginAmountIncrease: number,
   desiredPrice: number,
   maxPriceSlippage: number,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function:
-      `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::increase_position_size_and_increase_margin_entry` as `${string}::${string}::${string}`,
-    functionArguments: [
-      positionObjectAddress,
-      perpVaas,
-      marginVaas,
-      getDecimal8Argument(positionSizeIncrease),
-      getDecimal8Argument(marginAmountIncrease),
-      getDecimal8Argument(desiredPrice),
-      getDecimal8Argument(maxPriceSlippage),
-    ],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('increase_position_size_and_increase_margin_entry')
+  const typeArguments = []
+
+  const functionArguments = [
+    AccountAddress.fromString(positionObjectAddress),
+    perpVaa,
+    marginVaa ? marginVaa : emptyVaa,
+    getDecimal8BCS(positionSizeIncrease),
+    getDecimal8BCS(marginAmountIncrease),
+    getDecimal8BCS(desiredPrice),
+    getDecimal8BCS(maxPriceSlippage),
+  ]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -563,28 +785,34 @@ export const createIncreaseSizeAndIncreaseMarginPayload = (
  */
 export const createIncreaseSizeAndDecreaseMarginPayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8> | undefined,
   positionSizeIncrease: number,
   marginAmountDecrease: number,
   desiredPrice: number,
   maxPriceSlippage: number,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  const payload = {
-    function:
-      `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::increase_position_size_and_decrease_margin_entry` as `${string}::${string}::${string}`,
-    functionArguments: [
-      positionObjectAddress,
-      perpVaas,
-      marginVaas,
-      getDecimal8Argument(positionSizeIncrease),
-      getDecimal8Argument(marginAmountDecrease),
-      getDecimal8Argument(desiredPrice),
-      getDecimal8Argument(maxPriceSlippage),
-    ],
-  }
-  return payload
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('increase_position_size_and_decrease_margin_entry')
+  const typeArguments = []
+
+  const functionArguments = [
+    AccountAddress.fromString(positionObjectAddress),
+    perpVaa,
+    marginVaa ? marginVaa : emptyVaa,
+    getDecimal8BCS(positionSizeIncrease),
+    getDecimal8BCS(marginAmountDecrease),
+    getDecimal8BCS(desiredPrice),
+    getDecimal8BCS(maxPriceSlippage),
+  ]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -593,27 +821,34 @@ export const createIncreaseSizeAndDecreaseMarginPayload = (
  */
 export const createDecreaseSizeAndDecreaseMarginPayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8> | undefined,
   positionSizeDecrease: number,
   marginAmountDecrease: number,
   desiredPrice: number,
   maxPriceSlippage: number,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function:
-      `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::decrease_position_size_and_decrease_margin_entry` as `${string}::${string}::${string}`,
-    functionArguments: [
-      positionObjectAddress,
-      perpVaas,
-      marginVaas,
-      getDecimal8Argument(positionSizeDecrease),
-      getDecimal8Argument(marginAmountDecrease),
-      getDecimal8Argument(desiredPrice),
-      getDecimal8Argument(maxPriceSlippage),
-    ],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('decrease_position_size_and_decrease_margin_entry')
+  const typeArguments = []
+
+  const functionArguments = [
+    AccountAddress.fromString(positionObjectAddress),
+    perpVaa,
+    marginVaa ? marginVaa : emptyVaa,
+    getDecimal8BCS(positionSizeDecrease),
+    getDecimal8BCS(marginAmountDecrease),
+    getDecimal8BCS(desiredPrice),
+    getDecimal8BCS(maxPriceSlippage),
+  ]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -622,25 +857,62 @@ export const createDecreaseSizeAndDecreaseMarginPayload = (
  */
 export const createDecreaseSizeAndIncreaseMarginPayload = (
   positionObjectAddress: MoveObjectType,
-  perpVaas: number[],
-  marginVaas: number[],
+  perpVaa: MoveVector<U8>,
+  marginVaa: MoveVector<U8> | undefined,
   positionSizeDecrease: number,
   marginAmountIncrease: number,
   desiredPrice: number,
   maxPriceSlippage: number,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function:
-      `${getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress)}::market_scripts::decrease_position_size_and_increase_margin_entry` as `${string}::${string}::${string}`,
-    functionArguments: [
-      positionObjectAddress,
-      perpVaas,
-      marginVaas,
-      getDecimal8Argument(positionSizeDecrease),
-      getDecimal8Argument(marginAmountIncrease),
-      getDecimal8Argument(desiredPrice),
-      getDecimal8Argument(maxPriceSlippage),
-    ],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('decrease_position_size_and_increase_margin_entry')
+  const typeArguments = []
+
+  const functionArguments = [
+    AccountAddress.fromString(positionObjectAddress),
+    perpVaa,
+    marginVaa ? marginVaa : emptyVaa,
+    getDecimal8BCS(positionSizeDecrease),
+    getDecimal8BCS(marginAmountIncrease),
+    getDecimal8BCS(desiredPrice),
+    getDecimal8BCS(maxPriceSlippage),
+  ]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
+}
+
+/**
+ * decrease the position size and decrease the margin of a position
+ * @returns payload promise for the transaction
+ */
+export const createCloseAllPositionsPayload = (
+  allPositionObjectAddress: MoveObjectType[],
+  allPerpVaas: (MoveVector<U8> | undefined)[],
+  allMarginVaas: (MoveVector<U8> | undefined)[],
+  deployerAddress: AccountAddress,
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('close_all_positions_entry')
+  const typeArguments = []
+
+  const allPositionObjectAddressesBCS = new MoveVector<AccountAddress>(
+    allPositionObjectAddress.map((address) => AccountAddress.fromString(address)),
+  )
+  const allMarginVaasBCS = new MoveVector<MoveVector<U8>>(allMarginVaas.map((vaa) => (vaa ? vaa : emptyVaa)))
+  const allPerpVaasBCS = new MoveVector<MoveVector<U8>>(allPerpVaas.map((vaa) => (vaa ? vaa : emptyVaa)))
+
+  const functionArguments = [allPositionObjectAddressesBCS, allPerpVaasBCS, allMarginVaasBCS]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }

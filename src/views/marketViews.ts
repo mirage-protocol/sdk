@@ -8,7 +8,7 @@ import {
   GetTokenIdsFromCollectionsByOwnerDocument,
   GetTokenIdsFromCollectionsByOwnerQueryVariables,
 } from '../generated/aptos/graphql'
-import { getDecimal8Argument } from '../transactions'
+import { getDecimal8BCS } from '../transactions'
 import { getModuleAddress, MoveModules, PRECISION_8 } from '../utils'
 
 export type AllPositionInfo = {
@@ -126,7 +126,7 @@ export const isLimitOrderTriggerableView = async (
   const payload = {
     function:
       `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::limit_order::is_limit_order_triggerable` as `${string}::${string}::${string}`,
-    functionArguments: [limitOrderObject, getDecimal8Argument(perpPrice)],
+    functionArguments: [limitOrderObject, getDecimal8BCS(perpPrice)],
   }
   const ret = await aptosClient.view({ payload })
   return ret[0] as boolean
@@ -141,7 +141,7 @@ export const isLimitOrderTriggerableBulkView = async (
   const payload = {
     function:
       `${getModuleAddress(MoveModules.KEEPER_SCRIPTS, deployerAddress)}::market_scripts::get_is_limit_order_triggerable_states_same_perp` as `${string}::${string}::${string}`,
-    functionArguments: [limitOrderObjectAddresses, getDecimal8Argument(perpPrice)],
+    functionArguments: [limitOrderObjectAddresses, getDecimal8BCS(perpPrice)],
   }
   const ret = await aptosClient.view({ payload })
   return (ret as any)[0] as boolean[]
@@ -157,7 +157,7 @@ export const liquidationPriceView = async (
   const payload = {
     function:
       `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::market::get_liquidation_price` as `${string}::${string}::${string}`,
-    functionArguments: [positionObjectAddress, getDecimal8Argument(perpPrice), getDecimal8Argument(marginPrice)],
+    functionArguments: [positionObjectAddress, getDecimal8BCS(perpPrice), getDecimal8BCS(marginPrice)],
   }
   const ret = await aptosClient.view({ payload })
   return BigNumber(ret[0] as MoveUint64Type)
@@ -175,7 +175,7 @@ export const liquidationPriceBulkView = async (
   const payload = {
     function:
       `${getModuleAddress(MoveModules.KEEPER_SCRIPTS, deployerAddress)}::market_scripts::get_liquidation_prices_same_perp` as `${string}::${string}::${string}`,
-    functionArguments: [positionObjectAddresses, getDecimal8Argument(perpPrice), getDecimal8Argument(marginPrice)],
+    functionArguments: [positionObjectAddresses, getDecimal8BCS(perpPrice), getDecimal8BCS(marginPrice)],
   }
   const ret = await aptosClient.view({ payload })
   return (ret as any)[0].map((r) =>
@@ -207,9 +207,9 @@ export const estimateFeeView = async (
     functionArguments: [
       marketObjectAddress,
       isLong,
-      getDecimal8Argument(positionSize),
-      getDecimal8Argument(perpPrice),
-      getDecimal8Argument(marginPrice),
+      getDecimal8BCS(positionSize),
+      getDecimal8BCS(perpPrice),
+      getDecimal8BCS(marginPrice),
     ],
   }
   const ret = await aptosClient.view({ payload })
@@ -228,7 +228,7 @@ export const positionMaintenanceMarginMusdView = async (
   const payload = {
     function:
       `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::market::get_position_maintenance_margin_musd` as `${string}::${string}::${string}`,
-    functionArguments: [positionObjectAddress, getDecimal8Argument(perpPrice), getDecimal8Argument(marginPrice)],
+    functionArguments: [positionObjectAddress, getDecimal8BCS(perpPrice), getDecimal8BCS(marginPrice)],
   }
   const ret = await aptosClient.view({ payload })
   return BigNumber(ret[0] as MoveUint64Type)
@@ -246,7 +246,7 @@ export const allPositionInfoView = async (
   const payload = {
     function:
       `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::market::all_position_info` as `${string}::${string}::${string}`,
-    functionArguments: [positionObjectAddress, getDecimal8Argument(perpPrice), getDecimal8Argument(marginPrice)],
+    functionArguments: [positionObjectAddress, getDecimal8BCS(perpPrice), getDecimal8BCS(marginPrice)],
   }
   const ret = await aptosClient.view({ payload })
   const data = ret[0] as any

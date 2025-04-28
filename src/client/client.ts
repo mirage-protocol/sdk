@@ -5,6 +5,7 @@ import { OracleClient } from './oracle/oracleClient'
 import { TestnetClient } from './testnet/testnetClient'
 import { UserProfileClient } from './userProfile/userProfileClient'
 import { VaultClient } from './vaults/vaultClient'
+import { AccountAddress } from '@aptos-labs/ts-sdk'
 
 export class MirageClient {
   fungibleAsset: FungibleAssetClient
@@ -16,9 +17,14 @@ export class MirageClient {
   userProfile: UserProfileClient
 
   chainId: number
+  deployerAddress: AccountAddress
 
   public getChainId = (): number => {
     return this.chainId
+  }
+
+  public getDeployerAddress = (): AccountAddress => {
+    return this.deployerAddress
   }
 
   constructor(config: MirageConfig) {
@@ -30,5 +36,6 @@ export class MirageClient {
     this.userProfile = new UserProfileClient(config)
 
     this.chainId = config.chainId
+    this.deployerAddress = config.deployerAddress
   }
 }

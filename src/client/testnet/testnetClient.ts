@@ -1,4 +1,4 @@
-import { InputEntryFunctionData } from '@aptos-labs/ts-sdk'
+import { TransactionPayloadEntryFunction } from '@aptos-labs/ts-sdk'
 
 import { createClaimAirdropPayload } from '../../transactions'
 import { MirageConfig } from '../../utils'
@@ -16,7 +16,7 @@ export class TestnetClient extends MirageClientBase {
     this.views = new TestnetViewsClient(this, this.aptosClient)
   }
 
-  public getClaimAirdropPayload = async (): Promise<InputEntryFunctionData> => {
+  public getClaimAirdropPayload = async (): Promise<TransactionPayloadEntryFunction> => {
     const collateralPriceFeed = await this.vaults.getCollateralPriceFeedUpdate('tUSDC', 'mUSD')
     const borrowPriceFeed = await this.vaults.getBorrowPriceFeedUpdate('tUSDC', 'mUSD')
 

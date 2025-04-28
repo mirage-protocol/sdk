@@ -1,5 +1,6 @@
 import { getPrice, getPriceFeedUpdateData } from '../../utils'
 import { MirageClientBase } from '../base'
+import { MoveVector, U8 } from '@aptos-labs/ts-sdk'
 
 export class OracleClientBase extends MirageClientBase {
   public getAllOracleNames = (): string[] => {
@@ -24,7 +25,7 @@ export class OracleClientBase extends MirageClientBase {
     return oracle.priceFeedId
   }
 
-  public getPriceFeedUpdateData = async (oracleName: string): Promise<number[]> => {
+  public getPriceFeedUpdateData = async (oracleName: string): Promise<MoveVector<U8>> => {
     const priceFeedId = this.getPriceFeedId(oracleName)
     return await getPriceFeedUpdateData(priceFeedId, this.pythClient)
   }

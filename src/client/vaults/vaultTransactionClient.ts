@@ -1,4 +1,4 @@
-import { InputEntryFunctionData, MoveObjectType } from '@aptos-labs/ts-sdk'
+import { MoveObjectType, MoveVector, U8, TransactionPayloadEntryFunction } from '@aptos-labs/ts-sdk'
 
 import {
   createAccrueInterestPayload,
@@ -29,7 +29,7 @@ export class VaultTransactionClient {
     collateralSymbol: string,
     borrowSymbol: string,
     collateralAmount: number,
-  ): InputEntryFunctionData => {
+  ): TransactionPayloadEntryFunction => {
     const collectionAddress = this.base.getVaultCollectionAddress(collateralSymbol, borrowSymbol)
     const collateralCoinType = this.base.getCollateralCoinType(collateralSymbol)
     const collateralDecimals = this.base.getCollateralCoinDecimals(collateralSymbol)
@@ -47,13 +47,30 @@ export class VaultTransactionClient {
     borrowSymbol: string,
     collateralAmount: number,
     borrowAmount: number,
-  ): Promise<InputEntryFunctionData> => {
+  ): Promise<TransactionPayloadEntryFunction> => {
+    const collateralVaas = await this.base.getCollateralPriceFeedUpdate(collateralSymbol, borrowSymbol)
+    const borrowVaas = await this.base.getBorrowPriceFeedUpdate(collateralSymbol, borrowSymbol)
+    return this.getCreateVaultAndBorrowPayloadVaas(
+      collateralSymbol,
+      borrowSymbol,
+      collateralAmount,
+      borrowAmount,
+      collateralVaas,
+      borrowVaas,
+    )
+  }
+
+  public getCreateVaultAndBorrowPayloadVaas = (
+    collateralSymbol: string,
+    borrowSymbol: string,
+    collateralAmount: number,
+    borrowAmount: number,
+    collateralVaa: MoveVector<U8>,
+    borrowVaa: MoveVector<U8> | undefined,
+  ): TransactionPayloadEntryFunction => {
     const collectionAddress = this.base.getVaultCollectionAddress(collateralSymbol, borrowSymbol)
     const collateralCoinType = this.base.getCollateralCoinType(collateralSymbol)
     const collateralDecimals = this.base.getCollateralCoinDecimals(collateralSymbol)
-
-    const collateralVaas = await this.base.getCollateralPriceFeedUpdate(collateralSymbol, borrowSymbol)
-    const borrowVaas = await this.base.getBorrowPriceFeedUpdate(collateralSymbol, borrowSymbol)
 
     return createVaultAndBorrowPayload(
       collectionAddress,
@@ -61,8 +78,8 @@ export class VaultTransactionClient {
       borrowAmount,
       collateralCoinType,
       collateralDecimals,
-      collateralVaas,
-      borrowVaas,
+      collateralVaa,
+      borrowVaa,
       this.base.getDeployerAddress(),
     )
   }
@@ -71,7 +88,7 @@ export class VaultTransactionClient {
     collateralSymbol: string,
     vaultObjectAddress: MoveObjectType,
     collateralAmount: number,
-  ): InputEntryFunctionData => {
+  ): TransactionPayloadEntryFunction => {
     const collateralCoinType = this.base.getCollateralCoinType(collateralSymbol)
     const collateralDecimals = this.base.getCollateralCoinDecimals(collateralSymbol)
     return createAddCollateralPayload(
@@ -87,15 +104,25 @@ export class VaultTransactionClient {
     collateralSymbol: string,
     borrowSymbol: string,
     vaultObjectAddress: MoveObjectType,
-    collateralAmount: number,
-  ): Promise<InputEntryFunctionData> => {
+    borrowAmount: number,
+  ): Promise<TransactionPayloadEntryFunction> => {
     const collateralVaas = await this.base.getCollateralPriceFeedUpdate(collateralSymbol, borrowSymbol)
     const borrowVaas = await this.base.getBorrowPriceFeedUpdate(collateralSymbol, borrowSymbol)
+
+    return this.getBorrowPayloadVaas(vaultObjectAddress, borrowAmount, collateralVaas, borrowVaas)
+  }
+
+  public getBorrowPayloadVaas = (
+    vaultObjectAddress: MoveObjectType,
+    borrowAmount: number,
+    collateralVaa: MoveVector<U8>,
+    borrowVaa: MoveVector<U8> | undefined,
+  ): TransactionPayloadEntryFunction => {
     return createBorrowPayload(
       vaultObjectAddress,
-      collateralAmount,
-      collateralVaas,
-      borrowVaas,
+      borrowAmount,
+      collateralVaa,
+      borrowVaa,
       this.base.getDeployerAddress(),
     )
   }
@@ -105,15 +132,32 @@ export class VaultTransactionClient {
     borrowSymbol: string,
     vaultObjectAddress: MoveObjectType,
     removeAmount: number,
-  ): Promise<InputEntryFunctionData> => {
+  ): Promise<TransactionPayloadEntryFunction> => {
     const collateralVaas = await this.base.getCollateralPriceFeedUpdate(collateralSymbol, borrowSymbol)
     const borrowVaas = await this.base.getBorrowPriceFeedUpdate(collateralSymbol, borrowSymbol)
-    const collateralDecimals = this.base.getCollateralCoinDecimals(collateralSymbol)
-    return createRemoveCollateralPayload(
+
+    return this.getRemoveCollateralPayloadVaas(
+      collateralSymbol,
       vaultObjectAddress,
       removeAmount,
       collateralVaas,
       borrowVaas,
+    )
+  }
+
+  public getRemoveCollateralPayloadVaas = (
+    collateralSymbol: string,
+    vaultObjectAddress: MoveObjectType,
+    removeAmount: number,
+    collateralVaa: MoveVector<U8>,
+    borrowVaa: MoveVector<U8> | undefined,
+  ): TransactionPayloadEntryFunction => {
+    const collateralDecimals = this.base.getCollateralCoinDecimals(collateralSymbol)
+    return createRemoveCollateralPayload(
+      vaultObjectAddress,
+      removeAmount,
+      collateralVaa,
+      borrowVaa,
       collateralDecimals,
       this.base.getDeployerAddress(),
     )
@@ -122,7 +166,7 @@ export class VaultTransactionClient {
   public getRepayDebtPartPayload = (
     vaultObjectAddress: MoveObjectType,
     repayPartAmount: number,
-  ): InputEntryFunctionData => {
+  ): TransactionPayloadEntryFunction => {
     return createRepayDebtPartPayload(vaultObjectAddress, repayPartAmount, this.base.getDeployerAddress())
   }
 
@@ -132,19 +176,37 @@ export class VaultTransactionClient {
     vaultObjectAddress: MoveObjectType,
     addAmount: number,
     borrowAmount: number,
-  ): Promise<InputEntryFunctionData> => {
+  ): Promise<TransactionPayloadEntryFunction> => {
+    const collateralVaa = await this.base.getCollateralPriceFeedUpdate(collateralSymbol, borrowSymbol)
+    const borrowVaa = await this.base.getBorrowPriceFeedUpdate(collateralSymbol, borrowSymbol)
+
+    return this.getAddCollateralAndBorrowPayloadVaas(
+      collateralSymbol,
+      vaultObjectAddress,
+      addAmount,
+      borrowAmount,
+      collateralVaa,
+      borrowVaa,
+    )
+  }
+
+  public getAddCollateralAndBorrowPayloadVaas = (
+    collateralSymbol: string,
+    vaultObjectAddress: MoveObjectType,
+    addAmount: number,
+    borrowAmount: number,
+    collateralVaa: MoveVector<U8>,
+    borrowVaa: MoveVector<U8> | undefined,
+  ): TransactionPayloadEntryFunction => {
     const collateralCoinType = this.base.getCollateralCoinType(collateralSymbol)
     const collateralDecimals = this.base.getCollateralCoinDecimals(collateralSymbol)
-
-    const collateralVaas = await this.base.getCollateralPriceFeedUpdate(collateralSymbol, borrowSymbol)
-    const borrowVaas = await this.base.getBorrowPriceFeedUpdate(collateralSymbol, borrowSymbol)
 
     return createAddCollateralAndBorrowPayload(
       vaultObjectAddress,
       addAmount,
       borrowAmount,
-      collateralVaas,
-      borrowVaas,
+      collateralVaa,
+      borrowVaa,
       collateralCoinType,
       collateralDecimals,
       this.base.getDeployerAddress(),
@@ -157,28 +219,47 @@ export class VaultTransactionClient {
     vaultObjectAddress: MoveObjectType,
     removeAmount: number,
     repayPartAmount: number,
-  ): Promise<InputEntryFunctionData> => {
+  ): Promise<TransactionPayloadEntryFunction> => {
     const collateralVaas = await this.base.getCollateralPriceFeedUpdate(collateralSymbol, borrowSymbol)
     const borrowVaas = await this.base.getBorrowPriceFeedUpdate(collateralSymbol, borrowSymbol)
+
+    return this.getRepayDebtAndRemoveCollateralPayloadVaas(
+      collateralSymbol,
+      vaultObjectAddress,
+      removeAmount,
+      repayPartAmount,
+      collateralVaas,
+      borrowVaas,
+    )
+  }
+
+  public getRepayDebtAndRemoveCollateralPayloadVaas = (
+    collateralSymbol: string,
+    vaultObjectAddress: MoveObjectType,
+    removeAmount: number,
+    repayPartAmount: number,
+    collateralVaa: MoveVector<U8>,
+    borrowVaa: MoveVector<U8> | undefined,
+  ): TransactionPayloadEntryFunction => {
     const collateralDecimals = this.base.getCollateralCoinDecimals(collateralSymbol)
 
     return createRepayDebtAndRemoveCollateralPayload(
       vaultObjectAddress,
       removeAmount,
       repayPartAmount,
-      collateralVaas,
-      borrowVaas,
+      collateralVaa,
+      borrowVaa,
       collateralDecimals,
       this.base.getDeployerAddress(),
     )
   }
 
-  public getAddCollateralAndRepayDebtPayload = async (
+  public getAddCollateralAndRepayDebtPayload = (
     collateralSymbol: string,
     vaultObjectAddress: MoveObjectType,
     increaseAmount: number,
     repayPartAmount: number,
-  ): Promise<InputEntryFunctionData> => {
+  ): TransactionPayloadEntryFunction => {
     const collateralDecimals = this.base.getCollateralCoinDecimals(collateralSymbol)
     const collateralCoinType = this.base.getCollateralCoinType(collateralSymbol)
 
@@ -198,18 +279,36 @@ export class VaultTransactionClient {
     vaultObjectAddress: MoveObjectType,
     removeAmount: number,
     borrowAmount: number,
-  ): Promise<InputEntryFunctionData> => {
-    const collateralDecimals = this.base.getCollateralCoinDecimals(collateralSymbol)
+  ): Promise<TransactionPayloadEntryFunction> => {
+    const collateralVaa = await this.base.getCollateralPriceFeedUpdate(collateralSymbol, borrowSymbol)
+    const borrowVaa = await this.base.getBorrowPriceFeedUpdate(collateralSymbol, borrowSymbol)
 
-    const collateralVaas = await this.base.getCollateralPriceFeedUpdate(collateralSymbol, borrowSymbol)
-    const borrowVaas = await this.base.getBorrowPriceFeedUpdate(collateralSymbol, borrowSymbol)
+    return this.getRemoveCollateralAndBorrowPayloadVaas(
+      collateralSymbol,
+      vaultObjectAddress,
+      removeAmount,
+      borrowAmount,
+      collateralVaa,
+      borrowVaa,
+    )
+  }
+
+  public getRemoveCollateralAndBorrowPayloadVaas = (
+    collateralSymbol: string,
+    vaultObjectAddress: MoveObjectType,
+    removeAmount: number,
+    borrowAmount: number,
+    collateralVaa: MoveVector<U8>,
+    borrowVaa: MoveVector<U8> | undefined,
+  ): TransactionPayloadEntryFunction => {
+    const collateralDecimals = this.base.getCollateralCoinDecimals(collateralSymbol)
 
     return createRemoveCollateralAndBorrow(
       vaultObjectAddress,
       removeAmount,
       borrowAmount,
-      collateralVaas,
-      borrowVaas,
+      collateralVaa,
+      borrowVaa,
       collateralDecimals,
       this.base.getDeployerAddress(),
     )
@@ -220,15 +319,24 @@ export class VaultTransactionClient {
     borrowSymbol: string,
     vaultObjectAddress: MoveObjectType,
     partToLiquidate: number,
-  ): Promise<InputEntryFunctionData> => {
+  ): Promise<TransactionPayloadEntryFunction> => {
     const collateralVaas = await this.base.getCollateralPriceFeedUpdate(collateralSymbol, borrowSymbol)
     const borrowVaas = await this.base.getBorrowPriceFeedUpdate(collateralSymbol, borrowSymbol)
 
+    return this.getLiquidateVaultWithPartPayloadVaas(vaultObjectAddress, partToLiquidate, collateralVaas, borrowVaas)
+  }
+
+  public getLiquidateVaultWithPartPayloadVaas = (
+    vaultObjectAddress: MoveObjectType,
+    partToLiquidate: number,
+    collateralVaa: MoveVector<U8>,
+    borrowVaa: MoveVector<U8> | undefined,
+  ): TransactionPayloadEntryFunction => {
     return createLiquidateVaultWithPartPayload(
       vaultObjectAddress,
       partToLiquidate,
-      collateralVaas,
-      borrowVaas,
+      collateralVaa,
+      borrowVaa,
       this.base.getDeployerAddress(),
     )
   }
@@ -238,7 +346,7 @@ export class VaultTransactionClient {
     borrowSymbol: string,
     vaultObjectAddress: MoveObjectType,
     debtAmountToLiquidate: number,
-  ): Promise<InputEntryFunctionData> => {
+  ): Promise<TransactionPayloadEntryFunction> => {
     const collateralVaas = await this.base.getCollateralPriceFeedUpdate(collateralSymbol, borrowSymbol)
     const borrowVaas = await this.base.getBorrowPriceFeedUpdate(collateralSymbol, borrowSymbol)
 
@@ -251,24 +359,48 @@ export class VaultTransactionClient {
     )
   }
 
-  public getAccrueInterestPayload = (collectionObjectAddress: MoveObjectType): InputEntryFunctionData => {
+  public getLiquidateVaultBankruptPayloadVaas = (
+    vaultObjectAddress: MoveObjectType,
+    debtAmountToLiquidate: number,
+    collateralVaa: MoveVector<U8>,
+    borrowVaa: MoveVector<U8> | undefined,
+  ): TransactionPayloadEntryFunction => {
+    return createLiquidateVaultBankruptPayload(
+      vaultObjectAddress,
+      debtAmountToLiquidate,
+      collateralVaa,
+      borrowVaa,
+      this.base.getDeployerAddress(),
+    )
+  }
+
+  public getAccrueInterestPayload = (collectionObjectAddress: MoveObjectType): TransactionPayloadEntryFunction => {
     return createAccrueInterestPayload(collectionObjectAddress, this.base.getDeployerAddress())
   }
 
-  public getMergeVaultsPaylaod = async (
+  public getMergeVaultsPayload = async (
     collateralSymbol: string,
     borrowSymbol: string,
     dstVaultObjectAddress: MoveObjectType,
     srcVaultObjectAddress: MoveObjectType,
-  ): Promise<InputEntryFunctionData> => {
+  ): Promise<TransactionPayloadEntryFunction> => {
     const collateralVaas = await this.base.getCollateralPriceFeedUpdate(collateralSymbol, borrowSymbol)
     const borrowVaas = await this.base.getBorrowPriceFeedUpdate(collateralSymbol, borrowSymbol)
 
+    return this.getMergeVaultsPayloadVaas(dstVaultObjectAddress, srcVaultObjectAddress, collateralVaas, borrowVaas)
+  }
+
+  public getMergeVaultsPayloadVaas = (
+    dstVaultObjectAddress: MoveObjectType,
+    srcVaultObjectAddress: MoveObjectType,
+    collateralVaa: MoveVector<U8>,
+    borrowVaa: MoveVector<U8> | undefined,
+  ): TransactionPayloadEntryFunction => {
     return createMergeVaultsPaylaod(
       dstVaultObjectAddress,
       srcVaultObjectAddress,
-      collateralVaas,
-      borrowVaas,
+      collateralVaa,
+      borrowVaa,
       this.base.getDeployerAddress(),
     )
   }

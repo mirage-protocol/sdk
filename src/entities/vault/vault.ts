@@ -1,4 +1,4 @@
-import { AccountAddress, MoveResource } from '@aptos-labs/ts-sdk'
+import { AccountAddress, MoveResource, TypeTagStruct, StructTag, Identifier } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import { getModuleAddress, integerToDecimal, MoveModules, PRECISION_8 } from '../../utils'
@@ -49,7 +49,7 @@ export class Vault {
     this.vaultCollection = vaultCollection
     this.objectAddress = objectAddress
 
-    const vaultType = `${getModuleAddress(MoveModules.MIRAGE, deployerAddress)}::vault::Vault`
+    const vaultType = Vault.getVaultType(deployerAddress).toString()
     const propertyMapType = `0x4::property_map::PropertyMap`
 
     const vault = vaultObjectResources.find((resource) => resource.type === vaultType)
@@ -85,6 +85,17 @@ export class Vault {
       this.vaultCollection.maintenanceCollateralizationPercent,
       collateralPrice,
       borrowPrice,
+    )
+  }
+
+  public static getVaultType(deployerAddress: AccountAddress): TypeTagStruct {
+    return new TypeTagStruct(
+      new StructTag(
+        getModuleAddress(MoveModules.MIRAGE, deployerAddress),
+        new Identifier('vault'),
+        new Identifier('Vault'),
+        [],
+      ),
     )
   }
 }

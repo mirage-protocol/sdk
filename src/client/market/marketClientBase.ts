@@ -1,6 +1,7 @@
 import { MarketConfig, MirageConfig } from '../../utils'
 import { MirageClientBase } from '../base'
 import { OracleClient } from '../oracle/oracleClient'
+import { MoveVector, U8 } from '@aptos-labs/ts-sdk'
 
 export class MarketClientBase extends MirageClientBase {
   private readonly oracles: OracleClient
@@ -55,12 +56,12 @@ export class MarketClientBase extends MirageClientBase {
     return this.oracles.getPriceFeedId(marginOracle)
   }
 
-  public getPerpPriceFeedUpdate = async (perpSymbol: string, marginSymbol: string): Promise<number[]> => {
+  public getPerpPriceFeedUpdate = async (perpSymbol: string, marginSymbol: string): Promise<MoveVector<U8>> => {
     const perpOracle = this.getMarket(perpSymbol, marginSymbol).perpOracle
     return this.oracles.getPriceFeedUpdateData(perpOracle)
   }
 
-  public getMarginPriceFeedUpdate = async (perpSymbol: string, marginSymbol: string): Promise<number[]> => {
+  public getMarginPriceFeedUpdate = async (perpSymbol: string, marginSymbol: string): Promise<MoveVector<U8>> => {
     const marginOracle = this.getMarket(perpSymbol, marginSymbol).marginOracle
     return this.oracles.getPriceFeedUpdateData(marginOracle)
   }

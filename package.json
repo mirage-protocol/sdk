@@ -25,7 +25,7 @@
     "url": "https://mirage.money"
   },
   "scripts": {
-    "build": "yarn codegen && npm run clean && tsup src/index.ts --format esm,cjs --dts",
+    "build": "npm run clean && tsup src/index.ts --format esm,cjs --dts",
     "clean": "rm -rf dist",
     "format": "yarn lint --fix",
     "lint": "eslint . --ext ts --ext tsx --ext js --quiet",
