@@ -886,3 +886,40 @@ export const createDecreaseSizeAndIncreaseMarginPayload = (
     new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
   )
 }
+
+/**
+ * decrease the position size and decrease the margin of a position
+ * @returns payload promise for the transaction
+ */
+export const createCloseAllPositionsPayload = (
+  allPositionObjectAddress: MoveObjectType[],
+  allPerpVaas: MoveVector<U8>[],
+  allMarginVaas: (MoveVector<U8> | undefined)[],
+  deployerAddress: AccountAddress,
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(
+    getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
+    new Identifier('market_scripts'),
+  )
+  const functionName = new Identifier('close_all_positions_entry')
+  const typeArguments = []
+
+  if (
+    allPositionObjectAddress.length !== allPerpVaas.length ||
+    allPositionObjectAddress.length !== allMarginVaas.length
+  ) {
+    throw new Error('allPositionObjectAddress, allPerpVaas, and allMarginVaas must have the same length')
+  }
+
+  const allPositionObjectAddressesBCS = new MoveVector<AccountAddress>(
+    allPositionObjectAddress.map((address) => AccountAddress.fromString(address)),
+  )
+  const allMarginVaasBCS = new MoveVector<MoveVector<U8>>(allMarginVaas.map((vaa) => (vaa ? vaa : emptyVaa)))
+  const allPerpVaasBCS = new MoveVector<MoveVector<U8>>(allPerpVaas)
+
+  const functionArguments = [allPositionObjectAddressesBCS, allPerpVaasBCS, allMarginVaasBCS]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
+}

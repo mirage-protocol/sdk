@@ -8,6 +8,7 @@ import {
   createCancelTpslPayload,
   createCleanupLimitOrderPayload,
   createCleanupTpslPayload,
+  createCloseAllPositionsPayload,
   createClosePositionPayload,
   createDecreaseLimitOrderMarginPayload,
   createDecreaseMarginPayload,
@@ -865,6 +866,19 @@ export class MarketTransactionClient {
     return createDecreaseLimitOrderMarginPayload(
       limitOrderObjectAddress,
       marginDecrease,
+      this.base.getDeployerAddress(),
+    )
+  }
+
+  public getCloseAllPositionsPayload = (
+    allPositionObjectAddress: MoveObjectType[],
+    allPerpVaas: MoveVector<U8>[],
+    allMarginVaas: (MoveVector<U8> | undefined)[],
+  ): TransactionPayloadEntryFunction => {
+    return createCloseAllPositionsPayload(
+      allPositionObjectAddress,
+      allPerpVaas,
+      allMarginVaas,
       this.base.getDeployerAddress(),
     )
   }
