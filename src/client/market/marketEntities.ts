@@ -15,7 +15,22 @@ export class MarketEntitiesClient {
   }
 
   createPosition(positionObjectResources: MoveResource[], market: Market, objectAddress: string): Position {
-    return new Position(positionObjectResources, market, objectAddress, this.config.deployerAddress)
+    return new Position(positionObjectResources, [], market, objectAddress, this.config.deployerAddress)
+  }
+
+  createPositionWithStrategies(
+    positionObjectResources: MoveResource[],
+    strategyObjectsResources: MoveResource[][],
+    market: Market,
+    objectAddress: string,
+  ): Position {
+    return new Position(
+      positionObjectResources,
+      strategyObjectsResources,
+      market,
+      objectAddress,
+      this.config.deployerAddress,
+    )
   }
 
   createLimitOrder(limitOrderResources: MoveResource[], objectAddress: string): LimitOrder {

@@ -1,4 +1,4 @@
-import { AccountAddress, MoveResource } from '@aptos-labs/ts-sdk'
+import { AccountAddress, Identifier, MoveResource, StructTag, TypeTagStruct } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import {
@@ -13,6 +13,8 @@ import {
   ZERO,
 } from '../../utils'
 import { Market } from './market'
+import { TpSl } from './tpsl'
+import { LimitOrder } from './limitOrder'
 
 /**
  * Direction of a position
@@ -87,6 +89,10 @@ export class Position {
    * The realized pnl of this position in margin token
    */
   public readonly realizedPnl: BigNumber
+
+  public tpsl: TpSl | undefined
+  public limitOrders: LimitOrder[]
+
   /**
    * The positions initial leverage
    */
@@ -102,14 +108,18 @@ export class Position {
    */
   constructor(
     positionObjectResources: MoveResource[],
+    strategyObjectsResources: MoveResource[][],
     market: Market,
     objectAddress: string,
     deployerAddress: AccountAddress,
   ) {
+    this.limitOrders = []
+    this.tpsl = undefined
+
     this.objectAddress = objectAddress
     this.market = market
 
-    const positionType = `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::market::Position`
+    const positionType = Position.getPositionType(deployerAddress).toString()
     const tokenIdsType = '0x4::token::TokenIdentifiers'
     const propertyMapType = '0x4::property_map::PropertyMap'
 
@@ -151,6 +161,36 @@ export class Position {
     this.maintenanceMargin = ZERO // TODO
 
     this.strategyAddresses = (position.data as any).strategy_refs as string[]
+
+    for (const strategyObjectResources of strategyObjectsResources) {
+      for (const strategyObjectResource of strategyObjectResources) {
+        if (strategyObjectResource.type === TpSl.getTpslType(deployerAddress).toString()) {
+          const tpsl = new TpSl(strategyObjectResources, this.objectAddress, deployerAddress)
+          if (tpsl.positionObjectAddress == this.objectAddress) {
+            this.tpsl = tpsl
+          }
+          break
+        }
+        if (strategyObjectResource.type === LimitOrder.getLimitOrderType(deployerAddress).toString()) {
+          const limitOrder = new LimitOrder(strategyObjectResources, this.objectAddress, deployerAddress)
+          if (limitOrder.positionObjectAddress == this.objectAddress) {
+            this.limitOrders.push(limitOrder)
+          }
+          break
+        }
+      }
+    }
+  }
+
+  public static getStrategyAddresses(
+    positionObjectResources: MoveResource[],
+    deployerAddress: AccountAddress,
+  ): string[] {
+    const positionType = Position.getPositionType(deployerAddress).toString()
+    const findPosition = positionObjectResources.find((resource) => resource.type === positionType)
+    if (!findPosition) return []
+    const strategyAddresses = (findPosition.data as any).strategy_refs as string[]
+    return strategyAddresses
   }
 
   /**
@@ -248,5 +288,16 @@ export class Position {
     } else {
       return BigNumber(U64_MAX)
     }
+  }
+
+  public static getPositionType(deployerAddress: AccountAddress): TypeTagStruct {
+    return new TypeTagStruct(
+      new StructTag(
+        getModuleAddress(MoveModules.MARKET, deployerAddress),
+        new Identifier('market'),
+        new Identifier('Position'),
+        [],
+      ),
+    )
   }
 }
