@@ -1,4 +1,4 @@
-import { AccountAddress, MoveResource } from '@aptos-labs/ts-sdk'
+import { AccountAddress, Identifier, MoveResource, StructTag, TypeTagStruct } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import { getModuleAddress, MoveModules, PRECISION_8, U64_MAX } from '../../utils'
@@ -68,7 +68,7 @@ export class LimitOrder {
   constructor(limitOrderResources: MoveResource[], objectAddress: string, deployerAddress: AccountAddress) {
     this.objectAddress = objectAddress
 
-    const limitOrderType = `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::limit_order::LimitOrder`
+    const limitOrderType = LimitOrder.getLimitOrderType(deployerAddress).toString()
     const findLimitOrder = limitOrderResources.find((resource) => resource.type === limitOrderType)
     if (findLimitOrder == undefined) throw new Error('LimitOrder object not found')
     const limitOrder = findLimitOrder.data as LimitOrderData
@@ -107,5 +107,16 @@ export class LimitOrder {
    */
   static percentSlippageToPriceSlippage(triggerPrice: BigNumber, percentSlippage: number): BigNumber {
     return triggerPrice.times(percentSlippage).div(10000)
+  }
+
+  public static getLimitOrderType(deployerAddress: AccountAddress): TypeTagStruct {
+    return new TypeTagStruct(
+      new StructTag(
+        getModuleAddress(MoveModules.MARKET, deployerAddress),
+        new Identifier('limit_order'),
+        new Identifier('LimitOrder'),
+        [],
+      ),
+    )
   }
 }

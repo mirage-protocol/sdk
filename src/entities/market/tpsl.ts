@@ -1,4 +1,4 @@
-import { AccountAddress, MoveResource } from '@aptos-labs/ts-sdk'
+import { AccountAddress, Identifier, MoveResource, StructTag, TypeTagStruct } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import { getModuleAddress, MoveModules, PRECISION_8 } from '../../utils'
@@ -36,7 +36,7 @@ export class TpSl {
   constructor(tpslResources: MoveResource[], objectAddress: string, deployerAddress: AccountAddress) {
     this.objectAddress = objectAddress
 
-    const tpslOrderType = `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::tpsl::TpSl`
+    const tpslOrderType = TpSl.getTpslType(deployerAddress).toString()
     const findTpSl = tpslResources.find((resource) => resource.type === tpslOrderType)
     if (findTpSl == undefined) throw new Error('TpSl object not found')
     const tpsl = findTpSl.data as TpSlData
@@ -51,5 +51,16 @@ export class TpSl {
 
     this.positionObjectAddress = (strategy.data as any).position.inner as string
     this.marketObjectAddress = (strategy.data as any).market.inner as string
+  }
+
+  public static getTpslType(deployerAddress: AccountAddress): TypeTagStruct {
+    return new TypeTagStruct(
+      new StructTag(
+        getModuleAddress(MoveModules.MARKET, deployerAddress),
+        new Identifier('tpsl'),
+        new Identifier('TpSl'),
+        [],
+      ),
+    )
   }
 }
