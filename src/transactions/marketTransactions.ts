@@ -112,7 +112,7 @@ export const createOpenPositionWithTpslPayload = (
     getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
     new Identifier('market_scripts'),
   )
-  const functionName = new Identifier('open_position_entry_with_tpsl_entry')
+  const functionName = new Identifier('open_position_with_tpsl_entry')
   const typeArguments = []
 
   const functionArguments = [
