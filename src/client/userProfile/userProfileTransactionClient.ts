@@ -1,4 +1,4 @@
-import { InputEntryFunctionData } from '@aptos-labs/ts-sdk'
+import { TransactionPayloadEntryFunction } from '@aptos-labs/ts-sdk'
 
 import {
   createAddCustomReferralCodePayload,
@@ -19,7 +19,7 @@ export class UserProfileTransactionClient {
     this.base = base
   }
 
-  public getAddCustomReferralCodePayload = (code: string): InputEntryFunctionData => {
+  public getAddCustomReferralCodePayload = (code: string): TransactionPayloadEntryFunction => {
     return createAddCustomReferralCodePayload(code, this.base.getDeployerAddress())
   }
 
@@ -27,27 +27,27 @@ export class UserProfileTransactionClient {
    * Adds custom referral code for user in referral program
    * @returns payload for the transaction
    */
-  public getUpdateReferralDepositAddressPayload = (toAddress: string): InputEntryFunctionData => {
+  public getUpdateReferralDepositAddressPayload = (toAddress: string): TransactionPayloadEntryFunction => {
     return createUpdateReferralDepositAddressPayload(toAddress, this.base.getDeployerAddress())
   }
 
-  public getUserProfileWithCodePayload = (code: string): InputEntryFunctionData => {
+  public getUserProfileWithCodePayload = (code: string): TransactionPayloadEntryFunction => {
     return createUserProfileWithCodePayload(code, this.base.getDeployerAddress())
   }
 
-  public getUserProfilePayload = (code: string): InputEntryFunctionData => {
-    return createUserProfilePayload(code, this.base.getDeployerAddress())
+  public getUserProfilePayload = (userAddress: string): TransactionPayloadEntryFunction => {
+    return createUserProfilePayload(userAddress, this.base.getDeployerAddress())
   }
 
-  public getAddVipReferralRatePayload = (userAddress: string, rate: bigint): InputEntryFunctionData => {
+  public getAddVipReferralRatePayload = (userAddress: string, rate: bigint): TransactionPayloadEntryFunction => {
     return createAddVipReferralRatePayload(userAddress, rate, this.base.getDeployerAddress())
   }
 
-  public getReferViaCustomCodePayload = (code: string): InputEntryFunctionData => {
+  public getReferViaCustomCodePayload = (code: string): TransactionPayloadEntryFunction => {
     return createReferViaCustomCodePayload(code, this.base.getDeployerAddress())
   }
 
-  public getReferPayload = (referrerAddress: string): InputEntryFunctionData => {
+  public getReferPayload = (referrerAddress: string): TransactionPayloadEntryFunction => {
     return createReferPayload(referrerAddress, this.base.getDeployerAddress())
   }
 }

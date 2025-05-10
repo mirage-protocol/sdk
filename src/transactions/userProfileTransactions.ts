@@ -1,6 +1,14 @@
-import { AccountAddress, InputEntryFunctionData } from '@aptos-labs/ts-sdk'
+import {
+  AccountAddress,
+  EntryFunction,
+  Identifier,
+  ModuleId,
+  TransactionPayloadEntryFunction,
+  U64,
+} from '@aptos-labs/ts-sdk'
 
 import { getModuleAddress, MoveModules } from '../utils'
+import { MoveString } from '@aptos-labs/ts-sdk'
 
 /**
  * Adds custom referral code for user in referral program
@@ -9,25 +17,29 @@ import { getModuleAddress, MoveModules } from '../utils'
 export const createAddCustomReferralCodePayload = (
   code: string,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function: `${getModuleAddress(MoveModules.MIRAGE, deployerAddress)}::fee_manager::add_custom_referral_code`,
-    functionArguments: [code],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(getModuleAddress(MoveModules.MIRAGE, deployerAddress), new Identifier('fee_manager'))
+  const functionName = new Identifier('add_custom_referral_code')
+  const typeArguments = []
+  const functionArguments = [new MoveString(code)]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
-/**
- * Adds custom referral code for user in referral program
- * @returns payload for the transaction
- */
 export const createUpdateReferralDepositAddressPayload = (
   toAddress: string,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function: `${getModuleAddress(MoveModules.MIRAGE, deployerAddress)}::fee_manager::update_referral_deposit_address`,
-    functionArguments: [toAddress],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(getModuleAddress(MoveModules.MIRAGE, deployerAddress), new Identifier('fee_manager'))
+  const functionName = new Identifier('update_referral_deposit_address')
+  const typeArguments = []
+  const functionArguments = [AccountAddress.fromString(toAddress)]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -37,22 +49,33 @@ export const createUpdateReferralDepositAddressPayload = (
 export const createUserProfileWithCodePayload = (
   code: string,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function: `${getModuleAddress(MoveModules.MIRAGE, deployerAddress)}::fee_manager::create_user_profile_with_custom_code`,
-    functionArguments: [code],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(getModuleAddress(MoveModules.MIRAGE, deployerAddress), new Identifier('fee_manager'))
+  const functionName = new Identifier('create_user_profile_with_custom_code')
+  const typeArguments = []
+  const functionArguments = [new MoveString(code)]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
  * Sign up for referral program
  * @returns payload for the transaction
  */
-export const createUserProfilePayload = (code: string, deployerAddress: AccountAddress): InputEntryFunctionData => {
-  return {
-    function: `${getModuleAddress(MoveModules.MIRAGE, deployerAddress)}::fee_manager::create_user_profile`,
-    functionArguments: [code],
-  }
+export const createUserProfilePayload = (
+  userAddress: string,
+  deployerAddress: AccountAddress,
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(getModuleAddress(MoveModules.MIRAGE, deployerAddress), new Identifier('fee_manager'))
+  const functionName = new Identifier('create_user_profile')
+  const typeArguments = []
+  const functionArguments = [AccountAddress.fromString(userAddress)]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -63,11 +86,15 @@ export const createAddVipReferralRatePayload = (
   userAddress: string,
   rate: bigint,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function: `${getModuleAddress(MoveModules.MIRAGE, deployerAddress)}::fee_manager::add_vip_referral_fee_rate`,
-    functionArguments: [userAddress, rate.toString()],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(getModuleAddress(MoveModules.MIRAGE, deployerAddress), new Identifier('fee_manager'))
+  const functionName = new Identifier('add_vip_referral_fee_rate')
+  const typeArguments = []
+  const functionArguments = [AccountAddress.fromString(userAddress), new U64(rate)]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -77,11 +104,15 @@ export const createAddVipReferralRatePayload = (
 export const createReferViaCustomCodePayload = (
   code: string,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function: `${getModuleAddress(MoveModules.MIRAGE, deployerAddress)}::fee_manager::refer_via_custom_referral_code`,
-    functionArguments: [code],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(getModuleAddress(MoveModules.MIRAGE, deployerAddress), new Identifier('fee_manager'))
+  const functionName = new Identifier('refer_via_custom_referral_code')
+  const typeArguments = []
+  const functionArguments = [new MoveString(code)]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
 
 /**
@@ -91,9 +122,13 @@ export const createReferViaCustomCodePayload = (
 export const createReferPayload = (
   referrerAddress: string,
   deployerAddress: AccountAddress,
-): InputEntryFunctionData => {
-  return {
-    function: `${getModuleAddress(MoveModules.MIRAGE, deployerAddress)}::fee_manager::refer`,
-    functionArguments: [referrerAddress],
-  }
+): TransactionPayloadEntryFunction => {
+  const moduleId = new ModuleId(getModuleAddress(MoveModules.MIRAGE, deployerAddress), new Identifier('fee_manager'))
+  const functionName = new Identifier('refer')
+  const typeArguments = []
+  const functionArguments = [AccountAddress.fromString(referrerAddress)]
+
+  return new TransactionPayloadEntryFunction(
+    new EntryFunction(moduleId, functionName, typeArguments, functionArguments),
+  )
 }
