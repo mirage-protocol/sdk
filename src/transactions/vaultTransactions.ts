@@ -28,7 +28,7 @@ export const createVaultPayload = (
 ): TransactionPayloadEntryFunction => {
   const moduleId = new ModuleId(
     getModuleAddress(MoveModules.MIRAGE_SCRIPTS, deployerAddress),
-    new Identifier('market_scripts'),
+    new Identifier('vault_scripts'),
   )
   const functionName = new Identifier(`create_vault_${getFunctionSuffix(collateralCoinType)}`)
   const typeArguments = collateralCoinType ? [parseTypeTag(collateralCoinType)] : []
