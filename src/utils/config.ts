@@ -2,8 +2,8 @@ import { AccountAddress } from '@aptos-labs/ts-sdk'
 
 import mirage_config_movement from '../../mirage_config_movement.json'
 import mirage_config_testnet from '../../mirage_config_testnet.json'
+import mirage_config_mainnet from '../../mirage_mainnet_config.json'
 
-// import mirageConfigMainnet from '../../mirage_config_mainnet.json'
 export enum Deployment {
   APTOS_TESTNET = 'testnet',
   APTOS_MAINNET = 'mainnet',
@@ -140,6 +140,8 @@ export class MirageConfig {
       config = options.customConfig
     } else if (this.deployment == Deployment.APTOS_TESTNET) {
       config = mirage_config_testnet
+    } else if (this.deployment == Deployment.APTOS_MAINNET) {
+      config = mirage_config_mainnet
     } else if (this.deployment == Deployment.MOVEMENT_MAINNET) {
       config = mirage_config_movement
     } else {
