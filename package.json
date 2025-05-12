@@ -1,7 +1,7 @@
 {
   "name": "@mirage-protocol/sdk",
   "license": "MIT",
-  "version": "0.3.42",
+  "version": "0.3.43",
   "publishConfig": {
     "access": "public"
   },
@@ -17,7 +17,7 @@
     "movement",
     "mirage"
   ],
-  "module": "dist/sdk.esm.js",
+  "module": "dist/index.mjs",
   "repository": "https://github.com/mirage-protocol/sdk.git",
   "author": {
     "name": "mirage-protocol",
