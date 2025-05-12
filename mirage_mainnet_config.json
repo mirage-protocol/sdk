@@ -1,0 +1,73 @@
+{
+  "chainId": 1,
+  "deployerAddress": "0x86d2ae026e602dbe39040457a6196ecdfc6308ab5b276d4379e10327b7204666",
+  "vaults": [
+    {
+      "name": "APT/mUSD CDP",
+      "address": "0xe1e13aa968df88dff6ac5227eaa6220c90a0e40e60ce274695a134f43966e2c0",
+      "collateralSymbol": "APT",
+      "borrowSymbol": "mUSD",
+      "collateralOracle": "APT_PYTH",
+      "borrowOracle": "STABLE_ORACLE"
+    },
+    {
+      "name": "USDC/mUSD CDP",
+      "address": "0x3fb56c8c18ad3f20acf1ac971edfca4dd2bef1144e363aec83a04587675752f5",
+      "collateralSymbol": "USDC",
+      "borrowSymbol": "mUSD",
+      "collateralOracle": "USDC_PYTH",
+      "borrowOracle": "STABLE_ORACLE"
+    }
+  ],
+  "oracles": [
+    {
+      "name": "STABLE_ORACLE",
+      "address": "0xea497f66440058b553a3bfbc9eb8a7608fa58e0ab6d7c3a20042e07b9cb8b24d",
+      "priceFeedId": "",
+      "priceMultiplier": 1
+    },
+    {
+      "name": "APT_PYTH",
+      "address": "0xc21bdf1a4c16a5a7aad7c4a4feefde7ddf3122a149a92369c0044664b195f9cd",
+      "priceFeedId": "0x03ae4db29ed4ae33d323568895aa00337e658e348b37509f5372ae51f0af00d5",
+      "priceMultiplier": 1
+    },
+    {
+      "name": "USDC_PYTH",
+      "address": "0x1681450aa712554c31321d23a5dfdc7c4ea4d3e04d2375cdda3a48e89dbce0f7",
+      "priceFeedId": "0xeaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a",
+      "priceMultiplier": 1
+    }
+  ],
+  "fungibleAssets": [
+    {
+      "coinType": "0x1::aptos_coin::AptosCoin",
+      "address": "0x000000000000000000000000000000000000000000000000000000000000000a",
+      "decimals": 8,
+      "name": "Aptos Coin",
+      "symbol": "APT"
+    },
+    {
+      "address": "0xdd84125d1ebac8f1ecb2819801417fc392325e672be111ec03830c34d6ff82dd",
+      "decimals": 8,
+      "name": "mirage dollar",
+      "symbol": "mUSD"
+    },
+    {
+      "address": "0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b",
+      "decimals": 6,
+      "name": "USDC",
+      "symbol": "USDC"
+    }
+  ],
+  "markets": [
+    {
+      "address": "0xce54f046a632ce7a1ae5a53fc4ce85241b1b2c68e064b74a5e2d0d47c65f065e",
+      "marginOracle": "STABLE_ORACLE",
+      "perpOracle": "APT_PYTH",
+      "perpSymbol": "APTPERP",
+      "marginSymbol": "mUSD",
+      "name": "APTPERP/mUSD"
+    }
+  ]
+}

@@ -10,7 +10,6 @@ export enum MoveModules {
   MIRAGE_CORE = 'mirage_core',
   MIRAGE_ORACLE = 'mirage_oracle',
   MARKET = 'market',
-  LAYER_ZERO = 'layer_zero', // "asset",
   // swap
   // gov
   // deployer
@@ -35,8 +34,6 @@ export const getModuleAddress = (module: MoveModules | string, deployerAddress: 
       return createResourceAddress(deployerAddress, 'MIRAGE_ORACLE')
     case MoveModules.MARKET:
       return createResourceAddress(deployerAddress, 'MIRAGE_MARKET')
-    case MoveModules.LAYER_ZERO:
-      return AccountAddress.from('0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa')
     default:
       throw new Error('unrecognized module')
   }

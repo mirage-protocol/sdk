@@ -6,11 +6,14 @@ import mirage_config_testnet from '../../mirage_config_testnet.json'
 // import mirageConfigMainnet from '../../mirage_config_mainnet.json'
 export enum Deployment {
   APTOS_TESTNET = 'testnet',
+  APTOS_MAINNET = 'mainnet',
   MOVEMENT_MAINNET = 'movement',
 }
 
 export const getDeploymentByChainId = (chainId: number): Deployment => {
-  if (chainId == 2) {
+  if (chainId == 1) {
+    return Deployment.APTOS_MAINNET
+  } else if (chainId == 2) {
     return Deployment.APTOS_TESTNET
   } else if (chainId == 126) {
     return Deployment.MOVEMENT_MAINNET
@@ -21,6 +24,8 @@ export const getDeploymentByChainId = (chainId: number): Deployment => {
 
 export const getChainIdByDeployment = (deployment: Deployment): number => {
   switch (deployment) {
+    case Deployment.APTOS_MAINNET:
+      return 1
     case Deployment.APTOS_TESTNET:
       return 2
     case Deployment.MOVEMENT_MAINNET:
@@ -157,6 +162,12 @@ export class MirageConfig {
 }
 
 export const defaultMirageNetworks: { [deployment in Deployment]: NetworkConfig } = {
+  mainnet: {
+    fullnodeUrl: 'https://fullnode.mainnet.aptoslabs.com/v1',
+    indexerUrl: 'https://api.mainnet.aptoslabs.com/v1/graphql',
+    mirageIndexerUrl: 'https://api-aptos-mainnet.mirage.money/v1/graphql',
+    pythUrl: 'https://hermes.pyth.network',
+  },
   testnet: {
     fullnodeUrl: 'https://fullnode.testnet.aptoslabs.com/v1',
     indexerUrl: 'https://api.testnet.aptoslabs.com/v1/graphql',
@@ -173,6 +184,8 @@ export const defaultMirageNetworks: { [deployment in Deployment]: NetworkConfig 
 
 export const getDefaultFullnodeUrl = (deployment: Deployment | string): string => {
   switch (deployment as Deployment) {
+    case Deployment.APTOS_MAINNET:
+      return defaultMirageNetworks[Deployment.APTOS_MAINNET].fullnodeUrl
     case Deployment.APTOS_TESTNET:
       return defaultMirageNetworks[Deployment.APTOS_TESTNET].fullnodeUrl
     case Deployment.MOVEMENT_MAINNET:
@@ -184,6 +197,8 @@ export const getDefaultFullnodeUrl = (deployment: Deployment | string): string =
 
 export const getDefaultIndexerUrl = (deployment: Deployment): string => {
   switch (deployment) {
+    case Deployment.APTOS_MAINNET:
+      return defaultMirageNetworks[Deployment.APTOS_MAINNET].indexerUrl
     case Deployment.APTOS_TESTNET:
       return defaultMirageNetworks[Deployment.APTOS_TESTNET].indexerUrl
     case Deployment.MOVEMENT_MAINNET:
@@ -195,6 +210,8 @@ export const getDefaultIndexerUrl = (deployment: Deployment): string => {
 
 export const getDefaultMirageIndexerUrl = (deployment: Deployment): string => {
   switch (deployment) {
+    case Deployment.APTOS_MAINNET:
+      return defaultMirageNetworks[Deployment.APTOS_MAINNET].mirageIndexerUrl
     case Deployment.APTOS_TESTNET:
       return defaultMirageNetworks[Deployment.APTOS_TESTNET].mirageIndexerUrl
     case Deployment.MOVEMENT_MAINNET:
@@ -206,6 +223,8 @@ export const getDefaultMirageIndexerUrl = (deployment: Deployment): string => {
 
 export const getDefaultPythUrl = (deployment: Deployment): string => {
   switch (deployment) {
+    case Deployment.APTOS_MAINNET:
+      return defaultMirageNetworks[Deployment.APTOS_MAINNET].pythUrl
     case Deployment.APTOS_TESTNET:
       return defaultMirageNetworks[Deployment.APTOS_TESTNET].pythUrl
     case Deployment.MOVEMENT_MAINNET:
