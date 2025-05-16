@@ -1,4 +1,4 @@
-import { AccountAddress, Deserializer } from '@aptos-labs/ts-sdk'
+import { AccountAddress, Deserializer, Identifier, StructTag, TypeTagStruct } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 export * from './config'
@@ -7,6 +7,12 @@ export * from './constants'
 export * from './modules'
 export * from './network'
 export * from './priceFeeds'
+
+export const getCollectionType = (): TypeTagStruct => {
+  return new TypeTagStruct(
+    new StructTag(AccountAddress.FOUR, new Identifier('collection'), new Identifier('Collection'), []),
+  )
+}
 
 export const getPropertyMapU64 = (key: string, data: any): BigNumber => {
   const property = data.inner.data.find((property: { key: string; value: any }) => {

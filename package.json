@@ -32,14 +32,14 @@
     "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
-    "@aptos-labs/ts-sdk": "^1.38.0",
+    "@aptos-labs/ts-sdk": "^2.0.0",
     "@pythnetwork/pyth-aptos-js": "^1.4.2",
     "@pythnetwork/pyth-common-js": "^1.4.0",
     "@urql/exchange-auth": "^2.2.1",
     "bignumber.js": "9.1.2",
     "graphql": "^16.8.1",
     "graphql-tag": "^2.12.6",
-    "react": "^18.3.1",
+    "react": "^19.1.0",
     "urql": "^4.2.2"
   },
   "devDependencies": {
@@ -50,8 +50,7 @@
     "@graphql-codegen/typescript-operations": "^4.2.1",
     "@graphql-codegen/typescript-urql": "^4.0.0",
     "@tsconfig/recommended": "^1.0.6",
-    "@types/node": "^20.14.0",
-    "@types/styled-components": "^5.1.34",
+    "@types/node": "^22.14.1",
     "@typescript-eslint/eslint-plugin": "^8.27.0",
     "@typescript-eslint/parser": "^8.27.0",
     "eslint": "^9.23.0",

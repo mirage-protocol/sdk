@@ -1,4 +1,4 @@
-import { AccountAddress, Aptos as AptosClient, AptosConfig } from '@aptos-labs/ts-sdk'
+import { AccountAddress, Aptos as AptosClient, AptosConfig, Network } from '@aptos-labs/ts-sdk'
 import { AptosPriceServiceConnection as PythClient } from '@pythnetwork/pyth-aptos-js'
 import { Client as GqlClient } from 'urql'
 
@@ -14,11 +14,19 @@ export class MirageClientBase {
 
   constructor(config: MirageConfig) {
     this.config = config
+    let network = Network.TESTNET
+    if (config.chainId === 1) {
+      network = Network.MAINNET
+    } else if (config.chainId === 126) {
+      network = Network.CUSTOM
+    }
+
     this.aptosClient = new AptosClient(
       new AptosConfig({
         fullnode: config.fullnodeUrl,
         indexer: config.indexerUrl,
         clientConfig: { API_KEY: config.aptosApiKey },
+        network,
       }),
     )
     this.aptosGqlClient = createGraphqlClientWithUri(config.indexerUrl, config.aptosApiKey)

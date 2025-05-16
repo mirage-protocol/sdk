@@ -2,7 +2,7 @@ import { MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import { MirageAsset, Rebase, Vault, VaultCollection } from '../../entities'
-import { MirageConfig } from '../../utils'
+import { getCollectionType, MirageConfig } from '../../utils'
 import { VaultClientBase } from './vaultClientBase'
 
 export class VaultEntitiesClient {
@@ -25,21 +25,27 @@ export class VaultEntitiesClient {
   createVaultCollection(
     collectionObjectResources: MoveResource[],
     borrowTokenObjectResources: MoveResource[],
-    objectAddress: string,
   ): VaultCollection {
-    const { collateralSymbol } = this.base.getVaultTokensFromAddress(objectAddress)
+    // get collateral decimals
+    const collectionType = getCollectionType().toString()
+    const collection = collectionObjectResources.find((resource) => resource.type === collectionType)
+    console.log('collection', collection)
+    console.log('collectionType', collectionType)
+    console.log('collection resources', collectionObjectResources)
+    if (collection == undefined) throw new Error('Collection object not found')
+    const name = (collection.data as any).name as string
+    const collateralSymbol = name.split('/')[0]
     const collateralDecimals = this.base.getCollateralCoinDecimals(collateralSymbol)
+
     return new VaultCollection(
       collectionObjectResources,
       borrowTokenObjectResources,
-      objectAddress,
-      collateralSymbol,
       collateralDecimals,
       this.config.deployerAddress,
     )
   }
 
-  createVault(vaultObjectResources: MoveResource[], vaultCollection: VaultCollection, objectAddress: string): Vault {
-    return new Vault(vaultObjectResources, vaultCollection, objectAddress, this.config.deployerAddress)
+  createVault(vaultObjectResources: MoveResource[], vaultCollection: VaultCollection): Vault {
+    return new Vault(vaultObjectResources, vaultCollection, this.config.deployerAddress)
   }
 }

@@ -32,7 +32,7 @@ export class Vault {
    */
   public readonly vaultCollection: VaultCollection
 
-  public readonly objectAddress: string
+  public readonly objectAddress: AccountAddress
 
   /**
    * Construct an instance of Vault
@@ -40,14 +40,8 @@ export class Vault {
    * @param vaultCollection a vault collection entity
    * @param objectAddress the vault object address
    */
-  constructor(
-    vaultObjectResources: MoveResource[],
-    vaultCollection: VaultCollection,
-    objectAddress: string,
-    deployerAddress: AccountAddress,
-  ) {
+  constructor(vaultObjectResources: MoveResource[], vaultCollection: VaultCollection, deployerAddress: AccountAddress) {
     this.vaultCollection = vaultCollection
-    this.objectAddress = objectAddress
 
     const vaultType = Vault.getVaultType(deployerAddress).toString()
     const propertyMapType = `0x4::property_map::PropertyMap`
@@ -62,6 +56,8 @@ export class Vault {
       BigNumber((vault.data as any).collateral_amount),
       this.vaultCollection.collateralDecimals,
     )
+
+    this.objectAddress = AccountAddress.from((vault.data as any).burn_ref.inner as string)
 
     // need to use global debt rebase
     this.borrowAmount = this.vaultCollection.mirage.debtRebase.toElastic(

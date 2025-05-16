@@ -1,4 +1,4 @@
-import { AccountAddress, MoveResource } from '@aptos-labs/ts-sdk'
+import { AccountAddress, createObjectAddress, MoveResource } from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import { getModuleAddress, MoveModules } from '../utils'
@@ -9,6 +9,7 @@ export class MirageAsset {
   public readonly name: string
   public readonly decimals: number
   public readonly debtRebase: Rebase
+  public readonly objectAddress: AccountAddress
 
   constructor(tokenObjectResources: MoveResource[], deployerAddress: AccountAddress) {
     const debtStoreType = `${getModuleAddress(MoveModules.MIRAGE, deployerAddress)}::mirage::MirageDebtStore`
@@ -25,5 +26,16 @@ export class MirageAsset {
     this.symbol = (faMetadata.data as any).symbol
     this.name = (faMetadata.data as any).name
     this.decimals = BigNumber((faMetadata.data as any).decimals).toNumber()
+
+    this.objectAddress = MirageAsset.getMirageAssetAddress(this.symbol, deployerAddress)
   }
+
+  public static getMirageAssetAddress(symbol: string, deployerAddress: AccountAddress): AccountAddress {
+    const mirageModuleAddress = getModuleAddress(MoveModules.MIRAGE_CORE, deployerAddress)
+    return createObjectAddress(mirageModuleAddress, symbol)
+  }
+}
+
+export const getMusdAddress = (deployerAddress: AccountAddress): AccountAddress => {
+  return MirageAsset.getMirageAssetAddress('mUSD', deployerAddress)
 }

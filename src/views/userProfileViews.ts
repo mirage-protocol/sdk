@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js'
 import { getModuleAddress, MoveModules } from '../utils'
 
 export const referralDepositAddressView = async (
-  userAddress: string,
+  userAddress: AccountAddress,
   aptosClient: AptosClient,
   deployerAddress: AccountAddress,
 ): Promise<string> => {
@@ -20,7 +20,7 @@ export const referralDepositAddressView = async (
 }
 
 export const userProfileExistsView = async (
-  userAddress: string,
+  userAddress: AccountAddress,
   aptosClient: AptosClient,
   deployerAddress: AccountAddress,
 ): Promise<boolean> => {
@@ -36,7 +36,7 @@ export const userProfileExistsView = async (
 
 // returns the address of the person who referred the user passed in, eg Alice refers Bob, getReferreeReferrerAddress(Bob) returns alice
 export const userReferrerAddressView = async (
-  userAddress: string,
+  userAddress: AccountAddress,
   aptosClient: AptosClient,
   deployerAddress: AccountAddress,
 ): Promise<string> => {
@@ -51,7 +51,7 @@ export const userReferrerAddressView = async (
 }
 
 export const currentPeriodFeeRateView = async (
-  userAddress: string,
+  userAddress: AccountAddress,
   aptosClient: AptosClient,
   deployerAddress: AccountAddress,
 ): Promise<number> => {
@@ -67,7 +67,7 @@ export const currentPeriodFeeRateView = async (
 
 // returns last period, current period
 export const userProfileFeeVolumeView = async (
-  userAddress: string,
+  userAddress: AccountAddress,
   aptosClient: AptosClient,
   deployerAddress: AccountAddress,
 ): Promise<number[]> => {
@@ -82,7 +82,7 @@ export const userProfileFeeVolumeView = async (
 }
 
 export const nextReferralRateView = async (
-  userAddress: string,
+  userAddress: AccountAddress,
   aptosClient: AptosClient,
   deployerAddress: AccountAddress,
 ): Promise<number> => {

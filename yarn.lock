@@ -48,39 +48,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aptos-labs/aptos-client@npm:^1.1.0":
-  version: 1.2.0
-  resolution: "@aptos-labs/aptos-client@npm:1.2.0"
+"@aptos-labs/aptos-client@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@aptos-labs/aptos-client@npm:2.0.0"
   peerDependencies:
-    axios: ^1.8.4
     got: ^11.8.6
-  checksum: 10c0/dfdeeaeb0269265ae2ff9fcf576240dfbc42104ef79bfaa4bad50437285c6f3e37080908c00987f36d389402857d31b8be09c5bd7fe5c790ca47f468ca3afe90
+  checksum: 10c0/abbcd20757be8bc2ac4277646e591f95809c345fd1c735d52cb3f9f565d45c071e5f5444e66c896b04086feb48e8e621f1520a03c89a51cbe7449aab2fb1b7f9
   languageName: node
   linkType: hard
 
-"@aptos-labs/aptos-dynamic-transaction-composer@npm:^0.1.3":
-  version: 0.1.3
-  resolution: "@aptos-labs/aptos-dynamic-transaction-composer@npm:0.1.3"
-  checksum: 10c0/cba0388a2ed95f0c609b7368dec705bf324227b01732384bba6622ef1c6e6e15756cb7f739215e030e7d97f281f9fea381f2486fa2c32480ff7471b528ac09fa
-  languageName: node
-  linkType: hard
-
-"@aptos-labs/script-composer-pack@npm:^0.0.9":
-  version: 0.0.9
-  resolution: "@aptos-labs/script-composer-pack@npm:0.0.9"
-  dependencies:
-    "@aptos-labs/aptos-dynamic-transaction-composer": "npm:^0.1.3"
-  checksum: 10c0/8154f8c6ecc4db2db23ebd17d9d88773733671eeabfbfca654286ae9682d6ee973fe06fa90ed2b9441e5e4c2f48247a7437f6407f8b8fbaafe6c6858b4e8485c
-  languageName: node
-  linkType: hard
-
-"@aptos-labs/ts-sdk@npm:^1.38.0":
-  version: 1.38.0
-  resolution: "@aptos-labs/ts-sdk@npm:1.38.0"
+"@aptos-labs/ts-sdk@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@aptos-labs/ts-sdk@npm:2.0.0"
   dependencies:
     "@aptos-labs/aptos-cli": "npm:^1.0.2"
-    "@aptos-labs/aptos-client": "npm:^1.1.0"
-    "@aptos-labs/script-composer-pack": "npm:^0.0.9"
+    "@aptos-labs/aptos-client": "npm:^2.0.0"
     "@noble/curves": "npm:^1.6.0"
     "@noble/hashes": "npm:^1.5.0"
     "@scure/bip32": "npm:^1.4.0"
@@ -90,7 +72,7 @@ __metadata:
     js-base64: "npm:^3.7.7"
     jwt-decode: "npm:^4.0.0"
     poseidon-lite: "npm:^0.2.0"
-  checksum: 10c0/db7822ff6a6de5963fd774bf58828f24d690a0235804976f28238f9de08db8290569354ea55b923baa9c5a3581eebf31aae7a1ff17a7dff0cb8f7540599c865d
+  checksum: 10c0/b24813479f8feeea93a091bc6f84bcc36238b5de5c08ae163dee1c230505664f50197af8ef096f264b12a0ccfdcc2933e34054e615ebc2f919f41f6e20f697c5
   languageName: node
   linkType: hard
 
@@ -1880,7 +1862,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mirage-protocol/sdk@workspace:."
   dependencies:
-    "@aptos-labs/ts-sdk": "npm:^1.38.0"
+    "@aptos-labs/ts-sdk": "npm:^2.0.0"
     "@eslint/eslintrc": "npm:^3.3.1"
     "@graphql-codegen/cli": "npm:5.0.2"
     "@graphql-codegen/introspection": "npm:4.0.3"
@@ -1890,8 +1872,7 @@ __metadata:
     "@pythnetwork/pyth-aptos-js": "npm:^1.4.2"
     "@pythnetwork/pyth-common-js": "npm:^1.4.0"
     "@tsconfig/recommended": "npm:^1.0.6"
-    "@types/node": "npm:^20.14.0"
-    "@types/styled-components": "npm:^5.1.34"
+    "@types/node": "npm:^22.14.1"
     "@typescript-eslint/eslint-plugin": "npm:^8.27.0"
     "@typescript-eslint/parser": "npm:^8.27.0"
     "@urql/exchange-auth": "npm:^2.2.1"
@@ -1905,7 +1886,7 @@ __metadata:
     graphql-tag: "npm:^2.12.6"
     lint-staged: "npm:^15.2.5"
     prettier: "npm:^3.5.0"
-    react: "npm:^18.3.1"
+    react: "npm:^19.1.0"
     tsup: "npm:^6.6.3"
     typescript: "npm:^5.4.3"
     urql: "npm:^4.2.2"
@@ -2182,16 +2163,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/hoist-non-react-statics@npm:*":
-  version: 3.3.6
-  resolution: "@types/hoist-non-react-statics@npm:3.3.6"
-  dependencies:
-    "@types/react": "npm:*"
-    hoist-non-react-statics: "npm:^3.3.0"
-  checksum: 10c0/149a4c217d81f21f8a1e152160a59d5b99b6a9aa6d354385d5f5bc02760cbf1e170a8442ba92eb653befff44b0c5bc2234bb77ce33e0d11a65f779e8bab5c321
-  languageName: node
-  linkType: hard
-
 "@types/http-cache-semantics@npm:*":
   version: 4.0.4
   resolution: "@types/http-cache-semantics@npm:4.0.4"
@@ -2231,21 +2202,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.14.0":
-  version: 20.17.31
-  resolution: "@types/node@npm:20.17.31"
+"@types/node@npm:^22.14.1":
+  version: 22.15.18
+  resolution: "@types/node@npm:22.15.18"
   dependencies:
-    undici-types: "npm:~6.19.2"
-  checksum: 10c0/ab6fb60a7957bef39a9fcd3b9fbd8ea2f4a51d7b8522b0fd56e11b9fbbd3ff6cbd361e3bd510cdf9bbef54956332374c6646e28cce8ae597244623a0659153d0
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:*":
-  version: 19.1.2
-  resolution: "@types/react@npm:19.1.2"
-  dependencies:
-    csstype: "npm:^3.0.2"
-  checksum: 10c0/76ffe71395c713d4adc3c759465012d3c956db00af35ab7c6d0d91bd07b274b7ce69caa0478c0760311587bd1e38c78ffc9688ebc629f2b266682a19d8750947
+    undici-types: "npm:~6.21.0"
+  checksum: 10c0/e23178c568e2dc6b93b6aa3b8dfb45f9556e527918c947fe7406a4c92d2184c7396558912400c3b1b8d0fa952ec63819aca2b8e4d3545455fc6f1e9623e09ca6
   languageName: node
   linkType: hard
 
@@ -2255,17 +2217,6 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: 10c0/a58ba341cb9e7d74f71810a88862da7b2a6fa42e2a1fc0ce40498f6ea1d44382f0640117057da779f74c47039f7166bf48fad02dc876f94e005c7afa50f5e129
-  languageName: node
-  linkType: hard
-
-"@types/styled-components@npm:^5.1.34":
-  version: 5.1.34
-  resolution: "@types/styled-components@npm:5.1.34"
-  dependencies:
-    "@types/hoist-non-react-statics": "npm:*"
-    "@types/react": "npm:*"
-    csstype: "npm:^3.0.2"
-  checksum: 10c0/5bce93ea2c6161fc45daaf863eefdc20672e839ae486597c40b95e7978e249c160c1bc9706f56cb5152a7ef63cf485d15a9502889169ef945281f511e4b2d5a0
   languageName: node
   linkType: hard
 
@@ -3343,13 +3294,6 @@ __metadata:
     shebang-command: "npm:^2.0.0"
     which: "npm:^2.0.1"
   checksum: 10c0/053ea8b2135caff68a9e81470e845613e374e7309a47731e81639de3eaeb90c3d01af0e0b44d2ab9d50b43467223b88567dfeb3262db942dc063b9976718ffc1
-  languageName: node
-  linkType: hard
-
-"csstype@npm:^3.0.2":
-  version: 3.1.3
-  resolution: "csstype@npm:3.1.3"
-  checksum: 10c0/80c089d6f7e0c5b2bd83cf0539ab41474198579584fa10d86d0cafe0642202343cbc119e076a0b1aece191989477081415d66c9fefbf3c957fc2fc4b7009f248
   languageName: node
   linkType: hard
 
@@ -4525,15 +4469,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hoist-non-react-statics@npm:^3.3.0":
-  version: 3.3.2
-  resolution: "hoist-non-react-statics@npm:3.3.2"
-  dependencies:
-    react-is: "npm:^16.7.0"
-  checksum: 10c0/fe0889169e845d738b59b64badf5e55fa3cf20454f9203d1eb088df322d49d4318df774828e789898dcb280e8a5521bb59b3203385662ca5e9218a6ca5820e74
-  languageName: node
-  linkType: hard
-
 "http-cache-semantics@npm:^4.0.0, http-cache-semantics@npm:^4.1.1":
   version: 4.1.1
   resolution: "http-cache-semantics@npm:4.1.1"
@@ -5212,7 +5147,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loose-envify@npm:^1.0.0, loose-envify@npm:^1.1.0":
+"loose-envify@npm:^1.0.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
   dependencies:
@@ -6121,19 +6056,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-is@npm:^16.7.0":
-  version: 16.13.1
-  resolution: "react-is@npm:16.13.1"
-  checksum: 10c0/33977da7a5f1a287936a0c85639fec6ca74f4f15ef1e59a6bc20338fc73dc69555381e211f7a3529b8150a1f71e4225525b41b60b52965bda53ce7d47377ada1
-  languageName: node
-  linkType: hard
-
-"react@npm:^18.3.1":
-  version: 18.3.1
-  resolution: "react@npm:18.3.1"
-  dependencies:
-    loose-envify: "npm:^1.1.0"
-  checksum: 10c0/283e8c5efcf37802c9d1ce767f302dd569dd97a70d9bb8c7be79a789b9902451e0d16334b05d73299b20f048cbc3c7d288bbbde10b701fa194e2089c237dbea3
+"react@npm:^19.1.0":
+  version: 19.1.0
+  resolution: "react@npm:19.1.0"
+  checksum: 10c0/530fb9a62237d54137a13d2cfb67a7db6a2156faed43eecc423f4713d9b20c6f2728b026b45e28fcd72e8eadb9e9ed4b089e99f5e295d2f0ad3134251bdd3698
   languageName: node
   linkType: hard
 
@@ -6952,13 +6878,6 @@ __metadata:
   version: 0.1.2
   resolution: "unc-path-regex@npm:0.1.2"
   checksum: 10c0/bf9c781c4e2f38e6613ea17a51072e4b416840fbe6eeb244597ce9b028fac2fb6cfd3dde1f14111b02c245e665dc461aab8168ecc30b14364d02caa37f812996
-  languageName: node
-  linkType: hard
-
-"undici-types@npm:~6.19.2":
-  version: 6.19.8
-  resolution: "undici-types@npm:6.19.8"
-  checksum: 10c0/078afa5990fba110f6824823ace86073b4638f1d5112ee26e790155f481f2a868cc3e0615505b6f4282bdf74a3d8caad715fd809e870c2bb0704e3ea6082f344
   languageName: node
   linkType: hard
 

@@ -1,8 +1,16 @@
-import { AccountAddress, MoveResource, StructTag, Identifier, TypeTagStruct } from '@aptos-labs/ts-sdk'
+import {
+  AccountAddress,
+  MoveResource,
+  StructTag,
+  Identifier,
+  TypeTagStruct,
+  createObjectAddress,
+} from '@aptos-labs/ts-sdk'
 import BigNumber from 'bignumber.js'
 
 import {
   EXCHANGE_RATE_PRECISION,
+  getCollectionType,
   getModuleAddress,
   INTEREST_PRECISION,
   MoveModules,
@@ -92,7 +100,8 @@ export class VaultCollection {
   /**
    * The vault collection object address
    */
-  public readonly objectAddress: string
+  public readonly objectAddress: AccountAddress
+  public readonly name: string
 
   /**
    * Construct an instance of VaultCollection
@@ -104,23 +113,26 @@ export class VaultCollection {
   constructor(
     collectionObjectResources: MoveResource[],
     borrowTokenObjectResources: MoveResource[],
-    objectAddress: string,
-    collateralSymbol: string,
     collateralDecimals: number,
     deployerAddress: AccountAddress,
   ) {
     this.mirage = new MirageAsset(borrowTokenObjectResources, deployerAddress)
-    this.objectAddress = objectAddress
 
     const vaultCollectionType = VaultCollection.getVaultCollectionType(deployerAddress).toString()
+    const collectionType = getCollectionType().toString()
 
     const vaultCollection = collectionObjectResources.find((resource) => resource.type === vaultCollectionType)
     if (vaultCollection == undefined) throw new Error('Vault object not found')
 
+    const collection = collectionObjectResources.find((resource) => resource.type === collectionType)
+    if (collection == undefined) throw new Error('Collection object not found')
+    this.name = (collection.data as any).name as string
+    this.objectAddress = VaultCollection.getVaultCollectionAddress(this.name, deployerAddress)
+    this.collateralSymbol = this.name.split('/')[0]
+
     this.collateralAddress = (vaultCollection.data as any).collateral_token.inner as string
     this.borrowAddress = (vaultCollection.data as any).borrow_token.inner as string
     this.borrowSymbol = this.mirage.symbol
-    this.collateralSymbol = collateralSymbol
     this.collateralDecimals = collateralDecimals
 
     this.borrowFeePercent = BigNumber((vaultCollection.data as any).config.borrow_fee)
@@ -194,5 +206,14 @@ export class VaultCollection {
   public borrowTokensToDebtPart(borrowAmount: number): number {
     const scaledVal = new BigNumber(borrowAmount).times(PRECISION_8)
     return this.mirage.debtRebase.toBase(this.borrowRebase.toBase(scaledVal, false), false).toNumber()
+  }
+
+  public static getVaultCollectionName(collateralSymbol: string, borrowSymbol: string): string {
+    return `${collateralSymbol}/${borrowSymbol} CDP`
+  }
+
+  public static getVaultCollectionAddress(name: string, deployerAddress: AccountAddress): AccountAddress {
+    const mirageModuleAddress = getModuleAddress(MoveModules.MIRAGE, deployerAddress)
+    return createObjectAddress(mirageModuleAddress, name)
   }
 }

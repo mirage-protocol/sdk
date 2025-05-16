@@ -1,21 +1,15 @@
-import { AccountAddress, createObjectAddress, createTokenAddress } from '@aptos-labs/ts-sdk'
+import { AccountAddress } from '@aptos-labs/ts-sdk'
 
-import { getModuleAddress, MoveModules } from '../../utils'
 import { MirageClientBase } from '../base'
+import { UserProfile } from '@/src/entities/profile/userProfile'
+import { UserProfileCollection } from '@/src/entities/profile/userProfileCollection'
 
 export class UserProfileClientBase extends MirageClientBase {
-  public getUserProfileAddress = (userAddress: string): string => {
-    return createTokenAddress(
-      getModuleAddress(MoveModules.MIRAGE, this.getDeployerAddress()),
-      'mirage user profiles',
-      AccountAddress.fromString(userAddress).toString(),
-    ).toString()
+  public getUserProfileAddress = (userAddress: AccountAddress): AccountAddress => {
+    return UserProfile.getUserProfileAddress(userAddress, this.getDeployerAddress())
   }
 
-  public getUserProfileCollectionAddress = (): string => {
-    return createObjectAddress(
-      getModuleAddress(MoveModules.MIRAGE, this.getDeployerAddress()),
-      'mirage user profiles',
-    ).toString()
+  public getUserProfileCollectionAddress = (): AccountAddress => {
+    return UserProfileCollection.getUserProfileCollectionAddress(this.getDeployerAddress())
   }
 }
