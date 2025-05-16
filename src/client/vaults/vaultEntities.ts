@@ -29,9 +29,6 @@ export class VaultEntitiesClient {
     // get collateral decimals
     const collectionType = getCollectionType().toString()
     const collection = collectionObjectResources.find((resource) => resource.type === collectionType)
-    console.log('collection', collection)
-    console.log('collectionType', collectionType)
-    console.log('collection resources', collectionObjectResources)
     if (collection == undefined) throw new Error('Collection object not found')
     const name = (collection.data as any).name as string
     const collateralSymbol = name.split('/')[0]
