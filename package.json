@@ -68,5 +68,8 @@
     "semi": false,
     "singleQuote": true
   },
+  "engines": {
+    "node": ">=20.18.0"
+  },
   "packageManager": "yarn@4.2.2"
 }
