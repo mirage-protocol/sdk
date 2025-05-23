@@ -95,3 +95,18 @@ export const nextReferralRateView = async (
   const result = await aptosClient.view({ payload })
   return BigNumber(result[0] as MoveUint64Type).toNumber()
 }
+
+export const getUserProfileCode = async (
+  userAddress: AccountAddress,
+  aptosClient: AptosClient,
+  deployerAddress: AccountAddress,
+): Promise<string> => {
+  const payload = {
+    function:
+      `${getModuleAddress(MoveModules.MIRAGE, deployerAddress)}::fee_manager::get_user_profile_code` as `${string}::${string}::${string}`,
+    functionArguments: [userAddress],
+    typeArguments: [],
+  }
+  const result = await aptosClient.view({ payload })
+  return result[0] as string
+}

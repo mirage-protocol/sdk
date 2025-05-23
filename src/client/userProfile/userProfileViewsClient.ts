@@ -2,6 +2,7 @@ import { AccountAddress, Aptos as AptosClient } from '@aptos-labs/ts-sdk'
 
 import {
   currentPeriodFeeRateView,
+  getUserProfileCode,
   nextReferralRateView,
   referralDepositAddressView,
   userProfileExistsView,
@@ -43,5 +44,9 @@ export class UserProfileViewsClient {
 
   public getNextReferralRate = async (userAddress: AccountAddress): Promise<number> => {
     return nextReferralRateView(userAddress, this.aptosClient, this.base.getDeployerAddress())
+  }
+
+  public getUserReferralCode = async (userAddress: AccountAddress): Promise<string> => {
+    return getUserProfileCode(userAddress, this.aptosClient, this.base.getDeployerAddress())
   }
 }
