@@ -116,7 +116,7 @@ export class Position {
     this.limitOrders = []
     this.tpsl = undefined
 
-    this.objectAddress = objectAddress
+    this.objectAddress = AccountAddress.fromString(objectAddress).toStringShort()
     this.market = market
 
     const positionType = Position.getPositionType(deployerAddress).toString()
@@ -163,19 +163,18 @@ export class Position {
     this.strategyAddresses = (position.data as any).strategy_refs as string[]
     for (const strategyObjectResources of strategyObjectsResources) {
       // object core is always the first resource
-      const strategyAddress = AccountAddress.fromString(
-        (strategyObjectResources[0].data as any).transfer_events.guid.id.addr,
-      )
+      const strategyAddress = (strategyObjectResources[0].data as any).transfer_events.guid.id.addr as string
+
       for (const strategyObjectResource of strategyObjectResources) {
         if (strategyObjectResource.type === TpSl.getTpslType(deployerAddress).toString()) {
-          const tpsl = new TpSl(strategyObjectResources, strategyAddress.toStringLong(), deployerAddress)
+          const tpsl = new TpSl(strategyObjectResources, strategyAddress, deployerAddress)
           if (tpsl.positionObjectAddress == this.objectAddress) {
             this.tpsl = tpsl
           }
           break
         }
         if (strategyObjectResource.type === LimitOrder.getLimitOrderType(deployerAddress).toString()) {
-          const limitOrder = new LimitOrder(strategyObjectResources, strategyAddress.toStringLong(), deployerAddress)
+          const limitOrder = new LimitOrder(strategyObjectResources, strategyAddress, deployerAddress)
           if (limitOrder.positionObjectAddress == this.objectAddress) {
             this.limitOrders.push(limitOrder)
           }
