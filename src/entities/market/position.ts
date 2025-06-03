@@ -232,8 +232,8 @@ export class Position {
       .minus(position.openingPrice)
       .times(position.positionSize)
       .div(marginPrice)
-      .minus(position.fundingAccrued)
       .times(position.side == PositionSide.LONG ? 1 : -1)
+      .minus(position.fundingAccrued)
       .toNumber()
   }
 
