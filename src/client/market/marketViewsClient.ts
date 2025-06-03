@@ -4,6 +4,7 @@ import {
   allMarketAddressesView,
   AllPositionInfo,
   allPositionInfoView,
+  availableMarginView,
   estimateFeeView,
   isLimitOrderTriggerableBulkView,
   isLimitOrderTriggerableView,
@@ -14,6 +15,7 @@ import {
   marketMarginTokenAddressView,
   marketPerpOracleView,
   marketPerpSymbolView,
+  positionFundingView,
   positionMaintenanceMarginMusdView,
 } from '../../views'
 import { MarketClientBase } from './marketClientBase'
@@ -81,6 +83,30 @@ export class MarketViewsClient {
       positionObjectAddress,
       perpPrice,
       marginPrice,
+      this.aptosClient,
+      this.base.getDeployerAddress(),
+    )
+  }
+
+  public getAvailableMargin = async (
+    positionObjectAddress: MoveObjectType,
+    perpPrice: number,
+    marginPrice: number,
+  ): Promise<number> => {
+    return await availableMarginView(
+      positionObjectAddress,
+      perpPrice,
+      marginPrice,
+      this.aptosClient,
+      this.base.getDeployerAddress(),
+    )
+  }
+
+  public getPositionFunding = async (
+    positionObjectAddress: MoveObjectType,
+  ): Promise<number> => {
+    return await positionFundingView(
+      positionObjectAddress,
       this.aptosClient,
       this.base.getDeployerAddress(),
     )

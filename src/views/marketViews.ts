@@ -165,6 +165,42 @@ export const liquidationPriceView = async (
     .toNumber()
 }
 
+export const availableMarginView = async (
+  positionObjectAddress: MoveObjectType,
+  perpPrice: number,
+  marginPrice: number,
+  aptosClient: AptosClient,
+  deployerAddress: AccountAddress,
+): Promise<number> => {
+  const payload = {
+    function:
+      `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::market::get_available_margin` as `${string}::${string}::${string}`,
+    functionArguments: [positionObjectAddress, getDecimal8BCS(perpPrice), getDecimal8BCS(marginPrice)],
+  }
+  const ret = await aptosClient.view({ payload })
+  return BigNumber(ret[0] as MoveUint64Type)
+    .div(PRECISION_8)
+    .toNumber()
+}
+
+export const positionFundingView = async (
+  positionObjectAddress: MoveObjectType,
+  aptosClient: AptosClient,
+  deployerAddress: AccountAddress,
+): Promise<number> => {
+  const payload = {
+    function:
+      `${getModuleAddress(MoveModules.MARKET, deployerAddress)}::market::position_funding` as `${string}::${string}::${string}`,
+    functionArguments: [positionObjectAddress],
+  }
+  const ret = await aptosClient.view({ payload })
+  const funding = (ret[0] as { magnitude: string; negative: boolean })
+  return BigNumber(funding.magnitude)
+    .times(funding.negative ? 1 : -1)
+    .div(PRECISION_8)
+    .toNumber()
+}
+
 export const liquidationPriceBulkView = async (
   positionObjectAddresses: MoveObjectType[],
   perpPrice: number,
