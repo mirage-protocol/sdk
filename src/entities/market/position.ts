@@ -269,11 +269,11 @@ export class Position {
       return ZERO
     }
 
-    const outstandingFunding = this.fundingAccrued
+    const pnl = Position.estimatePnl(this, perpPrice.toNumber(), marginPrice.toNumber())
     const maintenanceMargin = this.getPositionMaintenanceMarginMUSD(perpPrice, marginPrice)
     const openingPrice = this.openingPrice
     let rawMargin = this.margin
-    rawMargin = rawMargin.plus(outstandingFunding)
+    rawMargin = rawMargin.plus(pnl)
     const marginMUSD = rawMargin.times(marginPrice)
     if (marginMUSD.lte(maintenanceMargin)) {
       return this.side == PositionSide.LONG ? ZERO : BigNumber(U64_MAX)
