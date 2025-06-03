@@ -276,7 +276,7 @@ export class Position {
     rawMargin = rawMargin.plus(pnl)
     const marginMUSD = rawMargin.times(marginPrice)
     if (marginMUSD.lte(maintenanceMargin)) {
-      return this.side == PositionSide.LONG ? ZERO : BigNumber(U64_MAX)
+      return this.side == PositionSide.LONG ? BigNumber(U64_MAX) : ZERO
     }
 
     const marginScalar = marginMUSD.minus(maintenanceMargin).div(this.positionSize)
