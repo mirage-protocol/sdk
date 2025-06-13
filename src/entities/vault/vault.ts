@@ -56,8 +56,7 @@ export class Vault {
       BigNumber((vault.data as any).collateral_amount),
       this.vaultCollection.collateralDecimals,
     )
-
-    this.objectAddress = AccountAddress.from((vault.data as any).burn_ref.inner as string)
+    this.objectAddress = AccountAddress.from((vault.data as any).burn_ref.inner.vec[0].self as string)
 
     // need to use global debt rebase
     this.borrowAmount = this.vaultCollection.mirage.debtRebase.toElastic(
