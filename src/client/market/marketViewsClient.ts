@@ -102,14 +102,8 @@ export class MarketViewsClient {
     )
   }
 
-  public getPositionFunding = async (
-    positionObjectAddress: MoveObjectType,
-  ): Promise<number> => {
-    return await positionFundingView(
-      positionObjectAddress,
-      this.aptosClient,
-      this.base.getDeployerAddress(),
-    )
+  public getPositionFunding = async (positionObjectAddress: MoveObjectType): Promise<number> => {
+    return await positionFundingView(positionObjectAddress, this.aptosClient, this.base.getDeployerAddress())
   }
 
   public getLiquidationPriceBulk = async (

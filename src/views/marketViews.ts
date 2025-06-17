@@ -194,7 +194,7 @@ export const positionFundingView = async (
     functionArguments: [positionObjectAddress],
   }
   const ret = await aptosClient.view({ payload })
-  const funding = (ret[0] as { magnitude: string; negative: boolean })
+  const funding = ret[0] as { magnitude: string; negative: boolean }
   return BigNumber(funding.magnitude)
     .times(funding.negative ? 1 : -1)
     .div(PRECISION_8)

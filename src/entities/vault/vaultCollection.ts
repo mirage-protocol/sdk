@@ -180,11 +180,13 @@ export class VaultCollection {
     this.isEmergency = (vaultCollection.data as any).is_emergency
     this.collateralOracleAddress = (vaultCollection.data as any).collateral_oracle.inner
     this.borrowOracleAddress = (vaultCollection.data as any).borrow_oracle.inner
-    this.minCollateralAmount = 
-        BigNumber((vaultCollection.data as any).config.min_collateral_amount).div(collateralDecimals)
-    this.maxCollectionDebtAmount = 
-        BigNumber((vaultCollection.data as any).config.max_collection_debt_amount).div(PRECISION_8)
-}
+    this.minCollateralAmount = BigNumber((vaultCollection.data as any).config.min_collateral_amount).div(
+      collateralDecimals,
+    )
+    this.maxCollectionDebtAmount = BigNumber((vaultCollection.data as any).config.max_collection_debt_amount).div(
+      PRECISION_8,
+    )
+  }
 
   public static getVaultCollectionType(deployerAddress: AccountAddress): TypeTagStruct {
     return new TypeTagStruct(
